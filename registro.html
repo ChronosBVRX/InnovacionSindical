@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro | TrascendencIA Sindical</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header>
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-symbol">IA</span>
+        TrascendencIA Sindical
+      </a>
+      <nav>
+        <ul>
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="index.html#beneficios">Beneficios</a></li>
+          <li><a href="quienes-somos.html">¿Quiénes somos?</a></li>
+          <li><a class="btn-primary" href="#formulario">Completar registro</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="registration-hero">
+      <div class="container">
+        <div class="form-wrapper">
+          <div class="form-benefits">
+            <span class="badge">Piloto 2025 – 2026</span>
+            <h1>Únete al ecosistema TrascendencIA</h1>
+            <p>
+              Completa el formulario y coordinaremos una sesión de diagnóstico con el Equipo de Innovación Sindical para
+              definir el despliegue de chatbot, kioskos digitales, miniapp y plataforma web central en tu organización.
+            </p>
+            <ul>
+              <li>
+                <strong>Acompañamiento especializado:</strong>
+                sesiones con el equipo técnico y de participación para priorizar servicios.
+              </li>
+              <li>
+                <strong>Implementación ágil:</strong>
+                activación de canales en menos de 8 semanas con indicadores de adopción.
+              </li>
+              <li>
+                <strong>Métricas en tiempo real:</strong>
+                paneles de transparencia y percepción sindical disponibles 24/7.
+              </li>
+            </ul>
+          </div>
+
+          <form id="formulario" class="form-card">
+            <h2>Registro de organización</h2>
+            <p class="form-note">
+              Nos comunicaremos en menos de 48 horas para programar la sesión de diagnóstico y alinear los objetivos del piloto.
+            </p>
+            <div class="form-grid">
+              <div>
+                <label for="nombre-sindicato">Nombre del sindicato</label>
+                <input id="nombre-sindicato" name="nombre-sindicato" type="text" placeholder="Sindicato Sección XX" required />
+              </div>
+              <div>
+                <label for="sector">Sector</label>
+                <select id="sector" name="sector" required>
+                  <option value="">Selecciona un sector</option>
+                  <option>Salud</option>
+                  <option>Educación</option>
+                  <option>Transporte</option>
+                  <option>Industria</option>
+                  <option>Servicios públicos</option>
+                  <option>Otro</option>
+                </select>
+              </div>
+              <div>
+                <label for="cantidad-afiliados">Cantidad de afiliados</label>
+                <select id="cantidad-afiliados" name="cantidad-afiliados" required>
+                  <option value="">Selecciona un rango</option>
+                  <option>- 500</option>
+                  <option>500 - 2.000</option>
+                  <option>2.000 - 10.000</option>
+                  <option>+ 10.000</option>
+                </select>
+              </div>
+              <div>
+                <label for="pais">País</label>
+                <input id="pais" name="pais" type="text" placeholder="México" required />
+              </div>
+              <div>
+                <label for="nombre-contacto">Nombre de contacto</label>
+                <input id="nombre-contacto" name="nombre-contacto" type="text" placeholder="Nombre y apellido" required />
+              </div>
+              <div>
+                <label for="correo">Correo electrónico</label>
+                <input id="correo" name="correo" type="email" placeholder="correo@organizacion.org" required />
+              </div>
+              <div>
+                <label for="telefono">Teléfono</label>
+                <input id="telefono" name="telefono" type="tel" placeholder="Código de país + número" required />
+              </div>
+              <div>
+                <label for="cargo">Cargo / Rol</label>
+                <input id="cargo" name="cargo" type="text" placeholder="Secretaría General, Delegado/a" />
+              </div>
+            </div>
+            <div>
+              <label for="objetivos">Objetivos principales</label>
+              <textarea id="objetivos" name="objetivos" placeholder="Cuéntanos qué metas deseas alcanzar con TrascendencIA"></textarea>
+            </div>
+            <div>
+              <label for="componentes-interes">Componentes de interés</label>
+              <select id="componentes-interes" name="componentes-interes" multiple>
+                <option>Chatbot TrascendencIA</option>
+                <option>Kioskos digitales</option>
+                <option>Miniapp de WhatsApp</option>
+                <option>Plataforma web central</option>
+              </select>
+            </div>
+            <button class="btn-primary" type="submit">Enviar registro</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container section-surface">
+        <div class="section-heading">
+          <span class="badge">Próximos pasos</span>
+          <h2>¿Qué ocurre después de tu registro?</h2>
+          <p>
+            Te acompañamos desde el diagnóstico hasta la medición de resultados para garantizar una implementación exitosa del
+            ecosistema TrascendencIA Sindical.
+          </p>
+        </div>
+        <div class="timeline-inline" style="margin-top: 2.4rem;">
+          <article class="timeline-card">
+            <h3>1. Sesión de descubrimiento</h3>
+            <p>Revisión de objetivos, canales actuales y priorización de componentes a desplegar.</p>
+          </article>
+          <article class="timeline-card">
+            <h3>2. Plan de trabajo compartido</h3>
+            <p>Definimos responsables, cronograma y métricas clave por delegación o región.</p>
+          </article>
+          <article class="timeline-card">
+            <h3>3. Implementación acompañada</h3>
+            <p>Configuramos chatbot, kioskos, miniapp y plataforma con sesiones de capacitación.</p>
+          </article>
+          <article class="timeline-card">
+            <h3>4. Evaluación y mejora continua</h3>
+            <p>Monitoreamos uso y percepción sindical para evolucionar los servicios en conjunto.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <strong>TrascendencIA Sindical</strong>
+        <p>Proyecto estratégico del Equipo de Innovación Sindical · Sección XX del SNTSS.</p>
+      </div>
+      <div>
+        <strong>Navegación</strong>
+        <p><a href="index.html#vision">Visión</a></p>
+        <p><a href="index.html#beneficios">Beneficios</a></p>
+        <p><a href="quienes-somos.html">¿Quiénes somos?</a></p>
+      </div>
+      <div>
+        <strong>Contacto</strong>
+        <p>innovacion.sindical@sntss.mx</p>
+        <p>+52 55 0000 0000</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
