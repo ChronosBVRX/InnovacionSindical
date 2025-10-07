@@ -11,27 +11,26 @@
       --topbar: 52px; --dock: 60px;
     }
     *{box-sizing:border-box}
-    html,body{height:100%; margin:0;}
-    /* 🔒 Bloquea scrolling de la página para evitar scroll doble con Wix / host */
-    html,body{overflow:hidden; overscroll-behavior:none; background:#0b1022}
-
-    body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu; color:#e6fbff;
+    html,body{height:100%; margin:0; overflow:hidden; overscroll-behavior:none; background:#0b1022}
+    body{
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu; color:#e6fbff;
       background:radial-gradient(70vmax 70vmax at 50% 20%, rgba(96,165,250,.15), transparent 60%),
                  radial-gradient(60vmax 60vmax at 80% 80%, rgba(91,215,242,.12), transparent 60%),
-                 linear-gradient(180deg,var(--c-bg1),var(--c-bg2));}
+                 linear-gradient(180deg,var(--c-bg1),var(--c-bg2));
+    }
     .grid-bg::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;
       background-image:linear-gradient(to right, rgba(96,165,250,.12) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(91,215,242,.10) 1px, transparent 1px);
+                       linear-gradient(to bottom, rgba(91,215,242,.10) 1px, transparent 1px);
       background-size:48px 48px,48px 48px}
 
-    /* Barra superior fija */
+    /* Topbar */
     .topbar{position:fixed;inset:0 0 auto 0;height:var(--topbar);display:flex;align-items:center;justify-content:space-between;padding:0 16px;
       background:rgba(9,14,26,.55);backdrop-filter: blur(8px); border-bottom:1px solid rgba(91,215,242,.25); z-index:30}
     .mark{display:grid;place-items:center;width:28px;height:28px;border-radius:10px;background:rgba(91,215,242,.15);border:1px solid var(--ring)}
     .title{display:flex;align-items:center;gap:8px;font-weight:600;color:#bff4ff;letter-spacing:.3px}
     .clock{font-size:12px;color:#a2e7f5}
 
-    /* 🧱 Capa de contenido a pantalla completa entre Topbar y Dock */
+    /* Capa scrollable */
     .layer{position:fixed; left:0; right:0; top:var(--topbar); bottom:var(--dock); overflow:auto; -webkit-overflow-scrolling:touch;}
 
     /* Home */
@@ -51,11 +50,139 @@
     .tile h3{margin:0 0 4px;font-size:16px;color:#d8fbff}
     .tile p{margin:0;color:#aee9f7;font-size:12px;opacity:.85}
 
-    /* Dock fijo inferior */
+    /* Dock */
     .dock{position:fixed;inset:auto 0 0 0;height:var(--dock);display:flex;align-items:center; border-top:1px solid rgba(91,215,242,.25);background:rgba(9,14,26,.55);backdrop-filter: blur(8px); z-index:30}
     .dock-inner{max-width:1200px;margin:0 auto;padding:8px 14px;display:flex;gap:10px;justify-content:center;width:100%}
     .dock button{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:7px 10px;background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.32); color:#d9fbff; font-size:12px}
 
-    /* App view a pantalla completa sin scroll innecesario */
+    /* App view */
     .app-wrap{max-width:1200px;margin:0 auto;padding:10px 16px;height:100%;display:flex;flex-direction:column}
-    .app-head{display:flex;align-items:center;justify-content:spa
+    .app-head{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px}
+    .app-meta{display:flex;align-items:center;gap:10px}
+    .app-ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:rgba(91,215,242,.16); border:1px solid rgba(91,215,242,.3)}
+    .app-title{margin:0;font-size:18px;color:#d8fbff;font-weight:600}
+    .app-desc{margin:0;font-size:12px;color:#aee9f7}
+    .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:8px 12px;background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.32); color:#d9fbff; font-size:12px}
+    .app-body{position:relative; flex:1; min-height:0;}
+    .iframe{position:absolute; inset:0; width:100%; height:100%; border-radius:18px;border:1px solid rgba(91,215,242,.22);background:rgba(5,14,26,.5)}
+
+    /* Boot */
+    .boot{position:fixed;inset:0;display:grid;place-items:center;z-index:50;background:radial-gradient(60vmax 60vmax at 50% 40%, rgba(96,165,250,.18), transparent 60%), linear-gradient(180deg,#071122,#0a0f1d)}
+    .boot .halo{position:absolute;inset:auto; width:40vmin;height:40vmin; border-radius:50%; filter:blur(60px); background:radial-gradient(circle, rgba(91,215,242,.28), transparent 60%); animation:pulse 3.2s ease-in-out infinite}
+    .boot-card{position:relative; display:grid; place-items:center; gap:12px}
+    .logo{width:96px;height:96px;border-radius:26px;background:linear-gradient(135deg,rgba(96,165,250,.2),rgba(91,215,242,.1)); border:1px solid rgba(91,215,242,.35); display:grid;place-items:center; box-shadow:0 0 18px rgba(91,215,242,.35) inset}
+    .isvg{width:64px;height:64px}
+    .boot h1{margin:0;color:#bff4ff;font-size:28px;letter-spacing:.4px}
+    .boot p{margin:2px 0 0;color:#9fe9fb;opacity:.85;font-size:12px}
+    .bar{margin-top:10px;height:10px;width:280px;border-radius:999px;background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.25); overflow:hidden}
+    .bar span{display:block;height:100%;width:34%;background:linear-gradient(90deg,var(--c-cyan),var(--c-sky)); animation:load 1.6s ease-in-out infinite}
+    .skip{margin-top:10px;color:#a2e7f5;font-size:11px;opacity:.85}
+
+    @keyframes load{0%{transform:translateX(-120%)}100%{transform:translateX(220%)}}
+    @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+    .hide{opacity:0;pointer-events:none;transition:opacity .35s ease}
+    .show{opacity:1;transition:opacity .35s ease}
+
+    /* Visor de errores */
+    #dbg{position:fixed;right:8px;bottom:8px;max-width:60ch;background:rgba(0,0,0,.55);color:#fff;padding:8px 10px;border:1px solid rgba(255,255,255,.2);border-radius:8px;font:12px/1.4 ui-monospace,Consolas,monaco,monospace;z-index:1000;display:none;white-space:pre-wrap}
+  </style>
+</head>
+<body>
+  <noscript style="color:white;position:fixed;inset:0;display:grid;place-items:center;z-index:9999;background:#0b1022">
+    Necesitas habilitar JavaScript para ver SInOS.
+  </noscript>
+
+  <div class="grid-bg"></div>
+
+  <!-- BOOT -->
+  <div id="boot" class="boot show" onclick="window.SInOS && SInOS.skipBoot()" role="button" aria-label="Saltar arranque" title="Toca para saltar">
+    <div class="boot-card">
+      <div class="halo"></div>
+      <div class="logo">
+        <svg class="isvg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#67e8f9"/>
+              <stop offset="100%" stop-color="#60a5fa"/>
+            </linearGradient>
+          </defs>
+          <rect x="8" y="6" width="8" height="44" rx="3" fill="url(#g1)" />
+          <path d="M28 12c8-8 20-3 20 6s-7 12-16 14-16 6-16 14 12 14 22 6" stroke="url(#g1)" stroke-width="6" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <h1>SInOS</h1>
+      <p>SINDICAL INNOVATION OPERATIVE SYSTEM</p>
+      <div class="bar"><span></span></div>
+      <div class="skip">Toca para saltar ▸</div>
+    </div>
+  </div>
+
+  <!-- TOP BAR -->
+  <div class="topbar" id="topbar">
+    <div class="title">
+      <div class="mark" aria-hidden>
+        <svg viewBox="0 0 56 56" width="18" height="18">
+          <defs>
+            <linearGradient id="g1a" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#67e8f9" />
+              <stop offset="100%" stop-color="#60a5fa" />
+            </linearGradient>
+          </defs>
+          <rect x="8" y="6" width="8" height="44" rx="3" fill="url(#g1a)" />
+          <path d="M28 12c8-8 20-3 20 6s-7 12-16 14-16 6-16 14 12 14 22 6" stroke="url(#g1a)" stroke-width="6" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <span>SInOS</span>
+      <small style="opacity:.7;margin-left:6px">Innovación Sindical</small>
+    </div>
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+
+  <!-- HOME -->
+  <main id="home" class="layer show" aria-live="polite">
+    <section class="wrap">
+      <section class="brand">
+        <div>
+          <h1>Bienvenido a <span style="color:#93eaff">SInOS</span></h1>
+          <p>Sistema Operativo de Innovación Sindical. Toca un panel para abrir una app.</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div class="badge">Equipo de Innovacion Sindical</div>
+        </div>
+      </section>
+
+      <section class="tiles" id="tiles">
+        <!-- Contenido de respaldo si el JS no corre -->
+        <button class="tile" id="tile-fallback" style="display:none">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="icon">🧩</div>
+            <div>
+              <h3>Apps</h3>
+              <p>Si ves esto, el render dinámico falló.</p>
+            </div>
+          </div>
+          <div></div>
+        </button>
+      </section>
+    </section>
+  </main>
+
+  <!-- APP VIEW -->
+  <section id="app" class="layer hide" aria-live="polite">
+    <div class="app-wrap">
+      <div class="app-head">
+        <div class="app-meta">
+          <div class="app-ic" id="app-ic">🧩</div>
+          <div>
+            <h2 class="app-title" id="app-title">Título</h2>
+            <p class="app-desc" id="app-desc">Descripción</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="SInOS.goHome()">🏠 Inicio</button>
+          <button class="btn" onclick="SInOS.closeApp()">✖ Cerrar</button>
+        </div>
+      </div>
+      <div id="app-body" class="app-body">
+        <iframe id="app-iframe" class="iframe" title="app"></iframe>
+        <div id="app-link" class="hide" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border-radius:18px;border:1px solid rgba(91,215,242,.22);backgr
