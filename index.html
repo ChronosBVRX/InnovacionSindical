@@ -2,15 +2,20 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>SInOS — Sindical Innovation Operative System</title>
   <style>
     :root{
       --c-bg1:#0b1220; --c-bg2:#0b1022; --c-cyan:#5bd7f2; --c-sky:#60a5fa;
       --ring: rgba(91,215,242,.35); --tile: rgba(7,17,35,.6); --tileH: rgba(12,25,55,.7);
+      --topbar: 52px; --dock: 60px;
     }
-    *{box-sizing:border-box} html,body{height:100%}
-    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu; color:#e6fbff;
+    *{box-sizing:border-box}
+    html,body{height:100%; margin:0;}
+    /* 🔒 Bloquea scrolling de la página para evitar scroll doble con Wix */
+    html,body{overflow:hidden; overscroll-behavior:none; background:#0b1022}
+
+    body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu; color:#e6fbff;
       background:radial-gradient(70vmax 70vmax at 50% 20%, rgba(96,165,250,.15), transparent 60%),
                  radial-gradient(60vmax 60vmax at 80% 80%, rgba(91,215,242,.12), transparent 60%),
                  linear-gradient(180deg,var(--c-bg1),var(--c-bg2));}
@@ -18,13 +23,19 @@
       background-image:linear-gradient(to right, rgba(96,165,250,.12) 1px, transparent 1px),
                         linear-gradient(to bottom, rgba(91,215,242,.10) 1px, transparent 1px);
       background-size:48px 48px,48px 48px}
-    .topbar{position:fixed;inset:0 0 auto 0;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+
+    /* Barra superior fija */
+    .topbar{position:fixed;inset:0 0 auto 0;height:var(--topbar);display:flex;align-items:center;justify-content:space-between;padding:0 16px;
       background:rgba(9,14,26,.55);backdrop-filter: blur(8px); border-bottom:1px solid rgba(91,215,242,.25); z-index:30}
     .mark{display:grid;place-items:center;width:28px;height:28px;border-radius:10px;background:rgba(91,215,242,.15);border:1px solid var(--ring)}
     .title{display:flex;align-items:center;gap:8px;font-weight:600;color:#bff4ff;letter-spacing:.3px}
     .clock{font-size:12px;color:#a2e7f5}
 
-    .wrap{padding:92px 20px 88px;max-width:1200px;margin:0 auto}
+    /* 🧱 Capa de contenido a pantalla completa entre Topbar y Dock */
+    .layer{position:fixed; left:0; right:0; top:var(--topbar); bottom:var(--dock); overflow:auto; -webkit-overflow-scrolling:touch;}
+
+    /* Home */
+    .wrap{padding:24px 20px;max-width:1200px;margin:0 auto}
     .brand{display:flex;gap:16px;align-items:flex-end;justify-content:space-between}
     .brand h1{margin:0;font-size:26px;font-weight:700;color:#d9fbff}
     .brand p{margin:6px 0 0;color:#aee9f7;font-size:14px;max-width:640px}
@@ -40,19 +51,21 @@
     .tile h3{margin:0 0 4px;font-size:16px;color:#d8fbff}
     .tile p{margin:0;color:#aee9f7;font-size:12px;opacity:.85}
 
-    .dock{position:fixed;inset:auto 0 0 0;border-top:1px solid rgba(91,215,242,.25);background:rgba(9,14,26,.55);backdrop-filter: blur(8px); z-index:30}
-    .dock-inner{max-width:1200px;margin:0 auto;padding:8px 14px;display:flex;gap:10px;justify-content:center}
+    /* Dock fijo inferior */
+    .dock{position:fixed;inset:auto 0 0 0;height:var(--dock);display:flex;align-items:center; border-top:1px solid rgba(91,215,242,.25);background:rgba(9,14,26,.55);backdrop-filter: blur(8px); z-index:30}
+    .dock-inner{max-width:1200px;margin:0 auto;padding:8px 14px;display:flex;gap:10px;justify-content:center;width:100%}
     .dock button{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:7px 10px;background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.32); color:#d9fbff; font-size:12px}
 
-    /* App view */
-    .app-wrap{max-width:1200px;margin:0 auto;padding:72px 16px 96px}
-    .app-head{display:flex;align-items:center;justify-content:space-between;margin:10px 0 10px}
+    /* App view a pantalla completa sin scroll innecesario */
+    .app-wrap{max-width:1200px;margin:0 auto;padding:10px 16px;height:100%;display:flex;flex-direction:column}
+    .app-head{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px}
     .app-meta{display:flex;align-items:center;gap:10px}
     .app-ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:rgba(91,215,242,.16); border:1px solid rgba(91,215,242,.3)}
     .app-title{margin:0;font-size:18px;color:#d8fbff;font-weight:600}
     .app-desc{margin:0;font-size:12px;color:#aee9f7}
     .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:8px 12px;background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.32); color:#d9fbff; font-size:12px}
-    .iframe{height:64vh;width:100%;border-radius:18px;border:1px solid rgba(91,215,242,.22);background:rgba(5,14,26,.5)}
+    .app-body{position:relative; flex:1; min-height:0;}
+    .iframe{position:absolute; inset:0; width:100%; height:100%; border-radius:18px;border:1px solid rgba(91,215,242,.22);background:rgba(5,14,26,.5)}
 
     /* BOOT */
     .boot{position:fixed;inset:0;display:grid;place-items:center;z-index:50;background:radial-gradient(60vmax 60vmax at 50% 40%, rgba(96,165,250,.18), transparent 60%), linear-gradient(180deg,#071122,#0a0f1d)}
@@ -68,8 +81,8 @@
 
     @keyframes load{0%{transform:translateX(-120%)}100%{transform:translateX(220%)}}
     @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
-    .hide{opacity:0;pointer-events:none;transition:opacity .5s ease}
-    .show{opacity:1;transition:opacity .4s ease}
+    .hide{opacity:0;pointer-events:none;transition:opacity .35s ease}
+    .show{opacity:1;transition:opacity .35s ease}
   </style>
 </head>
 <body>
@@ -119,41 +132,45 @@
     <div class="clock" id="clock">--:--:--</div>
   </div>
 
-  <!-- HOME -->
-  <main id="home" class="wrap show" aria-live="polite">
-    <section class="brand">
-      <div>
-        <h1>Bienvenido a <span style="color:#93eaff">SInOS</span></h1>
-        <p>Sistema Operativo de Innovación Sindical dentro del navegador. Toca un panel para abrir una app.</p>
-      </div>
-      <div style="display:flex;gap:8px">
-        <div class="badge">Beta UI</div>
-        <div class="badge">Azul Futurista</div>
-      </div>
-    </section>
+  <!-- HOME (capa scrollable única) -->
+  <main id="home" class="layer show" aria-live="polite">
+    <section class="wrap">
+      <section class="brand">
+        <div>
+          <h1>Bienvenido a <span style="color:#93eaff">SInOS</span></h1>
+          <p>Sistema Operativo de Innovación Sindical dentro del navegador. Toca un panel para abrir una app.</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div class="badge">Beta UI</div>
+          <div class="badge">Azul Futurista</div>
+        </div>
+      </section>
 
-    <section class="tiles" id="tiles"></section>
+      <section class="tiles" id="tiles"></section>
+    </section>
   </main>
 
-  <!-- APP VIEW -->
-  <section id="app" class="app-wrap hide" aria-live="polite">
-    <div class="app-head">
-      <div class="app-meta">
-        <div class="app-ic" id="app-ic">🧩</div>
-        <div>
-          <h2 class="app-title" id="app-title">Título</h2>
-          <p class="app-desc" id="app-desc">Descripción</p>
+  <!-- APP VIEW (sin scroll de página; el iframe ocupa el 100%) -->
+  <section id="app" class="layer hide" aria-live="polite">
+    <div class="app-wrap">
+      <div class="app-head">
+        <div class="app-meta">
+          <div class="app-ic" id="app-ic">🧩</div>
+          <div>
+            <h2 class="app-title" id="app-title">Título</h2>
+            <p class="app-desc" id="app-desc">Descripción</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="SInOS.goHome()">🏠 Inicio</button>
+          <button class="btn" onclick="SInOS.closeApp()">✖ Cerrar</button>
         </div>
       </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn" onclick="SInOS.goHome()">🏠 Inicio</button>
-        <button class="btn" onclick="SInOS.closeApp()">✖ Cerrar</button>
-      </div>
-    </div>
-    <div id="app-body">
-      <iframe id="app-iframe" class="iframe" title="app"></iframe>
-      <div id="app-link" class="hide" style="display:flex;align-items:center;justify-content:center;height:64vh;border-radius:18px;border:1px solid rgba(91,215,242,.22);background:rgba(5,14,26,.5)">
-        <a id="app-anchor" href="#" target="_blank" rel="noreferrer" class="btn" style="font-size:14px;padding:10px 14px">🔗 Abrir en nueva pestaña</a>
+      <div id="app-body" class="app-body">
+        <iframe id="app-iframe" class="iframe" title="app"></iframe>
+        <div id="app-link" class="hide" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border-radius:18px;border:1px solid rgba(91,215,242,.22);background:rgba(5,14,26,.5)">
+          <a id="app-anchor" href="#" target="_blank" rel="noreferrer" class="btn" style="font-size:14px;padding:10px 14px">🔗 Abrir en nueva pestaña</a>
+        </div>
       </div>
     </div>
   </section>
@@ -176,7 +193,7 @@
     ];
 
     const SInOS = {
-      BOOT_MS: 2400,
+      BOOT_MS: 2000,
       bootEl: document.getElementById('boot'),
       homeEl: document.getElementById('home'),
       appEl: document.getElementById('app'),
@@ -193,11 +210,7 @@
         setTimeout(()=>this.hideBoot(), this.BOOT_MS);
         this.tickClock(); setInterval(()=>this.tickClock(), 1000);
       },
-      tickClock(){
-        const el = document.getElementById('clock');
-        const now = new Date();
-        el.textContent = now.toLocaleTimeString();
-      },
+      tickClock(){ document.getElementById('clock').textContent = new Date().toLocaleTimeString(); },
       hideBoot(){ this.bootEl.classList.add('hide'); this.bootEl.classList.remove('show'); },
       skipBoot(){ this.hideBoot(); },
       renderTiles(){
@@ -255,8 +268,15 @@
       }
     };
 
+    // iOS/Android: evita el rebote si el usuario arrastra fuera de la capa
+    document.addEventListener('touchmove', function(e){
+      const target = e.target.closest('.layer');
+      if(!target) e.preventDefault();
+    }, {passive:false});
+
     window.SInOS = SInOS; // para poder llamar skipBoot desde el click
     document.addEventListener('DOMContentLoaded', ()=> SInOS.init());
   </script>
 </body>
 </html>
+
