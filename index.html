@@ -14,9 +14,10 @@
     html,body{height:100%; margin:0; overflow:hidden; overscroll-behavior:none; background:#0b1022}
     body{
       font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu; color:#e6fbff;
-      background:radial-gradient(70vmax 70vmax at 50% 20%, rgba(96,165,250,.15), transparent 60%),
-                 radial-gradient(60vmax 60vmax at 80% 80%, rgba(91,215,242,.12), transparent 60%),
-                 linear-gradient(180deg,var(--c-bg1),var(--c-bg2));
+      background:
+        radial-gradient(70vmax 70vmax at 50% 20%, rgba(96,165,250,.15), transparent 60%),
+        radial-gradient(60vmax 60vmax at 80% 80%, rgba(91,215,242,.12), transparent 60%),
+        linear-gradient(180deg,var(--c-bg1),var(--c-bg2));
     }
     .grid-bg::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;
       background-image:linear-gradient(to right, rgba(96,165,250,.12) 1px, transparent 1px),
@@ -66,9 +67,9 @@
     .app-body{position:relative; flex:1; min-height:0;}
     .iframe{position:absolute; inset:0; width:100%; height:100%; border-radius:18px;border:1px solid rgba(91,215,242,.22);background:rgba(5,14,26,.5)}
 
-    /* Boot */
+    /* Boot (queda activo pero con paracaídas JS más abajo) */
     .boot{position:fixed;inset:0;display:grid;place-items:center;z-index:50;background:radial-gradient(60vmax 60vmax at 50% 40%, rgba(96,165,250,.18), transparent 60%), linear-gradient(180deg,#071122,#0a0f1d)}
-    .boot .halo{position:absolute;inset:auto; width:40vmin;height:40vmin; border-radius:50%; filter:blur(60px); background:radial-gradient(circle, rgba(91,215,242,.28), transparent 60%); animation:pulse 3.2s ease-in-out infinite}
+    .boot .halo{position:absolute; width:40vmin;height:40vmin; border-radius:50%; filter:blur(60px); background:radial-gradient(circle, rgba(91,215,242,.28), transparent 60%); animation:pulse 3.2s ease-in-out infinite}
     .boot-card{position:relative; display:grid; place-items:center; gap:12px}
     .logo{width:96px;height:96px;border-radius:26px;background:linear-gradient(135deg,rgba(96,165,250,.2),rgba(91,215,242,.1)); border:1px solid rgba(91,215,242,.35); display:grid;place-items:center; box-shadow:0 0 18px rgba(91,215,242,.35) inset}
     .isvg{width:64px;height:64px}
@@ -77,21 +78,13 @@
     .bar{margin-top:10px;height:10px;width:280px;border-radius:999px;background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.25); overflow:hidden}
     .bar span{display:block;height:100%;width:34%;background:linear-gradient(90deg,var(--c-cyan),var(--c-sky)); animation:load 1.6s ease-in-out infinite}
     .skip{margin-top:10px;color:#a2e7f5;font-size:11px;opacity:.85}
-
     @keyframes load{0%{transform:translateX(-120%)}100%{transform:translateX(220%)}}
     @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
     .hide{opacity:0;pointer-events:none;transition:opacity .35s ease}
     .show{opacity:1;transition:opacity .35s ease}
-
-    /* Visor de errores */
-    #dbg{position:fixed;right:8px;bottom:8px;max-width:60ch;background:rgba(0,0,0,.55);color:#fff;padding:8px 10px;border:1px solid rgba(255,255,255,.2);border-radius:8px;font:12px/1.4 ui-monospace,Consolas,monaco,monospace;z-index:1000;display:none;white-space:pre-wrap}
   </style>
 </head>
 <body>
-  <noscript style="color:white;position:fixed;inset:0;display:grid;place-items:center;z-index:9999;background:#0b1022">
-    Necesitas habilitar JavaScript para ver SInOS.
-  </noscript>
-
   <div class="grid-bg"></div>
 
   <!-- BOOT -->
@@ -151,19 +144,7 @@
         </div>
       </section>
 
-      <section class="tiles" id="tiles">
-        <!-- Contenido de respaldo si el JS no corre -->
-        <button class="tile" id="tile-fallback" style="display:none">
-          <div style="display:flex;gap:12px;align-items:center">
-            <div class="icon">🧩</div>
-            <div>
-              <h3>Apps</h3>
-              <p>Si ves esto, el render dinámico falló.</p>
-            </div>
-          </div>
-          <div></div>
-        </button>
-      </section>
+      <section class="tiles" id="tiles"></section>
     </section>
   </main>
 
@@ -185,4 +166,175 @@
       </div>
       <div id="app-body" class="app-body">
         <iframe id="app-iframe" class="iframe" title="app"></iframe>
-        <div id="app-link" class="hide" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border-radius:18px;border:1px solid rgba(91,215,242,.22);backgr
+        <div id="app-link" class="hide" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border-radius:18px;border:1px solid rgba(91,215,242,.22);background:rgba(5,14,26,.5)">
+          <a id="app-anchor" href="#" target="_blank" rel="noreferrer" class="btn" style="font-size:14px;padding:10px 14px">🔗 Abrir en nueva pestaña</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOCK -->
+  <div class="dock">
+    <div class="dock-inner" id="dock"></div>
+  </div>
+
+  <script>
+    // ======= APPS =======
+    const APPS = [
+      { id:'trascendencia', title:'TrascendencIA Sindical', desc:'Asistente IA para CCT, trámites y asesoría laboral.', icon:'🤖', href:'https://tu-url-de-trascendencia', quick:true },
+      { id:'noticias', title:'Noticias', desc:'Circulares y comunicados en tiempo real.', icon:'📰', iframe:'about:blank' },
+      { id:'agenda', title:'Agenda', desc:'Calendario de asambleas, guardias y eventos.', icon:'📅', iframe:'about:blank' },
+      { id:'denuncias', title:'Denuncias y Reportes', desc:'Genera un escrito formal en PDF, listo para imprimir.', icon:'🛡️', iframe:'https://chronosbvrx.github.io/InnovacionSindical/denuncias', quick:true },
+      { id:'prestaciones', title:'Prestaciones', desc:'Vacaciones, licencias, estímulos y antigüedad.', icon:'📄', iframe:'about:blank' },
+      { id:'directorio', title:'Directorio', desc:'Delegados, jurídicos y atención a trabajadores.', icon:'📞', iframe:'about:blank' },
+      { id:'miniapp', title:'MiniApp WhatsApp', desc:'Automatizaciones por palabras clave y avisos.', icon:'💬', href:'https://wa.me/XXXXXXXXXXX' },
+      { id:'ajustes', title:'Ajustes', desc:'Tema, accesibilidad y personalización.', icon:'⚙️', iframe:'about:blank' }
+    ];
+
+    // ======= CORE =======
+    const SInOS = {
+      BOOT_MS: 1600,
+      bootEl:null, homeEl:null, appEl:null, appTitle:null, appDesc:null, appIc:null, appIframe:null, appLink:null, appAnchor:null,
+
+      init(){
+        try{
+          this.bootEl = document.getElementById('boot');
+          this.homeEl = document.getElementById('home');
+          this.appEl = document.getElementById('app');
+          this.appTitle = document.getElementById('app-title');
+          this.appDesc = document.getElementById('app-desc');
+          this.appIc = document.getElementById('app-ic');
+          this.appIframe = document.getElementById('app-iframe');
+          this.appLink = document.getElementById('app-link');
+          this.appAnchor = document.getElementById('app-anchor');
+
+          this.renderTiles();
+          this.renderDock();
+
+          // Boot timeout + click-skip
+          setTimeout(()=>this.hideBoot(), this.BOOT_MS);
+
+          // Reloj 24h MX
+          this.tickClock();
+          setInterval(()=>this.tickClock(), 1000);
+
+        }catch(err){
+          console.error('Init:', err);
+          this.forceShowUI();
+        }
+      },
+
+      tickClock(){ const el=document.getElementById('clock'); if(el) el.textContent = new Date().toLocaleTimeString('es-MX', {hour12:false}); },
+      hideBoot(){ this.bootEl?.classList.add('hide'); this.bootEl?.classList.remove('show'); },
+      skipBoot(){ this.hideBoot(); },
+
+      forceShowUI(){
+        // Asegura que haya interfaz aunque algo falle
+        this.hideBoot();
+        const home=document.getElementById('home');
+        home?.classList.add('show'); home?.classList.remove('hide');
+        const tb=document.getElementById('topbar');
+        if(tb) tb.style.display='flex';
+      },
+
+      renderTiles(){
+        const wrap = document.getElementById('tiles');
+        if(!wrap){ this.forceShowUI(); return; }
+        wrap.innerHTML = '';
+        APPS.forEach(a=>{
+          const b = document.createElement('button');
+          b.className='tile';
+          b.onclick = ()=>this.openApp(a.id);
+          b.setAttribute('aria-label', `${a.title}. ${a.desc||''}`);
+          b.innerHTML = `
+            <div style="display:flex;gap:12px;align-items:center">
+              <div class="icon">${a.icon||'🧩'}</div>
+              <div>
+                <h3>${a.title}</h3>
+                <p>${a.desc||''}</p>
+              </div>
+            </div>
+            <div></div>`;
+          wrap.appendChild(b);
+        });
+      },
+
+      renderDock(){
+        const el = document.getElementById('dock');
+        if(!el){ this.forceShowUI(); return; }
+        el.innerHTML='';
+        APPS.filter(a=>a.quick).slice(0,5).forEach(a=>{
+          const btn = document.createElement('button');
+          btn.textContent = `${a.icon||'🧩'} ${a.title}`;
+          btn.onclick = ()=>this.openApp(a.id);
+          el.appendChild(btn);
+        });
+      },
+
+      openApp(id){
+        const app = APPS.find(x=>x.id===id);
+        if(!app){ this.forceShowUI(); return; }
+        this.homeEl.classList.add('hide'); this.homeEl.classList.remove('show');
+        this.appEl.classList.remove('hide'); this.appEl.classList.add('show');
+        this.appTitle.textContent = app.title;
+        this.appDesc.textContent = app.desc||'';
+        this.appIc.textContent = app.icon||'🧩';
+        if(app.iframe){
+          this.appIframe.src = app.iframe;
+          this.appIframe.style.display='block';
+          this.appLink.classList.add('hide');
+        } else if(app.href){
+          this.appIframe.style.display='none';
+          this.appLink.classList.remove('hide');
+          this.appAnchor.href = app.href;
+        }
+        if('vibrate' in navigator) { try{ navigator.vibrate(8); }catch{} }
+        this.appEl.setAttribute('tabindex','-1'); this.appEl.focus();
+      },
+
+      closeApp(){ this.goHome(); },
+      goHome(){
+        this.appEl.classList.remove('show'); this.appEl.classList.add('hide');
+        this.homeEl.classList.remove('hide'); this.homeEl.classList.add('show');
+        if(this.appIframe) this.appIframe.src = 'about:blank';
+      }
+    };
+
+    // Evitar rebote en móviles
+    document.addEventListener('touchmove', function(e){
+      const target = e.target.closest?.('.layer');
+      if(!target) e.preventDefault();
+    }, {passive:false});
+
+    // Exponer y arrancar
+    window.SInOS = SInOS;
+    document.addEventListener('DOMContentLoaded', ()=> SInOS.init());
+  </script>
+
+  <!-- PARACAÍDAS ABSOLUTO DEL BOOT:
+       Pase lo que pase, el overlay se quita y se muestra Home. -->
+  <script>
+    (function(){
+      function forceHideBoot(){
+        var b = document.getElementById('boot');
+        if(b){
+          b.style.transition = 'opacity .3s ease';
+          b.style.opacity = '0';
+          b.style.pointerEvents = 'none';
+          b.style.zIndex = '0';
+          b.classList.add('hide');
+        }
+        var home = document.getElementById('home');
+        if(home){ home.classList.add('show'); home.classList.remove('hide'); }
+        var tb = document.getElementById('topbar');
+        if(tb) tb.style.display='flex';
+      }
+      // 1) a los 1500ms, 2) cuando 'load', 3) ante errores
+      setTimeout(forceHideBoot, 1500);
+      window.addEventListener('load', forceHideBoot);
+      window.addEventListener('error', forceHideBoot);
+      window.addEventListener('unhandledrejection', forceHideBoot);
+    })();
+  </script>
+</body>
+</html>
