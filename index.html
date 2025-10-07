@@ -203,7 +203,7 @@
   <script>
     // APPS
     const APPS = [
-      { id:'trascendencia', title:'TrascendencIA Sindical', desc:'Asistente IA en nueva pestaña.', icon:'🤖', href:'https://trascendencia-sindical-7t85.onrender.com/', quick:true },
+      { id:'trascendencia', title:'TrascendencIA Sindical', desc:'Asistente IA en nueva pestaña.', icon:'🤖', href:'https://trascendencia-sindical-7t85.onrender.com/', quick:true, externalDirect:true },
       { id:'noticias', title:'Noticias', desc:'Circulares y comunicados en tiempo real.', icon:'📰', type:'internal' },
       { id:'agenda', title:'Agenda', desc:'Calendario de asambleas, guardias y eventos.', icon:'📅', iframe:'about:blank' },
       { id:'denuncias', title:'Denuncias y Reportes', desc:'Genera un escrito formal en PDF, listo para imprimir.', icon:'🛡️', iframe:'https://chronosbvrx.github.io/InnovacionSindical/denuncias', quick:true },
@@ -266,7 +266,13 @@
         const wrap=document.getElementById('tiles'); wrap.innerHTML='';
         APPS.forEach(a=>{
           const b=document.createElement('button');
-          b.className='tile'; b.onclick=()=>this.openApp(a.id);
+          b.className='tile';
+          // Si es externalDirect, abre directo en nueva pestaña
+          if (a.externalDirect && a.href){
+            b.onclick=()=>window.open(a.href,'_blank','noopener,noreferrer');
+          } else {
+            b.onclick=()=>this.openApp(a.id);
+          }
           b.setAttribute('aria-label',`${a.title}. ${a.desc||''}`);
           b.innerHTML=`
             <div style="display:flex;gap:12px;align-items:center">
@@ -282,7 +288,12 @@
         APPS.filter(a=>a.quick).slice(0,5).forEach(a=>{
           const btn=document.createElement('button');
           btn.textContent=`${a.icon||'🧩'} ${a.title}`;
-          btn.onclick=()=>this.openApp(a.id);
+          // También en el dock: abrir directo si es externalDirect
+          if (a.externalDirect && a.href){
+            btn.onclick=()=>window.open(a.href,'_blank','noopener,noreferrer');
+          } else {
+            btn.onclick=()=>this.openApp(a.id);
+          }
           el.appendChild(btn);
         });
       },
@@ -290,6 +301,12 @@
       openApp(id){
         const app=APPS.find(x=>x.id===id); if(!app) return;
         this.currentApp=app;
+
+        // Si por alguna razón llaman openApp y es externalDirect, abre y sal
+        if (app.externalDirect && app.href){
+          window.open(app.href,'_blank','noopener,noreferrer');
+          return;
+        }
 
         if (this._cleanupNoticias) { try{ this._cleanupNoticias(); }catch{} this._cleanupNoticias=null; }
 
