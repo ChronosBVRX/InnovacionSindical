@@ -9,7 +9,7 @@
       --c-bg1:#0b1220; --c-bg2:#0b1022; --c-cyan:#5bd7f2; --c-sky:#60a5fa;
       --ring: rgba(91,215,242,.35); --tile: rgba(7,17,35,.6); --tileH: rgba(12,25,55,.7);
       --topbar: 52px; --dock: 60px;
-      --boot-ms: 5200ms; /* JS ajusta: 5200ms primera vez, 2200ms después */
+      --boot-ms: 5200ms; /* 5200ms primera vez, 2200ms después */
     }
     *{box-sizing:border-box}
     html,body{height:100%; margin:0; overflow:hidden; overscroll-behavior:none; background:#0b1022}
@@ -25,17 +25,14 @@
                        linear-gradient(to bottom, rgba(91,215,242,.10) 1px, transparent 1px);
       background-size:48px 48px,48px 48px}
 
-    /* Topbar */
     .topbar{position:fixed;inset:0 0 auto 0;height:var(--topbar);display:flex;align-items:center;justify-content:space-between;padding:0 16px;
       background:rgba(9,14,26,.55);backdrop-filter: blur(8px); border-bottom:1px solid rgba(91,215,242,.25); z-index:30}
     .mark{display:grid;place-items:center;width:28px;height:28px;border-radius:10px;background:rgba(91,215,242,.15);border:1px solid var(--ring)}
     .title{display:flex;align-items:center;gap:8px;font-weight:600;color:#bff4ff;letter-spacing:.3px}
     .clock{font-size:12px;color:#a2e7f5}
 
-    /* Capas */
     .layer{position:fixed; left:0; right:0; top:var(--topbar); bottom:var(--dock); overflow:auto; -webkit-overflow-scrolling:touch;}
 
-    /* Home */
     .wrap{padding:24px 20px;max-width:1200px;margin:0 auto}
     .brand{display:flex;gap:16px;align-items:flex-end;justify-content:space-between}
     .brand h1{margin:0;font-size:26px;font-weight:700;color:#d9fbff}
@@ -52,12 +49,10 @@
     .tile h3{margin:0 0 4px;font-size:16px;color:#d8fbff}
     .tile p{margin:0;color:#aee9f7;font-size:12px;opacity:.85}
 
-    /* Dock */
     .dock{position:fixed;inset:auto 0 0 0;height:var(--dock);display:flex;align-items:center; border-top:1px solid rgba(91,215,242,.25);background:rgba(9,14,26,.55);backdrop-filter: blur(8px); z-index:30}
     .dock-inner{max-width:1200px;margin:0 auto;padding:8px 14px;display:flex;gap:10px;justify-content:center;width:100%}
     .dock button{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:7px 10px;background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.32); color:#d9fbff; font-size:12px}
 
-    /* App view */
     .app-wrap{max-width:1200px;margin:0 auto;padding:10px 16px;height:100%;display:flex;flex-direction:column}
     .app-head{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px}
     .app-meta{display:flex;align-items:center;gap:10px}
@@ -67,10 +62,13 @@
     .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:8px 12px;background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.32); color:#d9fbff; font-size:12px}
     .app-body{position:relative; flex:1; min-height:0;}
     .iframe{position:absolute; inset:0; width:100%; height:100%; border-radius:18px;border:1px solid rgba(91,215,242,.22);background:rgba(5,14,26,.5)}
+
+    /* Contenedor interno (Noticias) full-width */
+    #app-internal{ position:absolute; inset:0; overflow:auto; padding:0; }
+
     .hide{opacity:0;pointer-events:none;transition:opacity .35s ease}
     .show{opacity:1;transition:opacity .35s ease}
 
-    /* Boot */
     .boot{position:fixed;inset:0;display:grid;place-items:center;z-index:50;background:
       radial-gradient(60vmax 60vmax at 50% 40%, rgba(96,165,250,.18), transparent 60%),
       linear-gradient(180deg,#071122,#0a0f1d)}
@@ -173,7 +171,7 @@
       </div>
       <div id="app-body" class="app-body">
         <iframe id="app-iframe" class="iframe" title="app" referrerpolicy="no-referrer" style="display:none"></iframe>
-        <div id="app-internal" style="position:absolute;inset:0; overflow:auto; padding:8px 0; display:none"></div>
+        <div id="app-internal"></div>
       </div>
     </div>
   </section>
@@ -183,16 +181,13 @@
     <div class="dock-inner" id="dock"></div>
   </div>
 
-  <!-- SDK loader para el Page Plugin (Noticias) -->
+  <!-- Loader del SDK de Facebook (para Noticias) -->
   <script>
-    // Carga el SDK de Facebook UNA sola vez (para Noticias)
     function loadFacebookSDKOnce(locale='es_LA'){
       return new Promise((resolve)=>{
         if (window.FB) return resolve(window.FB);
         if(!document.getElementById('fb-root')){
-          const fbroot = document.createElement('div');
-          fbroot.id = 'fb-root';
-          document.body.appendChild(fbroot);
+          const fbroot = document.createElement('div'); fbroot.id = 'fb-root'; document.body.appendChild(fbroot);
         }
         const id = 'facebook-jssdk';
         if(document.getElementById(id)) return resolve(window.FB);
@@ -206,39 +201,26 @@
   </script>
 
   <script>
-    // ===== APPS =====
+    // APPS
     const APPS = [
-      { id:'trascendencia',
-        title:'TrascendencIA Sindical',
-        desc:'Asistente IA en nueva pestaña.',
-        icon:'🤖',
-        href:'https://trascendencia-sindical-7t85.onrender.com/',
-        quick:true
-      },
-      { id:'noticias',
-        title:'Noticias',
-        desc:'Circulares y comunicados en tiempo real.',
-        icon:'📰',
-        type:'internal' // renderer propio con Page Plugin
-      },
+      { id:'trascendencia', title:'TrascendencIA Sindical', desc:'Asistente IA en nueva pestaña.', icon:'🤖', href:'https://trascendencia-sindical-7t85.onrender.com/', quick:true },
+      { id:'noticias', title:'Noticias', desc:'Circulares y comunicados en tiempo real.', icon:'📰', type:'internal' },
       { id:'agenda', title:'Agenda', desc:'Calendario de asambleas, guardias y eventos.', icon:'📅', iframe:'about:blank' },
-      { id:'denuncias', title:'Denuncias y Reportes', desc:'Genera un escrito formal en PDF, listo para imprimir.', icon:'🛡️',
-        iframe:'https://chronosbvrx.github.io/InnovacionSindical/denuncias', quick:true },
+      { id:'denuncias', title:'Denuncias y Reportes', desc:'Genera un escrito formal en PDF, listo para imprimir.', icon:'🛡️', iframe:'https://chronosbvrx.github.io/InnovacionSindical/denuncias', quick:true },
       { id:'prestaciones', title:'Prestaciones', desc:'Vacaciones, licencias, estímulos y antigüedad.', icon:'📄', iframe:'about:blank' },
       { id:'directorio', title:'Directorio', desc:'Delegados, jurídicos y atención a trabajadores.', icon:'📞', iframe:'about:blank' },
       { id:'miniapp', title:'MiniApp WhatsApp', desc:'Automatizaciones por palabras clave y avisos.', icon:'💬', href:'https://wa.me/XXXXXXXXXXX' },
       { id:'ajustes', title:'Ajustes', desc:'Tema, accesibilidad y personalización.', icon:'⚙️', iframe:'about:blank' }
     ];
 
-    // ===== CORE =====
+    // CORE
     const SInOS = {
       BOOT_MS: 2200,
       bootEl:null, homeEl:null, appEl:null, appTitle:null, appDesc:null, appIc:null,
-      appIframe:null, appInternal:null, btnOpenNew:null, currentApp:null,
+      appIframe:null, appInternal:null, btnOpenNew:null, currentApp:null, _cleanupNoticias:null,
 
       init(){
         try{
-          // Nodos
           this.bootEl = document.getElementById('boot');
           this.homeEl = document.getElementById('home');
           this.appEl = document.getElementById('app');
@@ -249,11 +231,8 @@
           this.appInternal = document.getElementById('app-internal');
           this.btnOpenNew = document.getElementById('btn-open-new');
 
-          // Render
-          this.renderTiles();
-          this.renderDock();
+          this.renderTiles(); this.renderDock();
 
-          // Boot: 1a vez largo
           const FIRST_KEY = 'sinos:bootedOnce';
           const qs = new URLSearchParams(location.search);
           const forceLong = qs.get('boot') === 'long';
@@ -263,20 +242,16 @@
           this.BOOT_MS = (forceLong||firstTime) ? 5200 : 2200;
           document.documentElement.style.setProperty('--boot-ms', this.BOOT_MS + 'ms');
 
-          // Tips
           (function(){
-            const tips = ['Inicializando módulos…','Montando apps del sistema…','Verificando integridad de interfaz…','Optimizando desempeño para tu dispositivo…'];
-            let i=0; setInterval(()=>{ const el=document.getElementById('boot-tips'); if(el){ i=(i+1)%tips.length; el.textContent=tips[i]; } }, 1200);
+            const tips=['Inicializando módulos…','Montando apps del sistema…','Verificando integridad de interfaz…','Optimizando desempeño para tu dispositivo…'];
+            let i=0; setInterval(()=>{ const el=document.getElementById('boot-tips'); if(el){ i=(i+1)%tips.length; el.textContent=tips[i]; } },1200);
           })();
 
           const _hide=this.hideBoot.bind(this);
           this.hideBoot=()=>{ try{ localStorage.setItem(FIRST_KEY,'1'); }catch{}; _hide(); };
           setTimeout(()=>this.hideBoot(), this.BOOT_MS);
 
-          // Reloj
           this.tickClock(); setInterval(()=>this.tickClock(), 1000);
-
-          // Acceso rápido
           document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') this.goHome(); });
 
         }catch(err){ console.error('Init:',err); this.forceShowUI(); }
@@ -316,90 +291,83 @@
         const app=APPS.find(x=>x.id===id); if(!app) return;
         this.currentApp=app;
 
-        // Mostrar capa app
+        if (this._cleanupNoticias) { try{ this._cleanupNoticias(); }catch{} this._cleanupNoticias=null; }
+
         this.homeEl.classList.add('hide'); this.homeEl.classList.remove('show');
         this.appEl.classList.remove('hide'); this.appEl.classList.add('show');
 
-        // Header
         this.appTitle.textContent=app.title;
         this.appDesc.textContent=app.desc||'';
         this.appIc.textContent=app.icon||'🧩';
 
-        // Reset body
-        this.appIframe.style.display='none';
-        this.appIframe.src='about:blank';
-        this.appInternal.style.display='none';
-        this.appInternal.innerHTML='';
+        this.appIframe.style.display='none'; this.appIframe.src='about:blank';
+        this.appInternal.style.display='none'; this.appInternal.innerHTML='';
         this.btnOpenNew.style.display='none';
 
-        // Routing
         if(app.type==='internal' && app.id==='noticias'){
           this.renderNoticias();
         }else if(app.iframe){
-          this.appIframe.style.display='block';
-          this.appIframe.src=app.iframe;
+          this.appIframe.style.display='block'; this.appIframe.src=app.iframe;
         }else if(app.href){
-          this.btnOpenNew.style.display='inline-flex'; // abrir en pestaña nueva
+          this.btnOpenNew.style.display='inline-flex';
         }
 
         if('vibrate' in navigator){ try{ navigator.vibrate(8); }catch{} }
       },
 
-      // ===== Noticias con Page Plugin (fácil) =====
+      // Noticias: Page Plugin full-width y responsivo
       async renderNoticias(){
         this.appInternal.style.display='block';
         const root=this.appInternal;
         root.innerHTML=`
-          <div style="padding:10px">
-            <div id="fb-news-wrap" style="display:flex;justify-content:center;">
-              <div class="fb-page"
-                data-href="https://www.facebook.com/profile.php?id=100063446307036"
-                data-tabs="timeline"
-                data-width="980"
-                data-height=""
-                data-small-header="false"
-                data-adapt-container-width="true"
-                data-hide-cover="false"
-                data-show-facepile="false">
-                <blockquote cite="https://www.facebook.com/profile.php?id=100063446307036" class="fb-xfbml-parse-ignore">
-                  <a href="https://www.facebook.com/profile.php?id=100063446307036">Noticias</a>
-                </blockquote>
-              </div>
+          <div id="fb-news-wrap" style="width:100%; padding:10px;">
+            <div class="fb-page"
+              data-href="https://www.facebook.com/profile.php?id=100063446307036"
+              data-tabs="timeline"
+              data-width="980"
+              data-height=""
+              data-small-header="false"
+              data-adapt-container-width="true"
+              data-hide-cover="false"
+              data-show-facepile="false">
+              <blockquote cite="https://www.facebook.com/profile.php?id=100063446307036" class="fb-xfbml-parse-ignore">
+                <a href="https://www.facebook.com/profile.php?id=100063446307036">Noticias</a>
+              </blockquote>
             </div>
           </div>
         `;
         const pageDiv=root.querySelector('.fb-page');
         const fit=()=>{
-          const max=Math.min(1000, root.clientWidth - 24);
-          pageDiv.setAttribute('data-width', String(Math.max(320,max)));
-          if(window.FB && FB.XFBML) FB.XFBML.parse(root);
+          const available=Math.max(280, Math.floor(root.clientWidth - 20)); // 10px padding por lado
+          pageDiv.setAttribute('data-width', String(available));
+          if(window.FB && FB.XFBML && typeof FB.XFBML.parse==='function'){ FB.XFBML.parse(root); }
         };
         await loadFacebookSDKOnce('es_LA');
-        fit();
-        window.addEventListener('resize', ()=>{ clearTimeout(window.__fbFitT); window.__fbFitT=setTimeout(fit,180); });
+        fit(); setTimeout(fit,60); setTimeout(fit,300);
+        let t; const onResize=()=>{ clearTimeout(t); t=setTimeout(fit,120); };
+        window.addEventListener('resize', onResize);
+        this._cleanupNoticias = () => window.removeEventListener('resize', onResize);
       },
 
       openExternal(){ if(this.currentApp?.href){ window.open(this.currentApp.href,'_blank','noopener,noreferrer'); } },
       closeApp(){ this.goHome(); },
       goHome(){
+        if (this._cleanupNoticias) { try{ this._cleanupNoticias(); }catch{} this._cleanupNoticias=null; }
         this.appEl.classList.remove('show'); this.appEl.classList.add('hide');
         this.homeEl.classList.remove('hide'); this.homeEl.classList.add('show');
         this.appIframe.src='about:blank';
       }
     };
 
-    // Evitar rebote en móviles
     document.addEventListener('touchmove', function(e){
-      const target = e.target.closest?.('.layer');
-      if(!target) e.preventDefault();
+      const target = e.target.closest?.('.layer'); if(!target) e.preventDefault();
     }, {passive:false});
 
-    // Exponer y arrancar
     window.SInOS = SInOS;
     document.addEventListener('DOMContentLoaded', ()=> SInOS.init());
   </script>
 
-  <!-- Paracaídas: timeout o error; NO en 'load' -->
+  <!-- Paracaídas -->
   <script>
     (function(){
       function forceHideBoot(){
