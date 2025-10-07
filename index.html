@@ -315,7 +315,7 @@
         if('vibrate' in navigator){ try{ navigator.vibrate(8); }catch{} }
       },
 
-      // Noticias: Page Plugin full-width y responsivo
+      // Noticias: Page Plugin con encabezado mínimo (sin portada/facepile) y ancho completo
       async renderNoticias(){
         this.appInternal.style.display='block';
         const root=this.appInternal;
@@ -326,10 +326,10 @@
               data-tabs="timeline"
               data-width="980"
               data-height=""
-              data-small-header="false"
+              data-small-header="true"     <!-- header compacto -->
               data-adapt-container-width="true"
-              data-hide-cover="false"
-              data-show-facepile="false">
+              data-hide-cover="true"       <!-- sin portada -->
+              data-show-facepile="false">  <!-- sin avatars -->
               <blockquote cite="https://www.facebook.com/profile.php?id=100063446307036" class="fb-xfbml-parse-ignore">
                 <a href="https://www.facebook.com/profile.php?id=100063446307036">Noticias</a>
               </blockquote>
