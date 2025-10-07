@@ -9,7 +9,7 @@
       --c-bg1:#0b1220; --c-bg2:#0b1022; --c-cyan:#5bd7f2; --c-sky:#60a5fa;
       --ring: rgba(91,215,242,.35); --tile: rgba(7,17,35,.6); --tileH: rgba(12,25,55,.7);
       --topbar: 52px; --dock: 60px;
-      --boot-ms: 5200ms; /* se sobreescribe desde JS: 5200ms primera vez, 2200ms después */
+      --boot-ms: 5200ms; /* JS la ajusta: 5200ms primera vez, 2200ms después */
     }
     *{box-sizing:border-box}
     html,body{height:100%; margin:0; overflow:hidden; overscroll-behavior:none; background:#0b1022}
@@ -174,6 +174,7 @@
         </div>
       </div>
       <div id="app-body" class="app-body">
+        <!-- Ya no embebemos TrascendencIA: este iframe se usa solo para apps que sí van en marco -->
         <iframe id="app-iframe" class="iframe" title="app" referrerpolicy="no-referrer"></iframe>
       </div>
     </div>
@@ -189,10 +190,9 @@
     const APPS = [
       { id:'trascendencia',
         title:'TrascendencIA Sindical',
-        desc:'Asistente IA embebido.',
+        desc:'Asistente IA en nueva pestaña.',
         icon:'🤖',
-        iframe:'https://trascendencia-sindical-7t85.onrender.com/',
-        href:'https://trascendencia-sindical-7t85.onrender.com/', // para el botón "Abrir en pestaña nueva"
+        href:'https://trascendencia-sindical-7t85.onrender.com/', // SOLO ventana aparte
         quick:true
       },
       { id:'noticias', title:'Noticias', desc:'Circulares y comunicados en tiempo real.', icon:'📰', iframe:'about:blank' },
@@ -257,4 +257,156 @@
           // Programar ocultamiento
           const _hide = this.hideBoot.bind(this);
           this.hideBoot = ()=>{
-            try{ localStorage.setItem(FIRS
+            try{ localStorage.setItem(FIRST_KEY,'1'); }catch{}
+            _hide();
+          };
+          setTimeout(()=>this.hideBoot(), this.BOOT_MS);
+
+          // Reloj 24h MX
+          this.tickClock();
+          setInterval(()=>this.tickClock(), 1000);
+
+          // Accesos rápidos
+          document.addEventListener('keydown',(e)=>{
+            if(e.key==='Escape') this.goHome();
+            if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); this.goHome(); }
+          });
+
+        }catch(err){
+          console.error('Init:', err);
+          this.forceShowUI();
+        }
+      },
+
+      tickClock(){ const el=document.getElementById('clock'); if(el) el.textContent = new Date().toLocaleTimeString('es-MX', {hour12:false}); },
+      hideBoot(){ this.bootEl?.classList.add('hide'); this.bootEl?.classList.remove('show'); },
+      skipBoot(){ this.hideBoot(); },
+
+      forceShowUI(){
+        // Asegura que haya interfaz aunque algo falle
+        this.hideBoot();
+        const home=document.getElementById('home');
+        home?.classList.add('show'); home?.classList.remove('hide');
+        const tb=document.getElementById('topbar');
+        if(tb) tb.style.display='flex';
+      },
+
+      renderTiles(){
+        const wrap = document.getElementById('tiles');
+        if(!wrap){ this.forceShowUI(); return; }
+        wrap.innerHTML = '';
+        APPS.forEach(a=>{
+          const b = document.createElement('button');
+          b.className='tile';
+          b.onclick = ()=>this.openApp(a.id);
+          b.setAttribute('aria-label', `${a.title}. ${a.desc||''}`);
+          b.innerHTML = `
+            <div style="display:flex;gap:12px;align-items:center">
+              <div class="icon">${a.icon||'🧩'}</div>
+              <div>
+                <h3>${a.title}</h3>
+                <p>${a.desc||''}</p>
+              </div>
+            </div>
+            <div></div>`;
+          wrap.appendChild(b);
+        });
+      },
+
+      renderDock(){
+        const el = document.getElementById('dock');
+        if(!el){ this.forceShowUI(); return; }
+        el.innerHTML='';
+        APPS.filter(a=>a.quick).slice(0,5).forEach(a=>{
+          const btn = document.createElement('button');
+          btn.textContent = `${a.icon||'🧩'} ${a.title}`;
+          btn.onclick = ()=>this.openApp(a.id);
+          el.appendChild(btn);
+        });
+      },
+
+      openApp(id){
+        const app = APPS.find(x=>x.id===id);
+        if(!app){ this.forceShowUI(); return; }
+        this.currentApp = app;
+        this.homeEl.classList.add('hide'); this.homeEl.classList.remove('show');
+        this.appEl.classList.remove('hide'); this.appEl.classList.add('show');
+        this.appTitle.textContent = app.title;
+        this.appDesc.textContent = app.desc||'';
+        this.appIc.textContent = app.icon||'🧩';
+
+        // Si la app tiene href (sin iframe), mostramos botón para abrir en nueva pestaña
+        if(app.href && !app.iframe){
+          this.btnOpenNew.style.display='inline-flex';
+          this.appIframe.style.display='none';
+        } else if(app.iframe){
+          this.btnOpenNew.style.display='none';
+          this.appIframe.style.display='block';
+          this.appIframe.src = app.iframe;
+        } else {
+          this.btnOpenNew.style.display='none';
+          this.appIframe.style.display='none';
+        }
+
+        if('vibrate' in navigator) { try{ navigator.vibrate(8); }catch{} }
+        this.appEl.setAttribute('tabindex','-1'); this.appEl.focus();
+      },
+
+      openExternal(){
+        if(this.currentApp?.href){
+          window.open(this.currentApp.href, '_blank', 'noopener,noreferrer');
+        }
+      },
+
+      closeApp(){ this.goHome(); },
+      goHome(){
+        this.appEl.classList.remove('show'); this.appEl.classList.add('hide');
+        this.homeEl.classList.remove('hide'); this.homeEl.classList.add('show');
+        if(this.appIframe) this.appIframe.src = 'about:blank';
+      }
+    };
+
+    // Evitar rebote en móviles
+    document.addEventListener('touchmove', function(e){
+      const target = e.target.closest?.('.layer');
+      if(!target) e.preventDefault();
+    }, {passive:false});
+
+    // Exponer y arrancar
+    window.SInOS = SInOS;
+    document.addEventListener('DOMContentLoaded', ()=> SInOS.init());
+  </script>
+
+  <!-- PARACAÍDAS: sólo por timeout (según BOOT_MS) o error; NO en 'load' -->
+  <script>
+    (function(){
+      function forceHideBoot(){
+        var b = document.getElementById('boot');
+        if(b){
+          b.style.transition = 'opacity .35s ease';
+          b.style.opacity = '0';
+          b.style.pointerEvents = 'none';
+          b.style.zIndex = '0';
+          b.classList.add('hide');
+        }
+        var home = document.getElementById('home');
+        if(home){ home.classList.add('show'); home.classList.remove('hide'); }
+        var tb = document.getElementById('topbar');
+        if(tb) tb.style.display='flex';
+      }
+      function scheduleFallback(){
+        var base = (window.SInOS && SInOS.BOOT_MS ? SInOS.BOOT_MS : 7000) + 1500;
+        setTimeout(forceHideBoot, base);
+      }
+      if(document.readyState === 'loading'){
+        document.addEventListener('DOMContentLoaded', scheduleFallback);
+      }else{
+        scheduleFallback();
+      }
+      // SOLO si hay error se cierra antes
+      window.addEventListener('error', forceHideBoot);
+      window.addEventListener('unhandledrejection', forceHideBoot);
+    })();
+  </script>
+</body>
+</html>
