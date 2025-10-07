@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SInOS — Sindical Innovation Operative System</title>
+  <style>
+    :root{
+      --c-bg1:#0b1220; --c-bg2:#0b1022; --c-cyan:#5bd7f2; --c-sky:#60a5fa;
+      --ring: rgba(91,215,242,.35); --tile: rgba(7,17,35,.6); --tileH: rgba(12,25,55,.7);
+    }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu; color:#e6fbff;
+      background:radial-gradient(70vmax 70vmax at 50% 20%, rgba(96,165,250,.15), transparent 60%),
+                 radial-gradient(60vmax 60vmax at 80% 80%, rgba(91,215,242,.12), transparent 60%),
+                 linear-gradient(180deg,var(--c-bg1),var(--c-bg2));}
+    .grid-bg::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;
+      background-image:linear-gradient(to right, rgba(96,165,250,.12) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(91,215,242,.10) 1px, transparent 1px);
+      background-size:48px 48px,48px 48px}
+    .topbar{position:fixed;inset:0 0 auto 0;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+      background:rgba(9,14,26,.55);backdrop-filter: blur(8px); border-bottom:1px solid rgba(91,215,242,.25); z-index:30}
+    .mark{display:grid;place-items:center;width:28px;height:28px;border-radius:10px;background:rgba(91,215,242,.15);border:1px solid var(--ring)}
+    .title{display:flex;align-items:center;gap:8px;font-weight:600;color:#bff4ff;letter-spacing:.3px}
+    .clock{font-size:12px;color:#a2e7f5}
+
+    .wrap{padding:92px 20px 88px;max-width:1200px;margin:0 auto}
+    .brand{display:flex;gap:16px;align-items:flex-end;justify-content:space-between}
+    .brand h1{margin:0;font-size:26px;font-weight:700;color:#d9fbff}
+    .brand p{margin:6px 0 0;color:#aee9f7;font-size:14px;max-width:640px}
+    .badge{border:1px solid rgba(91,215,242,.25);background:rgba(91,215,242,.12);padding:6px 10px;border-radius:12px;font-size:12px;color:#c7f7ff}
+
+    .tiles{margin-top:18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    @media(min-width:640px){.tiles{grid-template-columns:repeat(3,1fr)}}
+    @media(min-width:960px){.tiles{grid-template-columns:repeat(4,1fr)}}
+    .tile{display:flex;flex-direction:column;justify-content:space-between;min-height:150px;padding:16px;border-radius:16px;
+      background:var(--tile); border:1px solid rgba(91,215,242,.22); transition:.18s; cursor:pointer; text-align:left}
+    .tile:hover{background:var(--tileH); box-shadow:0 0 0 1px var(--ring) inset, 0 20px 40px rgba(11,18,32,.6)}
+    .icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:rgba(91,215,242,.16); border:1px solid rgba(91,215,242,.3); color:#93eaff}
+    .tile h3{margin:0 0 4px;font-size:16px;color:#d8fbff}
+    .tile p{margin:0;color:#aee9f7;font-size:12px;opacity:.85}
+
+    .dock{position:fixed;inset:auto 0 0 0;border-top:1px solid rgba(91,215,242,.25);background:rgba(9,14,26,.55);backdrop-filter: blur(8px); z-index:30}
+    .dock-inner{max-width:1200px;margin:0 auto;padding:8px 14px;display:flex;gap:10px;justify-content:center}
+    .dock button{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:7px 10px;background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.32); color:#d9fbff; font-size:12px}
+
+    /* App view */
+    .app-wrap{max-width:1200px;margin:0 auto;padding:72px 16px 96px}
+    .app-head{display:flex;align-items:center;justify-content:space-between;margin:10px 0 10px}
+    .app-meta{display:flex;align-items:center;gap:10px}
+    .app-ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:rgba(91,215,242,.16); border:1px solid rgba(91,215,242,.3)}
+    .app-title{margin:0;font-size:18px;color:#d8fbff;font-weight:600}
+    .app-desc{margin:0;font-size:12px;color:#aee9f7}
+    .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:8px 12px;background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.32); color:#d9fbff; font-size:12px}
+    .iframe{height:64vh;width:100%;border-radius:18px;border:1px solid rgba(91,215,242,.22);background:rgba(5,14,26,.5)}
+
+    /* BOOT */
+    .boot{position:fixed;inset:0;display:grid;place-items:center;z-index:50;background:radial-gradient(60vmax 60vmax at 50% 40%, rgba(96,165,250,.18), transparent 60%), linear-gradient(180deg,#071122,#0a0f1d)}
+    .boot .halo{position:absolute;inset:auto; width:40vmin;height:40vmin; border-radius:50%; filter:blur(60px); background:radial-gradient(circle, rgba(91,215,242,.28), transparent 60%); animation:pulse 3.2s ease-in-out infinite}
+    .boot-card{position:relative; display:grid; place-items:center; gap:12px}
+    .logo{width:96px;height:96px;border-radius:26px;background:linear-gradient(135deg,rgba(96,165,250,.2),rgba(91,215,242,.1)); border:1px solid rgba(91,215,242,.35); display:grid;place-items:center; box-shadow:0 0 18px rgba(91,215,242,.35) inset}
+    .isvg{width:64px;height:64px}
+    .boot h1{margin:0;color:#bff4ff;font-size:28px;letter-spacing:.4px}
+    .boot p{margin:2px 0 0;color:#9fe9fb;opacity:.85;font-size:12px}
+    .bar{margin-top:10px;height:10px;width:280px;border-radius:999px;background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.25); overflow:hidden}
+    .bar span{display:block;height:100%;width:34%;background:linear-gradient(90deg,var(--c-cyan),var(--c-sky)); animation:load 1.6s ease-in-out infinite}
+    .skip{margin-top:10px;color:#a2e7f5;font-size:11px;opacity:.85}
+
+    @keyframes load{0%{transform:translateX(-120%)}100%{transform:translateX(220%)}}
+    @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+    .hide{opacity:0;pointer-events:none;transition:opacity .5s ease}
+    .show{opacity:1;transition:opacity .4s ease}
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <!-- BOOT -->
+  <div id="boot" class="boot show" onclick="SInOS.skipBoot()" role="button" aria-label="Saltar arranque" title="Toca para saltar">
+    <div class="boot-card">
+      <div class="halo"></div>
+      <div class="logo">
+        <svg class="isvg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#67e8f9"/>
+              <stop offset="100%" stop-color="#60a5fa"/>
+            </linearGradient>
+          </defs>
+          <rect x="8" y="6" width="8" height="44" rx="3" fill="url(#g1)" />
+          <path d="M28 12c8-8 20-3 20 6s-7 12-16 14-16 6-16 14 12 14 22 6" stroke="url(#g1)" stroke-width="6" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <h1>SInOS</h1>
+      <p>SINDICAL INNOVATION OPERATIVE SYSTEM</p>
+      <div class="bar"><span></span></div>
+      <div class="skip">Toca para saltar ▸</div>
+    </div>
+  </div>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="title">
+      <div class="mark" aria-hidden>
+        <svg viewBox="0 0 56 56" width="18" height="18">
+          <defs>
+            <linearGradient id="g1a" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#67e8f9" />
+              <stop offset="100%" stop-color="#60a5fa" />
+            </linearGradient>
+          </defs>
+          <rect x="8" y="6" width="8" height="44" rx="3" fill="url(#g1a)" />
+          <path d="M28 12c8-8 20-3 20 6s-7 12-16 14-16 6-16 14 12 14 22 6" stroke="url(#g1a)" stroke-width="6" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <span>SInOS</span>
+      <small style="opacity:.7;margin-left:6px">Innovación Sindical</small>
+    </div>
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+
+  <!-- HOME -->
+  <main id="home" class="wrap show" aria-live="polite">
+    <section class="brand">
+      <div>
+        <h1>Bienvenido a <span style="color:#93eaff">SInOS</span></h1>
+        <p>Sistema Operativo de Innovación Sindical dentro del navegador. Toca un panel para abrir una app.</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <div class="badge">Beta UI</div>
+        <div class="badge">Azul Futurista</div>
+      </div>
+    </section>
+
+    <section class="tiles" id="tiles"></section>
+  </main>
+
+  <!-- APP VIEW -->
+  <section id="app" class="app-wrap hide" aria-live="polite">
+    <div class="app-head">
+      <div class="app-meta">
+        <div class="app-ic" id="app-ic">🧩</div>
+        <div>
+          <h2 class="app-title" id="app-title">Título</h2>
+          <p class="app-desc" id="app-desc">Descripción</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn" onclick="SInOS.goHome()">🏠 Inicio</button>
+        <button class="btn" onclick="SInOS.closeApp()">✖ Cerrar</button>
+      </div>
+    </div>
+    <div id="app-body">
+      <iframe id="app-iframe" class="iframe" title="app"></iframe>
+      <div id="app-link" class="hide" style="display:flex;align-items:center;justify-content:center;height:64vh;border-radius:18px;border:1px solid rgba(91,215,242,.22);background:rgba(5,14,26,.5)">
+        <a id="app-anchor" href="#" target="_blank" rel="noreferrer" class="btn" style="font-size:14px;padding:10px 14px">🔗 Abrir en nueva pestaña</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOCK -->
+  <div class="dock">
+    <div class="dock-inner" id="dock"></div>
+  </div>
+
+  <script>
+    const APPS = [
+      { id:'trascendencia', title:'TrascendencIA Sindical', desc:'Asistente IA para CCT, trámites y asesoría laboral.', icon:'🤖', href:'https://tu-url-de-trascendencia', quick:true },
+      { id:'noticias', title:'Noticias', desc:'Circulares y comunicados en tiempo real.', icon:'📰', iframe:'about:blank' },
+      { id:'agenda', title:'Agenda', desc:'Calendario de asambleas, guardias y eventos.', icon:'📅', iframe:'about:blank' },
+      { id:'denuncias', title:'Denuncias y Reportes', desc:'Canal seguro para reportes de hostigamiento o abuso de autoridad.', icon:'🛡️', iframe:'about:blank' },
+      { id:'prestaciones', title:'Prestaciones', desc:'Vacaciones, licencias, estímulos y antigüedad.', icon:'📄', iframe:'about:blank' },
+      { id:'directorio', title:'Directorio', desc:'Delegados, jurídicos y atención a trabajadores.', icon:'📞', iframe:'about:blank' },
+      { id:'miniapp', title:'MiniApp WhatsApp', desc:'Automatizaciones por palabras clave y avisos.', icon:'💬', href:'https://wa.me/XXXXXXXXXXX' },
+      { id:'ajustes', title:'Ajustes', desc:'Tema, accesibilidad y personalización.', icon:'⚙️', iframe:'about:blank' }
+    ];
+
+    const SInOS = {
+      BOOT_MS: 2400,
+      bootEl: document.getElementById('boot'),
+      homeEl: document.getElementById('home'),
+      appEl: document.getElementById('app'),
+      appTitle: document.getElementById('app-title'),
+      appDesc: document.getElementById('app-desc'),
+      appIc: document.getElementById('app-ic'),
+      appIframe: document.getElementById('app-iframe'),
+      appLink: document.getElementById('app-link'),
+      appAnchor: document.getElementById('app-anchor'),
+
+      init(){
+        this.renderTiles();
+        this.renderDock();
+        setTimeout(()=>this.hideBoot(), this.BOOT_MS);
+        this.tickClock(); setInterval(()=>this.tickClock(), 1000);
+      },
+      tickClock(){
+        const el = document.getElementById('clock');
+        const now = new Date();
+        el.textContent = now.toLocaleTimeString();
+      },
+      hideBoot(){ this.bootEl.classList.add('hide'); this.bootEl.classList.remove('show'); },
+      skipBoot(){ this.hideBoot(); },
+      renderTiles(){
+        const wrap = document.getElementById('tiles');
+        wrap.innerHTML = '';
+        APPS.forEach(a=>{
+          const b = document.createElement('button');
+          b.className='tile';
+          b.onclick = ()=>this.openApp(a.id);
+          b.innerHTML = `
+            <div style="display:flex;gap:12px;align-items:center">
+              <div class="icon">${a.icon||'🧩'}</div>
+              <div>
+                <h3>${a.title}</h3>
+                <p>${a.desc||''}</p>
+              </div>
+            </div>
+            <div></div>`;
+          wrap.appendChild(b);
+        })
+      },
+      renderDock(){
+        const el = document.getElementById('dock');
+        el.innerHTML='';
+        APPS.filter(a=>a.quick).slice(0,5).forEach(a=>{
+          const btn = document.createElement('button');
+          btn.textContent = `${a.icon||'🧩'} ${a.title}`;
+          btn.onclick = ()=>this.openApp(a.id);
+          el.appendChild(btn);
+        })
+      },
+      openApp(id){
+        const app = APPS.find(x=>x.id===id);
+        if(!app) return;
+        this.homeEl.classList.add('hide'); this.homeEl.classList.remove('show');
+        this.appEl.classList.remove('hide'); this.appEl.classList.add('show');
+        this.appTitle.textContent = app.title;
+        this.appDesc.textContent = app.desc||'';
+        this.appIc.textContent = app.icon||'🧩';
+        if(app.iframe){
+          this.appIframe.src = app.iframe;
+          this.appIframe.style.display='block';
+          this.appLink.classList.add('hide');
+        } else if(app.href){
+          this.appIframe.style.display='none';
+          this.appLink.classList.remove('hide');
+          this.appAnchor.href = app.href;
+        }
+      },
+      closeApp(){ this.goHome(); },
+      goHome(){
+        this.appEl.classList.remove('show'); this.appEl.classList.add('hide');
+        this.homeEl.classList.remove('hide'); this.homeEl.classList.add('show');
+        this.appIframe.src = 'about:blank';
+      }
+    };
+
+    window.SInOS = SInOS; // para poder llamar skipBoot desde el click
+    document.addEventListener('DOMContentLoaded', ()=> SInOS.init());
+  </script>
+</body>
+</html>
