@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Denuncias / Reportes – SInOS</title>
+<style>
+  :root{--bg:#0b1022;--fg:#e6fbff;--edge:rgba(91,215,242,.35);--panel:rgba(7,17,35,.6)}
+  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;background:var(--bg);color:var(--fg)}
+  .wrap{max-width:840px;margin:0 auto;padding:16px 14px 24px}
+  .card{background:var(--panel);border:1px solid var(--edge);border-radius:16px;padding:16px}
+  h1{margin:0 0 8px;font-size:20px}
+  p{margin:0 0 12px;opacity:.85}
+  form{display:grid;grid-template-columns:1fr;gap:12px;margin-top:8px}
+  label{display:grid;gap:6px;font-size:14px}
+  input,select,textarea{
+    background:rgba(91,215,242,.10); color:var(--fg); border:1px solid rgba(91,215,242,.25);
+    border-radius:10px; padding:10px 12px; font-size:14px; outline:none;
+  }
+  textarea{min-height:140px;resize:vertical}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .btns{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{
+    background:rgba(91,215,242,.14); color:var(--fg); border:1px solid rgba(91,215,242,.35);
+    padding:10px 14px; border-radius:12px; font-size:14px; cursor:pointer
+  }
+  .muted{font-size:12px;opacity:.7;margin-top:8px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Generar escrito formal</h1>
+      <p>Llena los datos para crear un PDF tipo oficio, listo para imprimir o guardar.</p>
+
+      <form id="f">
+        <div class="row">
+          <label>Nombre del trabajador
+            <input name="nombre" required placeholder="Nombre completo">
+          </label>
+          <label>Matrícula
+            <input name="matricula" required placeholder="000000">
+          </label>
+        </div>
+
+        <div class="row">
+          <label>Categoría / Puesto
+            <input name="categoria" required placeholder="Ej. Téc. Radiólogo A, Enfermera Gral., etc.">
+          </label>
+          <label>Secretaría a la que va dirigido
+            <select name="secretaria" required>
+              <option value="" disabled selected>Selecciona una secretaría</option>
+              <option>Secretaría General</option>
+              <option>Secretaría del Trabajo</option>
+              <option>Secretaría de Conflictos</option>
+              <option>Secretaría del Interior y Propaganda</option>
+            </select>
+          </label>
+        </div>
+
+        <label>Describe la problemática
+          <textarea name="problematica" required placeholder="Expón fechas, lugares, personas involucradas (si procede) y qué ha ocurrido."></textarea>
+        </label>
+
+        <div class="btns">
+          <button type="button" class="btn" id="preview">📝 Previsualizar escrito</button>
+          <button type="submit" class="btn">📄 Generar PDF</button>
+          <button type="button" class="btn" id="limpiar">🧽 Limpiar</button>
+        </div>
+        <div class="muted">
+          Aviso de privacidad: La información es para atención sindical. Evita datos sensibles innecesarios. Si requieres anonimato, coméntalo en el cuerpo del texto.
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- jsPDF desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script>
+    const $ = (s, r=document)=> r.querySelector(s);
+    const fmtFechaMX = (d=new Date()) =>
+      d.toLocaleDateString('es-MX', {year:'numeric',month:'long',day:'numeric'});
+
+    function encabezadoSecretaria(sec){
+      switch(sec){
+        case 'Secretaría General': return 'A la Secretaría General';
+        case 'Secretaría del Trabajo': return 'A la Secretaría del Trabajo';
+        case 'Secretaría de Conflictos': return 'A la Secretaría de Conflictos';
+        case 'Secretaría del Interior y Propaganda': return 'A la Secretaría del Interior y Propaganda';
+        default: return 'A quien corresponda';
+      }
+    }
+
+    function construirCuerpo(datos){
+      const {nombre, matricula, categoria, secretaria, problematica} = datos;
+      return [
+        `${encabezadoSecretaria(secretaria)}`,
+        ``,
+        `Presente.`,
+        ``,
+        `Quien suscribe, ${nombre}, con matrícula ${matricula}, de categoría ${categoria}, respetuosamente expongo lo siguiente:`,
+        ``,
+        `${problematica}`,
+        ``,
+        `Por lo anterior, solicito atentamente su amable intervención para el análisis y pronta atención del caso conforme a la normativa aplicable, garantizando el respeto a mis derechos laborales.`,
+        ``,
+        `Sin otro particular, quedo a sus órdenes para cualquier aclaración o ampliación de información.`,
+        ``,
+        `Atentamente,`,
+        `${nombre}`,
+        `Matrícula ${matricula}`,
+        `Categoría ${categoria}`
+      ].join('\n');
+    }
+
+    function previsualizar(){
+      const d = obtenerDatos();
+      if(!d) return;
+      const lugar = 'Ciudad Lázaro Cárdenas, Michoacán';
+      const fecha = fmtFechaMX();
+      const texto = [
+        `${lugar}; ${fecha}`,
+        ``,
+        construirCuerpo(d)
+      ].join('\n');
+      alert(texto);
+    }
+
+    function obtenerDatos(){
+      const f = $('#f');
+      const nombre = f.nombre.value.trim();
+      const matricula = f.matricula.value.trim();
+      const categoria = f.categoria.value.trim();
+      const secretaria = f.secretaria.value;
+      const problematica = f.problematica.value.trim();
+      if(!nombre || !matricula || !categoria || !secretaria || !problematica){
+        alert('Por favor completa todos los campos requeridos.');
+        return null;
+      }
+      return {nombre, matricula, categoria, secretaria, problematica};
+    }
+
+    async function generarPDF(ev){
+      ev.preventDefault();
+      const d = obtenerDatos();
+      if(!d) return;
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({unit:'mm', format:'letter'}); // Carta (MX/US)
+
+      const margen = 18;
+      const ancho = doc.internal.pageSize.getWidth();
+      const usable = ancho - margen*2;
+      let y = 18;
+
+      // Encabezado simple
+      doc.setDrawColor(96,165,250);
+      doc.setLineWidth(0.6);
+      doc.roundedRect(margen, y, usable, 18, 3, 3, 'S');
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(14);
+      doc.text('Escrito formal – Innovación Sindical', margen+4, y+7.5);
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(10);
+      doc.text('SInOS — Sindical Innovation Operative System', margen+4, y+13.5);
+      y += 26;
+
+      // Lugar y fecha
+      doc.setFontSize(11);
+      doc.text('Ciudad Lázaro Cárdenas, Michoacán; ' + fmtFechaMX(), margen, y);
+      y += 8;
+
+      // Destinatario
+      doc.setFont('helvetica','bold');
+      doc.text(encabezadoSecretaria(d.secretaria), margen, y);
+      doc.setFont('helvetica','normal');
+      doc.text('Presente.', margen, y+6);
+      y += 14;
+
+      // Cuerpo (autowrap)
+      doc.setFontSize(12);
+      const cuerpo = construirCuerpo(d);
+      const lineas = doc.splitTextToSize(cuerpo, usable);
+      lineas.forEach(l => {
+        if(y > 260){ doc.addPage(); y = 18; }
+        doc.text(l, margen, y);
+        y += 6;
+      });
+
+      // Firma
+      y += 10;
+      if(y > 240){ doc.addPage(); y = 40; }
+      doc.setDrawColor(150, 200, 255);
+      doc.line(margen, y, margen+70, y);
+      doc.text(d.nombre, margen, y+6);
+      doc.text('Firma', margen, y+12);
+
+      // Guardar/Imprimir
+      const nombreArchivo = `Escrito_${d.matricula}_${Date.now()}.pdf`;
+      doc.save(nombreArchivo);
+      // Si prefieres abrir diálogo de impresión:
+      // window.open(doc.output('bloburl'), '_blank');
+    }
+
+    function limpiar(){
+      $('#f').reset();
+    }
+
+    $('#preview').addEventListener('click', previsualizar);
+    $('#f').addEventListener('submit', generarPDF);
+    $('#limpiar').addEventListener('click', limpiar);
+  </script>
+</body>
+</html>
