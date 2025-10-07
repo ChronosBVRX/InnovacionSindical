@@ -9,6 +9,7 @@
       --c-bg1:#0b1220; --c-bg2:#0b1022; --c-cyan:#5bd7f2; --c-sky:#60a5fa;
       --ring: rgba(91,215,242,.35); --tile: rgba(7,17,35,.6); --tileH: rgba(12,25,55,.7);
       --topbar: 52px; --dock: 60px;
+      --boot-ms: 5200ms; /* se sobreescribe desde JS: 5200ms primera vez, 2200ms después */
     }
     *{box-sizing:border-box}
     html,body{height:100%; margin:0; overflow:hidden; overscroll-behavior:none; background:#0b1022}
@@ -67,21 +68,28 @@
     .app-body{position:relative; flex:1; min-height:0;}
     .iframe{position:absolute; inset:0; width:100%; height:100%; border-radius:18px;border:1px solid rgba(91,215,242,.22);background:rgba(5,14,26,.5)}
 
-    /* Boot (queda activo pero con paracaídas JS más abajo) */
-    .boot{position:fixed;inset:0;display:grid;place-items:center;z-index:50;background:radial-gradient(60vmax 60vmax at 50% 40%, rgba(96,165,250,.18), transparent 60%), linear-gradient(180deg,#071122,#0a0f1d)}
-    .boot .halo{position:absolute; width:40vmin;height:40vmin; border-radius:50%; filter:blur(60px); background:radial-gradient(circle, rgba(91,215,242,.28), transparent 60%); animation:pulse 3.2s ease-in-out infinite}
+    /* Boot */
+    .boot{position:fixed;inset:0;display:grid;place-items:center;z-index:50;background:
+      radial-gradient(60vmax 60vmax at 50% 40%, rgba(96,165,250,.18), transparent 60%),
+      linear-gradient(180deg,#071122,#0a0f1d)}
+    .boot .halo{position:absolute; width:44vmin;height:44vmin; border-radius:50%;
+      filter:blur(60px); background:radial-gradient(circle, rgba(91,215,242,.28), transparent 60%);
+      animation:pulse 4.6s ease-in-out infinite}
     .boot-card{position:relative; display:grid; place-items:center; gap:12px}
-    .logo{width:96px;height:96px;border-radius:26px;background:linear-gradient(135deg,rgba(96,165,250,.2),rgba(91,215,242,.1)); border:1px solid rgba(91,215,242,.35); display:grid;place-items:center; box-shadow:0 0 18px rgba(91,215,242,.35) inset}
-    .isvg{width:64px;height:64px}
-    .boot h1{margin:0;color:#bff4ff;font-size:28px;letter-spacing:.4px}
+    .logo{width:104px;height:104px;border-radius:26px;background:linear-gradient(135deg,rgba(96,165,250,.22),rgba(91,215,242,.12)); border:1px solid rgba(91,215,242,.38); display:grid;place-items:center; box-shadow:0 0 18px rgba(91,215,242,.35) inset}
+    .isvg{width:70px;height:70px;filter:drop-shadow(0 6px 14px rgba(96,165,250,.35))}
+    .boot h1{margin:0;color:#bff4ff;font-size:30px;letter-spacing:.4px}
     .boot p{margin:2px 0 0;color:#9fe9fb;opacity:.85;font-size:12px}
-    .bar{margin-top:10px;height:10px;width:280px;border-radius:999px;background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.25); overflow:hidden}
-    .bar span{display:block;height:100%;width:34%;background:linear-gradient(90deg,var(--c-cyan),var(--c-sky)); animation:load 1.6s ease-in-out infinite}
+    .bar{margin-top:12px;height:10px;width:320px;border-radius:999px;background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.25); overflow:hidden}
+    .bar span{display:block;height:100%;width:34%;background:linear-gradient(90deg,var(--c-cyan),var(--c-sky)); animation:load var(--boot-ms) ease-in-out infinite}
     .skip{margin-top:10px;color:#a2e7f5;font-size:11px;opacity:.85}
     @keyframes load{0%{transform:translateX(-120%)}100%{transform:translateX(220%)}}
     @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
     .hide{opacity:0;pointer-events:none;transition:opacity .35s ease}
     .show{opacity:1;transition:opacity .35s ease}
+
+    /* Tips de boot */
+    #boot-tips{margin-top:6px;font-size:12px;color:#a7eaff;opacity:.85;text-align:center}
   </style>
 </head>
 <body>
@@ -106,6 +114,7 @@
       <h1>SInOS</h1>
       <p>SINDICAL INNOVATION OPERATIVE SYSTEM</p>
       <div class="bar"><span></span></div>
+      <div id="boot-tips">Inicializando módulos…</div>
       <div class="skip">Toca para saltar ▸</div>
     </div>
   </div>
@@ -184,7 +193,8 @@
       { id:'trascendencia', title:'TrascendencIA Sindical', desc:'Asistente IA para CCT, trámites y asesoría laboral.', icon:'🤖', href:'https://tu-url-de-trascendencia', quick:true },
       { id:'noticias', title:'Noticias', desc:'Circulares y comunicados en tiempo real.', icon:'📰', iframe:'about:blank' },
       { id:'agenda', title:'Agenda', desc:'Calendario de asambleas, guardias y eventos.', icon:'📅', iframe:'about:blank' },
-      { id:'denuncias', title:'Denuncias y Reportes', desc:'Genera un escrito formal en PDF, listo para imprimir.', icon:'🛡️', iframe:'https://chronosbvrx.github.io/InnovacionSindical/denuncias', quick:true },
+      { id:'denuncias', title:'Denuncias y Reportes', desc:'Genera un escrito formal en PDF, listo para imprimir.', icon:'🛡️',
+        iframe:'https://chronosbvrx.github.io/InnovacionSindical/denuncias', quick:true },
       { id:'prestaciones', title:'Prestaciones', desc:'Vacaciones, licencias, estímulos y antigüedad.', icon:'📄', iframe:'about:blank' },
       { id:'directorio', title:'Directorio', desc:'Delegados, jurídicos y atención a trabajadores.', icon:'📞', iframe:'about:blank' },
       { id:'miniapp', title:'MiniApp WhatsApp', desc:'Automatizaciones por palabras clave y avisos.', icon:'💬', href:'https://wa.me/XXXXXXXXXXX' },
@@ -193,11 +203,12 @@
 
     // ======= CORE =======
     const SInOS = {
-      BOOT_MS: 1600,
+      BOOT_MS: 2200, /* valor por defecto (se recalcula en init) */
       bootEl:null, homeEl:null, appEl:null, appTitle:null, appDesc:null, appIc:null, appIframe:null, appLink:null, appAnchor:null,
 
       init(){
         try{
+          // Cache nodos
           this.bootEl = document.getElementById('boot');
           this.homeEl = document.getElementById('home');
           this.appEl = document.getElementById('app');
@@ -208,15 +219,48 @@
           this.appLink = document.getElementById('app-link');
           this.appAnchor = document.getElementById('app-anchor');
 
+          // Render UI
           this.renderTiles();
           this.renderDock();
 
-          // Boot timeout + click-skip
+          // Boot: 1ª vez largo (5.2s), luego corto (2.2s)
+          const FIRST_KEY = 'sinos:bootedOnce';
+          let firstTime = false;
+          try{ firstTime = !localStorage.getItem(FIRST_KEY); }catch{}
+          this.BOOT_MS = firstTime ? 5200 : 2200;
+          document.documentElement.style.setProperty('--boot-ms', this.BOOT_MS + 'ms');
           setTimeout(()=>this.hideBoot(), this.BOOT_MS);
+
+          // Tips del boot
+          (function cycleTips(){
+            const tips = [
+              'Inicializando módulos…',
+              'Montando apps del sistema…',
+              'Verificando integridad de interfaz…',
+              'Optimizando desempeño para tu dispositivo…'
+            ];
+            let i=0; setInterval(()=>{
+              const el = document.getElementById('boot-tips');
+              if(el){ i=(i+1)%tips.length; el.textContent = tips[i]; }
+            }, 1200);
+          })();
 
           // Reloj 24h MX
           this.tickClock();
           setInterval(()=>this.tickClock(), 1000);
+
+          // Persistir “ya arrancó”
+          const _hide = this.hideBoot.bind(this);
+          this.hideBoot = ()=>{
+            try{ localStorage.setItem(FIRST_KEY,'1'); }catch{}
+            _hide();
+          };
+
+          // Accesos rápidos
+          document.addEventListener('keydown',(e)=>{
+            if(e.key==='Escape') this.goHome();
+            if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); this.goHome(); }
+          });
 
         }catch(err){
           console.error('Init:', err);
@@ -311,14 +355,13 @@
     document.addEventListener('DOMContentLoaded', ()=> SInOS.init());
   </script>
 
-  <!-- PARACAÍDAS ABSOLUTO DEL BOOT:
-       Pase lo que pase, el overlay se quita y se muestra Home. -->
+  <!-- PARACAÍDAS: respeta BOOT_MS y, si algo falla, muestra la UI -->
   <script>
     (function(){
       function forceHideBoot(){
         var b = document.getElementById('boot');
         if(b){
-          b.style.transition = 'opacity .3s ease';
+          b.style.transition = 'opacity .35s ease';
           b.style.opacity = '0';
           b.style.pointerEvents = 'none';
           b.style.zIndex = '0';
@@ -329,8 +372,15 @@
         var tb = document.getElementById('topbar');
         if(tb) tb.style.display='flex';
       }
-      // 1) a los 1500ms, 2) cuando 'load', 3) ante errores
-      setTimeout(forceHideBoot, 1500);
+      function scheduleFallback(){
+        var base = (window.SInOS && SInOS.BOOT_MS ? SInOS.BOOT_MS : 7000) + 1500;
+        setTimeout(forceHideBoot, base);
+      }
+      if(document.readyState === 'loading'){
+        document.addEventListener('DOMContentLoaded', scheduleFallback);
+      }else{
+        scheduleFallback();
+      }
       window.addEventListener('load', forceHideBoot);
       window.addEventListener('error', forceHideBoot);
       window.addEventListener('unhandledrejection', forceHideBoot);
