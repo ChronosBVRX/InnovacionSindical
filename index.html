@@ -207,8 +207,8 @@
       { id:'noticias', title:'Noticias', desc:'Circulares y comunicados en tiempo real.', icon:'📰', type:'internal' },
       { id:'agenda', title:'Agenda', desc:'Calendario de asambleas, guardias y eventos.', icon:'📅', iframe:'about:blank' },
       { id:'denuncias', title:'Denuncias y Reportes', desc:'Genera un escrito formal en PDF, listo para imprimir.', icon:'🛡️', iframe:'https://chronosbvrx.github.io/InnovacionSindical/denuncias', quick:true },
+      { id:'directorio', title:'Directorio', desc:'Delegados, jurídicos y atención a trabajadores.', icon:'📞', iframe:'https://chronosbvrx.github.io/InnovacionSindical/directorio', quick:true },
       { id:'prestaciones', title:'Prestaciones', desc:'Vacaciones, licencias, estímulos y antigüedad.', icon:'📄', iframe:'about:blank' },
-      { id:'directorio', title:'Directorio', desc:'Delegados, jurídicos y atención a trabajadores.', icon:'📞', iframe:'about:blank' },
       { id:'miniapp', title:'MiniApp WhatsApp', desc:'Automatizaciones por palabras clave y avisos.', icon:'💬', href:'https://wa.me/XXXXXXXXXXX' },
       { id:'ajustes', title:'Ajustes', desc:'Tema, accesibilidad y personalización.', icon:'⚙️', iframe:'about:blank' }
     ];
@@ -315,7 +315,7 @@
         if('vibrate' in navigator){ try{ navigator.vibrate(8); }catch{} }
       },
 
-      // Noticias: Page Plugin con encabezado mínimo (sin portada/facepile) y ancho completo
+      // Noticias: Page Plugin con encabezado mínimo y ancho completo
       async renderNoticias(){
         this.appInternal.style.display='block';
         const root=this.appInternal;
@@ -326,10 +326,10 @@
               data-tabs="timeline"
               data-width="980"
               data-height=""
-              data-small-header="true"     <!-- header compacto -->
+              data-small-header="true"
               data-adapt-container-width="true"
-              data-hide-cover="true"       <!-- sin portada -->
-              data-show-facepile="false">  <!-- sin avatars -->
+              data-hide-cover="true"
+              data-show-facepile="false">
               <blockquote cite="https://www.facebook.com/profile.php?id=100063446307036" class="fb-xfbml-parse-ignore">
                 <a href="https://www.facebook.com/profile.php?id=100063446307036">Noticias</a>
               </blockquote>
