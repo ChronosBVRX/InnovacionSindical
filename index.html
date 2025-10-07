@@ -9,7 +9,7 @@
       --c-bg1:#0b1220; --c-bg2:#0b1022; --c-cyan:#5bd7f2; --c-sky:#60a5fa;
       --ring: rgba(91,215,242,.35); --tile: rgba(7,17,35,.6); --tileH: rgba(12,25,55,.7);
       --topbar: 52px; --dock: 60px;
-      --boot-ms: 5200ms; /* JS la ajusta: 5200ms primera vez, 2200ms después */
+      --boot-ms: 5200ms; /* JS ajusta: 5200ms primera vez, 2200ms después */
     }
     *{box-sizing:border-box}
     html,body{height:100%; margin:0; overflow:hidden; overscroll-behavior:none; background:#0b1022}
@@ -32,7 +32,7 @@
     .title{display:flex;align-items:center;gap:8px;font-weight:600;color:#bff4ff;letter-spacing:.3px}
     .clock{font-size:12px;color:#a2e7f5}
 
-    /* Capa scrollable */
+    /* Capas */
     .layer{position:fixed; left:0; right:0; top:var(--topbar); bottom:var(--dock); overflow:auto; -webkit-overflow-scrolling:touch;}
 
     /* Home */
@@ -67,6 +67,8 @@
     .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:8px 12px;background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.32); color:#d9fbff; font-size:12px}
     .app-body{position:relative; flex:1; min-height:0;}
     .iframe{position:absolute; inset:0; width:100%; height:100%; border-radius:18px;border:1px solid rgba(91,215,242,.22);background:rgba(5,14,26,.5)}
+    .hide{opacity:0;pointer-events:none;transition:opacity .35s ease}
+    .show{opacity:1;transition:opacity .35s ease}
 
     /* Boot */
     .boot{position:fixed;inset:0;display:grid;place-items:center;z-index:50;background:
@@ -84,11 +86,8 @@
     .bar span{display:block;height:100%;width:34%;background:linear-gradient(90deg,var(--c-cyan),var(--c-sky)); animation:load var(--boot-ms) ease-in-out infinite}
     .skip{margin-top:10px;color:#a2e7f5;font-size:11px;opacity:.85}
     #boot-tips{margin-top:6px;font-size:12px;color:#a7eaff;opacity:.85;text-align:center}
-
     @keyframes load{0%{transform:translateX(-120%)}100%{transform:translateX(220%)}}
     @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
-    .hide{opacity:0;pointer-events:none;transition:opacity .35s ease}
-    .show{opacity:1;transition:opacity .35s ease}
   </style>
 </head>
 <body>
@@ -151,7 +150,6 @@
           <div class="badge">Equipo de Innovacion Sindical</div>
         </div>
       </section>
-
       <section class="tiles" id="tiles"></section>
     </section>
   </main>
@@ -174,8 +172,8 @@
         </div>
       </div>
       <div id="app-body" class="app-body">
-        <!-- Ya no embebemos TrascendencIA: este iframe se usa solo para apps que sí van en marco -->
-        <iframe id="app-iframe" class="iframe" title="app" referrerpolicy="no-referrer"></iframe>
+        <iframe id="app-iframe" class="iframe" title="app" referrerpolicy="no-referrer" style="display:none"></iframe>
+        <div id="app-internal" style="position:absolute;inset:0; overflow:auto; padding:8px 0; display:none"></div>
       </div>
     </div>
   </section>
@@ -185,17 +183,44 @@
     <div class="dock-inner" id="dock"></div>
   </div>
 
+  <!-- SDK loader para el Page Plugin (Noticias) -->
   <script>
-    // ======= APPS =======
+    // Carga el SDK de Facebook UNA sola vez (para Noticias)
+    function loadFacebookSDKOnce(locale='es_LA'){
+      return new Promise((resolve)=>{
+        if (window.FB) return resolve(window.FB);
+        if(!document.getElementById('fb-root')){
+          const fbroot = document.createElement('div');
+          fbroot.id = 'fb-root';
+          document.body.appendChild(fbroot);
+        }
+        const id = 'facebook-jssdk';
+        if(document.getElementById(id)) return resolve(window.FB);
+        const js = document.createElement('script');
+        js.id = id; js.async = true; js.defer = true; js.crossOrigin = 'anonymous';
+        js.src = `https://connect.facebook.net/${locale}/sdk.js#xfbml=1&version=v20.0`;
+        js.onload = () => resolve(window.FB);
+        document.body.appendChild(js);
+      });
+    }
+  </script>
+
+  <script>
+    // ===== APPS =====
     const APPS = [
       { id:'trascendencia',
         title:'TrascendencIA Sindical',
         desc:'Asistente IA en nueva pestaña.',
         icon:'🤖',
-        href:'https://trascendencia-sindical-7t85.onrender.com/', // SOLO ventana aparte
+        href:'https://trascendencia-sindical-7t85.onrender.com/',
         quick:true
       },
-      { id:'noticias', title:'Noticias', desc:'Circulares y comunicados en tiempo real.', icon:'📰', iframe:'about:blank' },
+      { id:'noticias',
+        title:'Noticias',
+        desc:'Circulares y comunicados en tiempo real.',
+        icon:'📰',
+        type:'internal' // renderer propio con Page Plugin
+      },
       { id:'agenda', title:'Agenda', desc:'Calendario de asambleas, guardias y eventos.', icon:'📅', iframe:'about:blank' },
       { id:'denuncias', title:'Denuncias y Reportes', desc:'Genera un escrito formal en PDF, listo para imprimir.', icon:'🛡️',
         iframe:'https://chronosbvrx.github.io/InnovacionSindical/denuncias', quick:true },
@@ -205,15 +230,15 @@
       { id:'ajustes', title:'Ajustes', desc:'Tema, accesibilidad y personalización.', icon:'⚙️', iframe:'about:blank' }
     ];
 
-    // ======= CORE =======
+    // ===== CORE =====
     const SInOS = {
-      BOOT_MS: 2200, /* valor por defecto (se recalcula en init) */
-      bootEl:null, homeEl:null, appEl:null, appTitle:null, appDesc:null, appIc:null, appIframe:null, btnOpenNew:null,
-      currentApp:null,
+      BOOT_MS: 2200,
+      bootEl:null, homeEl:null, appEl:null, appTitle:null, appDesc:null, appIc:null,
+      appIframe:null, appInternal:null, btnOpenNew:null, currentApp:null,
 
       init(){
         try{
-          // Cache nodos
+          // Nodos
           this.bootEl = document.getElementById('boot');
           this.homeEl = document.getElementById('home');
           this.appEl = document.getElementById('app');
@@ -221,148 +246,145 @@
           this.appDesc = document.getElementById('app-desc');
           this.appIc = document.getElementById('app-ic');
           this.appIframe = document.getElementById('app-iframe');
+          this.appInternal = document.getElementById('app-internal');
           this.btnOpenNew = document.getElementById('btn-open-new');
 
-          // Render UI
+          // Render
           this.renderTiles();
           this.renderDock();
 
-          // Boot: primera vez largo (5.2s), luego corto (2.2s)
+          // Boot: 1a vez largo
           const FIRST_KEY = 'sinos:bootedOnce';
           const qs = new URLSearchParams(location.search);
           const forceLong = qs.get('boot') === 'long';
           const forceReset = qs.get('boot') === 'reset';
           if(forceReset){ try{ localStorage.removeItem(FIRST_KEY); }catch{} }
-
-          let firstTime = false;
-          try{ firstTime = !localStorage.getItem(FIRST_KEY); }catch{}
-
-          this.BOOT_MS = (forceLong || firstTime) ? 5200 : 2200;
+          let firstTime=false; try{ firstTime=!localStorage.getItem(FIRST_KEY); }catch{}
+          this.BOOT_MS = (forceLong||firstTime) ? 5200 : 2200;
           document.documentElement.style.setProperty('--boot-ms', this.BOOT_MS + 'ms');
 
-          // Tips del boot
-          (function cycleTips(){
-            const tips = [
-              'Inicializando módulos…',
-              'Montando apps del sistema…',
-              'Verificando integridad de interfaz…',
-              'Optimizando desempeño para tu dispositivo…'
-            ];
-            let i=0; setInterval(()=>{
-              const el = document.getElementById('boot-tips');
-              if(el){ i=(i+1)%tips.length; el.textContent = tips[i]; }
-            }, 1200);
+          // Tips
+          (function(){
+            const tips = ['Inicializando módulos…','Montando apps del sistema…','Verificando integridad de interfaz…','Optimizando desempeño para tu dispositivo…'];
+            let i=0; setInterval(()=>{ const el=document.getElementById('boot-tips'); if(el){ i=(i+1)%tips.length; el.textContent=tips[i]; } }, 1200);
           })();
 
-          // Programar ocultamiento
-          const _hide = this.hideBoot.bind(this);
-          this.hideBoot = ()=>{
-            try{ localStorage.setItem(FIRST_KEY,'1'); }catch{}
-            _hide();
-          };
+          const _hide=this.hideBoot.bind(this);
+          this.hideBoot=()=>{ try{ localStorage.setItem(FIRST_KEY,'1'); }catch{}; _hide(); };
           setTimeout(()=>this.hideBoot(), this.BOOT_MS);
 
-          // Reloj 24h MX
-          this.tickClock();
-          setInterval(()=>this.tickClock(), 1000);
+          // Reloj
+          this.tickClock(); setInterval(()=>this.tickClock(), 1000);
 
-          // Accesos rápidos
-          document.addEventListener('keydown',(e)=>{
-            if(e.key==='Escape') this.goHome();
-            if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); this.goHome(); }
-          });
+          // Acceso rápido
+          document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') this.goHome(); });
 
-        }catch(err){
-          console.error('Init:', err);
-          this.forceShowUI();
-        }
+        }catch(err){ console.error('Init:',err); this.forceShowUI(); }
       },
 
-      tickClock(){ const el=document.getElementById('clock'); if(el) el.textContent = new Date().toLocaleTimeString('es-MX', {hour12:false}); },
+      tickClock(){ const el=document.getElementById('clock'); if(el) el.textContent=new Date().toLocaleTimeString('es-MX',{hour12:false}); },
       hideBoot(){ this.bootEl?.classList.add('hide'); this.bootEl?.classList.remove('show'); },
       skipBoot(){ this.hideBoot(); },
-
-      forceShowUI(){
-        // Asegura que haya interfaz aunque algo falle
-        this.hideBoot();
-        const home=document.getElementById('home');
-        home?.classList.add('show'); home?.classList.remove('hide');
-        const tb=document.getElementById('topbar');
-        if(tb) tb.style.display='flex';
-      },
+      forceShowUI(){ this.hideBoot(); this.homeEl?.classList.add('show'); this.homeEl?.classList.remove('hide'); },
 
       renderTiles(){
-        const wrap = document.getElementById('tiles');
-        if(!wrap){ this.forceShowUI(); return; }
-        wrap.innerHTML = '';
+        const wrap=document.getElementById('tiles'); wrap.innerHTML='';
         APPS.forEach(a=>{
-          const b = document.createElement('button');
-          b.className='tile';
-          b.onclick = ()=>this.openApp(a.id);
-          b.setAttribute('aria-label', `${a.title}. ${a.desc||''}`);
-          b.innerHTML = `
+          const b=document.createElement('button');
+          b.className='tile'; b.onclick=()=>this.openApp(a.id);
+          b.setAttribute('aria-label',`${a.title}. ${a.desc||''}`);
+          b.innerHTML=`
             <div style="display:flex;gap:12px;align-items:center">
               <div class="icon">${a.icon||'🧩'}</div>
-              <div>
-                <h3>${a.title}</h3>
-                <p>${a.desc||''}</p>
-              </div>
-            </div>
-            <div></div>`;
+              <div><h3>${a.title}</h3><p>${a.desc||''}</p></div>
+            </div><div></div>`;
           wrap.appendChild(b);
         });
       },
 
       renderDock(){
-        const el = document.getElementById('dock');
-        if(!el){ this.forceShowUI(); return; }
-        el.innerHTML='';
+        const el=document.getElementById('dock'); el.innerHTML='';
         APPS.filter(a=>a.quick).slice(0,5).forEach(a=>{
-          const btn = document.createElement('button');
-          btn.textContent = `${a.icon||'🧩'} ${a.title}`;
-          btn.onclick = ()=>this.openApp(a.id);
+          const btn=document.createElement('button');
+          btn.textContent=`${a.icon||'🧩'} ${a.title}`;
+          btn.onclick=()=>this.openApp(a.id);
           el.appendChild(btn);
         });
       },
 
       openApp(id){
-        const app = APPS.find(x=>x.id===id);
-        if(!app){ this.forceShowUI(); return; }
-        this.currentApp = app;
+        const app=APPS.find(x=>x.id===id); if(!app) return;
+        this.currentApp=app;
+
+        // Mostrar capa app
         this.homeEl.classList.add('hide'); this.homeEl.classList.remove('show');
         this.appEl.classList.remove('hide'); this.appEl.classList.add('show');
-        this.appTitle.textContent = app.title;
-        this.appDesc.textContent = app.desc||'';
-        this.appIc.textContent = app.icon||'🧩';
 
-        // Si la app tiene href (sin iframe), mostramos botón para abrir en nueva pestaña
-        if(app.href && !app.iframe){
-          this.btnOpenNew.style.display='inline-flex';
-          this.appIframe.style.display='none';
-        } else if(app.iframe){
-          this.btnOpenNew.style.display='none';
+        // Header
+        this.appTitle.textContent=app.title;
+        this.appDesc.textContent=app.desc||'';
+        this.appIc.textContent=app.icon||'🧩';
+
+        // Reset body
+        this.appIframe.style.display='none';
+        this.appIframe.src='about:blank';
+        this.appInternal.style.display='none';
+        this.appInternal.innerHTML='';
+        this.btnOpenNew.style.display='none';
+
+        // Routing
+        if(app.type==='internal' && app.id==='noticias'){
+          this.renderNoticias();
+        }else if(app.iframe){
           this.appIframe.style.display='block';
-          this.appIframe.src = app.iframe;
-        } else {
-          this.btnOpenNew.style.display='none';
-          this.appIframe.style.display='none';
+          this.appIframe.src=app.iframe;
+        }else if(app.href){
+          this.btnOpenNew.style.display='inline-flex'; // abrir en pestaña nueva
         }
 
-        if('vibrate' in navigator) { try{ navigator.vibrate(8); }catch{} }
-        this.appEl.setAttribute('tabindex','-1'); this.appEl.focus();
+        if('vibrate' in navigator){ try{ navigator.vibrate(8); }catch{} }
       },
 
-      openExternal(){
-        if(this.currentApp?.href){
-          window.open(this.currentApp.href, '_blank', 'noopener,noreferrer');
-        }
+      // ===== Noticias con Page Plugin (fácil) =====
+      async renderNoticias(){
+        this.appInternal.style.display='block';
+        const root=this.appInternal;
+        root.innerHTML=`
+          <div style="padding:10px">
+            <div id="fb-news-wrap" style="display:flex;justify-content:center;">
+              <div class="fb-page"
+                data-href="https://www.facebook.com/profile.php?id=100063446307036"
+                data-tabs="timeline"
+                data-width="980"
+                data-height=""
+                data-small-header="false"
+                data-adapt-container-width="true"
+                data-hide-cover="false"
+                data-show-facepile="false">
+                <blockquote cite="https://www.facebook.com/profile.php?id=100063446307036" class="fb-xfbml-parse-ignore">
+                  <a href="https://www.facebook.com/profile.php?id=100063446307036">Noticias</a>
+                </blockquote>
+              </div>
+            </div>
+          </div>
+        `;
+        const pageDiv=root.querySelector('.fb-page');
+        const fit=()=>{
+          const max=Math.min(1000, root.clientWidth - 24);
+          pageDiv.setAttribute('data-width', String(Math.max(320,max)));
+          if(window.FB && FB.XFBML) FB.XFBML.parse(root);
+        };
+        await loadFacebookSDKOnce('es_LA');
+        fit();
+        window.addEventListener('resize', ()=>{ clearTimeout(window.__fbFitT); window.__fbFitT=setTimeout(fit,180); });
       },
 
+      openExternal(){ if(this.currentApp?.href){ window.open(this.currentApp.href,'_blank','noopener,noreferrer'); } },
       closeApp(){ this.goHome(); },
       goHome(){
         this.appEl.classList.remove('show'); this.appEl.classList.add('hide');
         this.homeEl.classList.remove('hide'); this.homeEl.classList.add('show');
-        if(this.appIframe) this.appIframe.src = 'about:blank';
+        this.appIframe.src='about:blank';
       }
     };
 
@@ -377,33 +399,20 @@
     document.addEventListener('DOMContentLoaded', ()=> SInOS.init());
   </script>
 
-  <!-- PARACAÍDAS: sólo por timeout (según BOOT_MS) o error; NO en 'load' -->
+  <!-- Paracaídas: timeout o error; NO en 'load' -->
   <script>
     (function(){
       function forceHideBoot(){
-        var b = document.getElementById('boot');
-        if(b){
-          b.style.transition = 'opacity .35s ease';
-          b.style.opacity = '0';
-          b.style.pointerEvents = 'none';
-          b.style.zIndex = '0';
-          b.classList.add('hide');
-        }
-        var home = document.getElementById('home');
-        if(home){ home.classList.add('show'); home.classList.remove('hide'); }
-        var tb = document.getElementById('topbar');
-        if(tb) tb.style.display='flex';
+        var b=document.getElementById('boot');
+        if(b){ b.style.transition='opacity .35s ease'; b.style.opacity='0'; b.style.pointerEvents='none'; b.style.zIndex='0'; b.classList.add('hide'); }
+        var home=document.getElementById('home'); if(home){ home.classList.add('show'); home.classList.remove('hide'); }
+        var tb=document.getElementById('topbar'); if(tb) tb.style.display='flex';
       }
       function scheduleFallback(){
-        var base = (window.SInOS && SInOS.BOOT_MS ? SInOS.BOOT_MS : 7000) + 1500;
+        var base=(window.SInOS && SInOS.BOOT_MS ? SInOS.BOOT_MS : 7000) + 1500;
         setTimeout(forceHideBoot, base);
       }
-      if(document.readyState === 'loading'){
-        document.addEventListener('DOMContentLoaded', scheduleFallback);
-      }else{
-        scheduleFallback();
-      }
-      // SOLO si hay error se cierra antes
+      if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', scheduleFallback); } else { scheduleFallback(); }
       window.addEventListener('error', forceHideBoot);
       window.addEventListener('unhandledrejection', forceHideBoot);
     })();
