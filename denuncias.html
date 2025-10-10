@@ -1,71 +1,213 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Generar escrito formal (impresión directa)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Denuncias y Reportes — SInOS</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
 <style>
-  :root{--bg:#0b1022;--fg:#e6fbff;--edge:rgba(91,215,242,.35);--panel:rgba(7,17,35,.6)}
-  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;background:var(--bg);color:var(--fg)}
-  .wrap{max-width:840px;margin:0 auto;padding:16px 14px 24px}
-  .card{background:var(--panel);border:1px solid var(--edge);border-radius:16px;padding:16px}
-  h1{margin:0 0 8px;font-size:22px}
-  p{margin:0 0 12px;opacity:.85}
-  form{display:grid;grid-template-columns:1fr;gap:12px;margin-top:8px}
-  label{display:grid;gap:6px;font-size:14px}
-  input,select,textarea{
-    background:rgba(91,215,242,.10); color:var(--fg); border:1px solid rgba(91,215,242,.25);
-    border-radius:10px; padding:10px 12px; font-size:14px; outline:none;
+  :root{
+    --bg:#0b1022; --panel:#0e1730; --ring:rgba(91,215,242,.35);
+    --txt:#dff9ff; --muted:#aee9f7; --primary:#5bd7f2; --sky:#60a5fa;
   }
-  textarea{min-height:140px;resize:vertical}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .btn{background:rgba(91,215,242,.14); color:var(--fg); border:1px solid rgba(91,215,242,.35);
-       padding:10px 14px; border-radius:12px; font-size:14px; cursor:pointer}
-  .muted{font-size:12px;opacity:.7;margin-top:8px}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--txt);
+    font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu}
+  .wrap{max-width:980px;margin:0 auto;padding:24px}
+  h1{margin:0 0 12px;font-size:24px}
+  p.muted{color:var(--muted);margin-top:0}
+  .card{background:linear-gradient(180deg,#0e1730,#0b1428);border:1px solid rgba(91,215,242,.28);
+    border-radius:18px;padding:16px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+  form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  label{display:block;font-size:12px;color:#bdefff;margin:4px 0}
+  input,select,textarea{
+    width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(91,215,242,.28);
+    background:#0a1329;color:var(--txt);outline:none
+  }
+  textarea{min-height:160px;resize:vertical;grid-column:1/-1}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+  .btn{appearance:none;border:1px solid rgba(91,215,242,.45);background:rgba(91,215,242,.14);
+    color:#e6fbff;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer}
+  .btn:hover{box-shadow:0 0 0 1px var(--ring) inset, 0 10px 24px rgba(11,18,32,.55)}
+  .btn.primary{background:linear-gradient(90deg,var(--primary),var(--sky));border:none;color:#072133}
+  .preview{margin-top:16px;padding:14px;border-radius:12px;background:#0b1429;border:1px dashed rgba(91,215,242,.25)}
+  .small{font-size:12px;color:#9edff0}
+  .grid-1{grid-column:1/-1}
 </style>
 </head>
 <body>
   <div class="wrap">
+    <h1>Denuncias y Reportes</h1>
+    <p class="muted">Completa el formulario y presiona <b>Generar PDF e imprimir</b>. El documento se formatea automáticamente.</p>
+
     <div class="card">
-      <h1>Generar escrito formal</h1>
-      <p>Se abrirá una nueva pestaña con el PDF y el diálogo de impresión automático.</p>
-
-      <!-- IMPORTANTE: cambia el action con TU URL del Web App (termina en /exec) -->
-      <form action="https://script.google.com/macros/s/AKfycbw7T7HILeYQrQwSpjFPnWsMDjEd78IX6W-Qpli5Fn_KWHJ71DF0P1EX4Af6wLyv1Y9CqQ/exec" method="post" target="_blank">
-        <div class="row">
-          <label>Nombre del trabajador
-            <input name="nombre" required placeholder="Nombre completo">
-          </label>
-          <label>Matrícula
-            <input name="matricula" required placeholder="000000">
-          </label>
+      <form id="fDenuncia" autocomplete="on">
+        <div>
+          <label for="nombre">Nombre del trabajador</label>
+          <input id="nombre" name="nombre" required placeholder="Nombre(s) y apellidos">
+        </div>
+        <div>
+          <label for="matricula">Matrícula</label>
+          <input id="matricula" name="matricula" required placeholder="Ej. 123456">
+        </div>
+        <div>
+          <label for="categoria">Categoría</label>
+          <input id="categoria" name="categoria" required placeholder="Ej. Enfermera General A">
+        </div>
+        <div>
+          <label for="secretaria">Secretaría destinataria</label>
+          <select id="secretaria" name="secretaria" required>
+            <option value="Secretaría General">Secretaría General</option>
+            <option value="Secretaría del Trabajo">Secretaría del Trabajo</option>
+            <option value="Secretaría de Conflictos">Secretaría de Conflictos</option>
+            <option value="Secretaría del Interior y Propaganda">Secretaría del Interior y Propaganda</option>
+          </select>
+        </div>
+        <div class="grid-1">
+          <label for="problematica">Describe la problemática</label>
+          <textarea id="problematica" name="problematica" required placeholder="Escribe con detalle los hechos, fechas, lugares, personas involucradas y pruebas con que cuentes."></textarea>
         </div>
 
         <div class="row">
-          <label>Categoría / Puesto
-            <input name="categoria" required placeholder="Ej. Téc. Radiólogo A, Enfermera, etc.">
-          </label>
-          <label>Secretaría a la que va dirigido
-            <select name="secretaria" required>
-              <option value="" disabled selected>Selecciona una secretaría</option>
-              <option>Secretaría General</option>
-              <option>Secretaría del Trabajo</option>
-              <option>Secretaría de Conflictos</option>
-              <option>Secretaría del Interior y Propaganda</option>
-            </select>
-          </label>
-        </div>
-
-        <label>Describe la problemática
-          <textarea name="problematica" required placeholder="Fechas, hechos, personas (si procede) y la petición concreta."></textarea>
-        </label>
-
-        <button type="submit" class="btn">📄 Generar y abrir impresión</button>
-        <div class="muted">
-          Aviso de privacidad: La información es para atención sindical. Evita datos sensibles innecesarios.
+          <button type="button" class="btn" id="btnPreview">👁️ Vista previa</button>
+          <button type="submit" class="btn primary">🖨️ Generar PDF e imprimir</button>
+          <span class="small">La impresión se genera localmente; no se envían datos a servidores.</span>
         </div>
       </form>
+
+      <div id="preview" class="preview small" hidden></div>
     </div>
   </div>
+
+  <!-- jsPDF (cliente) -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <script>
+    const $ = s => document.querySelector(s);
+
+    function encabezado(secretaria){
+      const map = {
+        'Secretaría General': 'Secretaría General del SNTSS Sección XX Michoacán',
+        'Secretaría del Trabajo': 'Secretaría del Trabajo del SNTSS Sección XX Michoacán',
+        'Secretaría de Conflictos': 'Secretaría de Conflictos del SNTSS Sección XX Michoacán',
+        'Secretaría del Interior y Propaganda': 'Secretaría del Interior y Propaganda del SNTSS Sección XX Michoacán'
+      };
+      return map[secretaria] || secretaria;
+    }
+
+    function redactar({nombre, matricula, categoria, secretaria, problematica}){
+      const fecha = new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});
+      return (
+`${encabezado(secretaria)}
+
+Presente.
+
+Por este conducto me permito exponer lo siguiente:
+
+${problematica.trim()}
+
+Por lo anterior, solicito atentamente su intervención conforme a derecho, y se me informe el seguimiento otorgado a la presente.
+
+Sin otro particular, quedo a sus órdenes.
+
+ATENTAMENTE
+
+${nombre}
+Matrícula: ${matricula}
+Categoría: ${categoria}
+${fecha}`
+      );
+    }
+
+    function mostrarPreview(texto){
+      const box = $('#preview');
+      box.hidden = false;
+      box.textContent = texto;
+    }
+
+    // --- Generación de PDF + impresión sin bloqueos (iframe oculto)
+    async function generarPDFyImprimir(data){
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit:'pt', format:'letter' });
+
+      const left = 64, top = 72, width = 468; // carta: 612x792 pt
+      doc.setFont('Times','Normal'); doc.setFontSize(12);
+
+      // Encabezado
+      doc.setFont('Times','Bold'); doc.setFontSize(14);
+      doc.text(encabezado(data.secretaria), left, top);
+      doc.setFont('Times','Normal'); doc.setFontSize(12);
+      doc.text('Presente.', left, top + 22);
+
+      // Cuerpo
+      const cuerpo = redactar(data)
+        .replace(encabezado(data.secretaria)+'\n\nPresente.\n\n',''); // evitar duplicado
+      const líneas = doc.splitTextToSize(cuerpo, width);
+      doc.text(líneas, left, top + 52, { align:'left', lineHeightFactor:1.45 });
+
+      // Firma (al final)
+      const firmaY = Math.min(700, top + 52 + (líneas.length * 16));
+      doc.setFont('Times','Bold'); doc.text('ATENTAMENTE', left, firmaY + 32);
+      doc.setFont('Times','Normal');
+      doc.text(data.nombre, left, firmaY + 52);
+      doc.text(`Matrícula: ${data.matricula}`, left, firmaY + 70);
+      doc.text(`Categoría: ${data.categoria}`, left, firmaY + 88);
+
+      // Blob URL
+      const blob = doc.output('blob');
+      const url = URL.createObjectURL(blob);
+
+      // Imprimir desde iframe oculto (misma pestaña, menos bloqueos)
+      let iframe = document.getElementById('print-iframe');
+      if(!iframe){
+        iframe = document.createElement('iframe');
+        iframe.id = 'print-iframe';
+        iframe.style.position='fixed'; iframe.style.right='0'; iframe.style.bottom='0';
+        iframe.style.width='0'; iframe.style.height='0'; iframe.style.border='0'; iframe.style.visibility='hidden';
+        document.body.appendChild(iframe);
+      }
+
+      return new Promise(resolve=>{
+        iframe.onload = () => {
+          try{
+            iframe.contentWindow.focus();
+            // algunos navegadores requieren un pequeño delay
+            setTimeout(()=>{ iframe.contentWindow.print(); resolve(); }, 120);
+          }catch(e){ resolve(); }
+        };
+        iframe.src = url;
+      });
+    }
+
+    // --- Eventos
+    $('#btnPreview').addEventListener('click', ()=>{
+      const data = {
+        nombre: $('#nombre').value.trim(),
+        matricula: $('#matricula').value.trim(),
+        categoria: $('#categoria').value.trim(),
+        secretaria: $('#secretaria').value,
+        problematica: $('#problematica').value.trim()
+      };
+      if(!data.nombre || !data.matricula || !data.categoria || !data.problematica){
+        alert('Completa todos los campos.'); return;
+      }
+      mostrarPreview( redactar(data) );
+    });
+
+    $('#fDenuncia').addEventListener('submit', async (e)=>{
+      e.preventDefault(); // evita navegación/ventana nueva
+      const data = {
+        nombre: $('#nombre').value.trim(),
+        matricula: $('#matricula').value.trim(),
+        categoria: $('#categoria').value.trim(),
+        secretaria: $('#secretaria').value,
+        problematica: $('#problematica').value.trim()
+      };
+      if(!data.nombre || !data.matricula || !data.categoria || !data.problematica){
+        alert('Por favor, completa todos los campos.'); return;
+      }
+      await generarPDFyImprimir(data);
+    });
+  </script>
 </body>
 </html>
