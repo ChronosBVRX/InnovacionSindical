@@ -114,11 +114,6 @@
           <textarea id="problematica" name="problematica" required></textarea>
         </div>
 
-        <div class="grid-1">
-          <label for="pruebas">Pruebas o documentos (opcional)</label>
-          <input id="pruebas" name="pruebas" placeholder="Ej. fotografías, oficios, mensajes, partes médicos…">
-        </div>
-
         <div class="row">
           <button type="button" class="btn" id="btnPreview">👁️ Vista previa</button>
           <button type="submit" class="btn primary" id="btnGenerar">🖨️ Generar PDF e imprimir</button>
@@ -174,23 +169,23 @@
       return d.toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
     };
 
+    /* Plantillas por tipo, SIN sección de pruebas */
     function cuerpoPorTipo(tipo, d){
       const p = N(d.problematica);
-      const pruebas = N(d.pruebas) ? `\n\nPRUEBAS / ELEMENTOS DE APOYO:\n• Cuento con: ${d.pruebas}. Solicito se integren al expediente para su valoración.` : '';
       const cierre = `\n\nSin otro particular, y en el ánimo de que no se repitan los hechos, quedo a sus órdenes para ampliar información o aportar más elementos.`;
 
       switch (tipo){
         case 'derechos':
-          return `Con fundamento en la normatividad aplicable y en ejercicio de mis derechos laborales, expongo los siguientes HECHOS:\n\n${p}\n\nIMPACTO:\n• Afectación a mis condiciones de trabajo e integridad.\n\nSOLICITO:\n• Investigación y determinación de responsabilidades.\n• Medidas de no repetición y restitución de derechos.\n• Informe por escrito del trámite y resultados.${pruebas}${cierre}`;
+          return `Con fundamento en la normatividad aplicable y en ejercicio de mis derechos laborales, expongo los siguientes HECHOS:\n\n${p}\n\nIMPACTO:\n• Afectación a mis condiciones de trabajo e integridad.\n\nSOLICITO:\n• Investigación y determinación de responsabilidades.\n• Medidas de no repetición y restitución de derechos.\n• Informe por escrito del trámite y resultados.${cierre}`;
         case 'compañero':
-          return `Interpongo QUEJA en contra de un compañero(a) sindicalizado por la conducta que describo a continuación:\n\n${p}\n\nSOLICITO:\n• Se escuche a las partes y se apliquen medidas correctivas.\n• Medidas de protección y no represalia para testigos.${pruebas}${cierre}`;
+          return `Interpongo QUEJA en contra de un compañero(a) sindicalizado por la conducta que describo a continuación:\n\n${p}\n\nSOLICITO:\n• Se escuche a las partes y se apliquen medidas correctivas.\n• Medidas de protección y no represalia para testigos.${cierre}`;
         case 'jefatura':
-          return `Presento QUEJA por presuntos actos/omisiones de personal con funciones de jefatura/mandos, con base en los siguientes hechos:\n\n${p}\n\nSOLICITO:\n• Investigación imparcial con revisión de registros y oficios.\n• Medidas de corrección, no represalia y no repetición.${pruebas}${cierre}`;
+          return `Presento QUEJA por presuntos actos/omisiones de personal con funciones de jefatura/mandos, con base en los siguientes hechos:\n\n${p}\n\nSOLICITO:\n• Investigación imparcial con revisión de registros y oficios.\n• Medidas de corrección, no represalia y no repetición.${cierre}`;
         case 'reporte':
-          return `REPORTO un incidente/irregularidad que podría implicar riesgo operativo o afectación al servicio:\n\n${p}\n\nACCIONES REQUERIDAS:\n• Verificación en sitio y emisión de informe.\n• Medidas correctivas y preventivas.${pruebas}${cierre}`;
+          return `REPORTO un incidente/irregularidad que podría implicar riesgo operativo o afectación al servicio:\n\n${p}\n\nACCIONES REQUERIDAS:\n• Verificación en sitio y emisión de informe.\n• Medidas correctivas y preventivas.${cierre}`;
         case 'peticion':
         default:
-          return `Presento PETICIÓN conforme a derecho, exponiendo los motivos y hechos que la sustentan:\n\n${p}\n\nSOLICITO:\n• Se atienda conforme a la normatividad aplicable y se me notifique resolución por escrito.${pruebas}${cierre}`;
+          return `Presento PETICIÓN conforme a derecho, exponiendo los motivos y hechos que la sustentan:\n\n${p}\n\nSOLICITO:\n• Se atienda conforme a la normatividad aplicable y se me notifique resolución por escrito.${cierre}`;
       }
     }
 
@@ -218,8 +213,7 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         matricula: N($('#matricula').value),
         categoria: N($('#categoria').value),
         lugar: N($('#lugar').value),
-        problematica: N($('#problematica').value),
-        pruebas: N($('#pruebas').value)
+        problematica: N($('#problematica').value)
       };
     }
 
