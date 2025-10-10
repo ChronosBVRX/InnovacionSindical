@@ -8,10 +8,10 @@
 <style>
   :root{
     --bg:#0b1022; --panel:#0e1730; --ring:rgba(91,215,242,.35);
-    --txt:#dff9ff; --muted:#aee9f7; --primary:#5bd7f2; --sky:#60a5fa;
+    --txt:#e6fbff; --muted:#aee9f7; --primary:#5bd7f2; --sky:#60a5fa;
   }
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:var(--bg);color:#e6fbff;
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--txt);
     font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu}
   .wrap{max-width:980px;margin:0 auto;padding:24px}
   h1{margin:0 0 12px;font-size:24px}
@@ -26,8 +26,6 @@
   }
   textarea{min-height:160px;resize:vertical;grid-column:1/-1}
   .grid-1{grid-column:1/-1}
-  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media(max-width:680px){ .two{grid-template-columns:1fr} }
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
   .btn{appearance:none;border:1px solid rgba(91,215,242,.45);background:rgba(91,215,242,.14);
     color:#e6fbff;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer}
@@ -47,12 +45,11 @@
   .modal-a{display:flex;gap:8px}
   .modal-b{padding:12px;overflow:auto;max-height:72vh}
 
-  /* Página “hoja blanca” */
+  /* Hoja blanca (Carta con márgenes normales) */
   .page{margin:0 auto;background:#fff;color:#111;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,.35); position:relative}
   .page.carta{width:816px;height:1056px}  /* ~8.5x11" @96dpi */
-  .page.a4{width:794px;height:1123px}     /* ~A4 @96dpi */
   .sheet{padding:72px 64px;font:14px "Times New Roman", Times, serif;line-height:1.35;white-space:pre-wrap}
-  .sheet header{font-size:12px;text-align:right;margin-bottom:16px} /* <<< alineado derecha */
+  .sheet header{font-size:12px;text-align:right;margin-bottom:16px} /* derecha */
   .sheet .dest{font-weight:700;margin-top:6px;margin-bottom:8px}
   .sheet .pres{margin:0 0 14px 0}
   .sheet h6{font-weight:700;margin:18px 0 6px 0}
@@ -62,7 +59,7 @@
 <body>
   <div class="wrap">
     <h1>Denuncias y Reportes</h1>
-    <p class="muted">Previsualiza el documento en una “hoja” y luego imprime o descarga. Los datos no se borran.</p>
+    <p class="muted">Previsualiza el documento y luego imprime o descarga. Los datos no se borran.</p>
 
     <div class="card">
       <form id="fDenuncia" autocomplete="on" novalidate>
@@ -127,27 +124,10 @@
           <input id="pruebas" name="pruebas" placeholder="Ej. fotografías, oficios, mensajes, partes médicos…">
         </div>
 
-        <div class="two grid-1">
-          <div>
-            <label for="tam">Tamaño de hoja</label>
-            <select id="tam">
-              <option value="carta" selected>Carta (8.5×11")</option>
-              <option value="a4">A4 (210×297 mm)</option>
-            </select>
-          </div>
-          <div>
-            <label for="margen">Márgenes</label>
-            <select id="margen">
-              <option value="normal" selected>Normal</option>
-              <option value="estrecho">Estrecho</option>
-            </select>
-          </div>
-        </div>
-
         <div class="row">
           <button type="button" class="btn" id="btnPreview">👁️ Vista previa</button>
           <button type="submit" class="btn primary" id="btnGenerar">🖨️ Generar PDF e imprimir</button>
-          <span class="small">Los datos no se borran al imprimir.</span>
+          <span class="small">Formato: Carta / márgenes normales.</span>
         </div>
       </form>
     </div>
@@ -183,6 +163,7 @@
     const N = s => (s||'').toString().trim();
     const setStatus = (t='')=> $('#status').textContent=t;
 
+    /* Espera jsPDF */
     const ensureJsPDF = () => new Promise((resolve, reject)=>{
       let tries = 0;
       const t = setInterval(()=>{
@@ -245,9 +226,7 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         categoria: N($('#categoria').value),
         lugar: N($('#lugar').value),
         problematica: N($('#problematica').value),
-        pruebas: N($('#pruebas').value),
-        tam: $('#tam').value,
-        margen: $('#margen').value
+        pruebas: N($('#pruebas').value)
       };
     }
 
@@ -256,7 +235,7 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
       const { encabezadoTop, dest, asunto, cuerpo, pie } = armarOficio(d);
       const parrafos = cuerpo.split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
       let html = `
-        <header>${encabezadoTop}</header>  <!-- ya está a la derecha por CSS -->
+        <header>${encabezadoTop}</header>
         <div class="dest">${dest.replace(/\n/g,'<br>')}</div>
         ${asunto ? `<div style="margin:6px 0 6px 0;font-weight:700">${asunto.replace(/\n/g,'<br>')}</div>`:''}
         <p class="pres">Presente.</p>
@@ -273,40 +252,31 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
       const d = datos();
       const required = ['ciudad','destinatario','nombre','matricula','categoria','problematica'];
       for(const k of required){ if(!d[k]){ alert('Faltan campos obligatorios.'); return; } }
-
-      const page = $('#page'); page.className = `page ${d.tam==='a4'?'a4':'carta'}`;
       const sheet = $('#sheet');
-
-      // márgenes
-      const padH = d.margen==='estrecho' ? 52 : 64;
-      const padV = d.margen==='estrecho' ? 56 : 72;
-      sheet.style.padding = `${padV}px ${padH}px`;
-
+      sheet.style.padding = `72px 64px`; // márgenes fijos
       sheet.innerHTML = buildPreviewHTML(d);
       $('#modal').classList.add('show');
     }
 
     function cerrarPreview(){ $('#modal').classList.remove('show'); }
 
-    /* ===== Generación de PDF ===== */
+    /* ===== Generación de PDF (Carta + márgenes normales) ===== */
     async function generarPDF(d, {action='print'} = {}){
       setStatus('Generando PDF…');
       try{
         const { jsPDF } = await ensureJsPDF();
 
-        const isA4 = d.tam === 'a4';
-        const doc = new jsPDF({ unit:'pt', format: isA4 ? 'a4' : 'letter' });
-
-        const dims = isA4 ? {W:595.28,H:841.89} : {W:612,H:792};
-        const M = d.margen==='estrecho' ? 52 : 64; // márgenes laterales
-        const topBase = d.margen==='estrecho' ? 56 : 72;
+        const doc = new jsPDF({ unit:'pt', format:'letter' }); // Carta
+        const dims = {W:612, H:792};
+        const M = 64;        // laterales
+        const topBase = 72;  // superior
         const width = dims.W - M*2;
 
         const { encabezadoTop, dest, asunto, cuerpo, pie } = armarOficio(d);
 
-        // Encabezado alineado a la derecha
+        // Encabezado a la derecha
         doc.setFont('Times','Normal'); doc.setFontSize(10);
-        doc.text(encabezadoTop, dims.W - M, 48, {align:'right'});  // <<< derecha
+        doc.text(encabezadoTop, dims.W - M, 48, {align:'right'});
 
         // Destinatario
         let y = 88;
@@ -314,9 +284,7 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         const destLines = doc.splitTextToSize(dest, width);
         doc.text(destLines, M, y); y += destLines.length*16 + 8;
 
-        if (asunto){
-          doc.text(asunto.replace(/\n/g,''), M, y); y += 18;
-        }
+        if (asunto){ doc.text(asunto.replace(/\n/g,''), M, y); y += 18; }
 
         // Presente
         doc.setFont('Times','Normal'); doc.setFontSize(12);
@@ -382,7 +350,7 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
 
     /* ===== Eventos ===== */
     $('#btnPreview').addEventListener('click', abrirPreview);
-    $('#btnClose').addEventListener('click', ()=> $('#modal').classList.remove('show'));
+    $('#btnClose').addEventListener('click', cerrarPreview);
     $('#btnDownload').addEventListener('click', descargarPDF);
     $('#btnPrint').addEventListener('click', imprimirDesdePreview);
     $('#btnCopy').addEventListener('click', async ()=>{
@@ -401,22 +369,8 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
       await generarPDF(d, {action:'print'});
     });
 
-    // cerrar modal haciendo clic fuera
-    $('#modal').addEventListener('click', (e)=>{ if(e.target.id==='modal') $('#modal').classList.remove('show'); });
-
-    function abrirPreview(){
-      const d = datos();
-      const required = ['ciudad','destinatario','nombre','matricula','categoria','problematica'];
-      for(const k of required){ if(!d[k]){ alert('Faltan campos obligatorios.'); return; } }
-
-      const page = $('#page'); page.className = `page ${d.tam==='a4'?'a4':'carta'}`;
-      const sheet = $('#sheet');
-      const padH = d.margen==='estrecho' ? 52 : 64;
-      const padV = d.margen==='estrecho' ? 56 : 72;
-      sheet.style.padding = `${padV}px ${padH}px`;
-      sheet.innerHTML = buildPreviewHTML(d);
-      $('#modal').classList.add('show');
-    }
+    // cerrar modal clic fuera
+    $('#modal').addEventListener('click', (e)=>{ if(e.target.id==='modal') cerrarPreview(); });
   </script>
 </body>
 </html>
