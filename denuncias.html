@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Denuncias y Reportes — SInOS</title>
-<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <style>
   :root{
     --bg:#0b1022; --panel:#0e1730; --ring:rgba(91,215,242,.35);
@@ -22,7 +22,7 @@
   label{display:block;font-size:12px;color:#bdefff;margin:4px 0}
   input,select,textarea{
     width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(91,215,242,.28);
-    background:#0a1329;color:var(--txt);outline:none
+    background:#0a1329;color:#e6fbff;outline:none
   }
   textarea{min-height:160px;resize:vertical;grid-column:1/-1}
   .grid-1{grid-column:1/-1}
@@ -33,17 +33,38 @@
     color:#e6fbff;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer}
   .btn:hover{box-shadow:0 0 0 1px var(--ring) inset, 0 10px 24px rgba(11,18,32,.55)}
   .btn.primary{background:linear-gradient(90deg,var(--primary),var(--sky));border:none;color:#072133}
-  .preview{margin-top:16px;padding:14px;border-radius:12px;background:#0b1429;border:1px dashed rgba(91,215,242,.25);white-space:pre-wrap}
   .small{font-size:12px;color:#9edff0}
+  #status{position:fixed;right:14px;bottom:14px;background:#0b1429;border:1px solid rgba(91,215,242,.25);
+    padding:8px 10px;border-radius:10px;font-size:12px;color:#bfefff}
+
+  /* ===== Modal (vista previa) ===== */
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50}
+  .modal.show{display:flex}
+  .modal-card{width:clamp(320px, 92vw, 1024px);background:#0e1730;border:1px solid rgba(91,215,242,.35);
+    border-radius:16px;box-shadow:0 30px 100px rgba(0,0,0,.6);display:flex;flex-direction:column}
+  .modal-h{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(91,215,242,.25)}
+  .modal-t{font-weight:600}
+  .modal-a{display:flex;gap:8px}
+  .modal-b{padding:12px;overflow:auto;max-height:72vh}
+  /* Página en blanco simulada */
+  .page{margin:0 auto;background:#fff;color:#111;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+  .page.carta{width:816px;height:1056px}  /* 96dpi aprox: 8.5x11in */
+  .page.a4{width:794px;height:1123px}     /* 210x297mm @96dpi aprox */
+  .sheet{padding:72px 64px;font:14px "Times New Roman", Times, serif;line-height:1.35;white-space:pre-wrap}
+  .sheet header{font-size:12px;text-align:center;margin-bottom:16px}
+  .sheet .dest{font-weight:700;margin-top:6px;margin-bottom:8px}
+  .sheet .pres{margin:0 0 14px 0}
+  .sheet h6{font-weight:700;margin:18px 0 6px 0}
+  .sheet .pie{position:absolute;bottom:72px;left:64px;right:64px}
 </style>
 </head>
 <body>
   <div class="wrap">
     <h1>Denuncias y Reportes</h1>
-    <p class="muted">Completa el formulario y presiona <b>Generar PDF e imprimir</b>. El documento se formatea como oficio y el contenido se adapta al tipo de escrito.</p>
+    <p class="muted">El escrito se formatea como oficio. Puedes <b>previsualizar</b> el documento y después <b>imprimir o descargar</b>.</p>
 
     <div class="card">
-      <form id="fDenuncia" autocomplete="on">
+      <form id="fDenuncia" autocomplete="on" novalidate>
         <div>
           <label for="ciudad">Ciudad / Municipio</label>
           <input id="ciudad" name="ciudad" placeholder="Ej. Lázaro Cárdenas, Michoacán" required>
@@ -60,6 +81,11 @@
         <div>
           <label for="cargo">Cargo del destinatario</label>
           <input id="cargo" name="cargo" placeholder="Ej. Jefe de CSS, Centro de Seguridad Social">
+        </div>
+
+        <div class="grid-1">
+          <label for="asunto">Asunto (opcional, se mostrará debajo del destinatario)</label>
+          <input id="asunto" name="asunto" placeholder="Ej. Apertura unilateral de bodega / solicitud de intervención">
         </div>
 
         <div class="grid-1">
@@ -100,23 +126,71 @@
           <input id="pruebas" name="pruebas" placeholder="Ej. fotografías, oficios, mensajes, partes médicos…">
         </div>
 
+        <div class="two grid-1">
+          <div>
+            <label for="tam">Tamaño de hoja</label>
+            <select id="tam">
+              <option value="carta" selected>Carta (8.5×11")</option>
+              <option value="a4">A4 (210×297 mm)</option>
+            </select>
+          </div>
+          <div>
+            <label for="margen">Márgenes</label>
+            <select id="margen">
+              <option value="normal" selected>Normal</option>
+              <option value="estrecho">Estrecho</option>
+            </select>
+          </div>
+        </div>
+
         <div class="row">
           <button type="button" class="btn" id="btnPreview">👁️ Vista previa</button>
-          <button type="submit" class="btn primary">🖨️ Generar PDF e imprimir</button>
-          <span class="small">Se genera localmente; no se envían datos a servidores.</span>
+          <button type="submit" class="btn primary" id="btnGenerar">🖨️ Generar PDF e imprimir</button>
+          <span class="small">Los datos no se borran al imprimir.</span>
         </div>
       </form>
+    </div>
+  </div>
 
-      <div id="preview" class="preview small" hidden></div>
+  <div id="status" aria-live="polite"></div>
+
+  <!-- Modal de vista previa -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-h">
+        <div class="modal-t" id="modal-title">Vista previa del escrito</div>
+        <div class="modal-a">
+          <button class="btn" id="btnCopy">📋 Copiar texto</button>
+          <button class="btn" id="btnDownload">⬇️ Descargar PDF</button>
+          <button class="btn primary" id="btnPrint">🖨️ Imprimir</button>
+          <button class="btn" id="btnClose">✖ Cerrar</button>
+        </div>
+      </div>
+      <div class="modal-b">
+        <div id="page" class="page carta">
+          <div id="sheet" class="sheet" style="position:relative"></div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- jsPDF -->
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <script>
     const $ = s => document.querySelector(s);
     const N = s => (s||'').toString().trim();
+    const setStatus = (t='')=> $('#status').textContent=t;
+
+    /* ---------- jsPDF listo ---------- */
+    const ensureJsPDF = () => new Promise((resolve, reject)=>{
+      let tries = 0;
+      const t = setInterval(()=>{
+        tries++;
+        if (window.jspdf && window.jspdf.jsPDF){ clearInterval(t); resolve(window.jspdf.jsPDF); }
+        if (tries > 120){ clearInterval(t); reject(new Error('jsPDF no cargó')); }
+      }, 50);
+    });
 
     const hoyISO = () => new Date().toISOString().slice(0,10);
     const fechaLarga = (iso) => {
@@ -124,200 +198,218 @@
       return d.toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
     };
 
-    // ====== PLANTILLAS SEGÚN TIPO ======
+    /* ---------- Texto según tipo ---------- */
     function cuerpoPorTipo(tipo, d){
       const p = N(d.problematica);
       const pruebas = N(d.pruebas) ? `\n\nPRUEBAS / ELEMENTOS DE APOYO:\n• Cuento con: ${d.pruebas}. Solicito se integren al expediente para su valoración.` : '';
-      const firmaCierre = `\n\nSin otro particular, y en el ánimo de que no se repitan los hechos, quedo a sus órdenes para ampliar información o aportar más elementos.`;
+      const cierre = `\n\nSin otro particular, y en el ánimo de que no se repitan los hechos, quedo a sus órdenes para ampliar información o aportar más elementos.`;
 
       switch (tipo){
         case 'derechos':
-          return (
-`Con fundamento en la normatividad aplicable y en ejercicio de mis derechos laborales, expongo los siguientes HECHOS que constituyen una presunta vulneración a mis derechos:
-
-${p}
-
-IMPACTO:
-• Los hechos descritos han generado afectaciones a mis condiciones de trabajo y a mi integridad, provocando incertidumbre y estrés.
-
-SOLICITO:
-• Se investiguen los hechos y se determinen las responsabilidades correspondientes.
-• Se adopten medidas de no repetición y, en su caso, la restitución de mis derechos y condiciones laborales.
-• Se me informe por escrito sobre el trámite y resultado de la presente.${pruebas}${firmaCierre}`
-          );
-
+          return `Con fundamento en la normatividad aplicable y en ejercicio de mis derechos laborales, expongo los siguientes HECHOS:\n\n${p}\n\nIMPACTO:\n• Afectación a mis condiciones de trabajo e integridad.\n\nSOLICITO:\n• Investigación y determinación de responsabilidades.\n• Medidas de no repetición y restitución de derechos.\n• Informe por escrito del trámite y resultados.${pruebas}${cierre}`;
         case 'compañero':
-          return (
-`Por medio del presente, interpongo QUEJA en contra de un compañero(a) sindicalizado por la conducta que a continuación describo:
-
-${p}
-
-Dicha conducta contraviene los principios de convivencia y respeto, afectando el ambiente laboral y el adecuado desempeño de las funciones.
-
-SOLICITO:
-• Se llame a las partes para escuchar versiones y, de ser procedente, se apliquen las medidas correctivas previstas en la normatividad sindical y laboral.
-• Se otorguen medidas de protección y se salvaguarde mi integridad y la de posibles testigos.${pruebas}${firmaCierre}`
-          );
-
+          return `Interpongo QUEJA en contra de un compañero(a) sindicalizado por la conducta que describo a continuación:\n\n${p}\n\nSOLICITO:\n• Se escuche a las partes y se apliquen medidas correctivas.\n• Medidas de protección y no represalia para testigos.${pruebas}${cierre}`;
         case 'jefatura':
-          return (
-`Presento formalmente QUEJA por presuntos actos u omisiones por parte de personal con funciones de jefatura/mandos, con base en los siguientes hechos:
-
-${p}
-
-Estos hechos podrían configurar abuso de autoridad y/o prácticas contrarias a la normatividad interna.
-
-SOLICITO:
-• Se inicie investigación imparcial y se revisen registros, oficios, roles y comunicaciones relacionadas.
-• Se implementen medidas de corrección, no represalia y no repetición, informando por escrito los resultados.${pruebas}${firmaCierre}`
-          );
-
+          return `Presento QUEJA por presuntos actos/omisiones de personal con funciones de jefatura/mandos, con base en los siguientes hechos:\n\n${p}\n\nSOLICITO:\n• Investigación imparcial con revisión de registros y oficios.\n• Medidas de corrección, no represalia y no repetición.${pruebas}${cierre}`;
         case 'reporte':
-          return (
-`Me permito REPORTAR un incidente/irregularidad observado que podría implicar riesgo operativo o afectación al servicio, de acuerdo con los hechos siguientes:
-
-${p}
-
-ACCIONES REQUERIDAS:
-• Verificación en sitio y emisión del informe correspondiente.
-• Implementación de medidas correctivas y preventivas para evitar nuevas incidencias.${pruebas}${firmaCierre}`
-          );
-
+          return `REPORTO un incidente/irregularidad que podría implicar riesgo operativo o afectación al servicio:\n\n${p}\n\nACCIONES REQUERIDAS:\n• Verificación en sitio y emisión de informe.\n• Medidas correctivas y preventivas.${pruebas}${cierre}`;
         case 'peticion':
         default:
-          return (
-`Por este conducto presento PETICIÓN conforme a derecho, exponiendo los motivos y hechos que la sustentan:
-
-${p}
-
-SOLICITO:
-• Se atienda la petición en términos de la normatividad aplicable.
-• Se me notifique la resolución por escrito dentro de los plazos correspondientes.${pruebas}${firmaCierre}`
-          );
+          return `Presento PETICIÓN conforme a derecho, exponiendo los motivos y hechos que la sustentan:\n\n${p}\n\nSOLICITO:\n• Se atienda conforme a la normatividad aplicable y se me notifique resolución por escrito.${pruebas}${cierre}`;
       }
     }
 
-    // ====== ARMADO DEL OFICIO EN TEXTO ======
     function armarOficio(d){
       const encabezadoTop = `${d.ciudad}, a ${fechaLarga(d.fecha || hoyISO())}`;
       const dest = `${d.destinatario}${N(d.cargo)?`\n${d.cargo}`:''}`;
-
+      const asunto = N(d.asunto) ? `\nASUNTO: ${d.asunto}\n` : '';
       const cuerpo = cuerpoPorTipo(d.tipo, d);
-
       const pie =
 `\nATENTAMENTE
 
 ${d.nombre}
 Matrícula: ${d.matricula}
 Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
-
-      return { encabezadoTop, dest, cuerpo, pie };
+      return { encabezadoTop, dest, asunto, cuerpo, pie };
     }
 
-    // ====== VISTA PREVIA ======
-    function vistaPrevia(){
-      const d = datos();
-      const { encabezadoTop, dest, cuerpo, pie } = armarOficio(d);
-      const txt = `${encabezadoTop}\n\n${dest}\n\nPresente.\n\n${cuerpo}\n${pie}`;
-      const box = $('#preview'); box.hidden = false; box.textContent = txt;
-    }
-
-    // ====== PDF (formato oficio) ======
-    async function imprimirPDF(d){
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit:'pt', format:'letter' });
-
-      const M = 64; // margen izquierdo
-      const W = 612, H = 792; // carta
-      const width = W - M*2;
-
-      const { encabezadoTop, dest, cuerpo, pie } = armarOficio(d);
-
-      // Encabezado en centro-arriba
-      doc.setFont('Times','Normal'); doc.setFontSize(10);
-      doc.text(encabezadoTop, W/2, 48, {align:'center'});
-
-      // Destinatario
-      let y = 88;
-      doc.setFont('Times','Bold'); doc.setFontSize(12);
-      const destLines = doc.splitTextToSize(dest, width);
-      doc.text(destLines, M, y); y += destLines.length*16 + 10;
-
-      // Presente.
-      doc.setFont('Times','Normal'); doc.setFontSize(12);
-      doc.text('Presente.', M, y); y += 22;
-
-      // Cuerpo
-      const parrafos = cuerpo.split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
-      const lineHeight = 16;
-
-      parrafos.forEach(p=>{
-        // Títulos en mayúsculas terminados en ":" semi negrita
-        if(/^[A-ZÁÉÍÓÚÑ\s\/]+:$/.test(p)){
-          doc.setFont('Times','Bold');
-          doc.text(p, M, y); y += lineHeight+2;
-          doc.setFont('Times','Normal');
-        }else{
-          const lines = doc.splitTextToSize(p, width);
-          // salto de página si no cabe
-          if(y + lines.length*lineHeight > H - 120){ doc.addPage(); y = 72; }
-          doc.text(lines, M, y); y += lines.length*lineHeight + 6;
-        }
-      });
-
-      // Pie y firma
-      if(y < H - 140) y = H - 140;
-      doc.setFont('Times','Bold'); doc.text('ATENTAMENTE', M, y); y += 28;
-      doc.setFont('Times','Normal');
-      doc.text(d.nombre, M, y); y += 16;
-      doc.text(`Matrícula: ${d.matricula}`, M, y); y += 16;
-      doc.text(`Categoría: ${d.categoria}`, M, y); y += 16;
-      if(N(d.lugar)) doc.text(d.lugar, M, y);
-
-      // Imprimir en la misma pestaña (menos bloqueos)
-      const blob = doc.output('blob');
-      const url = URL.createObjectURL(blob);
-      let iframe = document.getElementById('print-iframe');
-      if(!iframe){
-        iframe = document.createElement('iframe');
-        iframe.id = 'print-iframe';
-        iframe.style.position='fixed'; iframe.style.right='0'; iframe.style.bottom='0';
-        iframe.style.width='0'; iframe.style.height='0'; iframe.style.border='0'; iframe.style.visibility='hidden';
-        document.body.appendChild(iframe);
-      }
-      return new Promise(resolve=>{
-        iframe.onload = () => { try{ iframe.contentWindow.focus(); setTimeout(()=>{ iframe.contentWindow.print(); resolve(); }, 120);}catch(e){ resolve(); } };
-        iframe.src = url;
-      });
-    }
-
-    // ====== TOMAR DATOS ======
     function datos(){
       return {
         ciudad: N($('#ciudad').value),
         fecha: N($('#fecha').value),
         destinatario: N($('#destinatario').value),
         cargo: N($('#cargo').value),
+        asunto: N($('#asunto').value),
         tipo: $('#tipo').value,
         nombre: N($('#nombre').value),
         matricula: N($('#matricula').value),
         categoria: N($('#categoria').value),
         lugar: N($('#lugar').value),
         problematica: N($('#problematica').value),
-        pruebas: N($('#pruebas').value)
+        pruebas: N($('#pruebas').value),
+        tam: $('#tam').value,         // carta | a4
+        margen: $('#margen').value    // normal | estrecho
       };
     }
 
-    // ====== EVENTOS ======
-    $('#btnPreview').addEventListener('click', ()=>{
+    /* ---------- Vista previa (modal) ---------- */
+    function buildPreviewHTML(d){
+      const { encabezadoTop, dest, asunto, cuerpo, pie } = armarOficio(d);
+      const parrafos = cuerpo.split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
+      let html = `
+        <header>${encabezadoTop}</header>
+        <div class="dest">${dest.replace(/\n/g,'<br>')}</div>
+        ${asunto ? `<div style="margin:6px 0 6px 0;font-weight:700">${asunto.replace(/\n/g,'<br>')}</div>`:''}
+        <p class="pres">Presente.</p>
+      `;
+      parrafos.forEach(p=>{
+        if(/^[A-ZÁÉÍÓÚÑ\s\/]+:$/.test(p)){ html += `<h6>${p}</h6>`; }
+        else { html += `<p>${p.replace(/\n/g,'<br>')}</p>`; }
+      });
+      html += `<div class="pie">${pie.replace(/\n/g,'<br>')}</div>`;
+      return html;
+    }
+
+    function abrirPreview(){
       const d = datos();
-      if(!d.ciudad || !d.destinatario || !d.nombre || !d.matricula || !d.categoria || !d.problematica){
-        alert('Completa: Ciudad, Destinatario, Nombre, Matrícula, Categoría y Problemática.'); return;
+      const required = ['ciudad','destinatario','nombre','matricula','categoria','problematica'];
+      for(const k of required){ if(!d[k]){ alert('Faltan campos obligatorios.'); return; } }
+
+      const page = $('#page'); page.className = `page ${d.tam==='a4'?'a4':'carta'}`;
+      const sheet = $('#sheet');
+
+      // márgenes
+      const padH = d.margen==='estrecho' ? 52 : 64;
+      const padV = d.margen==='estrecho' ? 56 : 72;
+      sheet.style.padding = `${padV}px ${padH}px`;
+
+      sheet.innerHTML = buildPreviewHTML(d);
+      $('#modal').classList.add('show');
+    }
+
+    function cerrarPreview(){ $('#modal').classList.remove('show'); }
+
+    async function descargarPDF(){
+      const d = datos();
+      await generarPDF(d, {action:'download'});
+    }
+    async function imprimirDesdePreview(){
+      const d = datos();
+      await generarPDF(d, {action:'print'});
+    }
+
+    /* ---------- Generar PDF (sin borrar formulario) ---------- */
+    async function generarPDF(d, {action='print'} = {}){
+      setStatus('Generando PDF…');
+      try{
+        const { jsPDF } = await ensureJsPDF();
+
+        const isA4 = d.tam === 'a4';
+        const doc = new jsPDF({ unit:'pt', format: isA4 ? 'a4' : 'letter' });
+
+        const dims = isA4 ? {W:595.28,H:841.89} : {W:612,H:792};
+        const M = d.margen==='estrecho' ? 52 : 64; // margen izq/der
+        const topBase = d.margen==='estrecho' ? 56 : 72;
+        const width = dims.W - M*2;
+
+        const { encabezadoTop, dest, asunto, cuerpo, pie } = armarOficio(d);
+
+        // Encabezado centrado
+        doc.setFont('Times','Normal'); doc.setFontSize(10);
+        doc.text(encabezadoTop, dims.W/2, 48, {align:'center'});
+
+        // Destinatario
+        let y = 88;
+        doc.setFont('Times','Bold'); doc.setFontSize(12);
+        const destLines = doc.splitTextToSize(dest, width);
+        doc.text(destLines, M, y); y += destLines.length*16 + 8;
+
+        if (asunto){
+          doc.text(asunto.replace(/\n/g,''), M, y); y += 18;
         }
-      vistaPrevia();
+
+        // Presente
+        doc.setFont('Times','Normal'); doc.setFontSize(12);
+        doc.text('Presente.', M, y); y += 22;
+
+        // Cuerpo
+        const parrafos = cuerpo.split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
+        const lineHeight = 16;
+
+        parrafos.forEach(p=>{
+          if(/^[A-ZÁÉÍÓÚÑ\s\/]+:$/.test(p)){
+            doc.setFont('Times','Bold'); doc.text(p, M, y); y += lineHeight+2; doc.setFont('Times','Normal');
+          }else{
+            const lines = doc.splitTextToSize(p, width);
+            if(y + lines.length*lineHeight > dims.H - 120){ doc.addPage(); y = topBase; }
+            doc.text(lines, M, y); y += lines.length*lineHeight + 6;
+          }
+        });
+
+        // Pie / firma
+        if(y < dims.H - 140) y = dims.H - 140;
+        doc.setFont('Times','Bold'); doc.text('ATENTAMENTE', M, y); y += 28;
+        doc.setFont('Times','Normal');
+        doc.text(d.nombre, M, y); y += 16;
+        doc.text(`Matrícula: ${d.matricula}`, M, y); y += 16;
+        doc.text(`Categoría: ${d.categoria}`, M, y); y += 16;
+        if(N(d.lugar)) doc.text(d.lugar, M, y);
+
+        const blob = doc.output('blob');
+        const url = URL.createObjectURL(blob);
+
+        if(action==='download'){
+          const a = document.createElement('a');
+          a.href = url; a.download = 'Escrito.pdf'; document.body.appendChild(a);
+          a.click(); setTimeout(()=>{ a.remove(); URL.revokeObjectURL(url); }, 50);
+          setStatus('PDF descargado.');
+        } else {
+          let iframe = document.getElementById('print-iframe');
+          if(!iframe){
+            iframe = document.createElement('iframe');
+            iframe.id = 'print-iframe';
+            iframe.style.position='fixed'; iframe.style.right='0'; iframe.style.bottom='0';
+            iframe.style.width='0'; iframe.style.height='0'; iframe.style.border='0'; iframe.style.visibility='hidden';
+            document.body.appendChild(iframe);
+          }
+          await new Promise(res=>{
+            iframe.onload = ()=>{ try{ iframe.contentWindow.focus(); setTimeout(()=>{ iframe.contentWindow.print(); res(); }, 120);}catch(e){ res(); } };
+            iframe.src = url;
+          });
+          setStatus('Listo para imprimir. Si no aparece, usa Ctrl/Cmd + P.');
+        }
+      }catch(e){
+        console.error(e); setStatus('Error al generar el PDF.');
+        alert('No se pudo generar el PDF. Revisa tu conexión e inténtalo de nuevo.');
+      }finally{
+        setTimeout(()=>setStatus(''), 5000);
+      }
+    }
+
+    /* ---------- Eventos ---------- */
+    $('#btnPreview').addEventListener('click', abrirPreview);
+    $('#btnClose').addEventListener('click', cerrarPreview);
+    $('#btnDownload').addEventListener('click', descargarPDF);
+    $('#btnPrint').addEventListener('click', imprimirDesdePreview);
+    $('#btnCopy').addEventListener('click', async ()=>{
+      const d = datos();
+      const { encabezadoTop, dest, asunto, cuerpo, pie } = armarOficio(d);
+      const txt = `${encabezadoTop}\n\n${dest}\n${asunto ? asunto+'\n':''}Presente.\n\n${cuerpo}\n${pie}`;
+      try{ await navigator.clipboard.writeText(txt); setStatus('Texto copiado al portapapeles.'); }
+      catch{ setStatus('No se pudo copiar el texto.'); }
     });
 
+    // Generar e imprimir (no borra el formulario)
     $('#fDenuncia').addEventListener('submit', async (e)=>{
-      e.preventDefault();
+      e.preventDefault(); e.stopPropagation();
       const d = datos();
-      if(!d.ciudad || !d.destinatario || !d.nombre || !d.matricula || !d.categoria || !d.probl
+      const required = ['ciudad','destinatario','nombre','matricula','categoria','problematica'];
+      for(const k of required){ if(!d[k]){ alert('Faltan campos obligatorios.'); return; } }
+      await generarPDF(d, {action:'print'});
+    });
+
+    // Cerrar modal si clic fuera de la tarjeta
+    $('#modal').addEventListener('click', (e)=>{ if(e.target.id==='modal') cerrarPreview(); });
+  </script>
+</body>
+</html>
