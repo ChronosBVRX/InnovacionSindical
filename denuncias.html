@@ -25,6 +25,7 @@
     background:#0a1329;color:var(--txt);outline:none
   }
   textarea{min-height:160px;resize:vertical;grid-column:1/-1}
+  .grid-1{grid-column:1/-1}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
   .btn{appearance:none;border:1px solid rgba(91,215,242,.45);background:rgba(91,215,242,.14);
     color:#e6fbff;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer}
@@ -32,13 +33,14 @@
   .btn.primary{background:linear-gradient(90deg,var(--primary),var(--sky));border:none;color:#072133}
   .preview{margin-top:16px;padding:14px;border-radius:12px;background:#0b1429;border:1px dashed rgba(91,215,242,.25)}
   .small{font-size:12px;color:#9edff0}
-  .grid-1{grid-column:1/-1}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:680px){ .two{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
   <div class="wrap">
     <h1>Denuncias y Reportes</h1>
-    <p class="muted">Completa el formulario y presiona <b>Generar PDF e imprimir</b>. El documento se formatea automáticamente.</p>
+    <p class="muted">Completa el formulario y presiona <b>Generar PDF e imprimir</b>. El documento se estructura con apartados formales y desarrolla tu descripción.</p>
 
     <div class="card">
       <form id="fDenuncia" autocomplete="on">
@@ -63,15 +65,42 @@
             <option value="Secretaría del Interior y Propaganda">Secretaría del Interior y Propaganda</option>
           </select>
         </div>
+
+        <div class="grid-1 two">
+          <div>
+            <label for="lugar">Centro/Área (opcional)</label>
+            <input id="lugar" name="lugar" placeholder="Ej. HGZ No. XX, Urgencias">
+          </div>
+          <div>
+            <label for="contacto">Teléfono/Correo (opcional)</label>
+            <input id="contacto" name="contacto" placeholder="Para notificaciones">
+          </div>
+        </div>
+
         <div class="grid-1">
-          <label for="problematica">Describe la problemática</label>
-          <textarea id="problematica" name="problematica" required placeholder="Escribe con detalle los hechos, fechas, lugares, personas involucradas y pruebas con que cuentes."></textarea>
+          <label for="problematica">Describe la problemática (hechos, fechas, involucrados, impactos)</label>
+          <textarea id="problematica" name="problematica" required placeholder="Escribe de forma libre lo ocurrido, por orden cronológico si es posible."></textarea>
+        </div>
+
+        <div class="two grid-1">
+          <div>
+            <label for="nivel">Nivel de desarrollo</label>
+            <select id="nivel" name="nivel">
+              <option value="normal">Normal</option>
+              <option value="extenso" selected>Extenso</option>
+              <option value="muy">Muy extenso</option>
+            </select>
+          </div>
+          <div>
+            <label for="peticiones">Peticiones específicas (opcional)</label>
+            <input id="peticiones" placeholder="Ej. investigación, medidas cautelares, restitución..." />
+          </div>
         </div>
 
         <div class="row">
           <button type="button" class="btn" id="btnPreview">👁️ Vista previa</button>
           <button type="submit" class="btn primary">🖨️ Generar PDF e imprimir</button>
-          <span class="small">La impresión se genera localmente; no se envían datos a servidores.</span>
+          <span class="small">Todo se genera localmente; no se envían datos a servidores.</span>
         </div>
       </form>
 
@@ -79,11 +108,28 @@
     </div>
   </div>
 
-  <!-- jsPDF (cliente) -->
+  <!-- jsPDF -->
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <script>
+    // ===== utilidades de texto (sin IA) =====
     const $ = s => document.querySelector(s);
+
+    const normalize = s => (s||'').replace(/\s+/g,' ').trim();
+    const splitSentences = (text) => {
+      return normalize(text)
+        .replace(/([.;:!?])\s*(?=[A-ZÁÉÍÓÚÑ0-9])/g,'$1|')
+        .split('|')
+        .map(t=>t.trim()).filter(Boolean);
+    };
+
+    const extractHints = (text) => {
+      const fechas = [...text.matchAll(/\b(\d{1,2}\/\d{1,2}\/\d{2,4}|\d{1,2}\s+de\s+\w+\s+de\s+\d{4})\b/gi)].map(m=>m[0]);
+      const horas  = [...text.matchAll(/\b(\d{1,2}:\d{2}\s*(?:am|pm)?|\d{1,2}\s*h(?:oras)?)\b/gi)].map(m=>m[0]);
+      const personas = [...text.matchAll(/\b([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)+)\b/g)].map(m=>m[1]).slice(0,6);
+      const lugares = [...text.matchAll(/\b(en|en las|en los)\s+([A-ZÁÉÍÓÚÑ][\wÁÉÍÓÚÑáéíóúñ\. -]{2,})/g)].map(m=>m[2]).slice(0,4);
+      return {fechas, horas, personas, lugares};
+    };
 
     function encabezado(secretaria){
       const map = {
@@ -95,69 +141,110 @@
       return map[secretaria] || secretaria;
     }
 
-    function redactar({nombre, matricula, categoria, secretaria, problematica}){
+    function desarrollarProblematica(text, nivel='extenso'){
+      const sents = splitSentences(text);
+      const hints = extractHints(text);
+      const bullets = sents.map(s => `• ${s}`);
+
+      const intro =
+        `Me permito exponer una situación que considero contraria a mis derechos laborales y a un ambiente de trabajo digno. A continuación detallo los antecedentes y hechos relevantes para su conocimiento y atención.`;
+
+      const antecedentes =
+        `De manera general, los acontecimientos aquí referidos han tenido lugar${hints.lugares.length ? ` principalmente en ${hints.lugares[0]}` : ''}${hints.fechas.length ? `, con fechas relevantes como ${hints.fechas.slice(0,2).join(' y ')}` : ''}${hints.horas.length ? ` y horarios aproximados ${hints.horas.slice(0,2).join(' y ')}` : ''}.`;
+
+      const hechos =
+        `HECHOS CRONOLÓGICOS:\n${bullets.join('\n')}`;
+
+      const impacto =
+        `IMPACTO Y AFECTACIONES:\n• La situación descrita ha generado afectaciones a mi desempeño y bienestar, incluyendo estrés, incertidumbre y menoscabo en mis condiciones de trabajo.\n• Solicito su intervención para prevenir la repetición de estos hechos y restituir las condiciones laborales que correspondan.`;
+
+      const base =
+        `MARCO Y CONSIDERACIONES:\n• Lo anterior se expone con base en los principios de legalidad, respeto, igualdad y no violencia laboral.\n• Pido se salvaguarde mi integridad y confidencialidad, así como las de posibles testigos.`;
+
+      const cierre =
+        `Por lo anterior, agradezco se dé trámite a la presente y se me informe del seguimiento. Quedo a disposición para ampliar información y aportar documentación adicional.`;
+
+      // Ajustar longitud según nivel
+      let partes = [intro, antecedentes, hechos, impacto, base, cierre];
+      if(nivel === 'normal'){ partes = [intro, hechos, cierre]; }
+      if(nivel === 'muy'){
+        const ampliacion =
+          `DETALLE ADICIONAL:\n• A mi leal saber y entender, los hechos tienen un patrón que se manifiesta en distintos turnos o periodos. Resulta indispensable que se investigue integralmente, se escuchen a las partes y se revisen registros (listas de asistencia, roles, reportes, comunicaciones internas y cualquier otro documento relacionado).`;
+        partes.splice(3,0,ampliacion);
+      }
+
+      return partes.join('\n\n');
+    }
+
+    function armarDocumento(datos){
+      const {nombre, matricula, categoria, secretaria, problematica, nivel, lugar, contacto, peticiones} = datos;
       const fecha = new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});
-      return (
-`${encabezado(secretaria)}
 
-Presente.
+      const encabez = `${encabezado(secretaria)}\n\nPresente.`;
+      const desarrollo = desarrollarProblematica(problematica, nivel);
 
-Por este conducto me permito exponer lo siguiente:
+      const pet = peticiones && peticiones.trim()
+        ? `\n\nSOLICITUDES ESPECÍFICAS:\n• ${peticiones.trim().replace(/^[•\-\*]\s*/,'')}`
+        : `\n\nSOLICITUDES:\n• Se investiguen los hechos y se determinen responsabilidades.\n• Se adopten medidas de protección y no represalia.\n• Se restituyan, en su caso, mis condiciones laborales.`;
 
-${problematica.trim()}
-
-Por lo anterior, solicito atentamente su intervención conforme a derecho, y se me informe el seguimiento otorgado a la presente.
-
-Sin otro particular, quedo a sus órdenes.
+      const pie =
+`${lugar ? `\n\nLugar: ${lugar}` : ''}${contacto ? `\nMedio de contacto: ${contacto}` : ''}
 
 ATENTAMENTE
 
 ${nombre}
 Matrícula: ${matricula}
 Categoría: ${categoria}
-${fecha}`
-      );
+${fecha}`;
+
+      return `${encabez}\n\n${desarrollo}${pet}\n${pie}`;
     }
 
     function mostrarPreview(texto){
-      const box = $('#preview');
-      box.hidden = false;
+      const box = $('#preview'); box.hidden = false;
       box.textContent = texto;
     }
 
-    // --- Generación de PDF + impresión sin bloqueos (iframe oculto)
-    async function generarPDFyImprimir(data){
+    // ===== PDF + impresión (misma pestaña) =====
+    async function generarPDFyImprimir(datos){
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ unit:'pt', format:'letter' });
 
       const left = 64, top = 72, width = 468; // carta: 612x792 pt
-      doc.setFont('Times','Normal'); doc.setFontSize(12);
-
-      // Encabezado
       doc.setFont('Times','Bold'); doc.setFontSize(14);
-      doc.text(encabezado(data.secretaria), left, top);
+      doc.text(encabezado(datos.secretaria), left, top);
       doc.setFont('Times','Normal'); doc.setFontSize(12);
-      doc.text('Presente.', left, top + 22);
+      doc.text('Presente.', left, top+22);
 
-      // Cuerpo
-      const cuerpo = redactar(data)
-        .replace(encabezado(data.secretaria)+'\n\nPresente.\n\n',''); // evitar duplicado
-      const líneas = doc.splitTextToSize(cuerpo, width);
-      doc.text(líneas, left, top + 52, { align:'left', lineHeightFactor:1.45 });
+      const texto = armarDocumento(datos)
+        .replace(encabezado(datos.secretaria)+'\n\nPresente.\n\n',''); // evita duplicado
 
-      // Firma (al final)
-      const firmaY = Math.min(700, top + 52 + (líneas.length * 16));
-      doc.setFont('Times','Bold'); doc.text('ATENTAMENTE', left, firmaY + 32);
-      doc.setFont('Times','Normal');
-      doc.text(data.nombre, left, firmaY + 52);
-      doc.text(`Matrícula: ${data.matricula}`, left, firmaY + 70);
-      doc.text(`Categoría: ${data.categoria}`, left, firmaY + 88);
+      const parrafos = texto.split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
+      let y = top + 50;
+      const lh = 16; // line height aprox
 
-      // Blob URL
+      doc.setFont('Times','Normal'); doc.setFontSize(12);
+      parrafos.forEach(p=>{
+        const lines = doc.splitTextToSize(p, width);
+        if (y + lines.length*lh > 740){ doc.addPage(); y = top; }
+        // Titulares “en mayúsculas:” se ponen semi-bold
+        if (/^[A-ZÁÉÍÓÚÑ\s]+:/.test(p)){
+          const [head, ...rest] = p.split(':');
+          doc.setFont('Times','Bold'); doc.text(head+':', left, y); y += lh;
+          doc.setFont('Times','Normal');
+          if(rest.join(':').trim()){
+            const rs = doc.splitTextToSize(rest.join(':').trim(), width);
+            doc.text(rs, left, y); y += rs.length*lh + 6;
+          }
+        }else{
+          doc.text(lines, left, y); y += lines.length*lh + 6;
+        }
+      });
+
+      // Firma ya viene dentro del texto armado; nada extra aquí.
+
       const blob = doc.output('blob');
       const url = URL.createObjectURL(blob);
-
-      // Imprimir desde iframe oculto (misma pestaña, menos bloqueos)
       let iframe = document.getElementById('print-iframe');
       if(!iframe){
         iframe = document.createElement('iframe');
@@ -166,47 +253,40 @@ ${fecha}`
         iframe.style.width='0'; iframe.style.height='0'; iframe.style.border='0'; iframe.style.visibility='hidden';
         document.body.appendChild(iframe);
       }
-
       return new Promise(resolve=>{
-        iframe.onload = () => {
-          try{
-            iframe.contentWindow.focus();
-            // algunos navegadores requieren un pequeño delay
-            setTimeout(()=>{ iframe.contentWindow.print(); resolve(); }, 120);
-          }catch(e){ resolve(); }
-        };
+        iframe.onload = () => { try{ iframe.contentWindow.focus(); setTimeout(()=>{ iframe.contentWindow.print(); resolve(); }, 120);}catch(e){ resolve(); } };
         iframe.src = url;
       });
     }
 
-    // --- Eventos
+    // ===== Eventos =====
+    const datosForm = () => ({
+      nombre: normalize($('#nombre').value),
+      matricula: normalize($('#matricula').value),
+      categoria: normalize($('#categoria').value),
+      secretaria: $('#secretaria').value,
+      problematica: $('#problematica').value,
+      nivel: $('#nivel').value,
+      lugar: normalize($('#lugar').value),
+      contacto: normalize($('#contacto').value),
+      peticiones: $('#peticiones').value
+    });
+
     $('#btnPreview').addEventListener('click', ()=>{
-      const data = {
-        nombre: $('#nombre').value.trim(),
-        matricula: $('#matricula').value.trim(),
-        categoria: $('#categoria').value.trim(),
-        secretaria: $('#secretaria').value,
-        problematica: $('#problematica').value.trim()
-      };
-      if(!data.nombre || !data.matricula || !data.categoria || !data.problematica){
-        alert('Completa todos los campos.'); return;
+      const d = datosForm();
+      if(!d.nombre || !d.matricula || !d.categoria || !d.problematica){
+        alert('Completa al menos: Nombre, Matrícula, Categoría y Problemática.'); return;
       }
-      mostrarPreview( redactar(data) );
+      mostrarPreview( armarDocumento(d) );
     });
 
     $('#fDenuncia').addEventListener('submit', async (e)=>{
-      e.preventDefault(); // evita navegación/ventana nueva
-      const data = {
-        nombre: $('#nombre').value.trim(),
-        matricula: $('#matricula').value.trim(),
-        categoria: $('#categoria').value.trim(),
-        secretaria: $('#secretaria').value,
-        problematica: $('#problematica').value.trim()
-      };
-      if(!data.nombre || !data.matricula || !data.categoria || !data.problematica){
-        alert('Por favor, completa todos los campos.'); return;
+      e.preventDefault();
+      const d = datosForm();
+      if(!d.nombre || !d.matricula || !d.categoria || !d.problematica){
+        alert('Por favor, completa todos los campos obligatorios.'); return;
       }
-      await generarPDFyImprimir(data);
+      await generarPDFyImprimir(d);
     });
   </script>
 </body>
