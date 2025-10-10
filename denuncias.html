@@ -82,11 +82,6 @@
         </div>
 
         <div class="grid-1">
-          <label for="asunto">Asunto (opcional, se muestra bajo el destinatario)</label>
-          <input id="asunto" name="asunto" placeholder="Ej. Apertura unilateral de bodega / solicitud de intervención">
-        </div>
-
-        <div class="grid-1">
           <label for="tipo">Tipo de escrito</label>
           <select id="tipo" name="tipo" required>
             <option value="derechos">Violación de derechos laborales</option>
@@ -202,7 +197,6 @@
     function armarOficio(d){
       const encabezadoTop = `${d.ciudad}, a ${fechaLarga(d.fecha || hoyISO())}`;
       const dest = `${d.destinatario}${N(d.cargo)?`\n${d.cargo}`:''}`;
-      const asunto = N(d.asunto) ? `\nASUNTO: ${d.asunto}\n` : '';
       const cuerpo = cuerpoPorTipo(d.tipo, d);
       const pie =
 `\nATENTAMENTE
@@ -210,7 +204,7 @@
 ${d.nombre}
 Matrícula: ${d.matricula}
 Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
-      return { encabezadoTop, dest, asunto, cuerpo, pie };
+      return { encabezadoTop, dest, cuerpo, pie };
     }
 
     function datos(){
@@ -219,7 +213,6 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         fecha: N($('#fecha').value),
         destinatario: N($('#destinatario').value),
         cargo: N($('#cargo').value),
-        asunto: N($('#asunto').value),
         tipo: $('#tipo').value,
         nombre: N($('#nombre').value),
         matricula: N($('#matricula').value),
@@ -232,12 +225,11 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
 
     /* ===== Vista previa (modal) ===== */
     function buildPreviewHTML(d){
-      const { encabezadoTop, dest, asunto, cuerpo, pie } = armarOficio(d);
+      const { encabezadoTop, dest, cuerpo, pie } = armarOficio(d);
       const parrafos = cuerpo.split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
       let html = `
         <header>${encabezadoTop}</header>
         <div class="dest">${dest.replace(/\n/g,'<br>')}</div>
-        ${asunto ? `<div style="margin:6px 0 6px 0;font-weight:700">${asunto.replace(/\n/g,'<br>')}</div>`:''}
         <p class="pres">Presente.</p>
       `;
       parrafos.forEach(p=>{
@@ -272,7 +264,7 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         const topBase = 72;  // superior
         const width = dims.W - M*2;
 
-        const { encabezadoTop, dest, asunto, cuerpo, pie } = armarOficio(d);
+        const { encabezadoTop, dest, cuerpo, pie } = armarOficio(d);
 
         // Encabezado a la derecha
         doc.setFont('Times','Normal'); doc.setFontSize(10);
@@ -283,8 +275,6 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         doc.setFont('Times','Bold'); doc.setFontSize(12);
         const destLines = doc.splitTextToSize(dest, width);
         doc.text(destLines, M, y); y += destLines.length*16 + 8;
-
-        if (asunto){ doc.text(asunto.replace(/\n/g,''), M, y); y += 18; }
 
         // Presente
         doc.setFont('Times','Normal'); doc.setFontSize(12);
@@ -355,8 +345,8 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
     $('#btnPrint').addEventListener('click', imprimirDesdePreview);
     $('#btnCopy').addEventListener('click', async ()=>{
       const d = datos();
-      const { encabezadoTop, dest, asunto, cuerpo, pie } = armarOficio(d);
-      const txt = `${encabezadoTop}\n\n${dest}\n${asunto ? asunto+'\n':''}Presente.\n\n${cuerpo}\n${pie}`;
+      const { encabezadoTop, dest, cuerpo, pie } = armarOficio(d);
+      const txt = `${encabezadoTop}\n\n${dest}\nPresente.\n\n${cuerpo}\n${pie}`;
       try{ await navigator.clipboard.writeText(txt); setStatus('Texto copiado al portapapeles.'); }
       catch{ setStatus('No se pudo copiar el texto.'); }
     });
