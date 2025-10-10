@@ -55,6 +55,11 @@
   .sheet .pres{margin:0 0 14px 0}
   .sheet h6{font-weight:700;margin:18px 0 6px 0}
   .sheet .pie{position:absolute;bottom:72px;left:64px;right:64px}
+  /* readonly vistoso */
+  input[readonly]{
+    background:#0a1329; color:#e6fbff; opacity:.9;
+    box-shadow:0 0 0 1px rgba(91,215,242,.18) inset;
+  }
 </style>
 </head>
 <body>
@@ -64,7 +69,7 @@
 
     <div class="card">
       <form id="fDenuncia" autocomplete="on" novalidate>
-        <!-- ► Nuevo: catálogo de puestos para autocompletar destinatario -->
+        <!-- ► Catálogo de puestos (carga titular + cargo oculto) -->
         <div class="grid-1">
           <label for="puestoCatalogo">Selecciona puesto (secretaría / presidencia / subcomisión)</label>
           <select id="puestoCatalogo">
@@ -99,7 +104,7 @@
               <option value="Comisión de Acción Política — Presidencia|Lab. Irving Cruz Guerrero Castro">Acción Política — Presidencia</option>
             </optgroup>
 
-            <!-- Subcomisiones mixtas (representación sindical del directorio) -->
+            <!-- Subcomisiones mixtas (representación sindical) -->
             <optgroup label="Subcomisiones mixtas — Representación sindical">
               <option value="Subcomisión Mixta de Becas — Representación Sindical|M.F. Jorge Héctor Zaragoza Palacios">Becas</option>
               <option value="Subcomisión Mixta de Bolsa de Trabajo — Representación Sindical|COORD. CONT. Uriel Tapia Pérez">Bolsa de Trabajo</option>
@@ -132,13 +137,11 @@
         </div>
 
         <div>
-          <label for="destinatario">Nombre del destinatario</label>
-          <input id="destinatario" name="destinatario" placeholder="Ej. Dr. Nombre Apellido" required>
+          <label for="destinatario">Nombre del destinatario (se llena al elegir puesto)</label>
+          <input id="destinatario" name="destinatario" placeholder="Selecciona un puesto…" readonly aria-readonly="true" required>
         </div>
-        <div>
-          <label for="cargo">Cargo del destinatario</label>
-          <input id="cargo" name="cargo" placeholder="Ej. Secretaría General, C.E.S. Sección XX">
-        </div>
+        <!-- Cargo oculto (no visible, pero se usa en el documento) -->
+        <input id="cargo" name="cargo" type="hidden">
 
         <div class="grid-1">
           <label for="tipo">Tipo de escrito</label>
@@ -266,7 +269,7 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         ciudad: N($('#ciudad').value),
         fecha: N($('#fecha').value),
         destinatario: N($('#destinatario').value),
-        cargo: N($('#cargo').value),
+        cargo: N($('#cargo').value), // oculto
         tipo: $('#tipo').value,
         nombre: N($('#nombre').value),
         matricula: N($('#matricula').value),
@@ -412,13 +415,15 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
       await generarPDF(d, {action:'print'});
     });
 
-    // ► Autocompletar destinatario + cargo desde el catálogo
+    // ► Autocompletar: al elegir puesto, llena titular y cargo (oculto)
     $('#puestoCatalogo').addEventListener('change', (e)=>{
       const val = e.target.value || '';
+      $('#destinatario').value = '';
+      $('#cargo').value = '';
       if(!val) return;
       const [cargo, titular] = val.split('|');
-      if(cargo) $('#cargo').value = cargo;
-      if(titular) $('#destinatario').value = titular;
+      if(cargo) $('#cargo').value = cargo;          // oculto
+      if(titular) $('#destinatario').value = titular; // visible pero readonly
     });
 
     // cerrar modal clic fuera
