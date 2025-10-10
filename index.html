@@ -9,7 +9,7 @@
       --c-bg1:#0b1220; --c-bg2:#0b1022; --c-cyan:#5bd7f2; --c-sky:#60a5fa;
       --ring: rgba(91,215,242,.35); --tile: rgba(7,17,35,.6); --tileH: rgba(12,25,55,.7);
       --topbar: 52px; --dock: 60px;
-      --boot-ms: 5200ms; /* 5200ms primera vez, 2200ms después */
+      --boot-ms: 5200ms;
     }
     *{box-sizing:border-box}
     html,body{height:100%; margin:0; overflow:hidden; overscroll-behavior:none; background:#0b1022}
@@ -181,7 +181,7 @@
     <div class="dock-inner" id="dock"></div>
   </div>
 
-  <!-- Loader del SDK de Facebook (para Noticias) -->
+  <!-- SDK de Facebook (Noticias) -->
   <script>
     function loadFacebookSDKOnce(locale='es_LA'){
       return new Promise((resolve)=>{
@@ -206,14 +206,15 @@
       { id:'trascendencia', title:'TrascendencIA Sindical', desc:'Asistente IA en nueva pestaña.', icon:'🤖', href:'https://trascendencia-sindical-7t85.onrender.com/', quick:true, externalDirect:true },
       { id:'noticias', title:'Noticias', desc:'Circulares y comunicados en tiempo real.', icon:'📰', type:'internal' },
       { id:'agenda', title:'Agenda', desc:'Calendario de asambleas, guardias y eventos.', icon:'📅', iframe:'about:blank' },
-      { id:'denuncias', title:'Denuncias y Reportes', desc:'Genera un escrito formal en PDF, listo para imprimir.', icon:'🛡️', iframe:'https://chronosbvrx.github.io/InnovacionSindical/denuncias', quick:true },
+      { id:'denuncias', title:'Denuncias y Reportes', desc:'Genera un escrito formal en PDF, listo para imprimir.', icon:'🛡️',
+        href:'https://script.google.com/macros/s/AKfycbw7T7HILeYQrQwSpjFPnWsMDjEd78IX6W-Qpli5Fn_KWHJ71DF0P1EX4Af6wLyv1Y9CqQ/exec',
+        externalDirect:true, quick:true },
       { id:'directorio', title:'Directorio', desc:'Delegados, jurídicos y atención a trabajadores.', icon:'📞', iframe:'https://chronosbvrx.github.io/InnovacionSindical/directorio', quick:true },
       { id:'prestaciones', title:'Prestaciones', desc:'Vacaciones, licencias, estímulos y antigüedad.', icon:'📄', iframe:'about:blank' },
       { id:'miniapp', title:'MiniApp WhatsApp', desc:'Automatizaciones por palabras clave y avisos.', icon:'💬', href:'https://wa.me/XXXXXXXXXXX' },
       { id:'ajustes', title:'Ajustes', desc:'Tema, accesibilidad y personalización.', icon:'⚙️', iframe:'about:blank' }
     ];
 
-    // CORE
     const SInOS = {
       BOOT_MS: 2200,
       bootEl:null, homeEl:null, appEl:null, appTitle:null, appDesc:null, appIc:null,
@@ -267,7 +268,6 @@
         APPS.forEach(a=>{
           const b=document.createElement('button');
           b.className='tile';
-          // Si es externalDirect, abre directo en nueva pestaña
           if (a.externalDirect && a.href){
             b.onclick=()=>window.open(a.href,'_blank','noopener,noreferrer');
           } else {
@@ -288,7 +288,6 @@
         APPS.filter(a=>a.quick).slice(0,5).forEach(a=>{
           const btn=document.createElement('button');
           btn.textContent=`${a.icon||'🧩'} ${a.title}`;
-          // También en el dock: abrir directo si es externalDirect
           if (a.externalDirect && a.href){
             btn.onclick=()=>window.open(a.href,'_blank','noopener,noreferrer');
           } else {
@@ -302,7 +301,6 @@
         const app=APPS.find(x=>x.id===id); if(!app) return;
         this.currentApp=app;
 
-        // Si por alguna razón llaman openApp y es externalDirect, abre y sal
         if (app.externalDirect && app.href){
           window.open(app.href,'_blank','noopener,noreferrer');
           return;
@@ -332,7 +330,7 @@
         if('vibrate' in navigator){ try{ navigator.vibrate(8); }catch{} }
       },
 
-      // Noticias: Page Plugin con encabezado mínimo y ancho completo
+      // Noticias: FB Page Plugin (encabezado mínimo y ancho completo)
       async renderNoticias(){
         this.appInternal.style.display='block';
         const root=this.appInternal;
@@ -355,7 +353,7 @@
         `;
         const pageDiv=root.querySelector('.fb-page');
         const fit=()=>{
-          const available=Math.max(280, Math.floor(root.clientWidth - 20)); // 10px padding por lado
+          const available=Math.max(280, Math.floor(root.clientWidth - 20)); // padding 10px por lado
           pageDiv.setAttribute('data-width', String(available));
           if(window.FB && FB.XFBML && typeof FB.XFBML.parse==='function'){ FB.XFBML.parse(root); }
         };
