@@ -24,6 +24,7 @@
     width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(91,215,242,.28);
     background:#0a1329;color:#e6fbff;outline:none
   }
+  select{cursor:pointer}
   textarea{min-height:160px;resize:vertical;grid-column:1/-1}
   .grid-1{grid-column:1/-1}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
@@ -63,6 +64,64 @@
 
     <div class="card">
       <form id="fDenuncia" autocomplete="on" novalidate>
+        <!-- ► Nuevo: catálogo de puestos para autocompletar destinatario -->
+        <div class="grid-1">
+          <label for="puestoCatalogo">Selecciona puesto (secretaría / presidencia / subcomisión)</label>
+          <select id="puestoCatalogo">
+            <option value="">— Elegir —</option>
+
+            <!-- Secretarías -->
+            <optgroup label="Secretarías">
+              <option value="Secretaría General|Dr. Juan Gerardo García González">Secretaría General</option>
+              <option value="Secretaría del Interior y Propaganda|M.N.F. Amin Uriel Morales Sánchez">Secretaría del Interior y Propaganda</option>
+              <option value="Secretaría de Conflictos|C.E. Arturo Ochoa Huacuz">Secretaría de Conflictos</option>
+              <option value="Secretaría del Trabajo|M.N.F. Carlos Alberto Guerrero Rascón">Secretaría del Trabajo</option>
+              <option value="Secretaría de Asuntos al Exterior|M.N.F. Ignacio Agustín Orozco Pérez">Secretaría de Asuntos al Exterior</option>
+              <option value="Tesorería|EST. Azucena Herrera Martínez">Tesorería</option>
+              <option value="Secretaría de Previsión Social|O.T. Laura Ramírez Huitzacua">Secretaría de Previsión Social</option>
+              <option value="Secretaría de Igualdad Sustantiva|M.F. Gabriela Durán Negrete">Secretaría de Igualdad Sustantiva</option>
+              <option value="Secretaría de Asuntos Técnicos|M.N.F. Horacio Peña Alfaro">Secretaría de Asuntos Técnicos</option>
+              <option value="Secretaría de Actas y Acuerdos|M.A. César Augusto Contreras Flores">Secretaría de Actas y Acuerdos</option>
+              <option value="Secretaría de Prensa|A.M. Yolanda Morelos Palomares">Secretaría de Prensa</option>
+              <option value="Secretaría de Puestos Periféricos|M.G. Luz Nayelly Esquivel Martínez">Secretaría de Puestos Periféricos</option>
+              <option value="Secretaría de Admisión y Cambios|J.G.E. Cecilio Vanegas Villalobos">Secretaría de Admisión y Cambios</option>
+              <option value="Secretaría de Capacitación y Adiestramiento|O.P. América Hilda Reyes Reyes">Secretaría de Capacitación y Adiestramiento</option>
+              <option value="Secretaría de Calidad y Modernización|M.N.F. Carlos Mojica Rodríguez">Secretaría de Calidad y Modernización</option>
+            </optgroup>
+
+            <!-- Comisiones (sólo Presidencias) -->
+            <optgroup label="Comisiones — Presidencias">
+              <option value="Comisión de Honor y Justicia — Presidencia|C.S.T. José Francisco Ruiz Domínguez">Honor y Justicia — Presidencia</option>
+              <option value="Comisión de Hacienda — Presidencia|A.M. Fabiola Farías Ambriz">Hacienda — Presidencia</option>
+              <option value="Comisión de Vigilancia — Presidencia|A.M. Imelda Reyes López">Vigilancia — Presidencia</option>
+              <option value="Comisión de Deportes — Presidencia|J.G.P. Roberto Carlos Reyes Ortiz">Deportes — Presidencia</option>
+              <option value="Comisión de Fomento a la Seguridad Social — Presidencia|Q.C. Gerardo Ordaz Salazar">Fomento a la Seguridad Social — Presidencia</option>
+              <option value="Comisión de Acción Política — Presidencia|Lab. Irving Cruz Guerrero Castro">Acción Política — Presidencia</option>
+            </optgroup>
+
+            <!-- Subcomisiones mixtas (representación sindical del directorio) -->
+            <optgroup label="Subcomisiones mixtas — Representación sindical">
+              <option value="Subcomisión Mixta de Becas — Representación Sindical|M.F. Jorge Héctor Zaragoza Palacios">Becas</option>
+              <option value="Subcomisión Mixta de Bolsa de Trabajo — Representación Sindical|COORD. CONT. Uriel Tapia Pérez">Bolsa de Trabajo</option>
+              <option value="Subcomisión Mixta de Puestos de Confianza “B” — Representación Sindical|E.G. Cándido Mora Alcauter">Puestos de Confianza “B”</option>
+              <option value="Subcomisión Mixta de Capacitación y Adiestramiento — Representación Sindical|A.E.G. Juan Onofre Baez">Capacitación y Adiestramiento</option>
+              <option value="Subcomisión Mixta Aux. de Capacitación y Adiestramiento — Representación Sindical|A.M. Araceli Barajas Flores">Aux. Capacitación y Adiestramiento</option>
+              <option value="Subcomisión Mixta de Seguridad e Higiene — Representación Sindical|A.U.O. Betsabe Hernández Flores">Seguridad e Higiene</option>
+              <option value="Subcomisión Mixta Aux. de Seguridad e Higiene — Representación Sindical|A.U.O. Carmen Lizeth Ruiz Aguilar">Aux. Seguridad e Higiene (1)</option>
+              <option value="Subcomisión Mixta Aux. de Seguridad e Higiene — Representación Sindical|A.S.G. Sergio Ortiz Martínez">Aux. Seguridad e Higiene (2)</option>
+              <option value="Subcomisión Mixta Disciplinaria — Representación Sindical|Cont. Juan Carlos Servín Juárez">Disciplinaria</option>
+              <option value="Subcomisión Mixta de Escalafón — Representación Sindical|E.G. Hilda Ontiveros Cuellar">Escalafón</option>
+              <option value="Subcomisión Mixta Paritaria de Protección al Salario — Representación Sindical|M.N.F. J. Guadalupe Hernández Alcalá">Paritaria de Protección al Salario</option>
+              <option value="Subcomisión Mixta de Pasajes — Representación Sindical|O.A. José Antonio Carrillo Bejarano">Pasajes</option>
+              <option value="Subcomisión Mixta de Ropa de Trabajo y Uniformes — Representación Sindical|A.A. Julio Cesar García Salgado">Ropa de Trabajo y Uniformes</option>
+              <option value="Subcomisión Mixta de Selección de Recursos Humanos para Cambios de Rama — Representación Sindical|J.G.E. Gilberto Herrejón González">Selección RH (Cambios de Rama)</option>
+              <option value="Subcomisión Mixta de Tiendas — Representación Sindical|P.E.F.B. Humberto Guerrero Linares">Tiendas</option>
+              <option value="Subcomisión Mixta de Jubilaciones y Pensiones — Representación Sindical|E.G.C. Maricela Navarrete Mora">Jubilaciones y Pensiones</option>
+              <option value="Subcomisión Mixta de Revisión de Plantillas — Representación Sindical|E.G. Luis Fernando García Cervantes">Revisión de Plantillas</option>
+            </optgroup>
+          </select>
+        </div>
+
         <div>
           <label for="ciudad">Ciudad / Municipio</label>
           <input id="ciudad" name="ciudad" placeholder="Ej. Lázaro Cárdenas, Michoacán" required>
@@ -74,11 +133,11 @@
 
         <div>
           <label for="destinatario">Nombre del destinatario</label>
-          <input id="destinatario" name="destinatario" placeholder="Ej. Lic. Arturo Ochoa Huacuz" required>
+          <input id="destinatario" name="destinatario" placeholder="Ej. Dr. Nombre Apellido" required>
         </div>
         <div>
           <label for="cargo">Cargo del destinatario</label>
-          <input id="cargo" name="cargo" placeholder="Ej. Jefe de CSS, Centro de Seguridad Social">
+          <input id="cargo" name="cargo" placeholder="Ej. Secretaría General, C.E.S. Sección XX">
         </div>
 
         <div class="grid-1">
@@ -169,7 +228,7 @@
       return d.toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
     };
 
-    /* Plantillas por tipo, SIN sección de pruebas */
+    /* Plantillas por tipo */
     function cuerpoPorTipo(tipo, d){
       const p = N(d.problematica);
       const cierre = `\n\nSin otro particular, y en el ánimo de que no se repitan los hechos, quedo a sus órdenes para ampliar información o aportar más elementos.`;
@@ -217,7 +276,7 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
       };
     }
 
-    /* ===== Vista previa (modal) ===== */
+    /* Vista previa (modal) */
     function buildPreviewHTML(d){
       const { encabezadoTop, dest, cuerpo, pie } = armarOficio(d);
       const parrafos = cuerpo.split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
@@ -246,7 +305,7 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
 
     function cerrarPreview(){ $('#modal').classList.remove('show'); }
 
-    /* ===== Generación de PDF (Carta + márgenes normales) ===== */
+    /* Generación de PDF (Carta + márgenes normales) */
     async function generarPDF(d, {action='print'} = {}){
       setStatus('Generando PDF…');
       try{
@@ -328,11 +387,11 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
       }
     }
 
-    /* ===== Acciones del modal ===== */
+    /* Acciones del modal */
     async function descargarPDF(){ await generarPDF(datos(), {action:'download'}); }
     async function imprimirDesdePreview(){ await generarPDF(datos(), {action:'print'}); }
 
-    /* ===== Eventos ===== */
+    /* Eventos */
     $('#btnPreview').addEventListener('click', abrirPreview);
     $('#btnClose').addEventListener('click', cerrarPreview);
     $('#btnDownload').addEventListener('click', descargarPDF);
@@ -351,6 +410,15 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
       const required = ['ciudad','destinatario','nombre','matricula','categoria','problematica'];
       for(const k of required){ if(!d[k]){ alert('Faltan campos obligatorios.'); return; } }
       await generarPDF(d, {action:'print'});
+    });
+
+    // ► Autocompletar destinatario + cargo desde el catálogo
+    $('#puestoCatalogo').addEventListener('change', (e)=>{
+      const val = e.target.value || '';
+      if(!val) return;
+      const [cargo, titular] = val.split('|');
+      if(cargo) $('#cargo').value = cargo;
+      if(titular) $('#destinatario').value = titular;
     });
 
     // cerrar modal clic fuera
