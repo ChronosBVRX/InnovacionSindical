@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Miembros — Unidad en Acción</title>
+<title>Panel — Unidad en Acción</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <style>
   :root{
     --bg:#0b1022; --panel:#0e1730; --panel2:#0b1429; --ring:rgba(91,215,242,.35);
-    --txt:#e6fbff; --muted:#aee9f7; --accent:#5bd7f2; --sky:#60a5fa;
+    --txt:#e6fbff; --muted:#aee9f7; --accent:#5bd7f2; --sky:#60a5fa; --ok:#46d19e; --err:#ff7b7b;
   }
   *{box-sizing:border-box}
   html,body{
@@ -19,6 +19,7 @@
       radial-gradient(60vmax 60vmax at 80% 80%, rgba(91,215,242,.10), transparent 60%),
       linear-gradient(180deg,#0b1220,#0b1022);
   }
+  /* Top */
   .wrap{min-height:100%;display:grid;grid-template-rows:auto 1fr;gap:14px;padding:18px}
   .head{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
@@ -29,16 +30,24 @@
   .brand img{width:44px;height:44px;border-radius:10px;object-fit:contain;background:#061022;border:1px solid rgba(91,215,242,.25)}
   .brand h1{margin:0;font-size:18px;color:#d8fbff}
   .brand small{display:block;color:#9fdff0}
-  .actions{display:flex; gap:8px}
+  .actions{display:flex; gap:8px; align-items:center}
   .btn{
     appearance:none; border:1px solid rgba(91,215,242,.35);
     background:rgba(91,215,242,.14); color:#e6fbff;
     border-radius:12px; padding:8px 12px; font-size:14px; cursor:pointer;
     text-decoration:none; display:inline-flex; align-items:center; gap:6px;
+    transition:transform .12s ease;
   }
-  .btn:hover{box-shadow:0 0 0 1px var(--ring) inset, 0 10px 24px rgba(11,18,32,.55)}
+  .btn:hover{box-shadow:0 0 0 1px var(--ring) inset, 0 10px 24px rgba(11,18,32,.55); transform:translateY(-1px)}
   .btn.primary{background:linear-gradient(90deg,var(--accent),var(--sky)); border:none; color:#072133}
-  .content{max-width:1000px; margin:0 auto; width:100%; display:grid; gap:14px}
+
+  /* Grid */
+  .content{max-width:1200px; margin:0 auto; width:100%; display:grid; gap:14px}
+  .grid{display:grid; gap:14px}
+  .grid.cols-3{grid-template-columns:2fr 1.2fr 1fr}
+  .grid.cols-2{grid-template-columns:1.3fr 1fr}
+  @media (max-width:1100px){ .grid.cols-3{grid-template-columns:1fr} .grid.cols-2{grid-template-columns:1fr} }
+
   .card{
     background:linear-gradient(180deg,var(--panel),#0b1328);
     border:1px solid rgba(91,215,242,.25); border-radius:16px; padding:16px;
@@ -46,26 +55,68 @@
   }
   h2{margin:0 0 10px 0; font-size:18px; color:#d8fbff}
   .muted{color:#aee9f7}
-  .grid{display:grid; gap:12px}
-  .grid.cols{grid-template-columns:1fr 1fr}
-  @media (max-width:820px){ .grid.cols{grid-template-columns:1fr} }
-  .kv{display:grid; grid-template-columns:140px 1fr; gap:8px; align-items:center}
-  .kv b{color:#c8f6ff}
-  code.snip{
-    display:inline-block; padding:6px 8px; border-radius:10px;
-    background:#0b152f; border:1px solid rgba(91,215,242,.25); color:#bfefff; font-size:12px;
-    max-width:100%; overflow:auto;
+  .row{display:flex;gap:8px; align-items:center; flex-wrap:wrap}
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;
+    border:1px solid rgba(91,215,242,.35); background:rgba(91,215,242,.12); color:#c7f7ff}
+  .ok{color:var(--ok)} .err{color:var(--err)}
+
+  /* Calendario liviano */
+  .cal{--b:rgba(91,215,242,.18); --h:#c9f7ff}
+  .cal .head{background:transparent;border:none;padding:0;margin:0 0 8px}
+  .cal .bar{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .cal .bar h3{margin:0;font-size:16px;color:#d8fbff}
+  .cal .bar .nav button{padding:6px 10px;border-radius:10px;border:1px solid var(--b);background:rgba(91,215,242,.10);color:#d8fbff}
+  .cal .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .cal .wday{font-size:12px;color:#aee9f7;text-align:center}
+  .cal .day{height:78px;border:1px solid var(--b);border-radius:10px;padding:6px;font-size:12px;background:rgba(11,18,32,.55)}
+  .cal .day .n{opacity:.9;color:#bff4ff}
+  .cal .day.today{box-shadow:0 0 0 1px rgba(91,215,242,.42) inset}
+  .cal .day.muted{opacity:.55}
+
+  /* Perfil */
+  label{font-size:12px;color:#bdefff}
+  input{
+    width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(91,215,242,.28);
+    background:#0a1329;color:#e6fbff;outline:none
   }
+  .avatar{display:flex;align-items:center;gap:12px}
+  .avatar img{width:56px;height:56px;border-radius:12px;border:1px solid rgba(91,215,242,.3);background:#061022;object-fit:cover}
+
+  /* “En espera” */
+  .soon{opacity:.75}
+  .soon .btn{pointer-events:none;filter:grayscale(.35)}
+
+  /* Overlay de protección visual */
+  .overlay{
+    position:fixed; inset:0; display:grid; place-items:center; z-index:50;
+    background:radial-gradient(60vmax 60vmax at 50% 40%, rgba(96,165,250,.16), transparent 60%), linear-gradient(180deg,#071122,#0a0f1d);
+    transition:opacity .35s ease, visibility .35s ease;
+  }
+  .overlay.hide{opacity:0; visibility:hidden}
+  .loader{
+    width:86px;height:86px;border-radius:22px;border:1px solid rgba(91,215,242,.38);
+    background:linear-gradient(135deg,rgba(96,165,250,.18),rgba(91,215,242,.10));
+    display:grid;place-items:center;box-shadow:0 0 18px rgba(91,215,242,.35) inset;
+  }
+  .spinner{width:44px;height:44px;border-radius:50%;
+    border:3px solid rgba(91,215,242,.25); border-top:3px solid var(--accent); animation:spin .9s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* Snackbar */
+  #toast{position:fixed;right:14px;bottom:14px;background:#0b1429;border:1px solid rgba(91,215,242,.25);
+    padding:8px 10px;border-radius:10px;font-size:12px;color:#bfefff;z-index:60;opacity:0;transform:translateY(8px);transition:.25s}
+  #toast.show{opacity:1;transform:translateY(0)}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <!-- Top bar -->
   <header class="head">
     <div class="brand">
       <img alt="Unidad en Acción" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20Unidad%20en%20Accion.png">
       <div>
         <h1>Unidad en Acción</h1>
-        <small>Área exclusiva para miembros</small>
+        <small>Panel de miembros</small>
       </div>
     </div>
     <div class="actions">
@@ -74,34 +125,98 @@
     </div>
   </header>
 
+  <!-- Main -->
   <main class="content">
-    <section class="card">
-      <h2>Tu sesión</h2>
-      <p class="muted">Solo tú puedes ver esta información. Si no reconoces la cuenta, cierra sesión.</p>
-      <div class="grid cols">
-        <div class="grid">
-          <div class="kv"><b>Usuario:</b> <span id="uEmail">—</span></div>
-          <div class="kv"><b>ID:</b> <code class="snip" id="uId">—</code></div>
+    <section class="grid cols-3">
+      <!-- Calendario -->
+      <article class="card cal">
+        <div class="bar">
+          <h2>Calendario de actividades</h2>
+          <div class="nav">
+            <button id="calPrev" type="button">◀</button>
+            <button id="calToday" type="button">Hoy</button>
+            <button id="calNext" type="button">▶</button>
+          </div>
         </div>
-        <div class="grid">
-          <div class="kv"><b>Estado:</b> <span id="uState">Verificando…</span></div>
-          <div class="kv"><b>Último acceso:</b> <span id="uLast">—</span></div>
+        <div class="grid" id="calWeek"></div>
+        <div class="grid" id="calDays"></div>
+      </article>
+
+      <!-- Perfil -->
+      <article class="card">
+        <h2>Personaliza tu perfil</h2>
+        <p class="muted">Estos datos se guardan en tu <em>user_metadata</em> de Supabase.</p>
+        <div class="avatar" style="margin:8px 0 12px">
+          <img id="avatarImg" alt="Avatar" src="">
+          <div class="pill" id="emailPill">usuario@correo</div>
         </div>
-      </div>
+        <form id="fProfile" class="grid">
+          <div>
+            <label for="displayName">Nombre para mostrar</label>
+            <input id="displayName" placeholder="Ej. Ana Gómez">
+          </div>
+          <div>
+            <label for="avatarUrl">URL de avatar (opcional)</label>
+            <input id="avatarUrl" placeholder="https://...png">
+          </div>
+          <div class="row">
+            <button class="btn primary" type="submit">💾 Guardar cambios</button>
+            <span id="pStatus" class="muted"></span>
+          </div>
+        </form>
+      </article>
+
+      <!-- En espera -->
+      <article class="card soon">
+        <h2>En espera…</h2>
+        <p class="muted">Próximamente más módulos del panel.</p>
+        <div class="grid">
+          <button class="btn">📊 Métricas de participación</button>
+          <button class="btn">🤝 Vinculación y alianzas</button>
+          <button class="btn">📁 Documentos internos</button>
+        </div>
+      </article>
     </section>
 
-    <section class="card">
-      <h2>Herramientas</h2>
-      <div class="grid">
-        <a class="btn" href="https://chronosbvrx.github.io/InnovacionSindical/denuncias" target="_blank" rel="noopener">📝 Denuncias y reportes (con IA)</a>
-      </div>
+    <!-- Estado de sesión -->
+    <section class="grid cols-2">
+      <article class="card">
+        <h2>Tu sesión</h2>
+        <div class="row" style="margin-bottom:6px">
+          <div class="pill">🔐 Datos cifrados</div>
+          <div class="pill" id="sessState">Verificando…</div>
+        </div>
+        <div class="grid">
+          <div class="row"><b style="min-width:120px">Usuario:</b> <span id="uEmail">—</span></div>
+          <div class="row"><b style="min-width:120px">ID:</b> <span id="uId">—</span></div>
+          <div class="row"><b style="min-width:120px">Último acceso:</b> <span id="uLast">—</span></div>
+          <div class="row"><b style="min-width:120px">Expira:</b> <span id="uExp">—</span></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Accesos rápidos</h2>
+        <div class="grid">
+          <a class="btn" href="https://chronosbvrx.github.io/InnovacionSindical/denuncias" target="_blank" rel="noopener">📝 Denuncias y reportes (con IA)</a>
+        </div>
+      </article>
     </section>
   </main>
 </div>
 
+<!-- Overlay de protección visual -->
+<div id="overlay" class="overlay">
+  <div class="loader"><div class="spinner"></div></div>
+</div>
+
+<!-- Snackbar -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- Supabase JS v2 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (async () => {
+  /* ====== CONFIG ====== */
   const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
   const LOGIN_URL = "login.html";
@@ -110,40 +225,121 @@
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
   });
 
+  /* ====== UI Helpers ====== */
   const $ = s => document.querySelector(s);
-  const uEmail = $('#uEmail'), uId = $('#uId'), uState = $('#uState'), uLast = $('#uLast');
+  const toast = (t) => { const el = $('#toast'); el.textContent = t||''; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'), 2800); };
+  const overlay = $('#overlay');
+  const hideOverlay = () => overlay.classList.add('hide');
+
+  const uEmail = $('#uEmail'), uId = $('#uId'), uState = $('#sessState'), uLast = $('#uLast'), uExp = $('#uExp');
+  const emailPill = $('#emailPill'); const avatarImg = $('#avatarImg');
+  const displayNameI = $('#displayName'); const avatarUrlI = $('#avatarUrl'); const pStatus = $('#pStatus');
+
+  /* ====== Guardia de sesión + auto logout ====== */
+  let redirected = false, expiryTimer = null;
+  const goLogin = () => { if (!redirected) { redirected = true; location.href = LOGIN_URL; } };
+
+  function scheduleExpiryWatcher(session){
+    clearTimeout(expiryTimer);
+    // Supabase renueva tokens automáticamente; si no lo logra, expulsamos + mensaje
+    const nowSec = Math.floor(Date.now()/1000);
+    const exp = session?.expires_at || nowSec + 3600; // fallback
+    const ms = Math.max(0, (exp - nowSec + 5) * 1000); // 5s de colchón
+    expiryTimer = setTimeout(async () => {
+      // Luego de la expiración damos un margen: si el SDK no emitió TOKEN_REFRESHED en ~15s, salir.
+      let refreshed = false;
+      const guard = setTimeout(()=>{ if(!refreshed){ toast('Sesión expirada. Cerrando…'); supabase.auth.signOut().finally(goLogin); } }, 15000);
+      const unsub = supabase.auth.onAuthStateChange((ev)=>{ if(ev==='TOKEN_REFRESHED'){ refreshed = true; clearTimeout(guard); unsub.data?.subscription.unsubscribe(); scheduleExpiryWatcher((supabase.auth.getSession()).data?.session); }});
+    }, ms);
+    // Mostrar “expira” legible:
+    try{ uExp.textContent = new Date(exp*1000).toLocaleString('es-MX',{hour12:false}); }catch{ uExp.textContent = exp; }
+  }
 
   function renderUser(session){
     const user = session.user;
+    const meta = user.user_metadata || {};
+    const name = meta.display_name || '';
     uEmail.textContent = user.email || '(sin correo)';
     uId.textContent = user.id || '(sin id)';
     uState.textContent = 'Activa';
     const last = user.last_sign_in_at || user.updated_at || user.created_at;
-    if (last){
-      try{ uLast.textContent = new Date(last).toLocaleString('es-MX',{hour12:false}); }
-      catch{ uLast.textContent = last; }
-    }
+    if (last){ try{ uLast.textContent = new Date(last).toLocaleString('es-MX',{hour12:false}); } catch { uLast.textContent = last; } }
+
+    emailPill.textContent = user.email || '—';
+    displayNameI.value = name;
+    const aurl = meta.avatar_url || '';
+    avatarUrlI.value = aurl;
+    avatarImg.src = aurl || "https://avatars.githubusercontent.com/u/9919?v=4"; // placeholder
+
+    scheduleExpiryWatcher(session);
   }
 
-  let redirected = false;
-  const goLogin = () => { if (!redirected) { redirected = true; location.href = LOGIN_URL; } };
-
-  // ✅ Anti-bucle: espera INITIAL_SESSION; si no hay sesión, da 700ms y redirige
+  // Anti-bucle + overlay
   supabase.auth.onAuthStateChange((event, session) => {
     if (event === 'INITIAL_SESSION') {
-      if (session) renderUser(session);
-      else setTimeout(goLogin, 700);
+      hideOverlay();
+      if (session) renderUser(session); else setTimeout(goLogin, 700);
     } else if (event === 'SIGNED_IN') {
-      renderUser(session);
+      renderUser(session); toast('Sesión iniciada.');
     } else if (event === 'SIGNED_OUT') {
-      goLogin();
+      toast('Sesión cerrada.'); setTimeout(goLogin, 250);
+    } else if (event === 'TOKEN_REFRESHED') {
+      uState.textContent = 'Activa (refrescada)';
+      const s = supabase.auth.getSession().data?.session; if(s) scheduleExpiryWatcher(s);
+    } else if (event === 'USER_UPDATED') {
+      toast('Perfil actualizado.');
     }
   });
 
-  // Botón salir
-  document.getElementById('logoutBtn').addEventListener('click', async () => {
+  /* ====== Logout botón ====== */
+  $('#logoutBtn').addEventListener('click', async () => {
     try { await supabase.auth.signOut(); } finally { goLogin(); }
   });
+
+  /* ====== Perfil: guardar ====== */
+  $('#fProfile').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    pStatus.textContent = 'Guardando…';
+    const display_name = displayNameI.value.trim();
+    const avatar_url = avatarUrlI.value.trim();
+    const { error } = await supabase.auth.updateUser({ data: { display_name, avatar_url } });
+    if (error){ pStatus.textContent = 'Error: ' + error.message; pStatus.classList.add('err'); return; }
+    pStatus.textContent = 'Cambios guardados.'; pStatus.classList.remove('err');
+    if (avatar_url) avatarImg.src = avatar_url;
+    toast('Perfil guardado');
+  });
+
+  /* ====== Calendario simple ====== */
+  const weekNames = ['L','M','X','J','V','S','D'];
+  const monthNames = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const calWeek = $('#calWeek'), calDays = $('#calDays'); let cur = new Date();
+
+  function renderCalendar(date=new Date()){
+    calWeek.innerHTML = ''; calDays.innerHTML = '';
+    // encabezado de semana
+    weekNames.forEach(w=>{ const d=document.createElement('div'); d.className='wday'; d.textContent=w; calWeek.appendChild(d); });
+    // datos
+    const y = date.getFullYear(), m = date.getMonth();
+    const first = new Date(y,m,1), last = new Date(y,m+1,0);
+    const start = new Date(first); start.setDate(1 - ((first.getDay()+6)%7)); // lunes-based
+    const total = 42; // 6 semanas
+    $('#calToday').textContent = `${monthNames[m]} ${y}`;
+    for(let i=0;i<total;i++){
+      const d = new Date(start); d.setDate(start.getDate()+i);
+      const cell = document.createElement('div'); cell.className='day';
+      const inMonth = d.getMonth()===m;
+      if(!inMonth) cell.classList.add('muted');
+      const today = (new Date()).toDateString()===d.toDateString();
+      if(today) cell.classList.add('today');
+      cell.innerHTML = `<div class="n">${d.getDate()}</div>`;
+      calDays.appendChild(cell);
+    }
+  }
+  renderCalendar(cur);
+  $('#calPrev').onclick = ()=>{ cur.setMonth(cur.getMonth()-1); renderCalendar(cur); };
+  $('#calNext').onclick = ()=>{ cur.setMonth(cur.getMonth()+1); renderCalendar(cur); };
+  $('#calToday').onclick = ()=>{ cur = new Date(); renderCalendar(cur); };
+
 })();
 </script>
 </body>
