@@ -15,7 +15,8 @@
     font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu}
   .wrap{max-width:980px;margin:0 auto;padding:24px}
   h1{margin:0 0 12px;font-size:24px}
-  p.muted{color:var(--muted);margin-top:0}
+  p.muted{color:#aee9f7;margin-top:0}
+  .top-actions{display:flex;justify-content:flex-end;margin-bottom:10px}
   .card{background:linear-gradient(180deg,#0e1730,#0b1428);border:1px solid rgba(91,215,242,.28);
     border-radius:18px;padding:16px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
   form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -33,7 +34,7 @@
   .grid-1{grid-column:1/-1}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
   .btn{appearance:none;border:1px solid rgba(91,215,242,.45);background:rgba(91,215,242,.14);
-    color:#e6fbff;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer}
+    color:#e6fbff;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
   .btn:hover{box-shadow:0 0 0 1px var(--ring) inset, 0 10px 24px rgba(11,18,32,.55)}
   .btn.primary{background:linear-gradient(90deg,var(--primary),var(--sky));border:none;color:#072133}
   .small{font-size:12px;color:#9edff0}
@@ -63,6 +64,10 @@
 </head>
 <body>
   <div class="wrap">
+    <div class="top-actions">
+      <a class="btn" href="https://chronosbvrx.github.io/InnovacionSindical/">← Regresar</a>
+    </div>
+
     <h1>Denuncias y Reportes</h1>
     <p class="muted">Previsualiza el documento y luego imprime o descarga. Los datos no se borran.</p>
 
@@ -112,4 +117,361 @@
               <option value="Subcomisión Mixta Aux. de Capacitación y Adiestramiento — Representación Sindical|A.M. Araceli Barajas Flores">Aux. Capacitación y Adiestramiento</option>
               <option value="Subcomisión Mixta de Seguridad e Higiene — Representación Sindical|A.U.O. Betsabe Hernández Flores">Seguridad e Higiene</option>
               <option value="Subcomisión Mixta Aux. de Seguridad e Higiene — Representación Sindical|A.U.O. Carmen Lizeth Ruiz Aguilar">Aux. Seguridad e Higiene (1)</option>
-              <option value="Subcomisión Mixta Aux. de Seguridad e Higiene — Representación Sindical|A.S.G. Sergio Ortiz Mar
+              <option value="Subcomisión Mixta Aux. de Seguridad e Higiene — Representación Sindical|A.S.G. Sergio Ortiz Martínez">Aux. Seguridad e Higiene (2)</option>
+              <option value="Subcomisión Mixta Disciplinaria — Representación Sindical|Cont. Juan Carlos Servín Juárez">Disciplinaria</option>
+              <option value="Subcomisión Mixta de Escalafón — Representación Sindical|E.G. Hilda Ontiveros Cuellar">Escalafón</option>
+              <option value="Subcomisión Mixta Paritaria de Protección al Salario — Representación Sindical|M.N.F. J. Guadalupe Hernández Alcalá">Paritaria de Protección al Salario</option>
+              <option value="Subcomisión Mixta de Pasajes — Representación Sindical|O.A. José Antonio Carrillo Bejarano">Pasajes</option>
+              <option value="Subcomisión Mixta de Ropa de Trabajo y Uniformes — Representación Sindical|A.A. Julio Cesar García Salgado">Ropa de Trabajo y Uniformes</option>
+              <option value="Subcomisión Mixta de Selección de Recursos Humanos para Cambios de Rama — Representación Sindical|J.G.E. Gilberto Herrejón González">Selección RH (Cambios de Rama)</option>
+              <option value="Subcomisión Mixta de Tiendas — Representación Sindical|P.E.F.B. Humberto Guerrero Linares">Tiendas</option>
+              <option value="Subcomisión Mixta de Jubilaciones y Pensiones — Representación Sindical|E.G.C. Maricela Navarrete Mora">Jubilaciones y Pensiones</option>
+              <option value="Subcomisión Mixta de Revisión de Plantillas — Representación Sindical|E.G. Luis Fernando García Cervantes">Revisión de Plantillas</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div>
+          <label for="ciudad">Ciudad / Municipio</label>
+          <input id="ciudad" name="ciudad" placeholder="Ej. Lázaro Cárdenas, Michoacán" required>
+        </div>
+        <div>
+          <label for="fecha">Fecha (si la de hoy no aplica)</label>
+          <input id="fecha" name="fecha" type="date">
+        </div>
+
+        <div>
+          <label for="destinatario">Nombre del destinatario</label>
+          <input id="destinatario" name="destinatario" placeholder="Selecciona un puesto…" readonly aria-readonly="true" required>
+        </div>
+        <!-- Cargo oculto (no visible, pero se usa en el documento) -->
+        <input id="cargo" name="cargo" type="hidden">
+
+        <div>
+          <label for="nombre">Nombre del trabajador</label>
+          <input id="nombre" name="nombre" required placeholder="Nombre(s) y apellidos">
+        </div>
+        <div>
+          <label for="matricula">Matrícula</label>
+          <input id="matricula" name="matricula" required placeholder="Ej. 123456">
+        </div>
+        <div>
+          <label for="categoria">Categoría</label>
+          <input id="categoria" name="categoria" required placeholder="Ej. Enfermera General A">
+        </div>
+        <div>
+          <label for="lugar">Centro/Área</label>
+          <input id="lugar" name="lugar" placeholder="Ej. HGZ No. XX, Urgencias">
+        </div>
+
+        <div class="grid-1">
+          <label for="problematica">Describe la problemática (hechos, fechas, lugares, involucrados, impacto)</label>
+          <textarea id="problematica" name="problematica" required></textarea>
+        </div>
+
+        <div class="row">
+          <button type="button" class="btn" id="btnPreview">👁️ Vista previa</button>
+          <button type="submit" class="btn primary" id="btnGenerar">🖨️ Generar PDF e imprimir</button>
+          <span class="small">Formato: Carta / márgenes normales.</span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="status" aria-live="polite"></div>
+
+  <!-- Modal de vista previa -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-h">
+        <div class="modal-t" id="modal-title">Vista previa del escrito</div>
+        <div class="modal-a">
+          <button class="btn" id="btnCopy" type="button">📋 Copiar texto</button>
+          <button class="btn" id="btnDownload" type="button">⬇️ Descargar PDF</button>
+          <button class="btn primary" id="btnPrint" type="button">🖨️ Imprimir</button>
+          <button class="btn" id="btnClose" type="button">✖ Cerrar</button>
+        </div>
+      </div>
+      <div class="modal-b">
+        <div id="page" class="page carta">
+          <div id="sheet" class="sheet"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jsPDF -->
+  <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // === CONFIG ===
+    const API_BASE = "https://sinos-api.onrender.com"; // tu API pública en Render
+
+    const $ = s => document.querySelector(s);
+    const N = s => (s||'').toString().trim();
+    const setStatus = (t='')=> $('#status').textContent=t;
+
+    // ✔ FIX jsPDF: devolvemos el namespace window.jspdf (no la clase)
+    const ensureJsPDF = () => new Promise((resolve, reject)=>{
+      let tries = 0;
+      const t = setInterval(()=>{
+        tries++;
+        if (window.jspdf && window.jspdf.jsPDF){
+          clearInterval(t);
+          resolve(window.jspdf); // { jsPDF, ... }
+        }
+        if (tries > 120){
+          clearInterval(t);
+          reject(new Error('jsPDF no cargó'));
+        }
+      }, 50);
+    });
+
+    const hoyISO = () => new Date().toISOString().slice(0,10);
+    const fechaLarga = (iso) => {
+      const d = iso ? new Date(iso) : new Date();
+      return d.toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
+    };
+
+    // ===== IA: redacta usando SOLO problematica =====
+    async function redactarIA(d){
+      try{
+        setStatus("Redactando texto con IA…");
+
+        const hechos = [];
+        if (N(d.problematica)) hechos.push(N(d.problematica));
+
+        const payload = {
+          tema: "Escrito de denuncia o reporte",
+          tono: "formal",
+          hechos,
+          extras: "Analiza la problemática y redacta un cuerpo claro y profesional en párrafos; sin encabezado ni firma. Añade una despedida breve.",
+          incluirDespedida: true,
+          longitud: "media"
+        };
+
+        const res = await fetch(`${API_BASE}/escritor`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if(!res.ok){
+          const txt = await res.text().catch(()=> '');
+          throw new Error(`API /escritor ${res.status}: ${txt || res.statusText}`);
+        }
+
+        const json = await res.json();
+        if (json.error){
+          throw new Error(json.detail || json.error);
+        }
+
+        const cuerpo = json.cuerpo || "";
+        const despedida = json.despedida ? "\n\n" + json.despedida : "";
+        setStatus("Texto generado por IA.");
+        return `${cuerpo}${despedida}`;
+      }catch(e){
+        console.error(e);
+        setStatus("Error al redactar.");
+        alert("No se pudo redactar con la IA.\n" + e.message);
+        return "";
+      }finally{
+        setTimeout(()=>setStatus(""), 4000);
+      }
+    }
+
+    async function armarOficio(d){
+      const encabezadoTop = `${d.ciudad}, a ${fechaLarga(d.fecha || hoyISO())}`;
+      const dest = `${d.destinatario}${N(d.cargo)?`\n${d.cargo}`:''}`;
+      const cuerpo = await redactarIA(d);
+      const pie =
+`\nATENTAMENTE
+
+${d.nombre}
+Matrícula: ${d.matricula}
+Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
+      return { encabezadoTop, dest, cuerpo, pie };
+    }
+
+    function datos(){
+      return {
+        ciudad: N($('#ciudad').value),
+        fecha: N($('#fecha').value),
+        destinatario: N($('#destinatario').value),
+        cargo: N($('#cargo').value),
+        nombre: N($('#nombre').value),
+        matricula: N($('#matricula').value),
+        categoria: N($('#categoria').value),
+        lugar: N($('#lugar').value),
+        problematica: N($('#problematica').value)
+      };
+    }
+
+    function buildPreviewHTML(encabezadoTop, dest, cuerpo, pie){
+      const parrafos = (cuerpo||"").split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
+      let html = `
+        <header>${encabezadoTop}</header>
+        <div class="dest">${dest.replace(/\n/g,'<br>')}</div>
+        <p class="pres">Presente.</p>
+      `;
+      parrafos.forEach(p=>{
+        if(/^[A-ZÁÉÍÓÚÑ\s\/]+:$/.test(p)){ html += `<h6>${p}</h6>`; }
+        else { html += `<p>${p.replace(/\n/g,'<br>')}</p>`; }
+      });
+      html += `<div class="pie">${pie.replace(/\n/g,'<br>')}</div>`;
+      return html;
+    }
+
+    async function abrirPreview(){
+      try{
+        const d = datos();
+        const required = ['ciudad','destinatario','nombre','matricula','categoria','problematica'];
+        for(const k of required){ if(!d[k]){ alert('Faltan campos obligatorios.'); return; } }
+
+        const sheet = $('#sheet');
+        sheet.style.padding = `72px 64px`;
+
+        const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
+        if(!cuerpo){ return; }
+
+        sheet.innerHTML = buildPreviewHTML(encabezadoTop, dest, cuerpo, pie);
+        $('#modal').classList.add('show');
+      }catch(e){
+        console.error(e);
+        alert('Ocurrió un error generando la vista previa.');
+      }
+    }
+    function cerrarPreview(){ $('#modal').classList.remove('show'); }
+
+    async function generarPDF(d, {action='print'} = {}){
+      setStatus('Generando PDF…');
+      try{
+        const { jsPDF } = await ensureJsPDF();
+        const doc = new jsPDF({ unit:'pt', format:'letter' }); // Carta
+
+        const dims = {W:612, H:792};
+        const M = 64;        // laterales
+        const topBase = 72;  // superior
+        const width = dims.W - M*2;
+
+        const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
+        if(!cuerpo){ throw new Error('No se generó cuerpo del escrito.'); }
+
+        // Encabezado a la derecha
+        doc.setFont('Times','Normal'); doc.setFontSize(10);
+        doc.text(encabezadoTop, dims.W - M, 48, {align:'right'});
+
+        // Destinatario
+        let y = 88;
+        doc.setFont('Times','Bold'); doc.setFontSize(12);
+        const destLines = doc.splitTextToSize(dest, width);
+        doc.text(destLines, M, y); y += destLines.length*16 + 8;
+
+        // Presente
+        doc.setFont('Times','Normal'); doc.setFontSize(12);
+        doc.text('Presente.', M, y); y += 22;
+
+        // Cuerpo
+        const parrafos = (cuerpo||"").split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
+        const lineHeight = 16;
+
+        parrafos.forEach(p=>{
+          if(/^[A-ZÁÉÍÓÚÑ\s\/]+:$/.test(p)){
+            doc.setFont('Times','Bold'); doc.text(p, M, y); y += lineHeight+2; doc.setFont('Times','Normal');
+          }else{
+            const lines = doc.splitTextToSize(p, width);
+            if(y + lines.length*lineHeight > dims.H - 120){ doc.addPage(); y = topBase; }
+            doc.text(lines, M, y); y += lines.length*lineHeight + 6;
+          }
+        });
+
+        // Pie / firma
+        if(y < dims.H - 140) y = dims.H - 140;
+        doc.setFont('Times','Bold'); doc.text('ATENTAMENTE', M, y); y += 28;
+        doc.setFont('Times','Normal');
+        doc.text(d.nombre, M, y); y += 16;
+        doc.text(`Matrícula: ${d.matricula}`, M, y); y += 16;
+        doc.text(`Categoría: ${d.categoria}`, M, y); y += 16;
+        if(N(d.lugar)) doc.text(d.lugar, M, y);
+
+        const blob = doc.output('blob');
+        const url = URL.createObjectURL(blob);
+
+        if(action==='download'){
+          const a = document.createElement('a');
+          a.href = url; a.download = 'Escrito.pdf'; document.body.appendChild(a);
+          a.click(); setTimeout(()=>{ a.remove(); URL.revokeObjectURL(url); }, 50);
+          setStatus('PDF descargado.');
+        } else {
+          let iframe = document.getElementById('print-iframe');
+          if(!iframe){
+            iframe = document.createElement('iframe');
+            iframe.id = 'print-iframe';
+            iframe.style.position='fixed'; iframe.style.right='0'; iframe.style.bottom='0';
+            iframe.style.width='0'; iframe.style.height='0'; iframe.style.border='0'; iframe.style.visibility='hidden';
+            document.body.appendChild(iframe);
+          }
+          await new Promise(res=>{
+            iframe.onload = ()=>{ try{ iframe.contentWindow.focus(); setTimeout(()=>{ iframe.contentWindow.print(); res(); }, 120);}catch(e){ res(); } };
+            iframe.src = url;
+          });
+          setStatus('Listo para imprimir. Si no aparece, usa Ctrl/Cmd + P.');
+        }
+      }catch(e){
+        console.error(e);
+        setStatus('Error al generar el PDF.');
+        alert('No se pudo generar el PDF.\n' + e.message);
+      }finally{
+        setTimeout(()=>setStatus(""), 5000);
+      }
+    }
+
+    // ===== Eventos =====
+    document.getElementById('btnPreview').addEventListener('click', abrirPreview);
+    document.getElementById('btnClose').addEventListener('click', cerrarPreview);
+    document.getElementById('btnDownload').addEventListener('click', async ()=>{ await generarPDF(datos(), {action:'download'}); });
+    document.getElementById('btnPrint').addEventListener('click', async ()=>{ await generarPDF(datos(), {action:'print'}); });
+    document.getElementById('btnCopy').addEventListener('click', async ()=>{
+      try{
+        const d = datos();
+        const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
+        if(!cuerpo){ return; }
+        const txt = `${encabezadoTop}\n\n${dest}\nPresente.\n\n${cuerpo}\n${pie}`;
+        await navigator.clipboard.writeText(txt);
+        setStatus('Texto copiado al portapapeles.');
+      }catch(e){
+        console.error(e); setStatus('No se pudo copiar el texto.');
+      }finally{
+        setTimeout(()=>setStatus(""), 3000);
+      }
+    });
+
+    document.getElementById('fDenuncia').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      const d = datos();
+      const required = ['ciudad','destinatario','nombre','matricula','categoria','problematica'];
+      for(const k of required){ if(!d[k]){ alert('Faltan campos obligatorios.'); return; } }
+      await generarPDF(d, {action:'print'});
+    });
+
+    // ► Autocompletar: al elegir puesto, llena titular (destinatario readonly) y cargo (oculto)
+    document.getElementById('puestoCatalogo').addEventListener('change', (e)=>{
+      const val = e.target.value || '';
+      const dest = document.getElementById('destinatario');
+      const cargo = document.getElementById('cargo');
+      dest.value = '';
+      cargo.value = '';
+      if(!val) return;
+      const [cargoTxt, titular] = val.split('|');
+      if(cargoTxt) cargo.value = cargoTxt;
+      if(titular) dest.value = titular;
+    });
+
+    // cerrar modal clic fuera
+    document.getElementById('modal').addEventListener('click', (e)=>{ if(e.target.id==='modal') cerrarPreview(); });
+  });
+  </script>
+</body>
+</html>
