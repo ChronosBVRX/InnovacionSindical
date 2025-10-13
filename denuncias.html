@@ -24,6 +24,11 @@
     width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(91,215,242,.28);
     background:#0a1329;color:#e6fbff;outline:none
   }
+  input:read-only{
+    background:#0b152f; /* visible pero sutil */
+    box-shadow:0 0 0 1px rgba(91,215,242,.18) inset;
+    cursor:not-allowed;
+  }
   select{cursor:pointer}
   textarea{min-height:160px;resize:vertical;grid-column:1/-1}
   .grid-1{grid-column:1/-1}
@@ -55,11 +60,6 @@
   .sheet .pres{margin:0 0 14px 0}
   .sheet h6{font-weight:700;margin:18px 0 6px 0}
   .sheet .pie{position:absolute;bottom:72px;left:64px;right:64px}
-  /* readonly vistoso */
-  input[readonly]{
-    background:#0a1329; color:#e6fbff; opacity:.9;
-    box-shadow:0 0 0 1px rgba(91,215,242,.18) inset;
-  }
 </style>
 </head>
 <body>
@@ -137,7 +137,7 @@
         </div>
 
         <div>
-          <label for="destinatario">Nombre del destinatario (se llena al elegir puesto)</label>
+          <label for="destinatario">Nombre del destinatario</label>
           <input id="destinatario" name="destinatario" placeholder="Selecciona un puesto…" readonly aria-readonly="true" required>
         </div>
         <!-- Cargo oculto (no visible, pero se usa en el documento) -->
@@ -145,9 +145,10 @@
 
         <div class="grid-1">
           <label for="tipo">Tipo de escrito</label>
+          <!-- values sin espacios; etiquetas legibles -->
           <select id="tipo" name="tipo" required>
             <option value="derechos">Violación de derechos laborales</option>
-            <option value="compañero">Queja contra compañero(a) sindicalizado</option>
+            <option value="companero">Queja contra compañero(a) sindicalizado</option>
             <option value="jefatura">Queja contra jefatura / mando</option>
             <option value="reporte">Reporte de incidente / irregularidad</option>
             <option value="peticion">Petición / solicitud</option>
@@ -193,5 +194,285 @@
       <div class="modal-h">
         <div class="modal-t" id="modal-title">Vista previa del escrito</div>
         <div class="modal-a">
-          <button class="btn" id="btnCopy">📋 Copiar texto</button>
-          <button class="btn" id="btn
+          <button class="btn" id="btnCopy" type="button">📋 Copiar texto</button>
+          <button class="btn" id="btnDownload" type="button">⬇️ Descargar PDF</button>
+          <button class="btn primary" id="btnPrint" type="button">🖨️ Imprimir</button>
+          <button class="btn" id="btnClose" type="button">✖ Cerrar</button>
+        </div>
+      </div>
+      <div class="modal-b">
+        <div id="page" class="page carta">
+          <div id="sheet" class="sheet"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jsPDF -->
+  <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // === CONFIG ===
+    const API_BASE = "https://sinos-api.onrender.com"; // tu API pública en Render
+
+    const $ = s => document.querySelector(s);
+    const N = s => (s||'').toString().trim();
+    const setStatus = (t='')=> $('#status').textContent=t;
+
+    const ensureJsPDF = () => new Promise((resolve, reject)=>{
+      let tries = 0;
+      const t = setInterval(()=>{
+        tries++;
+        if (window.jspdf && window.jspdf.jsPDF){ clearInterval(t); resolve(window.jspdf.jsPDF); }
+        if (tries > 120){ clearInterval(t); reject(new Error('jsPDF no cargó')); }
+      }, 50);
+    });
+
+    const hoyISO = () => new Date().toISOString().slice(0,10);
+    const fechaLarga = (iso) => {
+      const d = iso ? new Date(iso) : new Date();
+      return d.toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
+    };
+
+    async function cuerpoPorTipo(tipo, d){
+      try{
+        setStatus("Redactando texto con IA…");
+
+        const hechos = [];
+        if (N(d.problematica)) hechos.push(N(d.problematica));
+
+        const payload = {
+          tema: tipo,
+          tono: "formal",
+          hechos,
+          extras: "Redactar claro y profesional. No incluyas encabezado ni firma. Usa párrafos legibles.",
+          incluirDespedida: true,
+          longitud: "media"
+        };
+
+        const res = await fetch(`${API_BASE}/escritor`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if(!res.ok){
+          const txt = await res.text().catch(()=> '');
+          throw new Error(`API /escritor ${res.status}: ${txt || res.statusText}`);
+        }
+
+        const json = await res.json();
+        if (json.error){
+          throw new Error(json.detail || json.error);
+        }
+        const cuerpo = json.cuerpo || "";
+        const despedida = json.despedida ? "\n\n" + json.despedida : "";
+        setStatus("Texto generado por IA.");
+        return `${cuerpo}${despedida}`;
+      }catch(e){
+        console.error(e);
+        setStatus("Error al redactar.");
+        alert("No se pudo redactar con la IA.\n" + e.message);
+        return "";
+      }finally{
+        setTimeout(()=>setStatus(""), 4000);
+      }
+    }
+
+    async function armarOficio(d){
+      const encabezadoTop = `${d.ciudad}, a ${fechaLarga(d.fecha || hoyISO())}`;
+      const dest = `${d.destinatario}${N(d.cargo)?`\n${d.cargo}`:''}`;
+      const cuerpo = await cuerpoPorTipo(d.tipo, d);
+      const pie =
+`\nATENTAMENTE
+
+${d.nombre}
+Matrícula: ${d.matricula}
+Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
+      return { encabezadoTop, dest, cuerpo, pie };
+    }
+
+    function datos(){
+      return {
+        ciudad: N($('#ciudad').value),
+        fecha: N($('#fecha').value),
+        destinatario: N($('#destinatario').value),
+        cargo: N($('#cargo').value),
+        tipo: $('#tipo').value, // valores sin espacios
+        nombre: N($('#nombre').value),
+        matricula: N($('#matricula').value),
+        categoria: N($('#categoria').value),
+        lugar: N($('#lugar').value),
+        problematica: N($('#problematica').value)
+      };
+    }
+
+    function buildPreviewHTML_fromParts(encabezadoTop, dest, cuerpo, pie){
+      const parrafos = (cuerpo||"").split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
+      let html = `
+        <header>${encabezadoTop}</header>
+        <div class="dest">${dest.replace(/\n/g,'<br>')}</div>
+        <p class="pres">Presente.</p>
+      `;
+      parrafos.forEach(p=>{
+        if(/^[A-ZÁÉÍÓÚÑ\s\/]+:$/.test(p)){ html += `<h6>${p}</h6>`; }
+        else { html += `<p>${p.replace(/\n/g,'<br>')}</p>`; }
+      });
+      html += `<div class="pie">${pie.replace(/\n/g,'<br>')}</div>`;
+      return html;
+    }
+
+    async function abrirPreview(){
+      try{
+        const d = datos();
+        const required = ['ciudad','destinatario','nombre','matricula','categoria','problematica'];
+        for(const k of required){ if(!d[k]){ alert('Faltan campos obligatorios.'); return; } }
+
+        const sheet = $('#sheet');
+        sheet.style.padding = `72px 64px`;
+
+        const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
+        if(!cuerpo){ return; } // si falló IA, no abre modal vacío
+
+        sheet.innerHTML = buildPreviewHTML_fromParts(encabezadoTop, dest, cuerpo, pie);
+        $('#modal').classList.add('show');
+      }catch(e){
+        console.error(e);
+        alert('Ocurrió un error generando la vista previa.');
+      }
+    }
+    function cerrarPreview(){ $('#modal').classList.remove('show'); }
+
+    async function generarPDF(d, {action='print'} = {}){
+      setStatus('Generando PDF…');
+      try{
+        const { jsPDF } = await ensureJsPDF();
+
+        const doc = new jsPDF({ unit:'pt', format:'letter' }); // Carta
+        const dims = {W:612, H:792};
+        const M = 64;        // laterales
+        const topBase = 72;  // superior
+        const width = dims.W - M*2;
+
+        const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
+        if(!cuerpo){ throw new Error('No se generó cuerpo del escrito.'); }
+
+        // Encabezado a la derecha
+        doc.setFont('Times','Normal'); doc.setFontSize(10);
+        doc.text(encabezadoTop, dims.W - M, 48, {align:'right'});
+
+        // Destinatario
+        let y = 88;
+        doc.setFont('Times','Bold'); doc.setFontSize(12);
+        const destLines = doc.splitTextToSize(dest, width);
+        doc.text(destLines, M, y); y += destLines.length*16 + 8;
+
+        // Presente
+        doc.setFont('Times','Normal'); doc.setFontSize(12);
+        doc.text('Presente.', M, y); y += 22;
+
+        // Cuerpo
+        const parrafos = (cuerpo||"").split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
+        const lineHeight = 16;
+
+        parrafos.forEach(p=>{
+          if(/^[A-ZÁÉÍÓÚÑ\s\/]+:$/.test(p)){
+            doc.setFont('Times','Bold'); doc.text(p, M, y); y += lineHeight+2; doc.setFont('Times','Normal');
+          }else{
+            const lines = doc.splitTextToSize(p, width);
+            if(y + lines.length*lineHeight > dims.H - 120){ doc.addPage(); y = topBase; }
+            doc.text(lines, M, y); y += lines.length*lineHeight + 6;
+          }
+        });
+
+        // Pie / firma
+        if(y < dims.H - 140) y = dims.H - 140;
+        doc.setFont('Times','Bold'); doc.text('ATENTAMENTE', M, y); y += 28;
+        doc.setFont('Times','Normal');
+        doc.text(d.nombre, M, y); y += 16;
+        doc.text(`Matrícula: ${d.matricula}`, M, y); y += 16;
+        doc.text(`Categoría: ${d.categoria}`, M, y); y += 16;
+        if(N(d.lugar)) doc.text(d.lugar, M, y);
+
+        const blob = doc.output('blob');
+        const url = URL.createObjectURL(blob);
+
+        if(action==='download'){
+          const a = document.createElement('a');
+          a.href = url; a.download = 'Escrito.pdf'; document.body.appendChild(a);
+          a.click(); setTimeout(()=>{ a.remove(); URL.revokeObjectURL(url); }, 50);
+          setStatus('PDF descargado.');
+        } else {
+          let iframe = document.getElementById('print-iframe');
+          if(!iframe){
+            iframe = document.createElement('iframe');
+            iframe.id = 'print-iframe';
+            iframe.style.position='fixed'; iframe.style.right='0'; iframe.style.bottom='0';
+            iframe.style.width='0'; iframe.style.height='0'; iframe.style.border='0'; iframe.style.visibility='hidden';
+            document.body.appendChild(iframe);
+          }
+          await new Promise(res=>{
+            iframe.onload = ()=>{ try{ iframe.contentWindow.focus(); setTimeout(()=>{ iframe.contentWindow.print(); res(); }, 120);}catch(e){ res(); } };
+            iframe.src = url;
+          });
+          setStatus('Listo para imprimir. Si no aparece, usa Ctrl/Cmd + P.');
+        }
+      }catch(e){
+        console.error(e);
+        setStatus('Error al generar el PDF.');
+        alert('No se pudo generar el PDF.\n' + e.message);
+      }finally{
+        setTimeout(()=>setStatus(""), 5000);
+      }
+    }
+
+    // ===== Eventos =====
+    $('#btnPreview').addEventListener('click', abrirPreview);
+    $('#btnClose').addEventListener('click', cerrarPreview);
+    $('#btnDownload').addEventListener('click', async ()=>{ await generarPDF(datos(), {action:'download'}); });
+    $('#btnPrint').addEventListener('click', async ()=>{ await generarPDF(datos(), {action:'print'}); });
+    $('#btnCopy').addEventListener('click', async ()=>{
+      try{
+        const d = datos();
+        const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
+        if(!cuerpo){ return; }
+        const txt = `${encabezadoTop}\n\n${dest}\nPresente.\n\n${cuerpo}\n${pie}`;
+        await navigator.clipboard.writeText(txt);
+        setStatus('Texto copiado al portapapeles.');
+      }catch(e){
+        console.error(e); setStatus('No se pudo copiar el texto.');
+      }finally{
+        setTimeout(()=>setStatus(""), 3000);
+      }
+    });
+
+    document.getElementById('fDenuncia').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      const d = datos();
+      const required = ['ciudad','destinatario','nombre','matricula','categoria','problematica'];
+      for(const k of required){ if(!d[k]){ alert('Faltan campos obligatorios.'); return; } }
+      await generarPDF(d, {action:'print'});
+      // NOTA: no se limpia ningún campo. Persisten hasta que recargues.
+    });
+
+    // ► Autocompletar: al elegir puesto, llena titular (destinatario visible readonly) y cargo (oculto)
+    document.getElementById('puestoCatalogo').addEventListener('change', (e)=>{
+      const val = e.target.value || '';
+      const dest = document.getElementById('destinatario');
+      const cargo = document.getElementById('cargo');
+      dest.value = '';
+      cargo.value = '';
+      if(!val) return;
+      const [cargoTxt, titular] = val.split('|');
+      if(cargoTxt) cargo.value = cargoTxt;
+      if(titular) dest.value = titular;
+    });
+
+    // cerrar modal clic fuera
+    document.getElementById('modal').addEventListener('click', (e)=>{ if(e.target.id==='modal') cerrarPreview(); });
+  });
+  </script>
+</body>
+</html>
