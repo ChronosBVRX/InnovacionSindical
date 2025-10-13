@@ -3,19 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Directorio – Innovación Sindical</title>
-  <meta name="description" content="Directorio del Comité Ejecutivo Seccional y órganos auxiliares." />
+  <title>Directorio – SInOS | Innovación Sindical</title>
+  <meta name="description" content="Directorio actualizado del Comité Ejecutivo Seccional y órganos auxiliares." />
   <style>
     :root{
-      --bg:#0b1220;         /* fondo oscuro azul */
-      --card:#111a2e;
-      --muted:#7f8aad;
-      --text:#eaf0ff;
-      --brand:#3ea0ff;      /* acento Innovación */
-      --chip:#1c2a49;
-      --chipText:#bcd3ff;
-      --ring:#5fb3ff55;
-      --ok:#26c281;
+      --bg:#0a0f20; --card:#0f1a33; --muted:#8ea3c7; --text:#eaf2ff;
+      --brand:#4cc3ff; --chip:#152749; --chipText:#cfe4ff; --ring:#5fb3ff55; --ok:#26c281; --warn:#ffb020;
     }
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif}
@@ -25,45 +18,29 @@
     header p{margin:0;color:var(--muted)}
     .controls{
       display:grid;gap:12px;margin:18px 0 8px;
-      grid-template-columns:1fr min(200px,40%) min(170px,35%);
+      grid-template-columns:1fr min(220px,40%) min(190px,35%);
     }
     @media (max-width:760px){.controls{grid-template-columns:1fr}}
     .input, .select{
       background:var(--card);border:1px solid transparent;color:var(--text);
-      padding:12px 14px;border-radius:12px;outline:none;
-      transition:border .2s, box-shadow .2s;
+      padding:12px 14px;border-radius:12px;outline:none;transition:border .2s, box-shadow .2s;
     }
     .input:focus, .select:focus{border-color:var(--brand);box-shadow:0 0 0 6px var(--ring)}
-    .grid{
-      display:grid;gap:14px;margin-top:14px;
-      grid-template-columns:repeat( auto-fill, minmax(270px,1fr) );
-    }
+    .grid{display:grid;gap:14px;margin-top:14px;grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
     .card{
       background:linear-gradient(180deg,var(--card),#0e1830 80%);
-      border:1px solid #1e2a46;border-radius:16px;padding:14px;
-      box-shadow:0 10px 24px #0006;
+      border:1px solid #1e2a46;border-radius:16px;padding:14px;box-shadow:0 10px 24px #0006
     }
-    .role{
-      display:inline-flex;align-items:center;gap:8px;
-      background:var(--chip);color:var(--chipText);
-      border:1px solid #27406f;border-radius:999px;font-size:12px;
-      padding:6px 10px;margin-bottom:10px
-    }
+    .role{display:inline-flex;align-items:center;gap:8px;background:var(--chip);color:var(--chipText);border:1px solid #27406f;border-radius:999px;font-size:12px;padding:6px 10px;margin-bottom:10px}
     .name{font-weight:700;font-size:18px;line-height:1.2;margin:2px 0 8px}
     .area{color:var(--muted);font-size:13px;margin:0 0 10px}
     .phones{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-    .pill{
-      display:inline-flex;align-items:center;gap:8px;
-      background:#0b2749;border:1px solid #244a7f;color:#dfe9ff;
-      border-radius:12px;padding:8px 10px;font-size:13px
-    }
+    .pill{display:inline-flex;align-items:center;gap:8px;background:#0b2749;border:1px solid #244a7f;color:#dfe9ff;border-radius:12px;padding:8px 10px;font-size:13px}
     .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+    .vacant{display:inline-flex;align-items:center;gap:6px;background:#2a1d07;border:1px solid #6a4a0b;color:#ffd28a;border-radius:10px;padding:6px 8px;font-size:12px}
     .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-    .btn{
-      background:#0f2b52;border:1px solid #2a5795;color:#e6f0ff;
-      border-radius:12px;padding:8px 12px;font-size:13px;cursor:pointer
-    }
-    .btn:hover{filter:brightness(1.15)}
+    .btn{background:#0f2b52;border:1px solid #2a5795;color:#e6f0ff;border-radius:12px;padding:8px 12px;font-size:13px;cursor:pointer}
+    .btn:hover{filter:brightness(1.12)}
     .empty{padding:28px;border:1px dashed #2a3e69;border-radius:16px;text-align:center;color:var(--muted)}
     footer{margin-top:26px;color:var(--muted);font-size:12px}
   </style>
@@ -72,7 +49,7 @@
   <div class="wrap">
     <header>
       <h1>Directorio</h1>
-      <p>Comité Ejecutivo Seccional y órganos auxiliares</p>
+      <p>SInOS – Comité Ejecutivo Seccional y órganos auxiliares (actualizado)</p>
     </header>
 
     <section class="controls" aria-label="Controles de filtrado y búsqueda">
@@ -94,24 +71,26 @@
     <div id="empty" class="empty" hidden>No se encontraron coincidencias. Ajusta tu búsqueda o filtros.</div>
 
     <footer>
-      <span>Tip: puedes hacer clic en un número para llamar desde tu teléfono.</span>
+      <span>Tip: toca un número para llamar o usa “Copiar”.</span>
     </footer>
   </div>
 
   <script>
+    // === Datos 2025 actualizados (fuente oficial del PDF)
+    // Categorías: Secretarías, Comisiones, Subcomisiones
     const DATA = [
       // ===== Secretarías =====
       { n:"Amin Uriel Morales Sánchez", r:"Secretario del Interior y Propaganda", a:"Secretarías", p:["4431170131"] },
       { n:"Arturo Ochoa Huácuz", r:"Secretario de Conflictos", a:"Secretarías", p:["4434338099"] },
       { n:"Carlos Alberto Guerrero Rascón", r:"Secretario de Trabajo", a:"Secretarías", p:["4432161426"] },
       { n:"Azucena Herrera Martínez", r:"Secretario Tesorero", a:"Secretarías", p:["4434092036"] },
-      { n:"J. Guadalupe Hernández Alcalá", r:"Secretario del Exterior", a:"Secretarías", p:["4431550142"] },
+      { n:"Ignacio Agustín Orozco Pérez", r:"Secretario del Exterior", a:"Secretarías", p:["4431113945"] },
       { n:"Laura Ramírez Huitzacua", r:"Secretario de Previsión Social", a:"Secretarías", p:["4521360480"] },
       { n:"Gabriela Durán Negrete", r:"Secretaria de Acción Femenil", a:"Secretarías", p:["4431707957"] },
       { n:"Horacio Peña Alfaro", r:"Secretario de Asuntos Técnicos", a:"Secretarías", p:["4433692053"] },
       { n:"César Augusto Contreras Flores", r:"Secretario de Actas y Acuerdos", a:"Secretarías", p:["4435714140"] },
-      { n:"Guadalupe Jhoseline Bruno Méndez", r:"Secretario de Prensa", a:"Secretarías", p:["4431451130"] },
-      { n:"Berenice Barajas Nieto", r:"Secretario de Puestos Periféricos", a:"Secretarías", p:["4434440740"] },
+      { n:"Yolanda Morelos Palomares", r:"Secretario de Prensa", a:"Secretarías", p:["5612247437"] },
+      { n:"Luz Nayelly Esquivel Martínez", r:"Secretario de Puestos Periféricos", a:"Secretarías", p:["4432244711"] },
       { n:"Cecilio Vanegas Villalobos", r:"Secretario de Admisión y Cambios", a:"Secretarías", p:["4436864553"] },
       { n:"América Hilda Reyes Reyes", r:"Secretario de Capacitación y Adiestramiento", a:"Secretarías", p:["4433884114"] },
       { n:"Carlos Mojica Rodríguez", r:"Secretario de Calidad y Modernización", a:"Secretarías", p:["4431970073"] },
@@ -119,13 +98,13 @@
       // ===== Comisiones =====
       { n:"José Francisco Ruiz Domínguez", r:"Presidente – Comisión de Honor y Justicia", a:"Comisiones", p:["4432219389"] },
       { n:"Irene Guadalupe Velázquez Ochoa", r:"1er. Secretario – Comisión de Honor y Justicia", a:"Comisiones", p:["3515005115"] },
-      { n:"Pablo Ramón Camacho Hernández", r:"2do. Secretario – Comisión de Honor y Justicia", a:"Comisiones", p:["4432590025"] },
+      { n:"VACANTE", r:"2do. Secretario – Comisión de Honor y Justicia", a:"Comisiones", p:[] },
 
       { n:"Fabiola Farías Ambriz", r:"Presidente – Comisión de Hacienda", a:"Comisiones", p:["4432260054"] },
       { n:"María Guadalupe Chávez León", r:"1er. Secretario – Comisión de Hacienda", a:"Comisiones", p:["7531372842"] },
       { n:"María del Rocío Vera Padilla", r:"2do. Secretario – Comisión de Hacienda", a:"Comisiones", p:["7531101489"] },
 
-      { n:"Juan Carlos Servín Juárez", r:"Presidente – Comisión de Vigilancia", a:"Comisiones", p:["4431360280"] },
+      { n:"VACANTE", r:"Presidente – Comisión de Vigilancia", a:"Comisiones", p:[] },
       { n:"Eduardo Bolaños Vázquez", r:"1er. Secretario – Comisión de Vigilancia", a:"Comisiones", p:["5628504227"] },
       { n:"Oscar Emerson Solís Gómez", r:"2do. Secretario – Comisión de Vigilancia", a:"Comisiones", p:["7151432381"] },
 
@@ -141,7 +120,7 @@
       { n:"Lucía Martínez Sandoval", r:"1er. Secretario – Comisión de Acción Política", a:"Comisiones", p:["4521141446"] },
       { n:"Néstor Norberto Sánchez Alonso", r:"2do. Secretario – Comisión de Acción Política", a:"Comisiones", p:["4521122746"] },
 
-      { n:"Ignacio Corona Aguilar", r:"Comisión de Revisión de Plantilla", a:"Comisiones", p:["4433647787"] },
+      { n:"Luis Fernando García Cervantes", r:"Comisión de Revisión de Plantilla", a:"Comisiones", p:["4431611676"] },
 
       // ===== Subcomisiones / Representaciones =====
       { n:"Jorge Héctor Zaragoza Palacios", r:"Representante ante la Subcomisión Mixta de Becas", a:"Subcomisiones", p:["4432027953"] },
@@ -149,17 +128,17 @@
       { n:"Cándido Mora Alcauter", r:"Representante ante la Subcomisión Mixta de Calif. y Selec. de Puestos de Confianza “B”", a:"Subcomisiones", p:["4438399098"] },
       { n:"Juan Onofre Báez", r:"Representante ante la Subcomisión Mixta de Capacitación y Adiestramiento", a:"Subcomisiones", p:["4433570725","4434426018"] },
       { n:"Araceli Barajas Flores", r:"Auxiliar ante la Subcomisión Mixta de Capacitación y Adiestramiento", a:"Subcomisiones", p:["3511075379"] },
-      { n:"Ignacio Agustín Orozco Pérez", r:"Representante ante la Subcomisión Mixta de Seguridad e Higiene", a:"Subcomisiones", p:["4431113945"] },
+      { n:"Betsabé Hernández Flores", r:"Representante ante la Subcomisión Mixta de Seguridad e Higiene", a:"Subcomisiones", p:["4431586796"] },
       { n:"Ruiz Aguilar Carmen Lizeth", r:"Auxiliar ante la Subcomisión Mixta de Seguridad e Higiene", a:"Subcomisiones", p:["4434973554"] },
       { n:"Sergio Ortiz Martínez", r:"Auxiliar ante la Subcomisión Mixta de Seguridad e Higiene", a:"Subcomisiones", p:["3315845837"] },
-      { n:"Imelda Reyes López", r:"Representante ante la Subcomisión Mixta Disciplinaria", a:"Subcomisiones", p:["4435341959"] },
+      { n:"Juan Carlos Servín Juárez", r:"Representante ante la Subcomisión Mixta Disciplinaria", a:"Subcomisiones", p:["4431360280"] },
       { n:"Hilda Ontiveros Cuéllar", r:"Representante ante la Subcomisión Mixta de Escalafón", a:"Subcomisiones", p:["4434245283"] },
-      { n:"Betsabé Hernández Flores", r:"Representante ante la Subcomisión Mixta Paritaria de Protección al Salario", a:"Subcomisiones", p:["4431586796"] },
+      { n:"VACANTE", r:"Representante ante la Subcomisión Mixta Paritaria de Protección al Salario", a:"Subcomisiones", p:[] },
       { n:"José Antonio Carrillo Bejarano", r:"Representante ante la Subcomisión Mixta de Pasajes", a:"Subcomisiones", p:["4431390301"] },
       { n:"Julio César García Salgado", r:"Representante ante la Subcomisión Mixta de Ropa de Trabajo y Uniformes", a:"Subcomisiones", p:["4434092778"] },
       { n:"Gilberto Herrejón González", r:"Representante ante la Subcomisión Mixta de Selección de Recursos Humanos para Cambios de Rama", a:"Subcomisiones", p:["4432416481"] },
       { n:"Humberto Guerrero Linares", r:"Representante ante la Subcomisión Mixta de Tiendas", a:"Subcomisiones", p:["4431398483"] },
-      { n:"Luis Fernando García Cervantes", r:"Representante ante la Subcomisión Mixta de Jubilaciones y Pensiones", a:"Subcomisiones", p:["4431611676"] },
+      { n:"Maricela Navarrete Mora", r:"Representante ante la Subcomisión Mixta de Jubilaciones y Pensiones", a:"Subcomisiones", p:["4431220909"] },
     ];
 
     const $results = document.getElementById('results');
@@ -174,24 +153,29 @@
       return num;
     }
 
+    function phonePills(nums){
+      if(!nums || !nums.length) return `<span class="vacant" title="Sin teléfono">Sin teléfono</span>`;
+      return nums.map(n => `
+        <span class="pill" title="Llamar a ${n}">
+          <span class="dot" aria-hidden="true"></span>
+          <a href="tel:${n}" aria-label="Llamar">${telFmt(n)}</a>
+        </span>
+      `).join('');
+    }
+
     function render(list){
       $results.innerHTML = '';
       if(!list.length){ $empty.hidden=false; return; }
       $empty.hidden = true;
       for(const item of list){
-        const phonePills = (item.p||[]).map(n => `
-          <span class="pill" title="Llamar a ${n}">
-            <span class="dot" aria-hidden="true"></span>
-            <a href="tel:${n}" aria-label="Llamar">${telFmt(n)}</a>
-          </span>
-        `).join('');
+        const isVacant = item.n.toUpperCase?.().includes('VACANTE');
         const card = document.createElement('article');
         card.className='card'; card.setAttribute('role','listitem');
         card.innerHTML = `
           <div class="role">${item.a}</div>
-          <div class="name">${item.n}</div>
+          <div class="name">${isVacant ? `<span class="vacant">VACANTE</span>` : item.n}</div>
           <p class="area">${item.r}</p>
-          <div class="phones">${phonePills}</div>
+          <div class="phones">${phonePills(item.p)}</div>
           <div class="actions">
             ${(item.p||[]).map(n=>`<button class="btn" data-copy="${n}">Copiar</button>`).join('')}
           </div>
@@ -231,6 +215,7 @@
       render(out);
     }
 
+    // Inputs
     $q.addEventListener('input', apply);
     $cat.addEventListener('change', apply);
     $sort.addEventListener('change', apply);
