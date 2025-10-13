@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Miembros — Unidad en Acción</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<style>
+  :root{
+    --bg:#0b1022; --panel:#0e1730; --panel2:#0b1429;
+    --ring:rgba(91,215,242,.35);
+    --txt:#e6fbff; --muted:#aee9f7; --accent:#5bd7f2; --sky:#60a5fa;
+  }
+  *{box-sizing:border-box}
+  html,body{
+    height:100%; margin:0; color:var(--txt);
+    font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
+    background:
+      radial-gradient(70vmax 70vmax at 50% 20%, rgba(96,165,250,.12), transparent 60%),
+      radial-gradient(60vmax 60vmax at 80% 80%, rgba(91,215,242,.10), transparent 60%),
+      linear-gradient(180deg,#0b1220,#0b1022);
+  }
+  .wrap{min-height:100%;display:grid;grid-template-rows:auto 1fr;gap:14px;padding:18px}
+  .head{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:10px 12px; border:1px solid rgba(91,215,242,.25); border-radius:14px;
+    background:linear-gradient(180deg,var(--panel2),#0b1328);
+  }
+  .brand{display:flex; align-items:center; gap:12px}
+  .brand img{width:44px;height:44px;border-radius:10px;object-fit:contain;background:#061022;border:1px solid rgba(91,215,242,.25)}
+  .brand h1{margin:0;font-size:18px;color:#d8fbff}
+  .brand small{display:block;color:#9fdff0}
+  .head .actions{display:flex; gap:8px; align-items:center}
+  .btn{
+    appearance:none; border:1px solid rgba(91,215,242,.35);
+    background:rgba(91,215,242,.14); color:#e6fbff;
+    border-radius:12px; padding:8px 12px; font-size:14px; cursor:pointer;
+    text-decoration:none; display:inline-flex; align-items:center; gap:6px;
+  }
+  .btn:hover{box-shadow:0 0 0 1px var(--ring) inset, 0 10px 24px rgba(11,18,32,.55)}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--sky)); border:none; color:#072133}
+
+  .content{
+    max-width:1000px; margin:0 auto; width:100%;
+    display:grid; gap:14px;
+  }
+  .card{
+    background:linear-gradient(180deg,var(--panel),#0b1328);
+    border:1px solid rgba(91,215,242,.25); border-radius:16px; padding:16px;
+    box-shadow:0 10px 40px rgba(0,0,0,.45);
+  }
+  h2{margin:0 0 10px 0; font-size:18px; color:#d8fbff}
+  .muted{color:#aee9f7}
+  .grid{display:grid; gap:12px}
+  .grid.cols{grid-template-columns:1fr 1fr}
+  @media (max-width:820px){ .grid.cols{grid-template-columns:1fr} }
+
+  .kv{display:grid; grid-template-columns:140px 1fr; gap:8px; align-items:center}
+  .kv b{color:#c8f6ff}
+  code.snip{
+    display:inline-block; padding:6px 8px; border-radius:10px;
+    background:#0b152f; border:1px solid rgba(91,215,242,.25); color:#bfefff; font-size:12px;
+    max-width:100%; overflow:auto;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div class="brand">
+      <img alt="Unidad en Acción" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20Unidad%20en%20Accion.png">
+      <div>
+        <h1>Unidad en Acción</h1>
+        <small>Área exclusiva para miembros</small>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="btn" href="https://chronosbvrx.github.io/InnovacionSindical/">🏠 Inicio</a>
+      <button class="btn primary" id="logoutBtn">⎋ Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="card">
+      <h2>Tu sesión</h2>
+      <p class="muted">Solo tú puedes ver esta información. Si no reconoces la cuenta, cierra sesión.</p>
+      <div class="grid cols">
+        <div class="grid">
+          <div class="kv"><b>Usuario:</b> <span id="uEmail">—</span></div>
+          <div class="kv"><b>ID:</b> <code class="snip" id="uId">—</code></div>
+        </div>
+        <div class="grid">
+          <div class="kv"><b>Estado:</b> <span id="uState">Verificando…</span></div>
+          <div class="kv"><b>Último acceso:</b> <span id="uLast">—</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EJEMPLO: Si quieres poner enlaces a herramientas privadas, ponlos aquí -->
+    <section class="card">
+      <h2>Herramientas</h2>
+      <div class="grid">
+        <a class="btn" href="https://chronosbvrx.github.io/InnovacionSindical/denuncias" target="_blank" rel="noopener">📝 Denuncias y reportes (con IA)</a>
+        <!-- Agrega más accesos aquí -->
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Supabase JS v2 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(async () => {
+  // ===== CONFIG: reemplaza por tu proyecto =====
+  const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";     // <- tu URL
+  const SUPABASE_ANON_KEY = "TU_ANON_PUBLICA";                // <- tu anon key
+  const LOGIN_URL = "login.html"; // a dónde redirigir si no hay sesión
+
+  // Init
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  });
+
+  // Helpers UI
+  const $ = s => document.querySelector(s);
+  const uEmail = $('#uEmail');
+  const uId = $('#uId');
+  const uState = $('#uState');
+  const uLast = $('#uLast');
+
+  // Guardia de sesión
+  try{
+    const { data:{ session } } = await supabase.auth.getSession();
+    if (!session) {
+      // No hay sesión → a login
+      location.href = LOGIN_URL;
+      return;
+    }
+
+    // Mostrar datos
+    const user = session.user;
+    uEmail.textContent = user.email || '(sin correo)';
+    uId.textContent = user.id || '(sin id)';
+    uState.textContent = 'Activa';
+    // último acceso (si available en metadata)
+    const last = user.last_sign_in_at || user.updated_at || user.created_at;
+    if (last) {
+      try {
+        const d = new Date(last);
+        uLast.textContent = d.toLocaleString('es-MX', {hour12:false});
+      } catch { uLast.textContent = last; }
+    }
+
+  }catch(err){
+    console.error(err);
+    // Si falla algo con Supabase, regresa al login por seguridad
+    location.href = LOGIN_URL;
+    return;
+  }
+
+  // Cerrar sesión
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    try{
+      await supabase.auth.signOut();
+    }finally{
+      location.href = LOGIN_URL;
+    }
+  });
+
+  // (Opcional) Reaccionar a cambios de sesión en vivo
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT' || !session) {
+      location.href = LOGIN_URL;
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
