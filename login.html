@@ -183,6 +183,7 @@
     const SUPABASE_URL  = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
     const API_BASE      = "https://sinos-api.onrender.com";
+    const LOGIN_URL     = "https://chronosbvrx.github.io/InnovacionSindical/login.html"; // para redirects
     // ==================
 
     const $ = sel => document.querySelector(sel);
@@ -223,7 +224,7 @@
     }
     if (preErrors.length) setCheck(preErrors);
 
-    // 3) Estado de sesión
+    // 3) Reflejar sesión y escuchar cambios (importante tras email)
     async function reflectSession(){
       if (!supa) { tag($('#authState'), 'Sin cliente', 'err'); return null; }
       const { data:{ session }, error } = await supa.auth.getSession();
@@ -231,6 +232,12 @@
       if (session?.user) tag($('#authState'), `Autenticado: ${session.user.email}`, 'ok');
       else tag($('#authState'), 'No autenticado');
       return session || null;
+    }
+    if (supa) {
+      supa.auth.onAuthStateChange((_event, _session) => {
+        // Se dispara cuando volvemos del correo con #access_token
+        reflectSession();
+      });
     }
 
     // 4) Entrar
@@ -251,7 +258,7 @@
       reflectSession();
     });
 
-    // 5) Crear cuenta
+    // 5) Crear cuenta (con emailRedirectTo → vuelve a este login)
     $('#panel-signup').addEventListener('submit', async (e)=>{
       e.preventDefault();
       if (!supa) { tag($('#state-signup'),'Sin cliente', 'err'); return; }
@@ -260,7 +267,13 @@
       const password = $('#su-pass').value;
       if (!email || !password) { tag($('#state-signup'), 'Completa los campos', 'err'); return; }
       if (password.length < 6) { tag($('#state-signup'), 'Contraseña muy corta', 'err'); return; }
-      const { error } = await supa.auth.signUp({ email, password });
+      const { error } = await supa.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: LOGIN_URL
+        }
+      });
       if (error) tag($('#state-signup'), error.message, 'err');
       else tag($('#state-signup'), 'Revisa tu correo para confirmar', 'ok');
       reflectSession();
