@@ -12,7 +12,7 @@
     :root{
       --c-bg1:#0b1220; --c-bg2:#0b1022; --c-cyan:#5bd7f2; --c-sky:#60a5fa;
       --ring: rgba(91,215,242,.35); --tile: rgba(7,17,35,.6); --tileH: rgba(12,25,55,.7);
-      --topbar: 56px; --dock: 64px;
+      --topbar: 56px;
       --boot-ms: 5200ms;
 
       /* Escalas responsivas */
@@ -20,10 +20,6 @@
       --tile-icon: 58px;         /* móvil */
       --tile-title: 16px;
       --tile-desc: 12px;
-
-      --dock-font: 12px;
-      --dock-padV: 8px;
-      --dock-padH: 12px;
 
       --app-ic: 36px;            /* icono en header de app */
       --mark: 28px;              /* logo topbar */
@@ -36,10 +32,6 @@
         --tile-icon: 72px;       /* icono grande desktop */
         --tile-title: 18px;
         --tile-desc: 13px;
-
-        --dock-font: 13px;
-        --dock-padV: 10px;
-        --dock-padH: 14px;
 
         --app-ic: 44px;
         --mark: 34px;
@@ -69,7 +61,7 @@
     .title small{opacity:.7;margin-left:6px}
     .clock{font-size:12px;color:#a2e7f5}
 
-    .layer{position:fixed; left:0; right:0; top:var(--topbar); bottom:var(--dock); overflow:auto; -webkit-overflow-scrolling:touch;}
+    .layer{position:fixed; left:0; right:0; top:var(--topbar); bottom:0; overflow:auto; -webkit-overflow-scrolling:touch;}
     .wrap{padding:24px 20px;max-width:1200px;margin:0 auto}
     .brand{display:flex;gap:16px;align-items:flex-end;justify-content:space-between}
     .brand h1{margin:0;font-size:26px;font-weight:700;color:#d9fbff}
@@ -87,12 +79,6 @@
     .tile p{margin:0;color:#aee9f7;font-size:var(--tile-desc);opacity:.85}
 
     .tile.ghost{visibility:hidden; pointer-events:none;} /* ocupa espacio para simetría */
-
-    .dock{position:fixed;inset:auto 0 0 0;height:var(--dock);display:flex;align-items:center; border-top:1px solid rgba(91,215,242,.25);background:rgba(9,14,26,.55);backdrop-filter: blur(8px); z-index:30}
-    .dock-inner{max-width:1200px;margin:0 auto;padding:8px 14px;display:flex;gap:10px;justify-content:center;width:100%}
-    .dock button{display:inline-flex;align-items:center;gap:10px;border-radius:14px;padding:var(--dock-padV) var(--dock-padH);background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.32); color:#d9fbff; font-size:var(--dock-font)}
-    .dock button .dock-ic{font-size:18px; line-height:1}
-    @media (min-width:960px){ .dock-inner{gap:12px} .dock button .dock-ic{font-size:20px} }
 
     .app-wrap{max-width:1200px;margin:0 auto;padding:10px 16px;height:100%;display:flex;flex-direction:column}
     .app-head{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px}
@@ -200,11 +186,6 @@
     </div>
   </section>
 
-  <!-- DOCK -->
-  <div class="dock">
-    <div class="dock-inner" id="dock"></div>
-  </div>
-
   <!-- Facebook SDK helper (para Noticias) -->
   <script>
     function loadFacebookSDKOnce(locale='es_LA'){
@@ -270,7 +251,7 @@
           this.appInternal = document.getElementById('app-internal');
           this.btnOpenNew = document.getElementById('btn-open-new');
 
-          this.renderTiles(); this.renderDock();
+          this.renderTiles();
 
           const FIRST_KEY = 'sinos:bootedOnce';
           const qs = new URLSearchParams(location.search);
@@ -337,20 +318,6 @@
           ghost.className='tile ghost';
           wrap.appendChild(ghost);
         }
-      },
-
-      renderDock(){
-        const el=document.getElementById('dock'); el.innerHTML='';
-        APPS.filter(a=>a.quick && !a.hidden).slice(0,5).forEach(a=>{
-          const btn=document.createElement('button');
-          btn.innerHTML = `<span class="dock-ic">${a.icon||'🧩'}</span><span>${a.title}</span>`;
-          if (a.externalDirect && a.href){
-            btn.onclick=()=>window.open(a.href,'_blank','noopener,noreferrer');
-          } else {
-            btn.onclick=()=>this.openApp(a.id);
-          }
-          el.appendChild(btn);
-        });
       },
 
       openApp(id){
