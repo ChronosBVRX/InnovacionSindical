@@ -1,44 +1,304 @@
-```html
-<div class="grow">
-<label for="password">Contraseña</label>
-<input id="password" type="password" placeholder="••••••••" autocomplete="current-password"/>
-</div>
-</div>
-<div class="sp"></div>
-<div class="row">
-<button class="btn accent" id="signup">Crear cuenta</button>
-<button class="btn" id="signin">Entrar</button>
-<button class="btn soft" id="signout">Salir</button>
-<span id="authState" class="tag">No autenticado</span>
-</div>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Innovación Sindical · Acceso</title>
+  <meta name="color-scheme" content="dark"/>
+  <style>
+    :root{
+      --bg1:#0b1220; --bg2:#0b1022; --panel:rgba(7,17,35,.78);
+      --edge:rgba(91,215,242,.35); --edge-soft:rgba(255,255,255,.14);
+      --txt:#e6fbff; --muted:#b9d8e0; --accent:#5bd7f2; --accent-2:#60a5fa;
+      --ok:#00d19a; --err:#ff6b6b; --warn:#ffb020;
+      --shadow:0 20px 60px rgba(0,0,0,.45);
+      --r-xl:18px; --r-lg:14px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
+      color:var(--txt);
+      background:
+        radial-gradient(70vmax 60vmax at 50% 12%, rgba(96,165,250,.16), transparent 60%),
+        radial-gradient(60vmax 60vmax at 80% 80%, rgba(91,215,242,.12), transparent 60%),
+        linear-gradient(180deg,var(--bg1),var(--bg2));
+    }
+    .grid::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;
+      background-image:linear-gradient(to right, rgba(96,165,250,.12) 1px, transparent 1px),
+                       linear-gradient(to bottom, rgba(91,215,242,.10) 1px, transparent 1px);
+      background-size:48px 48px,48px 48px}
 
+    .wrap{min-height:100%;display:grid;place-items:center;padding:24px}
+    .card{
+      width:100%; max-width:880px; background:var(--panel); border:1px solid var(--edge);
+      border-radius:var(--r-xl); box-shadow:var(--shadow); overflow:hidden
+    }
+    .head{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:16px 18px; border-bottom:1px solid var(--edge);
+      background:linear-gradient(180deg, rgba(91,215,242,.10), transparent);
+    }
+    .brand{display:flex; align-items:center; gap:12px}
+    .logo{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;
+      background:linear-gradient(135deg, rgba(96,165,250,.22), rgba(91,215,242,.10));
+      border:1px solid var(--edge)}
+    .brand h1{margin:0;font-size:18px;letter-spacing:.3px}
+    .back{appearance:none;border:1px solid var(--edge-soft);background:transparent;color:var(--txt);
+      padding:9px 12px;border-radius:12px;cursor:pointer}
+    .back:hover{border-color:var(--edge)}
 
-<div class="sp"></div>
-<p class="muted">Si la confirmación por correo está activada en Supabase, valida antes de entrar.</p>
-</section>
+    .body{display:grid; grid-template-columns:1fr; gap:0}
+    @media(min-width:940px){ .body{grid-template-columns:1.05fr .95fr} }
 
+    .panel{
+      padding:20px; border-right:1px solid var(--edge);
+    }
+    @media(max-width:939px){ .panel{border-right:none; border-bottom:1px solid var(--edge)} }
 
-<section class="card" aria-labelledby="sec-prot">
-<h2 id="sec-prot">Probar API protegida</h2>
-<p class="muted">Consulta <code>/profile</code> en tu API (Render) con el token de sesión.</p>
-<div class="row">
-<button class="btn" id="callApi">GET /profile</button>
-<span id="apiStatus" class="tag">Listo</span>
-</div>
-<div class="sp"></div>
-<pre id="apiResult">Sin datos…</pre>
-</section>
-</div>
+    .aside{
+      padding:20px;
+      background:
+        radial-gradient(50vmax 40vmax at 120% 0%, rgba(96,165,250,.12), transparent 60%),
+        linear-gradient(180deg, rgba(3,12,26,.35), transparent);
+    }
 
+    .tabs{display:flex; gap:8px; margin-bottom:14px}
+    .tab{
+      padding:8px 12px; border-radius:999px; font-size:13px; cursor:pointer;
+      border:1px solid var(--edge-soft); background:transparent; color:var(--txt)
+    }
+    .tab[aria-selected="true"]{ border-color:var(--accent); box-shadow:0 0 0 2px rgba(91,215,242,.15) inset }
 
-<section class="card" aria-labelledby="sec-notas" style="margin-top:16px">
-<h2 id="sec-notas">Notas rápidas</h2>
-<ul>
-<li>Este front usa <strong>Supabase Auth</strong> y llama tu <strong>API en Render</strong>.</li>
-<li>Configura CORS en Render: <code>ALLOWED_ORIGIN=https://chronosbvrx.github.io</code>.</li>
-</ul>
-</section>
-</div>
+    label{display:block; font-size:12px; color:var(--muted); margin:8px 0 6px}
+    .row{display:flex; gap:10px; flex-wrap:wrap}
+    .grow{flex:1 1 260px}
+    input{
+      width:100%; padding:12px 13px; border-radius:12px;
+      border:1px solid var(--edge-soft); background:#071327; color:var(--txt); outline:none
+    }
+    input:focus{ border-color:var(--accent) }
+
+    .btn{
+      appearance:none; border:1px solid var(--edge); background:transparent; color:var(--txt);
+      padding:10px 14px; border-radius:12px; cursor:pointer; transition:transform .06s ease;
+      min-width:140px; display:inline-flex; align-items:center; justify-content:center; gap:8px
+    }
+    .btn:hover{ transform:translateY(-1px) }
+    .btn.primary{ border-color:var(--accent) }
+    .btn.link{ border-color:var(--edge-soft) }
+
+    .hint{color:var(--muted); font-size:12px}
+    .note{padding:10px 12px; border:1px dashed var(--edge-soft); border-radius:12px; font-size:12px; color:var(--muted)}
+    .tag{display:inline-flex; align-items:center; gap:6px; padding:5px 9px; border-radius:999px; border:1px solid var(--edge-soft); font-size:12px; color:var(--muted)}
+    .tag.ok{border-color:rgba(0,209,154,.35); color:var(--ok)}
+    .tag.err{border-color:rgba(255,107,107,.35); color:var(--err)}
+
+    .status{display:flex; align-items:center; gap:10px}
+    .eye{position:absolute; right:10px; top:8px; cursor:pointer; font-size:12px; opacity:.8}
+
+    .cta{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .sp8{height:8px} .sp12{height:12px}
+
+    .api{margin-top:8px}
+    pre{white-space:pre-wrap; background:#061227; border:1px dashed rgba(255,255,255,.15); border-radius:12px; padding:12px; max-height:300px; overflow:auto}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="wrap">
+    <div class="card" role="region" aria-labelledby="title">
+      <header class="head">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">◆</div>
+          <h1 id="title">Innovación Sindical · Acceso</h1>
+        </div>
+        <a class="back" href="https://chronosbvrx.github.io/InnovacionSindical/">← Volver al inicio</a>
+      </header>
+
+      <div class="body">
+        <!-- Panel de autenticación -->
+        <section class="panel">
+          <nav class="tabs" role="tablist" aria-label="Modo de acceso">
+            <button class="tab" id="tab-login" role="tab" aria-selected="true" aria-controls="panel-login">Entrar</button>
+            <button class="tab" id="tab-signup" role="tab" aria-selected="false" aria-controls="panel-signup">Crear cuenta</button>
+          </nav>
+
+          <!-- Entrar -->
+          <form id="panel-login" role="tabpanel" aria-labelledby="tab-login">
+            <div class="row">
+              <div class="grow">
+                <label for="login-email">Correo</label>
+                <input id="login-email" type="email" placeholder="tu@correo.com" autocomplete="username" required/>
+              </div>
+              <div class="grow" style="position:relative">
+                <label for="login-pass">Contraseña</label>
+                <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password" required/>
+                <span class="eye" data-toggle="#login-pass">👁</span>
+              </div>
+            </div>
+            <div class="sp12"></div>
+            <div class="cta">
+              <button type="submit" class="btn primary" id="btn-login">Entrar</button>
+              <span class="tag" id="state-login">Listo</span>
+            </div>
+            <div class="sp8"></div>
+            <p class="hint">¿No tienes cuenta? Cambia a <strong>Crear cuenta</strong>.</p>
+          </form>
+
+          <!-- Crear cuenta -->
+          <form id="panel-signup" role="tabpanel" aria-labelledby="tab-signup" hidden>
+            <div class="row">
+              <div class="grow">
+                <label for="su-email">Correo</label>
+                <input id="su-email" type="email" placeholder="tu@correo.com" autocomplete="username" required/>
+              </div>
+              <div class="grow" style="position:relative">
+                <label for="su-pass">Contraseña</label>
+                <input id="su-pass" type="password" placeholder="Mín. 6 caracteres" autocomplete="new-password" minlength="6" required/>
+                <span class="eye" data-toggle="#su-pass">👁</span>
+              </div>
+            </div>
+            <div class="sp12"></div>
+            <div class="cta">
+              <button type="submit" class="btn primary" id="btn-signup">Crear cuenta</button>
+              <span class="tag" id="state-signup">Listo</span>
+            </div>
+            <div class="sp8"></div>
+            <p class="note">Si la confirmación por correo está activada en Supabase, revisa tu bandeja para validar la cuenta.</p>
+          </form>
+        </section>
+
+        <!-- Aside: estado de sesión y demo de API -->
+        <aside class="aside">
+          <h3 style="margin:4px 0 10px">Estado</h3>
+          <div class="status">
+            <span id="authState" class="tag">No autenticado</span>
+            <button class="btn link" id="btn-logout">Salir</button>
+          </div>
+
+          <div class="sp12"></div>
+          <h3 style="margin:0 0 8px">Probar API protegida</h3>
+          <p class="hint">Consulta <code>/profile</code> en tu API de Render con tu token.</p>
+          <div class="cta api">
+            <button class="btn" id="btn-profile">GET /profile</button>
+            <span class="tag" id="apiState">Listo</span>
+          </div>
+          <div class="sp8"></div>
+          <pre id="apiResult">—</pre>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =============== CONFIG ===============
+    const SUPABASE_URL = "https://xxxxxxxxxxxx.supabase.co";   // ⚙️ Supabase → Settings → API → Project URL
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."; // ⚙️ anon public
+    const API_BASE = "https://sinos-api.onrender.com";         // tu servicio en Render
+    // ======================================
+
+    const { createClient } = window.supabase;
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Helpers UI
+    const $ = (q) => document.querySelector(q);
+    const tag = (el, text, cls='') => { el.textContent = text; el.className = 'tag ' + cls; };
+
+    async function reflectSession() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) tag($('#authState'), `Autenticado: ${session.user.email}`, 'ok');
+      else tag($('#authState'), 'No autenticado');
+      return session;
+    }
+
+    // Mostrar/ocultar password
+    document.querySelectorAll('.eye').forEach(e => {
+      e.addEventListener('click', () => {
+        const input = document.querySelector(e.dataset.toggle);
+        if (!input) return;
+        input.type = input.type === 'password' ? 'text' : 'password';
+      });
+    });
+
+    // Tabs
+    const tabLogin = $('#tab-login'), tabSignup = $('#tab-signup');
+    const pnlLogin = $('#panel-login'), pnlSignup = $('#panel-signup');
+    function selectTab(which){
+      const login = which === 'login';
+      tabLogin.setAttribute('aria-selected', login);
+      tabSignup.setAttribute('aria-selected', !login);
+      pnlLogin.hidden = !login;
+      pnlSignup.hidden = login;
+    }
+    tabLogin.addEventListener('click',()=>selectTab('login'));
+    tabSignup.addEventListener('click',()=>selectTab('signup'));
+
+    // Entrar
+    pnlLogin.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const state = $('#state-login');
+      tag(state, 'Validando…');
+      const email = $('#login-email').value.trim();
+      const password = $('#login-pass').value;
+      if (!email || !password) { tag(state, 'Completa los campos', 'err'); return; }
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) { tag(state, error.message, 'err'); }
+      else { tag(state, 'Sesión iniciada', 'ok'); }
+      reflectSession();
+    });
+
+    // Crear cuenta
+    pnlSignup.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const state = $('#state-signup');
+      tag(state, 'Creando…');
+      const email = $('#su-email').value.trim();
+      const password = $('#su-pass').value;
+      if (!email || !password) { tag(state, 'Completa los campos', 'err'); return; }
+      if (password.length < 6) { tag(state, 'La contraseña es muy corta', 'err'); return; }
+
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) { tag(state, error.message, 'err'); }
+      else { tag(state, 'Revisa tu correo para confirmar', 'ok'); }
+      reflectSession();
+    });
+
+    // Salir
+    $('#btn-logout').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      tag($('#state-login'), 'Listo');
+      tag($('#state-signup'), 'Listo');
+      reflectSession();
+    });
+
+    // API protegida
+    $('#btn-profile').addEventListener('click', async () => {
+      const state = $('#apiState');
+      const out = $('#apiResult');
+      tag(state, 'Llamando…');
+      out.textContent = 'Llamando API...';
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { tag(state, 'Sin sesión', 'err'); out.textContent = 'Inicia sesión primero.'; return; }
+
+      try {
+        const res = await fetch(`${API_BASE}/profile`, {
+          headers: { 'Authorization': `Bearer ${session.access_token}` }
+        });
+        const json = await res.json();
+        out.textContent = JSON.stringify(json, null, 2);
+        tag(state, res.ok ? 'OK' : `Error ${res.status}`, res.ok ? 'ok' : 'err');
+      } catch (e) {
+        tag(state, 'Error', 'err');
+        out.textContent = 'Error: ' + e.message;
+      }
+    });
+
+    // Estado inicial
+    reflectSession();
+  </script>
 </body>
 </html>
-```
