@@ -51,9 +51,7 @@
     .body{display:grid; grid-template-columns:1fr; gap:0}
     @media(min-width:940px){ .body{grid-template-columns:1.05fr .95fr} }
 
-    .panel{
-      padding:20px; border-right:1px solid var(--edge);
-    }
+    .panel{ padding:20px; border-right:1px solid var(--edge); }
     @media(max-width:939px){ .panel{border-right:none; border-bottom:1px solid var(--edge)} }
 
     .aside{
@@ -194,9 +192,9 @@
 
   <script>
     // =============== CONFIG ===============
-    const SUPABASE_URL = "https://xxxxxxxxxxxx.supabase.co";   // ⚙️ Supabase → Settings → API → Project URL
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."; // ⚙️ anon public
-    const API_BASE = "https://sinos-api.onrender.com";         // tu servicio en Render
+    const SUPABASE_URL = https://axsncdwshdvsysrpikwj.supabase.co; // ✅ tu Project URL
+    const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs;               // ⚠️ usa la clave ANON (no service_role)
+    const API_BASE = "https://sinos-api.onrender.com";              // ✅ tu API en Render
     // ======================================
 
     const { createClient } = window.supabase;
