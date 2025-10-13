@@ -19,7 +19,6 @@
       radial-gradient(60vmax 60vmax at 80% 80%, rgba(91,215,242,.10), transparent 60%),
       linear-gradient(180deg,#0b1220,#0b1022);
   }
-  /* Top */
   .wrap{min-height:100%;display:grid;grid-template-rows:auto 1fr;gap:14px;padding:18px}
   .head{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
@@ -41,7 +40,6 @@
   .btn:hover{box-shadow:0 0 0 1px var(--ring) inset, 0 10px 24px rgba(11,18,32,.55); transform:translateY(-1px)}
   .btn.primary{background:linear-gradient(90deg,var(--accent),var(--sky)); border:none; color:#072133}
 
-  /* Grid */
   .content{max-width:1200px; margin:0 auto; width:100%; display:grid; gap:14px}
   .grid{display:grid; gap:14px}
   .grid.cols-3{grid-template-columns:2fr 1.2fr 1fr}
@@ -62,9 +60,8 @@
 
   /* Calendario liviano */
   .cal{--b:rgba(91,215,242,.18); --h:#c9f7ff}
-  .cal .head{background:transparent;border:none;padding:0;margin:0 0 8px}
   .cal .bar{display:flex;justify-content:space-between;align-items:center;gap:8px}
-  .cal .bar h3{margin:0;font-size:16px;color:#d8fbff}
+  .cal .bar h2{margin:0}
   .cal .bar .nav button{padding:6px 10px;border-radius:10px;border:1px solid var(--b);background:rgba(91,215,242,.10);color:#d8fbff}
   .cal .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
   .cal .wday{font-size:12px;color:#aee9f7;text-align:center}
@@ -73,20 +70,23 @@
   .cal .day.today{box-shadow:0 0 0 1px rgba(91,215,242,.42) inset}
   .cal .day.muted{opacity:.55}
 
-  /* Perfil */
+  /* Perfil + subida avatar */
   label{font-size:12px;color:#bdefff}
   input{
     width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(91,215,242,.28);
     background:#0a1329;color:#e6fbff;outline:none
   }
   .avatar{display:flex;align-items:center;gap:12px}
-  .avatar img{width:56px;height:56px;border-radius:12px;border:1px solid rgba(91,215,242,.3);background:#061022;object-fit:cover}
+  .avatar img{width:64px;height:64px;border-radius:12px;border:1px solid rgba(91,215,242,.3);background:#061022;object-fit:cover}
+  .drop{
+    border:1px dashed rgba(91,215,242,.35); background:rgba(91,215,242,.06);
+    border-radius:12px; padding:10px; text-align:center; font-size:13px; color:#bfefff;
+  }
+  .drop.drag{background:rgba(91,215,242,.12)}
 
-  /* “En espera” */
   .soon{opacity:.75}
   .soon .btn{pointer-events:none;filter:grayscale(.35)}
 
-  /* Overlay de protección visual */
   .overlay{
     position:fixed; inset:0; display:grid; place-items:center; z-index:50;
     background:radial-gradient(60vmax 60vmax at 50% 40%, rgba(96,165,250,.16), transparent 60%), linear-gradient(180deg,#071122,#0a0f1d);
@@ -102,7 +102,6 @@
     border:3px solid rgba(91,215,242,.25); border-top:3px solid var(--accent); animation:spin .9s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
 
-  /* Snackbar */
   #toast{position:fixed;right:14px;bottom:14px;background:#0b1429;border:1px solid rgba(91,215,242,.25);
     padding:8px 10px;border-radius:10px;font-size:12px;color:#bfefff;z-index:60;opacity:0;transform:translateY(8px);transition:.25s}
   #toast.show{opacity:1;transform:translateY(0)}
@@ -110,7 +109,6 @@
 </head>
 <body>
 <div class="wrap">
-  <!-- Top bar -->
   <header class="head">
     <div class="brand">
       <img alt="Unidad en Acción" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20Unidad%20en%20Accion.png">
@@ -125,7 +123,6 @@
     </div>
   </header>
 
-  <!-- Main -->
   <main class="content">
     <section class="grid cols-3">
       <!-- Calendario -->
@@ -142,15 +139,26 @@
         <div class="grid" id="calDays"></div>
       </article>
 
-      <!-- Perfil -->
+      <!-- Perfil + subida de avatar -->
       <article class="card">
         <h2>Personaliza tu perfil</h2>
-        <p class="muted">Estos datos se guardan en tu <em>user_metadata</em> de Supabase.</p>
+        <p class="muted">Edita tu nombre y sube un avatar. Se guardan en tu <em>user_metadata</em>.</p>
+
         <div class="avatar" style="margin:8px 0 12px">
           <img id="avatarImg" alt="Avatar" src="">
           <div class="pill" id="emailPill">usuario@correo</div>
         </div>
-        <form id="fProfile" class="grid">
+
+        <!-- Subida de avatar -->
+        <div class="grid">
+          <div class="drop" id="dropZone">
+            Arrastra tu imagen aquí o <label for="avatarFile" style="text-decoration:underline; cursor:pointer">selecciónala</label> (JPG/PNG/WebP, máx. 2MB).
+            <input id="avatarFile" type="file" accept="image/png,image/jpeg,image/webp" style="display:none">
+          </div>
+          <progress id="upProgress" max="100" value="0" style="width:100%; display:none"></progress>
+        </div>
+
+        <form id="fProfile" class="grid" style="margin-top:10px">
           <div>
             <label for="displayName">Nombre para mostrar</label>
             <input id="displayName" placeholder="Ej. Ana Gómez">
@@ -204,15 +212,12 @@
   </main>
 </div>
 
-<!-- Overlay de protección visual -->
+<!-- Overlay -->
 <div id="overlay" class="overlay">
   <div class="loader"><div class="spinner"></div></div>
 </div>
-
-<!-- Snackbar -->
 <div id="toast" role="status" aria-live="polite"></div>
 
-<!-- Supabase JS v2 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (async () => {
@@ -220,6 +225,7 @@
   const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
   const LOGIN_URL = "login.html";
+  const AVATAR_BUCKET = "avatars"; // crea este bucket (público)
 
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
@@ -234,24 +240,22 @@
   const uEmail = $('#uEmail'), uId = $('#uId'), uState = $('#sessState'), uLast = $('#uLast'), uExp = $('#uExp');
   const emailPill = $('#emailPill'); const avatarImg = $('#avatarImg');
   const displayNameI = $('#displayName'); const avatarUrlI = $('#avatarUrl'); const pStatus = $('#pStatus');
+  const fileInput = $('#avatarFile'); const dropZone = $('#dropZone'); const upProgress = $('#upProgress');
 
   /* ====== Guardia de sesión + auto logout ====== */
-  let redirected = false, expiryTimer = null;
+  let redirected = false, expiryTimer = null, currentAvatarPath = null;
   const goLogin = () => { if (!redirected) { redirected = true; location.href = LOGIN_URL; } };
 
   function scheduleExpiryWatcher(session){
     clearTimeout(expiryTimer);
-    // Supabase renueva tokens automáticamente; si no lo logra, expulsamos + mensaje
     const nowSec = Math.floor(Date.now()/1000);
-    const exp = session?.expires_at || nowSec + 3600; // fallback
-    const ms = Math.max(0, (exp - nowSec + 5) * 1000); // 5s de colchón
+    const exp = session?.expires_at || nowSec + 3600;
+    const ms = Math.max(0, (exp - nowSec + 5) * 1000);
     expiryTimer = setTimeout(async () => {
-      // Luego de la expiración damos un margen: si el SDK no emitió TOKEN_REFRESHED en ~15s, salir.
       let refreshed = false;
       const guard = setTimeout(()=>{ if(!refreshed){ toast('Sesión expirada. Cerrando…'); supabase.auth.signOut().finally(goLogin); } }, 15000);
       const unsub = supabase.auth.onAuthStateChange((ev)=>{ if(ev==='TOKEN_REFRESHED'){ refreshed = true; clearTimeout(guard); unsub.data?.subscription.unsubscribe(); scheduleExpiryWatcher((supabase.auth.getSession()).data?.session); }});
     }, ms);
-    // Mostrar “expira” legible:
     try{ uExp.textContent = new Date(exp*1000).toLocaleString('es-MX',{hour12:false}); }catch{ uExp.textContent = exp; }
   }
 
@@ -259,6 +263,8 @@
     const user = session.user;
     const meta = user.user_metadata || {};
     const name = meta.display_name || '';
+    currentAvatarPath = meta.avatar_path || null;
+
     uEmail.textContent = user.email || '(sin correo)';
     uId.textContent = user.id || '(sin id)';
     uState.textContent = 'Activa';
@@ -269,12 +275,11 @@
     displayNameI.value = name;
     const aurl = meta.avatar_url || '';
     avatarUrlI.value = aurl;
-    avatarImg.src = aurl || "https://avatars.githubusercontent.com/u/9919?v=4"; // placeholder
+    avatarImg.src = aurl || "https://avatars.githubusercontent.com/u/9919?v=4";
 
     scheduleExpiryWatcher(session);
   }
 
-  // Anti-bucle + overlay
   supabase.auth.onAuthStateChange((event, session) => {
     if (event === 'INITIAL_SESSION') {
       hideOverlay();
@@ -288,15 +293,20 @@
       const s = supabase.auth.getSession().data?.session; if(s) scheduleExpiryWatcher(s);
     } else if (event === 'USER_UPDATED') {
       toast('Perfil actualizado.');
+      // refrescar currentAvatarPath por si cambió
+      supabase.auth.getSession().then(({data})=>{
+        const meta = data?.session?.user?.user_metadata || {};
+        currentAvatarPath = meta.avatar_path || null;
+      });
     }
   });
 
-  /* ====== Logout botón ====== */
+  // Logout botón
   $('#logoutBtn').addEventListener('click', async () => {
     try { await supabase.auth.signOut(); } finally { goLogin(); }
   });
 
-  /* ====== Perfil: guardar ====== */
+  /* ====== Guardar nombre / URL en user_metadata (sin borrar archivos) ====== */
   $('#fProfile').addEventListener('submit', async (e) => {
     e.preventDefault();
     pStatus.textContent = 'Guardando…';
@@ -305,9 +315,74 @@
     const { error } = await supabase.auth.updateUser({ data: { display_name, avatar_url } });
     if (error){ pStatus.textContent = 'Error: ' + error.message; pStatus.classList.add('err'); return; }
     pStatus.textContent = 'Cambios guardados.'; pStatus.classList.remove('err');
-    if (avatar_url) avatarImg.src = avatar_url;
+    if (avatar_url) avatarImg.src = avatar_url + `#${Date.now()}`;
     toast('Perfil guardado');
   });
+
+  /* ====== Subida de avatar a Storage con borrado del anterior ====== */
+  function extFromType(type){
+    if(type === 'image/png') return 'png';
+    if(type === 'image/jpeg') return 'jpg';
+    if(type === 'image/webp') return 'webp';
+    return 'bin';
+  }
+
+  async function handleFile(file){
+    if(!file) return;
+    if(!['image/png','image/jpeg','image/webp'].includes(file.type)) { toast('Formato no soportado'); return; }
+    if(file.size > 2*1024*1024) { toast('El archivo supera 2MB'); return; }
+
+    const { data:{ session } } = await supabase.auth.getSession();
+    if(!session){ toast('Sin sesión'); return; }
+    const uid = session.user.id;
+    const ext = extFromType(file.type);
+    const path = `${uid}/${Date.now()}.${ext}`;
+
+    // progreso (simulado)
+    upProgress.style.display='block'; upProgress.value = 15;
+
+    // Subir nuevo
+    const { error: upErr } = await supabase.storage.from(AVATAR_BUCKET).upload(path, file, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file.type
+    });
+    if (upErr){ upProgress.style.display='none'; toast('Error al subir: ' + upErr.message); return; }
+    upProgress.value = 70;
+
+    // URL pública
+    const { data:pub } = supabase.storage.from(AVATAR_BUCKET).getPublicUrl(path);
+    const url = pub?.publicUrl;
+    if(!url){ upProgress.style.display='none'; toast('No se pudo obtener URL pública'); return; }
+
+    // Si había avatar previo, y es diferente, borrarlo
+    if (currentAvatarPath && currentAvatarPath !== path) {
+      // Intenta borrar (si falla, no detenemos el flujo)
+      await supabase.storage.from(AVATAR_BUCKET).remove([currentAvatarPath]).catch(()=>{});
+    }
+
+    // Actualizar user_metadata con url + path
+    const { error: upUserErr } = await supabase.auth.updateUser({ data: { avatar_url: url, avatar_path: path } });
+    upProgress.value = 100; setTimeout(()=> upProgress.style.display='none', 600);
+    if (upUserErr){ toast('Subido, pero no se pudo actualizar el perfil'); return; }
+
+    // Refrescar UI y memoria local de path
+    currentAvatarPath = path;
+    avatarUrlI.value = url;
+    avatarImg.src = url + `#${Date.now()}`; // cache-bust
+    toast('Avatar actualizado');
+  }
+
+  fileInput.addEventListener('change', (e)=> handleFile(e.target.files?.[0]));
+
+  // Drag & Drop
+  ;['dragenter','dragover'].forEach(ev => dropZone.addEventListener(ev, (e)=>{ e.preventDefault(); e.stopPropagation(); dropZone.classList.add('drag'); }));
+  ;['dragleave','drop'].forEach(ev => dropZone.addEventListener(ev, (e)=>{ e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('drag'); }));
+  dropZone.addEventListener('drop', (e)=> {
+    const file = e.dataTransfer.files?.[0];
+    handleFile(file);
+  });
+  dropZone.addEventListener('click', ()=> fileInput.click());
 
   /* ====== Calendario simple ====== */
   const weekNames = ['L','M','X','J','V','S','D'];
@@ -316,14 +391,12 @@
 
   function renderCalendar(date=new Date()){
     calWeek.innerHTML = ''; calDays.innerHTML = '';
-    // encabezado de semana
     weekNames.forEach(w=>{ const d=document.createElement('div'); d.className='wday'; d.textContent=w; calWeek.appendChild(d); });
-    // datos
     const y = date.getFullYear(), m = date.getMonth();
-    const first = new Date(y,m,1), last = new Date(y,m+1,0);
-    const start = new Date(first); start.setDate(1 - ((first.getDay()+6)%7)); // lunes-based
-    const total = 42; // 6 semanas
-    $('#calToday').textContent = `${monthNames[m]} ${y}`;
+    const first = new Date(y,m,1);
+    const start = new Date(first); start.setDate(1 - ((first.getDay()+6)%7)); // lunes
+    const total = 42;
+    document.getElementById('calToday').textContent = `${monthNames[m]} ${y}`;
     for(let i=0;i<total;i++){
       const d = new Date(start); d.setDate(start.getDate()+i);
       const cell = document.createElement('div'); cell.className='day';
@@ -336,9 +409,12 @@
     }
   }
   renderCalendar(cur);
-  $('#calPrev').onclick = ()=>{ cur.setMonth(cur.getMonth()-1); renderCalendar(cur); };
-  $('#calNext').onclick = ()=>{ cur.setMonth(cur.getMonth()+1); renderCalendar(cur); };
-  $('#calToday').onclick = ()=>{ cur = new Date(); renderCalendar(cur); };
+  document.getElementById('calPrev').onclick = ()=>{ cur.setMonth(cur.getMonth()-1); renderCalendar(cur); };
+  document.getElementById('calNext').onclick = ()=>{ cur.setMonth(cur.getMonth()+1); renderCalendar(cur); };
+  document.getElementById('calToday').onclick = ()=>{ cur = new Date(); renderCalendar(cur); };
+
+  // Oculta overlay si por algo no llegó INITIAL_SESSION (paracaídas)
+  setTimeout(()=> hideOverlay(), 2500);
 
 })();
 </script>
