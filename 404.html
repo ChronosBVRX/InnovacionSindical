@@ -1,0 +1,22 @@
+```html
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Redirigiendo…</title>
+<script>
+// Redirige al index del subpath conservando path como query
+(function(){
+var l = window.location;
+var base = '/InnovacionSindical/';
+// Si usas una única página (index.html), manda todo allí con ?p=path
+var newUrl = base + 'index.html?p=' + encodeURIComponent(l.pathname.replace(base,'')) + l.search + l.hash;
+// Si no tienes index.html SPA, puedes cambiarlo a login.html
+// var newUrl = base + 'login.html?p=' + encodeURIComponent(l.pathname.replace(base,'')) + l.search + l.hash;
+window.location.replace(newUrl);
+})();
+</script>
+</head>
+<body>Redirigiendo…</body>
+</html>
+```
