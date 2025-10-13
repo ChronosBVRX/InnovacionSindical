@@ -2,14 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Acceso — Unidad en Acción</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Unidad en Acción — Acceso</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <style>
   :root{
-    --bg:#0b1022; --panel:#0e1730; --panel2:#0b1429;
-    --ring:rgba(91,215,242,.35);
-    --txt:#e6fbff; --muted:#aee9f7; --accent:#5bd7f2; --sky:#60a5fa;
+    --bg:#0b1022; --panel:#0e1730; --ring:rgba(91,215,242,.35);
+    --txt:#e6fbff; --muted:#aee9f7; --accent:#5bd7f2; --sky:#60a5fa; --err:#ff7b7b;
   }
   *{box-sizing:border-box}
   html,body{
@@ -20,186 +19,199 @@
       radial-gradient(60vmax 60vmax at 80% 80%, rgba(91,215,242,.10), transparent 60%),
       linear-gradient(180deg,#0b1220,#0b1022);
   }
-  .grid-bg::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;
-    background-image:linear-gradient(to right, rgba(96,165,250,.12) 1px, transparent 1px),
-                     linear-gradient(to bottom, rgba(91,215,242,.10) 1px, transparent 1px);
-    background-size:48px 48px,48px 48px}
-  .wrap{min-height:100%;display:grid;place-items:center;padding:20px}
+  .wrap{max-width:980px;margin:0 auto;padding:22px}
   .card{
-    width:min(920px,95vw); background:linear-gradient(180deg,var(--panel),#0b1328);
-    border:1px solid rgba(91,215,242,.28); border-radius:20px; overflow:hidden;
-    box-shadow:0 10px 40px rgba(0,0,0,.45)
+    background:linear-gradient(180deg,var(--panel),#0b1328);
+    border:1px solid rgba(91,215,242,.25); border-radius:16px; padding:16px;
+    box-shadow:0 10px 40px rgba(0,0,0,.45);
   }
-  .head{
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    padding:14px 16px; border-bottom:1px solid rgba(91,215,242,.25);
-    background:linear-gradient(180deg,var(--panel2),transparent)
-  }
-  .brand{display:flex; align-items:center; gap:12px}
-  .brand img{width:42px;height:42px;border-radius:10px;object-fit:contain;background:#061022;border:1px solid rgba(91,215,242,.25)}
-  .brand h1{margin:0;font-size:18px;color:#d8fbff}
-  .brand small{display:block;color:#9fdff0;font-weight:500;margin-top:2px}
-  .back{font-size:13px; color:#c8f6ff; background:rgba(91,215,242,.14);
-    border:1px solid rgba(91,215,242,.32); padding:8px 10px; border-radius:10px; text-decoration:none}
-  .body{display:grid; grid-template-columns:1.1fr .9fr; gap:0; min-height:380px}
-  @media (max-width:860px){ .body{grid-template-columns:1fr} }
-  .col{padding:16px}
-  .left{border-right:1px solid rgba(91,215,242,.16)}
-  .tabs{display:flex;gap:10px;margin-bottom:12px}
-  .tab{appearance:none;border:1px solid rgba(91,215,242,.35); background:rgba(91,215,242,.14);
-    color:#e6fbff;border-radius:12px;padding:8px 12px;font-size:14px;cursor:pointer}
-  .tab.active{background:linear-gradient(90deg,var(--accent),var(--sky)); color:#072133; border:none}
-  form{display:grid;gap:10px}
-  label{font-size:12px;color:#bdefff}
-  input{
-    width:100%;padding:12px;border-radius:12px;border:1px solid rgba(91,215,242,.28);
+  .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand img{width:40px;height:40px;border-radius:10px;border:1px solid rgba(91,215,242,.25);background:#071022;object-fit:contain}
+  h1{margin:0;font-size:18px;color:#d8fbff}
+  .muted{color:#aee9f7}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+  .tabs{display:flex;gap:8px;margin:8px 0 12px}
+  .tab{appearance:none;border:1px solid rgba(91,215,242,.35);background:rgba(91,215,242,.14);color:#e6fbff;border-radius:12px;padding:8px 12px;cursor:pointer}
+  .tab.active{background:linear-gradient(90deg,var(--accent),var(--sky));border:none;color:#072133}
+
+  label{display:block;font-size:12px;color:#bdefff;margin:6px 0 4px}
+  input,select{
+    width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(91,215,242,.28);
     background:#0a1329;color:#e6fbff;outline:none
   }
-  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .grid-1{grid-column:1/-1}
+  @media(max-width:760px){ .grid{grid-template-columns:1fr} }
   .btn{appearance:none;border:1px solid rgba(91,215,242,.45);background:rgba(91,215,242,.14);
-    color:#e6fbff;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer}
+       color:#e6fbff;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer}
   .btn.primary{background:linear-gradient(90deg,var(--accent),var(--sky));border:none;color:#072133}
-  .hint{font-size:12px;color:#9edff0}
-  .status{margin-top:10px;font-size:13px}
-  .status.ok{color:#46d19e} .status.err{color:#ff7b7b}
-  .panel{
-    background:linear-gradient(180deg,#0b162e,#0b1429);
-    border:1px solid rgba(91,215,242,.22); border-radius:14px; padding:12px
-  }
-  .mute{color:#9fdff0; font-size:13px}
-  .kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;
-    border:1px solid rgba(91,215,242,.35); background:rgba(91,215,242,.12); color:#c7f7ff}
+  .error{color:var(--err);font-size:13px;margin-top:8px}
+  .hint{font-size:12px;color:#9fdff0}
 </style>
 </head>
 <body>
-<div class="grid-bg"></div>
-<div class="wrap">
-  <section class="card">
-    <div class="head">
-      <div class="brand">
-        <img alt="Unidad en Acción" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20Unidad%20en%20Accion.png">
+  <div class="wrap">
+    <div class="card">
+      <div class="head">
+        <div class="brand">
+          <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20Unidad%20en%20Accion.png" alt="Unidad en Acción">
+          <div>
+            <h1>Unidad en Acción</h1>
+            <div class="muted">Acceso a miembros</div>
+          </div>
+        </div>
+        <a class="btn" href="https://chronosbvrx.github.io/InnovacionSindical/">← Volver al inicio</a>
+      </div>
+
+      <div class="tabs">
+        <button id="tabLogin" class="tab active" type="button">Entrar</button>
+        <button id="tabSignup" class="tab" type="button">Crear cuenta</button>
+      </div>
+
+      <!-- FORM LOGIN -->
+      <form id="fLogin" class="grid" autocomplete="on">
+        <div class="grid-1">
+          <label for="liEmail">Correo</label>
+          <input id="liEmail" type="email" placeholder="tu@correo.com" required>
+        </div>
+        <div class="grid-1">
+          <label for="liPass">Contraseña</label>
+          <input id="liPass" type="password" placeholder="••••••••" required>
+        </div>
+        <div class="grid-1 row">
+          <button class="btn primary" type="submit">Entrar</button>
+          <span class="hint">¿Nuevo? cambia a “Crear cuenta”.</span>
+        </div>
+        <div id="liErr" class="grid-1 error" role="alert"></div>
+      </form>
+
+      <!-- FORM SIGNUP -->
+      <form id="fSignup" class="grid" style="display:none" autocomplete="on">
         <div>
-          <h1>Unidad en Acción</h1>
-          <small>Acceso a miembros</small>
+          <label for="suName">Nombre para mostrar</label>
+          <input id="suName" placeholder="Ej. Ana Gómez" required>
         </div>
-      </div>
-      <a class="back" href="https://chronosbvrx.github.io/InnovacionSindical/">← Volver al inicio</a>
+        <div>
+          <label for="suPhone">Teléfono</label>
+          <input id="suPhone" type="tel" inputmode="tel" placeholder="10 dígitos" pattern="^[0-9+\-\s()]{7,20}$" required>
+        </div>
+
+        <div>
+          <label for="suBirth">Fecha de cumpleaños</label>
+          <input id="suBirth" type="date" required>
+        </div>
+        <div>
+          <label for="suCategoria">Categoría</label>
+          <input id="suCategoria" placeholder="Ej. Enfermera General A" required>
+        </div>
+
+        <div class="grid-1">
+          <label for="suAdscripcion">Adscripción</label>
+          <input id="suAdscripcion" placeholder="Ej. HGZ No. XX, Urgencias" required>
+        </div>
+
+        <div class="grid-1"><hr style="border:none;border-top:1px solid rgba(91,215,242,.25)"></div>
+
+        <div>
+          <label for="suEmail">Correo</label>
+          <input id="suEmail" type="email" placeholder="tu@correo.com" required>
+        </div>
+        <div>
+          <label for="suPass">Contraseña</label>
+          <input id="suPass" type="password" minlength="6" placeholder="Mínimo 6 caracteres" required>
+        </div>
+
+        <div class="grid-1 row">
+          <button class="btn primary" type="submit">Crear cuenta</button>
+          <span class="hint">Te enviaremos un correo para confirmar.</span>
+        </div>
+        <div id="suErr" class="grid-1 error" role="alert"></div>
+      </form>
     </div>
+  </div>
 
-    <div class="body">
-      <div class="col left">
-        <div class="tabs">
-          <button id="tabLogin" class="tab active" type="button">Entrar</button>
-          <button id="tabSignup" class="tab" type="button">Crear cuenta</button>
-        </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  (()=>{
+    /* ====== CONFIG ====== */
+    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    const REDIRECT_AFTER_LOGIN = "miembros.html";
 
-        <!-- Login -->
-        <form id="formLogin" autocomplete="on">
-          <div>
-            <label for="liEmail">Correo</label>
-            <input id="liEmail" type="email" placeholder="tu@correo.com" required>
-          </div>
-          <div>
-            <label for="liPass">Contraseña</label>
-            <input id="liPass" type="password" placeholder="********" required>
-          </div>
-          <div class="row">
-            <button class="btn primary" type="submit">Entrar</button>
-            <span class="hint">¿Nuevo? cambia a “Crear cuenta”.</span>
-          </div>
-          <div id="liStatus" class="status"></div>
-        </form>
-
-        <!-- Signup -->
-        <form id="formSignup" style="display:none" autocomplete="on">
-          <div class="panel" style="margin-bottom:10px">
-            <span class="mute">Crea tu cuenta con correo y contraseña. Te enviaremos un correo de verificación.</span>
-          </div>
-          <div>
-            <label for="suEmail">Correo</label>
-            <input id="suEmail" type="email" placeholder="tu@correo.com" required>
-          </div>
-          <div>
-            <label for="suPass">Contraseña</label>
-            <input id="suPass" type="password" placeholder="Mínimo 6 caracteres" minlength="6" required>
-          </div>
-          <div class="row">
-            <button class="btn primary" type="submit">Crear cuenta</button>
-            <span class="hint">Revisa tu bandeja para confirmar.</span>
-          </div>
-          <div id="suStatus" class="status"></div>
-        </form>
-      </div>
-
-      <div class="col">
-        <div class="panel">
-          <p class="mute">Acceso seguro con Supabase.</p>
-          <div class="kpi">
-            <div><div class="pill">🔐 Datos cifrados</div></div>
-            <div><div class="pill">🛡️ Sesión protegida</div></div>
-          </div>
-          <hr style="border:none;height:1px;background:rgba(91,215,242,.18);margin:12px 0">
-          <p class="mute">¿Problemas para entrar? Verifica tu correo y contraseña. Si creaste cuenta, primero confirma el correo desde el mensaje que te enviamos.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-(() => {
-  // === TUS CREDENCIALES ===
-  const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-  const MEMBERS_URL = "miembros.html";
-
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-  });
-
-  const $ = s => document.querySelector(s);
-  const setMsg = (el, msg, kind='') => { el.textContent = msg||""; el.className = "status"+(kind?(" "+kind):""); };
-
-  // Tabs
-  const tabLogin = $('#tabLogin'), tabSignup = $('#tabSignup'),
-        formLogin = $('#formLogin'), formSignup = $('#formSignup');
-  tabLogin.addEventListener('click', ()=>{ tabLogin.classList.add('active'); tabSignup.classList.remove('active'); formLogin.style.display=''; formSignup.style.display='none'; setMsg($('#liStatus'),""); setMsg($('#suStatus'),""); });
-  tabSignup.addEventListener('click', ()=>{ tabSignup.classList.add('active'); tabLogin.classList.remove('active'); formSignup.style.display=''; formLogin.style.display='none'; setMsg($('#liStatus'),""); setMsg($('#suStatus'),""); });
-
-  // ✅ Anti-bucle: solo redirige cuando se emite INITIAL_SESSION con sesión
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'INITIAL_SESSION' && session) {
-      setTimeout(()=> location.href = MEMBERS_URL, 150);
-    }
-  });
-
-  // Entrar
-  formLogin.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = $('#liEmail').value.trim(), password = $('#liPass').value;
-    setMsg($('#liStatus'), 'Validando…');
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return setMsg($('#liStatus'), 'Error: ' + (error.message || 'No se pudo iniciar sesión'),'err');
-    setMsg($('#liStatus'), '¡Bienvenido! Redirigiendo…','ok');
-    setTimeout(()=> location.href = MEMBERS_URL, 400);
-  });
-
-  // Crear cuenta
-  formSignup.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = $('#suEmail').value.trim(), password = $('#suPass').value;
-    setMsg($('#suStatus'), 'Creando cuenta…');
-    const { error } = await supabase.auth.signUp({
-      email, password,
-      options: { emailRedirectTo: window.location.href.split('#')[0] }
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
-    if (error) return setMsg($('#suStatus'), 'Error: ' + (error.message || 'No se pudo crear la cuenta'),'err');
-    setMsg($('#suStatus'), 'Cuenta creada. Revisa tu correo y confirma para poder iniciar sesión.','ok');
-    tabLogin.click();
-  });
-})();
-</script>
+
+    /* ====== UI ====== */
+    const $ = s => document.querySelector(s);
+    const fLogin = $('#fLogin'), fSignup = $('#fSignup');
+    const tabLogin = $('#tabLogin'), tabSignup = $('#tabSignup');
+    const liErr = $('#liErr'), suErr = $('#suErr');
+
+    function showLogin(){ fLogin.style.display='grid'; fSignup.style.display='none'; tabLogin.classList.add('active'); tabSignup.classList.remove('active'); liErr.textContent=''; suErr.textContent=''; }
+    function showSignup(){ fLogin.style.display='none'; fSignup.style.display='grid'; tabSignup.classList.add('active'); tabLogin.classList.remove('active'); liErr.textContent=''; suErr.textContent=''; }
+    tabLogin.addEventListener('click', showLogin);
+    tabSignup.addEventListener('click', showSignup);
+
+    // Si ya hay sesión → redirigir
+    supabase.auth.getSession().then(({data})=>{
+      if (data?.session) location.href = REDIRECT_AFTER_LOGIN;
+    });
+
+    /* ====== LOGIN ====== */
+    fLogin.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      liErr.textContent = '';
+      const email = $('#liEmail').value.trim();
+      const password = $('#liPass').value;
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error){ liErr.textContent = 'Error: ' + (error.message || 'No se pudo iniciar sesión'); return; }
+
+      // ok
+      location.href = REDIRECT_AFTER_LOGIN;
+    });
+
+    /* ====== SIGNUP (con metadatos extra) ====== */
+    fSignup.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      suErr.textContent = '';
+
+      const display_name = $('#suName').value.trim();
+      const phone        = $('#suPhone').value.trim();
+      const birthdate    = $('#suBirth').value;       // YYYY-MM-DD
+      const categoria    = $('#suCategoria').value.trim();
+      const adscripcion  = $('#suAdscripcion').value.trim();
+
+      const email        = $('#suEmail').value.trim();
+      const password     = $('#suPass').value;
+
+      // Validación básica
+      if (!display_name || !phone || !birthdate || !categoria || !adscripcion){
+        suErr.textContent = 'Completa todos los campos del perfil.'; return;
+      }
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { display_name, phone, birthdate, categoria, adscripcion }
+          // Si quieres correos con una URL de redirección personalizada:
+          // emailRedirectTo: "https://tu-dominio/miembros.html"
+        }
+      });
+
+      if (error){ suErr.textContent = 'Error: ' + (error.message || 'No se pudo crear la cuenta'); return; }
+
+      alert('¡Cuenta creada! Revisa tu correo para confirmar la dirección. Después, inicia sesión.');
+      showLogin();
+      // Cargamos email en login para comodidad
+      $('#liEmail').value = email;
+    });
+
+  })();
+  </script>
 </body>
 </html>
