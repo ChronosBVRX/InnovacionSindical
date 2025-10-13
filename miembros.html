@@ -225,7 +225,7 @@
   const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
   const LOGIN_URL = "login.html";
-  const AVATAR_BUCKET = "avatars"; // crea este bucket (público)
+  const AVATAR_BUCKET = "avatars"; // Storage bucket
 
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
@@ -293,7 +293,6 @@
       const s = supabase.auth.getSession().data?.session; if(s) scheduleExpiryWatcher(s);
     } else if (event === 'USER_UPDATED') {
       toast('Perfil actualizado.');
-      // refrescar currentAvatarPath por si cambió
       supabase.auth.getSession().then(({data})=>{
         const meta = data?.session?.user?.user_metadata || {};
         currentAvatarPath = meta.avatar_path || null;
@@ -306,7 +305,7 @@
     try { await supabase.auth.signOut(); } finally { goLogin(); }
   });
 
-  /* ====== Guardar nombre / URL en user_metadata (sin borrar archivos) ====== */
+  /* ====== Guardar nombre/URL en user_metadata (sin borrar archivos) ====== */
   $('#fProfile').addEventListener('submit', async (e) => {
     e.preventDefault();
     pStatus.textContent = 'Guardando…';
@@ -357,7 +356,6 @@
 
     // Si había avatar previo, y es diferente, borrarlo
     if (currentAvatarPath && currentAvatarPath !== path) {
-      // Intenta borrar (si falla, no detenemos el flujo)
       await supabase.storage.from(AVATAR_BUCKET).remove([currentAvatarPath]).catch(()=>{});
     }
 
@@ -374,14 +372,9 @@
   }
 
   fileInput.addEventListener('change', (e)=> handleFile(e.target.files?.[0]));
-
-  // Drag & Drop
   ;['dragenter','dragover'].forEach(ev => dropZone.addEventListener(ev, (e)=>{ e.preventDefault(); e.stopPropagation(); dropZone.classList.add('drag'); }));
   ;['dragleave','drop'].forEach(ev => dropZone.addEventListener(ev, (e)=>{ e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('drag'); }));
-  dropZone.addEventListener('drop', (e)=> {
-    const file = e.dataTransfer.files?.[0];
-    handleFile(file);
-  });
+  dropZone.addEventListener('drop', (e)=> { const file = e.dataTransfer.files?.[0]; handleFile(file); });
   dropZone.addEventListener('click', ()=> fileInput.click());
 
   /* ====== Calendario simple ====== */
