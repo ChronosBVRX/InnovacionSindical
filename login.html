@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Innovación Sindical · Acceso</title>
+  <title>Innovación Sindical · Acceso (Modo Seguro)</title>
   <meta name="color-scheme" content="dark"/>
   <style>
     :root{
@@ -12,7 +12,7 @@
       --txt:#e6fbff; --muted:#b9d8e0; --accent:#5bd7f2; --accent-2:#60a5fa;
       --ok:#00d19a; --err:#ff6b6b; --warn:#ffb020;
       --shadow:0 20px 60px rgba(0,0,0,.45);
-      --r-xl:18px; --r-lg:14px;
+      --r-xl:18px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -28,10 +28,9 @@
       background-image:linear-gradient(to right, rgba(96,165,250,.12) 1px, transparent 1px),
                        linear-gradient(to bottom, rgba(91,215,242,.10) 1px, transparent 1px);
       background-size:48px 48px,48px 48px}
-
     .wrap{min-height:100%;display:grid;place-items:center;padding:24px}
     .card{
-      width:100%; max-width:880px; background:var(--panel); border:1px solid var(--edge);
+      width:100%; max-width:920px; background:var(--panel); border:1px solid var(--edge);
       border-radius:var(--r-xl); box-shadow:var(--shadow); overflow:hidden
     }
     .head{
@@ -49,23 +48,16 @@
     .back:hover{border-color:var(--edge)}
 
     .body{display:grid; grid-template-columns:1fr; gap:0}
-    @media(min-width:940px){ .body{grid-template-columns:1.05fr .95fr} }
+    @media(min-width:940px){ .body{grid-template-columns:1.1fr .9fr} }
 
     .panel{ padding:20px; border-right:1px solid var(--edge); }
     @media(max-width:939px){ .panel{border-right:none; border-bottom:1px solid var(--edge)} }
 
-    .aside{
-      padding:20px;
-      background:
-        radial-gradient(50vmax 40vmax at 120% 0%, rgba(96,165,250,.12), transparent 60%),
-        linear-gradient(180deg, rgba(3,12,26,.35), transparent);
-    }
+    .aside{ padding:20px; }
 
     .tabs{display:flex; gap:8px; margin-bottom:14px}
-    .tab{
-      padding:8px 12px; border-radius:999px; font-size:13px; cursor:pointer;
-      border:1px solid var(--edge-soft); background:transparent; color:var(--txt)
-    }
+    .tab{ padding:8px 12px; border-radius:999px; font-size:13px; cursor:pointer;
+      border:1px solid var(--edge-soft); background:transparent; color:var(--txt) }
     .tab[aria-selected="true"]{ border-color:var(--accent); box-shadow:0 0 0 2px rgba(91,215,242,.15) inset }
 
     label{display:block; font-size:12px; color:var(--muted); margin:8px 0 6px}
@@ -86,21 +78,15 @@
     .btn.primary{ border-color:var(--accent) }
     .btn.link{ border-color:var(--edge-soft) }
 
-    .hint{color:var(--muted); font-size:12px}
-    .note{padding:10px 12px; border:1px dashed var(--edge-soft); border-radius:12px; font-size:12px; color:var(--muted)}
-    .tag{display:inline-flex; align-items:center; gap:6px; padding:5px 9px; border-radius:999px; border:1px solid var(--edge-soft); font-size:12px; color:var(--muted)}
-    .tag.ok{border-color:rgba(0,209,154,.35); color:var(--ok)}
-    .tag.err{border-color:rgba(255,107,107,.35); color:var(--err)}
-
-    .status{display:flex; align-items:center; gap:10px}
-    .eye{position:absolute; right:10px; top:8px; cursor:pointer; font-size:12px; opacity:.8}
-
-    .cta{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-    .sp8{height:8px} .sp12{height:12px}
-
-    .api{margin-top:8px}
+    .tag{display:inline-flex; align-items:center; gap:6px; padding:5px 9px; border-radius:999px; border:1px solid var(--edge-soft); font-size:12px; color:#b9d8e0}
+    .ok{border-color:rgba(0,209,154,.35); color:#00d19a}
+    .err{border-color:rgba(255,107,107,.35); color:#ff6b6b}
+    .muted{color:#b9d8e0; font-size:12px}
     pre{white-space:pre-wrap; background:#061227; border:1px dashed rgba(255,255,255,.15); border-radius:12px; padding:12px; max-height:300px; overflow:auto}
+    .box{border:1px dashed var(--edge-soft);border-radius:12px;padding:10px}
   </style>
+
+  <!-- SDK Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -116,7 +102,7 @@
       </header>
 
       <div class="body">
-        <!-- Panel de autenticación -->
+        <!-- Panel -->
         <section class="panel">
           <nav class="tabs" role="tablist" aria-label="Modo de acceso">
             <button class="tab" id="tab-login" role="tab" aria-selected="true" aria-controls="panel-login">Entrar</button>
@@ -130,19 +116,18 @@
                 <label for="login-email">Correo</label>
                 <input id="login-email" type="email" placeholder="tu@correo.com" autocomplete="username" required/>
               </div>
-              <div class="grow" style="position:relative">
+              <div class="grow">
                 <label for="login-pass">Contraseña</label>
                 <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password" required/>
-                <span class="eye" data-toggle="#login-pass">👁</span>
               </div>
             </div>
-            <div class="sp12"></div>
-            <div class="cta">
+            <div style="height:12px"></div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
               <button type="submit" class="btn primary" id="btn-login">Entrar</button>
               <span class="tag" id="state-login">Listo</span>
             </div>
-            <div class="sp8"></div>
-            <p class="hint">¿No tienes cuenta? Cambia a <strong>Crear cuenta</strong>.</p>
+            <div style="height:8px"></div>
+            <p class="muted">¿No tienes cuenta? Cambia a <strong>Crear cuenta</strong>.</p>
           </form>
 
           <!-- Crear cuenta -->
@@ -152,150 +137,162 @@
                 <label for="su-email">Correo</label>
                 <input id="su-email" type="email" placeholder="tu@correo.com" autocomplete="username" required/>
               </div>
-              <div class="grow" style="position:relative">
+              <div class="grow">
                 <label for="su-pass">Contraseña</label>
                 <input id="su-pass" type="password" placeholder="Mín. 6 caracteres" autocomplete="new-password" minlength="6" required/>
-                <span class="eye" data-toggle="#su-pass">👁</span>
               </div>
             </div>
-            <div class="sp12"></div>
-            <div class="cta">
+            <div style="height:12px"></div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
               <button type="submit" class="btn primary" id="btn-signup">Crear cuenta</button>
               <span class="tag" id="state-signup">Listo</span>
             </div>
-            <div class="sp8"></div>
-            <p class="note">Si la confirmación por correo está activada en Supabase, revisa tu bandeja para validar la cuenta.</p>
+            <div style="height:8px"></div>
+            <div class="box muted">Si la confirmación por correo está activada en Supabase, revisa tu bandeja para validar la cuenta.</div>
           </form>
         </section>
 
-        <!-- Aside: estado de sesión y demo de API -->
+        <!-- Aside -->
         <aside class="aside">
           <h3 style="margin:4px 0 10px">Estado</h3>
-          <div class="status">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
             <span id="authState" class="tag">No autenticado</span>
             <button class="btn link" id="btn-logout">Salir</button>
           </div>
 
-          <div class="sp12"></div>
+          <div style="height:12px"></div>
           <h3 style="margin:0 0 8px">Probar API protegida</h3>
-          <p class="hint">Consulta <code>/profile</code> en tu API de Render con tu token.</p>
-          <div class="cta api">
+          <p class="muted">Consulta <code>/profile</code> en tu API de Render con tu token.</p>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
             <button class="btn" id="btn-profile">GET /profile</button>
             <span class="tag" id="apiState">Listo</span>
           </div>
-          <div class="sp8"></div>
+          <div style="height:8px"></div>
           <pre id="apiResult">—</pre>
+
+          <div style="height:12px"></div>
+          <h3 style="margin:0 0 8px">Chequeos</h3>
+          <div id="checks" class="box muted">Cargando chequeos…</div>
         </aside>
       </div>
     </div>
   </div>
 
   <script>
-    // =============== CONFIG ===============
-    const SUPABASE_URL = https://axsncdwshdvsysrpikwj.supabase.co; // ✅ tu Project URL
-    const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs;               // ⚠️ usa la clave ANON (no service_role)
-    const API_BASE = https://sinos-api.onrender.com;              // ✅ tu API en Render
-    // ======================================
+    // ===== CONFIG =====
+    const SUPABASE_URL  = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    const API_BASE      = "https://sinos-api.onrender.com";
+    // ==================
 
-    const { createClient } = window.supabase;
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Helpers UI
-    const $ = (q) => document.querySelector(q);
+    const $ = sel => document.querySelector(sel);
     const tag = (el, text, cls='') => { el.textContent = text; el.className = 'tag ' + cls; };
 
-    async function reflectSession() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) tag($('#authState'), `Autenticado: ${session.user.email}`, 'ok');
-      else tag($('#authState'), 'No autenticado');
-      return session;
-    }
-
-    // Mostrar/ocultar password
-    document.querySelectorAll('.eye').forEach(e => {
-      e.addEventListener('click', () => {
-        const input = document.querySelector(e.dataset.toggle);
-        if (!input) return;
-        input.type = input.type === 'password' ? 'text' : 'password';
-      });
-    });
-
     // Tabs
-    const tabLogin = $('#tab-login'), tabSignup = $('#tab-signup');
-    const pnlLogin = $('#panel-login'), pnlSignup = $('#panel-signup');
+    $('#tab-login').onclick = ()=> selectTab('login');
+    $('#tab-signup').onclick = ()=> selectTab('signup');
     function selectTab(which){
       const login = which === 'login';
-      tabLogin.setAttribute('aria-selected', login);
-      tabSignup.setAttribute('aria-selected', !login);
-      pnlLogin.hidden = !login;
-      pnlSignup.hidden = login;
+      $('#tab-login').setAttribute('aria-selected', login);
+      $('#tab-signup').setAttribute('aria-selected', !login);
+      $('#panel-login').hidden = !login;
+      $('#panel-signup').hidden = login;
     }
-    tabLogin.addEventListener('click',()=>selectTab('login'));
-    tabSignup.addEventListener('click',()=>selectTab('signup'));
 
-    // Entrar
-    pnlLogin.addEventListener('submit', async (e) => {
+    // Chequeos visibles
+    const checks = $('#checks');
+    function setCheck(lines){ checks.innerHTML = lines.map(l=>`• ${l}`).join('<br>'); }
+
+    // 1) Validaciones previas
+    const preErrors = [];
+    if (!window.supabase) preErrors.push('❌ No se cargó supabase-js (CDN).');
+    if (!/^https:\/\/.+\.supabase\.co$/.test(SUPABASE_URL)) preErrors.push('❌ SUPABASE_URL inválida.');
+    if (!SUPABASE_ANON || SUPABASE_ANON.length < 40) preErrors.push('❌ ANON KEY vacía o demasiado corta.');
+    if (!/^https?:\/\//.test(API_BASE)) preErrors.push('❌ API_BASE inválida.');
+
+    // 2) Crear cliente o reportar errores
+    let supa = null;
+    if (preErrors.length === 0) {
+      const { createClient } = window.supabase;
+      try {
+        supa = createClient(SUPABASE_URL, SUPABASE_ANON);
+        setCheck(['✅ SDK cargado','✅ URL válida','✅ ANON presente','✅ API_BASE válida']);
+      } catch(e) {
+        preErrors.push('❌ Error creando cliente: ' + e.message);
+      }
+    }
+    if (preErrors.length) setCheck(preErrors);
+
+    // 3) Estado de sesión
+    async function reflectSession(){
+      if (!supa) { tag($('#authState'), 'Sin cliente', 'err'); return null; }
+      const { data:{ session }, error } = await supa.auth.getSession();
+      if (error) tag($('#authState'), 'Error sesión', 'err');
+      if (session?.user) tag($('#authState'), `Autenticado: ${session.user.email}`, 'ok');
+      else tag($('#authState'), 'No autenticado');
+      return session || null;
+    }
+
+    // 4) Entrar
+    $('#panel-login').addEventListener('submit', async (e)=>{
       e.preventDefault();
-      const state = $('#state-login');
-      tag(state, 'Validando…');
+      if (!supa) { tag($('#state-login'),'Sin cliente', 'err'); return; }
+      tag($('#state-login'), 'Validando…');
       const email = $('#login-email').value.trim();
       const password = $('#login-pass').value;
-      if (!email || !password) { tag(state, 'Completa los campos', 'err'); return; }
-
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) { tag(state, error.message, 'err'); }
-      else { tag(state, 'Sesión iniciada', 'ok'); }
+      if (!email || !password) { tag($('#state-login'), 'Completa los campos', 'err'); return; }
+      const { error } = await supa.auth.signInWithPassword({ email, password });
+      if (error) tag($('#state-login'), error.message, 'err');
+      else {
+        tag($('#state-login'), 'Sesión iniciada', 'ok');
+        // Opcional: redirigir automáticamente
+        // location.href = './protected.html';
+      }
       reflectSession();
     });
 
-    // Crear cuenta
-    pnlSignup.addEventListener('submit', async (e) => {
+    // 5) Crear cuenta
+    $('#panel-signup').addEventListener('submit', async (e)=>{
       e.preventDefault();
-      const state = $('#state-signup');
-      tag(state, 'Creando…');
+      if (!supa) { tag($('#state-signup'),'Sin cliente', 'err'); return; }
+      tag($('#state-signup'), 'Creando…');
       const email = $('#su-email').value.trim();
       const password = $('#su-pass').value;
-      if (!email || !password) { tag(state, 'Completa los campos', 'err'); return; }
-      if (password.length < 6) { tag(state, 'La contraseña es muy corta', 'err'); return; }
-
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) { tag(state, error.message, 'err'); }
-      else { tag(state, 'Revisa tu correo para confirmar', 'ok'); }
+      if (!email || !password) { tag($('#state-signup'), 'Completa los campos', 'err'); return; }
+      if (password.length < 6) { tag($('#state-signup'), 'Contraseña muy corta', 'err'); return; }
+      const { error } = await supa.auth.signUp({ email, password });
+      if (error) tag($('#state-signup'), error.message, 'err');
+      else tag($('#state-signup'), 'Revisa tu correo para confirmar', 'ok');
       reflectSession();
     });
 
-    // Salir
-    $('#btn-logout').addEventListener('click', async () => {
-      await supabase.auth.signOut();
-      tag($('#state-login'), 'Listo');
-      tag($('#state-signup'), 'Listo');
+    // 6) Salir
+    $('#btn-logout').onclick = async ()=>{
+      if (!supa) return;
+      await supa.auth.signOut();
+      tag($('#state-login'),'Listo'); tag($('#state-signup'),'Listo');
       reflectSession();
-    });
+    };
 
-    // API protegida
-    $('#btn-profile').addEventListener('click', async () => {
-      const state = $('#apiState');
-      const out = $('#apiResult');
-      tag(state, 'Llamando…');
-      out.textContent = 'Llamando API...';
-
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { tag(state, 'Sin sesión', 'err'); out.textContent = 'Inicia sesión primero.'; return; }
-
-      try {
-        const res = await fetch(`${API_BASE}/profile`, {
-          headers: { 'Authorization': `Bearer ${session.access_token}` }
-        });
+    // 7) Probar API
+    $('#btn-profile').onclick = async ()=>{
+      if (!supa) { tag($('#apiState'),'Sin cliente','err'); return; }
+      tag($('#apiState'),'Llamando…');
+      $('#apiResult').textContent = 'Llamando API...';
+      const { data:{ session } } = await supa.auth.getSession();
+      if (!session){ tag($('#apiState'),'Sin sesión','err'); $('#apiResult').textContent='Inicia sesión primero.'; return; }
+      try{
+        const res = await fetch(`${API_BASE}/profile`, { headers:{ Authorization:`Bearer ${session.access_token}` } });
         const json = await res.json();
-        out.textContent = JSON.stringify(json, null, 2);
-        tag(state, res.ok ? 'OK' : `Error ${res.status}`, res.ok ? 'ok' : 'err');
-      } catch (e) {
-        tag(state, 'Error', 'err');
-        out.textContent = 'Error: ' + e.message;
+        $('#apiResult').textContent = JSON.stringify(json, null, 2);
+        tag($('#apiState'), res.ok ? 'OK' : `Error ${res.status}`, res.ok ? 'ok' : 'err');
+      }catch(e){
+        tag($('#apiState'),'Error','err');
+        $('#apiResult').textContent = 'Error: ' + e.message;
       }
-    });
+    };
 
-    // Estado inicial
+    // 8) Al cargar
     reflectSession();
   </script>
 </body>
