@@ -25,11 +25,10 @@
     background:#0a1329;color:#e6fbff;outline:none
   }
   input:read-only{
-    background:#0b152f; /* visible pero sutil */
+    background:#0b152f;
     box-shadow:0 0 0 1px rgba(91,215,242,.18) inset;
     cursor:not-allowed;
   }
-  select{cursor:pointer}
   textarea{min-height:160px;resize:vertical;grid-column:1/-1}
   .grid-1{grid-column:1/-1}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
@@ -55,7 +54,7 @@
   .page{margin:0 auto;background:#fff;color:#111;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,.35); position:relative}
   .page.carta{width:816px;height:1056px}  /* ~8.5x11" @96dpi */
   .sheet{padding:72px 64px;font:14px "Times New Roman", Times, serif;line-height:1.35;white-space:pre-wrap}
-  .sheet header{font-size:12px;text-align:right;margin-bottom:16px} /* derecha */
+  .sheet header{font-size:12px;text-align:right;margin-bottom:16px}
   .sheet .dest{font-weight:700;margin-top:6px;margin-bottom:8px}
   .sheet .pres{margin:0 0 14px 0}
   .sheet h6{font-weight:700;margin:18px 0 6px 0}
@@ -143,17 +142,7 @@
         <!-- Cargo oculto (no visible, pero se usa en el documento) -->
         <input id="cargo" name="cargo" type="hidden">
 
-        <div class="grid-1">
-          <label for="tipo">Tipo de escrito</label>
-          <!-- values sin espacios; etiquetas legibles -->
-          <select id="tipo" name="tipo" required>
-            <option value="derechos">Violación de derechos laborales</option>
-            <option value="companero">Queja contra compañero(a) sindicalizado</option>
-            <option value="jefatura">Queja contra jefatura / mando</option>
-            <option value="reporte">Reporte de incidente / irregularidad</option>
-            <option value="peticion">Petición / solicitud</option>
-          </select>
-        </div>
+        <!-- (TIPO DE ESCRITO ELIMINADO) -->
 
         <div>
           <label for="nombre">Nombre del trabajador</label>
@@ -235,7 +224,8 @@
       return d.toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
     };
 
-    async function cuerpoPorTipo(tipo, d){
+    // ===== IA: redacta usando SOLO problematica =====
+    async function redactarIA(d){
       try{
         setStatus("Redactando texto con IA…");
 
@@ -243,10 +233,10 @@
         if (N(d.problematica)) hechos.push(N(d.problematica));
 
         const payload = {
-          tema: tipo,
+          tema: "Escrito de denuncia o reporte",       // genérico
           tono: "formal",
           hechos,
-          extras: "Redactar claro y profesional. No incluyas encabezado ni firma. Usa párrafos legibles.",
+          extras: "Analiza la problemática y redacta un cuerpo claro y profesional en párrafos; sin encabezado ni firma. Añade una despedida breve.",
           incluirDespedida: true,
           longitud: "media"
         };
@@ -266,6 +256,7 @@
         if (json.error){
           throw new Error(json.detail || json.error);
         }
+
         const cuerpo = json.cuerpo || "";
         const despedida = json.despedida ? "\n\n" + json.despedida : "";
         setStatus("Texto generado por IA.");
@@ -283,7 +274,7 @@
     async function armarOficio(d){
       const encabezadoTop = `${d.ciudad}, a ${fechaLarga(d.fecha || hoyISO())}`;
       const dest = `${d.destinatario}${N(d.cargo)?`\n${d.cargo}`:''}`;
-      const cuerpo = await cuerpoPorTipo(d.tipo, d);
+      const cuerpo = await redactarIA(d);
       const pie =
 `\nATENTAMENTE
 
@@ -299,7 +290,6 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         fecha: N($('#fecha').value),
         destinatario: N($('#destinatario').value),
         cargo: N($('#cargo').value),
-        tipo: $('#tipo').value, // valores sin espacios
         nombre: N($('#nombre').value),
         matricula: N($('#matricula').value),
         categoria: N($('#categoria').value),
@@ -308,7 +298,7 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
       };
     }
 
-    function buildPreviewHTML_fromParts(encabezadoTop, dest, cuerpo, pie){
+    function buildPreviewHTML(encabezadoTop, dest, cuerpo, pie){
       const parrafos = (cuerpo||"").split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
       let html = `
         <header>${encabezadoTop}</header>
@@ -333,9 +323,9 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         sheet.style.padding = `72px 64px`;
 
         const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
-        if(!cuerpo){ return; } // si falló IA, no abre modal vacío
+        if(!cuerpo){ return; }
 
-        sheet.innerHTML = buildPreviewHTML_fromParts(encabezadoTop, dest, cuerpo, pie);
+        sheet.innerHTML = buildPreviewHTML(encabezadoTop, dest, cuerpo, pie);
         $('#modal').classList.add('show');
       }catch(e){
         console.error(e);
@@ -454,7 +444,7 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
       const required = ['ciudad','destinatario','nombre','matricula','categoria','problematica'];
       for(const k of required){ if(!d[k]){ alert('Faltan campos obligatorios.'); return; } }
       await generarPDF(d, {action:'print'});
-      // NOTA: no se limpia ningún campo. Persisten hasta que recargues.
+      // No se limpia ningún campo: persisten hasta refrescar.
     });
 
     // ► Autocompletar: al elegir puesto, llena titular (destinatario visible readonly) y cargo (oculto)
