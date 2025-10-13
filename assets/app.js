@@ -1,7 +1,7 @@
 // ================== CONFIGURA TUS VALORES ==================
 const SUPABASE_URL = https://axsncdwshdvsysrpikwj.supabase.co;      // Supabase → Settings → API → Project URL
 const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDIyOTAyNCwiZXhwIjoyMDc1ODA1MDI0fQ.YnkHpHoeSs3W0fquG_FwGi4DU-qJ7N7huQoEtr_kh1M; // Supabase → Settings → API → anon public
-const API_BASE = "https://sinos-api.onrender.com";            // URL pública de tu API en Render
+const API_BASE = https://sinos-api.onrender.com;            // URL pública de tu API en Render
 // ===========================================================
 
 if (!window.supabase) {
