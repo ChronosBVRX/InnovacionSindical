@@ -1,0 +1,46 @@
+```html
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Innovación Sindical · Zona protegida</title>
+<link rel="stylesheet" href="assets/app.css" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body data-page="protected">
+<div class="bgfx"></div>
+<div class="wrap">
+<div class="topbar">
+<div class="brand">
+<div class="logo" aria-hidden="true">◆</div>
+<h1>Innovación Sindical · Zona protegida</h1>
+</div>
+<div class="row">
+<a class="btn soft" href="https://chronosbvrx.github.io/InnovacionSindical/">← Volver al Inicio</a>
+</div>
+</div>
+
+
+<section class="card" id="guard-card" hidden>
+<h2>Acceso restringido</h2>
+<p class="muted">Necesitas iniciar sesión para ver este contenido.</p>
+<a class="btn accent" href="./login.html">Ir al login</a>
+</section>
+
+
+<section class="card" id="content-card" hidden>
+<h2>Bienvenido</h2>
+<p class="muted">Estás autenticado. Puedes consultar tu perfil o consumir endpoints protegidos.</p>
+<div class="row">
+<button class="btn" id="whoami">Ver perfil</button>
+<button class="btn soft" id="logout">Salir</button>
+</div>
+<div class="sp"></div>
+<pre id="whoamiResult">—</pre>
+</section>
+</div>
+</body>
+</html>
+```
