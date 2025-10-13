@@ -86,6 +86,8 @@
     .tile h3{margin:0 0 4px;font-size:var(--tile-title);color:#d8fbff}
     .tile p{margin:0;color:#aee9f7;font-size:var(--tile-desc);opacity:.85}
 
+    .tile.ghost{visibility:hidden; pointer-events:none;} /* ocupa espacio para simetría */
+
     .dock{position:fixed;inset:auto 0 0 0;height:var(--dock);display:flex;align-items:center; border-top:1px solid rgba(91,215,242,.25);background:rgba(9,14,26,.55);backdrop-filter: blur(8px); z-index:30}
     .dock-inner{max-width:1200px;margin:0 auto;padding:8px 14px;display:flex;gap:10px;justify-content:center;width:100%}
     .dock button{display:inline-flex;align-items:center;gap:10px;border-radius:14px;padding:var(--dock-padV) var(--dock-padH);background:rgba(91,215,242,.14); border:1px solid rgba(91,215,242,.32); color:#d9fbff; font-size:var(--dock-font)}
@@ -239,12 +241,13 @@
       { id:'directorio', title:'Directorio', desc:'Delegados, jurídicos y atención a trabajadores.', icon:'📞',
         iframe:'https://chronosbvrx.github.io/InnovacionSindical/directorio', quick:true },
 
+      /* Ocultas temporalmente */
+      { id:'miniapp', title:'MiniApp WhatsApp', desc:'Automatizaciones por palabras clave y avisos.', icon:'💬',
+        href:'https://wa.me/XXXXXXXXXXX', hidden:true },
+
       { id:'prestaciones', title:'Prestaciones', desc:'Vacaciones, licencias, estímulos y antigüedad.', icon:'📄', iframe:'about:blank' },
 
-      { id:'miniapp', title:'MiniApp WhatsApp', desc:'Automatizaciones por palabras clave y avisos.', icon:'💬',
-        href:'https://wa.me/XXXXXXXXXXX' },
-
-      { id:'ajustes', title:'Ajustes', desc:'Tema, accesibilidad y personalización.', icon:'⚙️', iframe:'about:blank' }
+      { id:'ajustes', title:'Ajustes', desc:'Tema, accesibilidad y personalización.', icon:'⚙️', iframe:'about:blank', hidden:true }
     ];
   </script>
 
@@ -290,6 +293,9 @@
           this.tickClock(); setInterval(()=>this.tickClock(), 1000);
           document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') this.goHome(); });
 
+          // Recalcula simetría al redimensionar
+          window.addEventListener('resize', ()=>this.renderTiles());
+
         }catch(err){ console.error('Init:',err); this.forceShowUI(); }
       },
 
@@ -299,8 +305,14 @@
       forceShowUI(){ this.hideBoot(); this.homeEl?.classList.add('show'); this.homeEl?.classList.remove('hide'); },
 
       renderTiles(){
-        const wrap=document.getElementById('tiles'); wrap.innerHTML='';
-        APPS.forEach(a=>{
+        const wrap=document.getElementById('tiles'); 
+        wrap.innerHTML='';
+
+        // Apps visibles (no hidden)
+        const visible = APPS.filter(a=>!a.hidden);
+
+        // Render normales
+        visible.forEach(a=>{
           const b=document.createElement('button');
           b.className='tile';
           if (a.externalDirect && a.href){
@@ -316,11 +328,20 @@
             </div><div></div>`;
           wrap.appendChild(b);
         });
+
+        // --- Fantasmas para mantener simetría del grid ---
+        const cols = (innerWidth>=960)?4:(innerWidth>=640?3:2);
+        const missing = (cols - (visible.length % cols)) % cols;
+        for(let i=0;i<missing;i++){
+          const ghost=document.createElement('div');
+          ghost.className='tile ghost';
+          wrap.appendChild(ghost);
+        }
       },
 
       renderDock(){
         const el=document.getElementById('dock'); el.innerHTML='';
-        APPS.filter(a=>a.quick).slice(0,5).forEach(a=>{
+        APPS.filter(a=>a.quick && !a.hidden).slice(0,5).forEach(a=>{
           const btn=document.createElement('button');
           btn.innerHTML = `<span class="dock-ic">${a.icon||'🧩'}</span><span>${a.title}</span>`;
           if (a.externalDirect && a.href){
