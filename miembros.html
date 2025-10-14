@@ -21,7 +21,7 @@
       linear-gradient(180deg,#0b1220,#0b1022);
   }
   a{color:#bff4ff}
-  .page{max-width:1100px;margin:0 auto;padding:18px;display:grid;gap:14px}
+  .page{max-width:1200px;margin:0 auto;padding:18px;display:grid;gap:14px}
   .head{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
     background:linear-gradient(180deg,var(--panel2),#0b1328);
@@ -29,6 +29,7 @@
   }
   .brand{display:flex;align-items:center;gap:12px}
   .logo{width:44px;height:44px;border-radius:12px;border:1px solid rgba(91,215,242,.25);background:#061022;object-fit:contain}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .muted{color:var(--muted)}
   .btn{
     appearance:none;border:1px solid rgba(91,215,242,.35);
@@ -55,21 +56,33 @@
   .tabbtn{width:100%;text-align:left}
   .tabbtn.active{background:linear-gradient(90deg,var(--accent),var(--sky));color:#072133;border:none}
 
-  /* Perfil tipo red social */
-  .profileHeader{display:flex;gap:14px;align-items:center}
-  .avatar{width:88px;height:88px;border-radius:18px;border:1px solid rgba(91,215,242,.35);background:#061022;object-fit:cover}
-  .pname{margin:0;font-size:20px;color:#d6fbff}
-  .ptag{display:inline-block;margin-top:4px;padding:4px 8px;border-radius:999px;font-size:12px;background:rgba(91,215,242,.12);border:1px solid rgba(91,215,242,.25)}
-  .grid{display:grid;gap:10px}
-  .grid.cols-2{grid-template-columns:1fr 1fr}
-  @media (max-width:860px){ .grid.cols-2{grid-template-columns:1fr} }
-
-  .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;border:1px solid rgba(91,215,242,.35);background:rgba(91,215,242,.12);color:#c7f7ff}
   .sep{border:none;border-top:1px solid rgba(91,215,242,.25);margin:8px 0}
 
-  /* Detalles plegables */
-  details{border:1px dashed rgba(91,215,242,.22);border-radius:12px;padding:8px 10px;background:rgba(91,215,242,.06)}
-  summary{cursor:pointer;color:#bfefff}
+  /* Grids */
+  .grid{display:grid;gap:12px}
+  .cols-2{grid-template-columns:1fr 1fr}
+  .cols-3{grid-template-columns:2fr 1.2fr 1fr}
+  @media (max-width:980px){ .cols-2,.cols-3{grid-template-columns:1fr} }
+
+  /* Perfil tipo red social */
+  .profileHeader{display:flex;gap:14px;align-items:center}
+  .avatar{width:92px;height:92px;border-radius:18px;border:1px solid rgba(91,215,242,.35);background:#061022;object-fit:cover}
+  .pname{margin:0;font-size:20px;color:#d6fbff}
+  .ptag{display:inline-block;margin-top:4px;padding:4px 8px;border-radius:999px;font-size:12px;background:rgba(91,215,242,.12);border:1px solid rgba(91,215,242,.25)}
+
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;border:1px solid rgba(91,215,242,.35);background:rgba(91,215,242,.12);color:#c7f7ff}
+
+  /* Calendario liviano */
+  .cal{--b:rgba(91,215,242,.18)}
+  .cal .bar{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .cal .bar h2{margin:0}
+  .cal .bar .nav button{padding:6px 10px;border-radius:10px;border:1px solid var(--b);background:rgba(91,215,242,.10);color:#d8fbff}
+  .cal .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .cal .wday{font-size:12px;color:#aee9f7;text-align:center}
+  .cal .day{height:78px;border:1px solid var(--b);border-radius:10px;padding:6px;font-size:12px;background:rgba(11,18,32,.55)}
+  .cal .day .n{opacity:.9;color:#bff4ff}
+  .cal .day.today{box-shadow:0 0 0 1px rgba(91,215,242,.42) inset}
+  .cal .day.muted{opacity:.55}
 
   /* Formulario edición */
   label{display:block;font-size:12px;color:#bdefff;margin:6px 0 4px}
@@ -126,20 +139,59 @@
       <aside class="card menu">
         <div class="section">
           <h3>Menú</h3>
-          <button class="btn tabbtn active" data-tab="perfil">📇 Perfil</button>
+          <button class="btn tabbtn active" data-tab="panel">📊 Panel</button>
+          <button class="btn tabbtn" data-tab="perfil">📇 Perfil</button>
           <button class="btn tabbtn" data-tab="editar">✏️ Editar perfil</button>
           <button class="btn tabbtn" data-tab="seguridad">🔐 Seguridad</button>
         </div>
         <hr class="sep">
         <div class="section">
-          <div class="muted" style="font-size:12px">Sólo se muestra información esencial en tu perfil público interno.</div>
+          <div class="muted" style="font-size:12px">Sólo se muestra información esencial en el perfil.</div>
         </div>
       </aside>
 
       <!-- CONTENIDO -->
-      <main class="grid" id="tabs">
-        <!-- PERFIL -->
-        <article id="tab-perfil" class="card">
+      <main id="tabs" class="grid">
+        <!-- ============ TAB: PANEL (Dashboard) ============ -->
+        <section id="tab-panel" class="grid cols-3">
+          <!-- Calendario -->
+          <article class="card cal">
+            <div class="bar">
+              <h2>Calendario de actividades</h2>
+              <div class="nav">
+                <button id="calPrev" type="button">◀</button>
+                <button id="calToday" type="button">Hoy</button>
+                <button id="calNext" type="button">▶</button>
+              </div>
+            </div>
+            <div class="grid" id="calWeek"></div>
+            <div class="grid" id="calDays"></div>
+          </article>
+
+          <!-- Accesos rápidos -->
+          <article class="card">
+            <h2>Accesos rápidos</h2>
+            <div class="grid">
+              <a class="btn" href="https://chronosbvrx.github.io/InnovacionSindical/denuncias" target="_blank" rel="noopener">📝 Denuncias y reportes (con IA)</a>
+              <a class="btn" href="https://trascendencia-sindical-7t85.onrender.com/" target="_blank" rel="noopener">🤖 TrascendencIA Sindical</a>
+              <a class="btn" href="https://chronosbvrx.github.io/InnovacionSindical/directorio" target="_blank" rel="noopener">📞 Directorio</a>
+            </div>
+          </article>
+
+          <!-- En espera -->
+          <article class="card">
+            <h2>En espera…</h2>
+            <p class="muted">Próximamente más módulos del panel.</p>
+            <div class="grid">
+              <button class="btn">📈 Métricas</button>
+              <button class="btn">🤝 Vinculación</button>
+              <button class="btn">📁 Documentos</button>
+            </div>
+          </article>
+        </section>
+
+        <!-- ============ TAB: PERFIL (social) ============ -->
+        <section id="tab-perfil" class="card" style="display:none">
           <div class="profileHeader">
             <img id="pfAvatar" class="avatar" alt="Avatar" src="">
             <div>
@@ -159,12 +211,12 @@
             </div>
             <div>
               <h3 style="margin:0 0 6px">Contacto (privado)</h3>
-              <div class="muted" style="font-size:14px">Sólo administradores pueden ver los datos completos.</div>
+              <div class="muted" style="font-size:14px">Sólo administradores ven los datos completos.</div>
             </div>
           </div>
 
           <details style="margin-top:10px">
-            <summary>Más detalles (visibles sólo para ti)</summary>
+            <summary>Más detalles (sólo tú)</summary>
             <div class="grid cols-2" style="margin-top:8px">
               <div><b>Email:</b> <span id="pfEmailMask">—</span></div>
               <div><b>Teléfono:</b> <span id="pfPhoneMask">—</span></div>
@@ -172,10 +224,10 @@
               <div><b>ID usuario:</b> <span id="pfUid">—</span></div>
             </div>
           </details>
-        </article>
+        </section>
 
-        <!-- EDITAR PERFIL -->
-        <article id="tab-editar" class="card" style="display:none">
+        <!-- ============ TAB: EDITAR PERFIL ============ -->
+        <section id="tab-editar" class="card" style="display:none">
           <h2 style="margin-top:0">Editar perfil</h2>
           <p class="muted">Actualiza tus datos. El avatar se guarda en Supabase Storage.</p>
 
@@ -224,10 +276,10 @@
               <span id="saveMsg" class="muted"></span>
             </div>
           </form>
-        </article>
+        </section>
 
-        <!-- SEGURIDAD -->
-        <article id="tab-seguridad" class="card" style="display:none">
+        <!-- ============ TAB: SEGURIDAD ============ -->
+        <section id="tab-seguridad" class="card" style="display:none">
           <h2 style="margin-top:0">Seguridad de la cuenta</h2>
           <div class="grid">
             <div class="pill">🔐 Datos cifrados</div>
@@ -241,7 +293,7 @@
           </div>
           <hr class="sep">
           <button id="btnLogout" class="btn">⎋ Cerrar sesión</button>
-        </article>
+        </section>
       </main>
     </section>
   </div>
@@ -274,8 +326,20 @@
     const maskPhone = (p) => p ? p.replace(/\d(?=\d{2})/g,'•') : '—';
     const fdate = (iso) => iso ? new Date(iso).toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' }) : '—';
 
+    /* ===== Tabs ===== */
+    const tabBtns = document.querySelectorAll('.tabbtn');
+    function showTab(id){
+      ['panel','perfil','editar','seguridad'].forEach(t => {
+        const el = document.getElementById('tab-'+t);
+        if (el) el.style.display = (t===id ? (t==='panel'?'grid':'block') : 'none');
+      });
+      tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab===id));
+    }
+    tabBtns.forEach(btn=> btn.addEventListener('click', ()=> showTab(btn.dataset.tab)));
+    showTab('panel');
+
     /* ===== Elements ===== */
-    // Perfil
+    // Perfil (social)
     const pfAvatar=$('#pfAvatar'), pfName=$('#pfName'), pfCategory=$('#pfCategory'), pfAds=$('#pfAdscripcion');
     const pfEmailMask=$('#pfEmailMask'), pfPhoneMask=$('#pfPhoneMask'), pfBirthNice=$('#pfBirthNice'), pfUid=$('#pfUid'), pfSince=$('#pfSince');
 
@@ -286,13 +350,7 @@
     // Seguridad
     const stState=$('#stState'), stEmail=$('#stEmail'), stLast=$('#stLast'), stExp=$('#stExp'), stUid=$('#stUid');
 
-    // Tabs
-    const tabBtns = document.querySelectorAll('.tabbtn');
-    function showTab(id){ ['perfil','editar','seguridad'].forEach(t=> $('#tab-'+t).style.display = (t===id?'block':'none')); tabBtns.forEach(b=> b.classList.toggle('active', b.dataset.tab===id)); }
-    tabBtns.forEach(btn=> btn.addEventListener('click', ()=> showTab(btn.dataset.tab)));
-    showTab('perfil');
-
-    // Logout
+    // Header botón
     const goLogin = ()=> location.href = LOGIN_URL;
     $('#btnLogout').onclick = async ()=> { await supabase.auth.signOut(); goLogin(); };
     $('#btnLogoutTop').onclick = async ()=> { await supabase.auth.signOut(); goLogin(); };
@@ -318,20 +376,19 @@
       const avatar = m.avatar_url || "https://avatars.githubusercontent.com/u/9919?v=4";
       currentAvatarPath = m.avatar_path || null;
 
-      // Perfil (esencial visible)
+      // PERFIL (social)
       pfAvatar.src = avatar; edAvatar.src = avatar;
       pfName.textContent = m.display_name || '(Sin nombre)';
       pfCategory.textContent = m.categoria || 'Sin categoría';
       pfAds.textContent = m.adscripcion || 'Sin adscripción';
 
-      // Detalles privados
       pfEmailMask.textContent = maskEmail(u.email);
       pfPhoneMask.textContent = maskPhone(m.phone||'');
       pfBirthNice.textContent = fdate(m.birthdate);
       pfUid.textContent = u.id;
       pfSince.textContent = "Desde " + fdate(u.created_at);
 
-      // Editar (form)
+      // EDITAR (form)
       iName.value = m.display_name || '';
       iPhone.value = m.phone || '';
       iBirth.value = (m.birthdate||'').slice(0,10);
@@ -339,7 +396,7 @@
       iAds.value = m.adscripcion || '';
       iAvatarUrl.value = m.avatar_url || '';
 
-      // Seguridad
+      // SEGURIDAD
       stState.textContent = 'Activa';
       stEmail.textContent = u.email || '—';
       stLast.textContent = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString('es-MX',{hour12:false}) : '—';
@@ -414,11 +471,47 @@
       toast('Avatar actualizado');
     }
 
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('avatarFile');
+    const upProgress = document.getElementById('upProgress');
     fileInput.addEventListener('change', e=> handleFile(e.target.files?.[0]));
     ;['dragenter','dragover'].forEach(ev=> dropZone.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropZone.classList.add('drag'); }));
     ;['dragleave','drop'].forEach(ev=> dropZone.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('drag'); }));
     dropZone.addEventListener('drop', e=> handleFile(e.dataTransfer.files?.[0]));
     dropZone.addEventListener('click', ()=> fileInput.click());
+
+    /* ===== Calendario simple (Panel) ===== */
+    const weekNames = ['L','M','X','J','V','S','D'];
+    const monthNames = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const calWeek = document.getElementById('calWeek'), calDays = document.getElementById('calDays'); let cur = new Date();
+
+    function renderCalendar(date=new Date()){
+      if(!calWeek || !calDays) return;
+      calWeek.innerHTML = ''; calDays.innerHTML = '';
+      weekNames.forEach(w=>{ const d=document.createElement('div'); d.className='wday'; d.textContent=w; calWeek.appendChild(d); });
+      const y = date.getFullYear(), m = date.getMonth();
+      const first = new Date(y,m,1);
+      const start = new Date(first); start.setDate(1 - ((first.getDay()+6)%7)); // lunes
+      const total = 42;
+      document.getElementById('calToday').textContent = `${monthNames[m]} ${y}`;
+      for(let i=0;i<total;i++){
+        const d = new Date(start); d.setDate(start.getDate()+i);
+        const cell = document.createElement('div'); cell.className='day';
+        const inMonth = d.getMonth()===m;
+        if(!inMonth) cell.classList.add('muted');
+        const today = (new Date()).toDateString()===d.toDateString();
+        if(today) cell.classList.add('today');
+        cell.innerHTML = `<div class="n">${d.getDate()}</div>`;
+        calDays.appendChild(cell);
+      }
+    }
+    renderCalendar(cur);
+    const calPrev = document.getElementById('calPrev');
+    const calNext = document.getElementById('calNext');
+    const calTodayBtn = document.getElementById('calToday');
+    if (calPrev) calPrev.onclick = ()=>{ cur.setMonth(cur.getMonth()-1); renderCalendar(cur); };
+    if (calNext) calNext.onclick = ()=>{ cur.setMonth(cur.getMonth()+1); renderCalendar(cur); };
+    if (calTodayBtn) calTodayBtn.onclick = ()=>{ cur = new Date(); renderCalendar(cur); };
 
   })();
   </script>
