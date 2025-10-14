@@ -3,14 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Unidad en Acción — Miembros</title>
-
-<!-- PWA -->
-<link rel="manifest" href="/InnovacionSindical/manifest.webmanifest">
-<meta name="theme-color" content="#0b1022">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="/InnovacionSindical/icons/icon-192.png">
+<title>Unidad en Acción — Miembros (todo en un archivo)</title>
 
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <style>
@@ -105,13 +98,13 @@
   .drop.drag{background:rgba(91,215,242,.12)}
   progress{width:100%}
 
-  /* Overlay de carga — auto cierre con CSS a los 7s */
+  /* Overlay de carga — auto cierre con CSS a los 7s y tap para cerrar */
   .overlay{
     position:fixed; inset:0; display:grid; place-items:center; z-index:50;
     background:radial-gradient(60vmax 60vmax at 50% 40%, rgba(96,165,250,.16), transparent 60%),
                linear-gradient(180deg,#071122,#0a0f1d);
     transition:opacity .35s ease, visibility .35s ease;
-    animation:ov-hide 7s forwards;   /* 👈 fallback puro CSS */
+    animation:ov-hide 7s forwards;
   }
   @keyframes ov-hide { to{ opacity:0; visibility:hidden; } }
   .overlay.hide{opacity:0; visibility:hidden}
@@ -127,10 +120,93 @@
   #toast{position:fixed;right:14px;bottom:14px;background:#0b1429;border:1px solid rgba(91,215,242,.25);
     padding:8px 10px;border-radius:10px;font-size:12px;color:#bfefff;z-index:60;opacity:0;transform:translateY(8px);transition:.25s}
   #toast.show{opacity:1;transform:translateY(0)}
+
+  /* Auth view */
+  .auth-wrap{max-width:860px;margin:24px auto}
+  .auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:900px){ .auth-grid{grid-template-columns:1fr} }
+  .field{display:grid;gap:6px}
 </style>
 </head>
 <body>
-  <div class="page">
+
+  <!-- ======== VISTA AUTH (login/registro) ======== -->
+  <section id="authView" class="page" style="display:none">
+    <header class="head">
+      <div class="brand">
+        <img class="logo" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20Unidad%20en%20Accion.png" alt="Unidad en Acción">
+        <div>
+          <h1 style="margin:0;font-size:18px;color:#d6fbff">Unidad en Acción</h1>
+          <div class="muted">Acceso a miembros</div>
+        </div>
+      </div>
+      <div class="row">
+        <a class="btn" href="https://chronosbvrx.github.io/InnovacionSindical/">🏠 Inicio</a>
+      </div>
+    </header>
+
+    <div class="auth-wrap">
+      <div class="card">
+        <div class="auth-grid">
+          <!-- Login -->
+          <div>
+            <h2 style="margin-top:0">Iniciar sesión</h2>
+            <div class="field">
+              <label for="liEmail">Correo</label>
+              <input id="liEmail" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email">
+            </div>
+            <div class="field">
+              <label for="liPass">Contraseña</label>
+              <input id="liPass" type="password" placeholder="••••••••" autocomplete="current-password">
+            </div>
+            <div class="row" style="margin-top:8px">
+              <button id="btnLogin" class="btn primary">Entrar</button>
+            </div>
+          </div>
+
+          <!-- Registro -->
+          <div>
+            <h2 style="margin-top:0">Crear cuenta</h2>
+            <div class="field">
+              <label for="suEmail">Correo</label>
+              <input id="suEmail" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email">
+            </div>
+            <div class="field">
+              <label for="suPass">Contraseña</label>
+              <input id="suPass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+            </div>
+            <div class="field">
+              <label for="suName">Nombre para mostrar</label>
+              <input id="suName" placeholder="Ej. Ana Gómez">
+            </div>
+            <div class="field">
+              <label for="suPhone">Teléfono</label>
+              <input id="suPhone" type="tel" inputmode="tel" placeholder="10 dígitos">
+            </div>
+            <div class="field">
+              <label for="suBirth">Fecha de cumpleaños</label>
+              <input id="suBirth" type="date">
+            </div>
+            <div class="field">
+              <label for="suCategoria">Categoría</label>
+              <input id="suCategoria" placeholder="Ej. Enfermera General A">
+            </div>
+            <div class="field">
+              <label for="suAds">Adscripción</label>
+              <input id="suAds" placeholder="Ej. HGZ No. XX, Urgencias">
+            </div>
+            <div class="row" style="margin-top:8px">
+              <button id="btnSignup" class="btn">Crear cuenta</button>
+            </div>
+          </div>
+        </div>
+        <div id="authMsg" class="muted" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== VISTA APP (panel, perfil, etc.) ======== -->
+  <section id="appView" class="page" style="display:none">
     <header class="head">
       <div class="brand">
         <img class="logo" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20Unidad%20en%20Accion.png" alt="Unidad en Acción">
@@ -307,20 +383,12 @@
         </section>
       </main>
     </section>
-  </div>
+  </section>
 
-  <!-- Overlay (clic para ocultar) -->
+  <!-- Overlay (tap para cerrar) -->
   <div id="overlay" class="overlay" onclick="this.classList.add('hide')">
     <div class="loader"><div class="spinner"></div></div>
   </div>
-
-  <!-- Botón de recarga dura (borra SW + cachés) -->
-  <button id="btnHardReload"
-    style="position:fixed;right:12px;bottom:12px;z-index:70;
-           padding:8px 10px;border-radius:10px;border:1px solid rgba(91,215,242,.35);
-           background:rgba(91,215,242,.14);color:#e6fbff;cursor:pointer">
-    🔄 Recargar app
-  </button>
 
   <div id="toast" role="status" aria-live="polite"></div>
 
@@ -330,59 +398,25 @@
     /* ===== CONFIG ===== */
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    const LOGIN_URL = "login.html";
-    const AVATAR_BUCKET = "avatars";
-
-    /* ===== Registro SW con bypass ===== */
-    if ('serviceWorker' in navigator) {
-      const qs = new URLSearchParams(location.search);
-      if (!qs.has('bypass')) {
-        navigator.serviceWorker.register('/InnovacionSindical/sw.js').catch(()=>{});
-      }
-    }
+    const AVATAR_BUCKET = "avatars"; // asegúrate que el bucket exista y sea público
 
     /* ===== Helpers UI ===== */
     const $ = s => document.querySelector(s);
     const toast = (t) => { const el = $('#toast'); el.textContent = t||''; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'), 2800); };
     const overlay = $('#overlay'); const hideOverlay = ()=> overlay.classList.add('hide');
 
-    // ⛑️ Paracaídas extra JS a los 6.5s
-    setTimeout(() => hideOverlay(), 6500);
+    const authView = $('#authView');
+    const appView  = $('#appView');
 
-    // Si falla el SDK de Supabase, ocultamos overlay y avisamos
-    window.addEventListener('error', (e) => {
-      if (String(e?.filename||'').includes('supabase-js')) {
-        hideOverlay();
-        alert('No se pudo cargar Supabase. Revisa tu conexión e intenta de nuevo.');
-      }
-    });
+    function showAuth(){ authView.style.display='block'; appView.style.display='none'; hideOverlay(); }
+    function showApp(){ authView.style.display='none'; appView.style.display='block'; hideOverlay(); }
 
-    /* ===== Botón Recarga dura ===== */
-    (function(){
-      const btn = document.getElementById('btnHardReload');
-      async function hardReload(){
-        try{
-          if ('serviceWorker' in navigator) {
-            const regs = await navigator.serviceWorker.getRegistrations();
-            await Promise.all(regs.map(r=>r.unregister().catch(()=>{})));
-          }
-          if (window.caches){
-            const keys = await caches.keys();
-            await Promise.all(keys.map(k=>caches.delete(k)));
-          }
-        }catch(e){}
-        const url = new URL(location.href);
-        url.searchParams.set('bust', Date.now());
-        location.replace(url.toString());
-      }
-      btn.addEventListener('click', hardReload);
-    })();
-
+    /* ===== Supabase client ===== */
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
 
-    /* ===== Tabs ===== */
+    /* ===== TABS ===== */
     const tabBtns = document.querySelectorAll('.tabbtn');
     function showTab(id){
       ['panel','perfil','editar','seguridad'].forEach(t => {
@@ -394,134 +428,7 @@
     tabBtns.forEach(btn=> btn.addEventListener('click', ()=> showTab(btn.dataset.tab)));
     showTab('panel');
 
-    /* ===== Elements ===== */
-    // Perfil (social)
-    const pfAvatar=$('#pfAvatar'), pfName=$('#pfName'), pfCategory=$('#pfCategory'), pfAds=$('#pfAdscripcion');
-    const pfEmailMask=$('#pfEmailMask'), pfPhoneMask=$('#pfPhoneMask'), pfBirthNice=$('#pfBirthNice'), pfUid=$('#pfUid'), pfSince=$('#pfSince');
-
-    // Editar
-    const edAvatar=$('#edAvatar'), iName=$('#iName'), iPhone=$('#iPhone'), iBirth=$('#iBirth'), iCategoria=$('#iCategoria'), iAds=$('#iAds'), iAvatarUrl=$('#iAvatarUrl'), saveMsg=$('#saveMsg');
-    const fileInput=$('#avatarFile'), dropZone=$('#dropZone'), upProgress=$('#upProgress');
-
-    // Seguridad
-    const stState=$('#stState'), stEmail=$('#stEmail'), stLast=$('#stLast'), stExp=$('#stExp'), stUid=$('#stUid');
-
-    // Header botón
-    const goLogin = ()=> location.href = LOGIN_URL;
-    $('#btnLogout').onclick = async ()=> { await supabase.auth.signOut(); goLogin(); };
-    $('#btnLogoutTop').onclick = async ()=> { await supabase.auth.signOut(); goLogin(); };
-
-    /* ===== Session guard + auto logout ===== */
-    let expiryTimer=null, currentAvatarPath=null;
-    function scheduleExpiryWatcher(session){
-      clearTimeout(expiryTimer);
-      const now = Math.floor(Date.now()/1000);
-      const exp = session?.expires_at || now + 3600;
-      const ms = Math.max(0, (exp - now + 5) * 1000);
-      expiryTimer = setTimeout(async ()=>{
-        let refreshed=false;
-        const guard=setTimeout(()=>{ if(!refreshed){ toast('Sesión expirada. Cerrando…'); supabase.auth.signOut().finally(goLogin); } }, 15000);
-        const unsub = supabase.auth.onAuthStateChange((ev)=>{ if(ev==='TOKEN_REFRESHED'){ refreshed=true; clearTimeout(guard); unsub.data?.subscription.unsubscribe(); supabase.auth.getSession().then(({data})=> scheduleExpiryWatcher(data?.session)); }});
-      }, ms);
-      stExp.textContent = new Date(exp*1000).toLocaleString('es-MX',{hour12:false});
-    }
-
-    const maskEmail = (e) => e?.replace(/(.{2}).+(@.+)/, (m,a,b)=> a+'***'+b) || '—';
-    const maskPhone = (p) => p ? p.replace(/\d(?=\d{2})/g,'•') : '—';
-    const fdate = (iso) => iso ? new Date(iso).toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' }) : '—';
-
-    function paintAll(session){
-      const u = session.user;
-      const m = u.user_metadata || {};
-      const avatar = m.avatar_url || "https://avatars.githubusercontent.com/u/9919?v=4";
-      currentAvatarPath = m.avatar_path || null;
-
-      // PERFIL (social)
-      pfAvatar.src = avatar; edAvatar.src = avatar;
-      pfName.textContent = m.display_name || '(Sin nombre)';
-      pfCategory.textContent = m.categoria || 'Sin categoría';
-      pfAds.textContent = m.adscripcion || 'Sin adscripción';
-
-      pfEmailMask.textContent = maskEmail(u.email);
-      pfPhoneMask.textContent = maskPhone(m.phone||'');
-      pfBirthNice.textContent = fdate(m.birthdate);
-      pfUid.textContent = u.id;
-      pfSince.textContent = "Desde " + fdate(u.created_at);
-
-      // EDITAR (form)
-      iName.value = m.display_name || '';
-      iPhone.value = m.phone || '';
-      iBirth.value = (m.birthdate||'').slice(0,10);
-      iCategoria.value = m.categoria || '';
-      iAds.value = m.adscripcion || '';
-      iAvatarUrl.value = m.avatar_url || '';
-
-      // SEGURIDAD
-      stState.textContent = 'Activa';
-      stEmail.textContent = u.email || '—';
-      stLast.textContent = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString('es-MX',{hour12:false}) : '—';
-      stUid.textContent = u.id;
-
-      scheduleExpiryWatcher(session);
-      hideOverlay();
-    }
-
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'INITIAL_SESSION'){ if(session){ paintAll(session); } else { hideOverlay(); goLogin(); } }
-      else if (event === 'SIGNED_IN'){ paintAll(session); toast('Sesión iniciada.'); }
-      else if (event === 'SIGNED_OUT'){ goLogin(); }
-      else if (event === 'TOKEN_REFRESHED'){ stState.textContent='Activa (refrescada)'; }
-      else if (event === 'USER_UPDATED'){ toast('Perfil actualizado.'); supabase.auth.getSession().then(({data})=> data?.session && paintAll(data.session)); }
-    });
-
-    /* ===== Subida avatar a Storage (con borrado del anterior) ===== */
-    function extFromType(t){ return t==='image/png'?'png':t==='image/jpeg'?'jpg':t==='image/webp'?'webp':'bin'; }
-
-    async function handleFile(file){
-      if(!file) return;
-      if(!['image/png','image/jpeg','image/webp'].includes(file.type)){ toast('Formato no soportado'); return; }
-      if(file.size > 2*1024*1024){ toast('Máximo 2MB'); return; }
-
-      const { data:{ session } } = await supabase.auth.getSession();
-      if(!session){ toast('Sin sesión'); return; }
-      const uid = session.user.id;
-      const path = `${uid}/${Date.now()}.${extFromType(file.type)}`;
-
-      upProgress.style.display='block'; upProgress.value=20;
-      const { error:upErr } = await supabase.storage.from(AVATAR_BUCKET).upload(path, file, { cacheControl:'3600', upsert:false, contentType:file.type });
-      if(upErr){ upProgress.style.display='none'; toast('Error al subir: '+upErr.message); return; }
-      upProgress.value=70;
-
-      const { data:pub } = supabase.storage.from(AVATAR_BUCKET).getPublicUrl(path);
-      const url = pub?.publicUrl; if(!url){ upProgress.style.display='none'; toast('No se pudo obtener URL pública'); return; }
-
-      // Borrar anterior si existe y es distinto
-      const { data:{ session: sess2 } } = await supabase.auth.getSession();
-      const prevPath = sess2?.user?.user_metadata?.avatar_path || null;
-
-      if(prevPath && prevPath !== path){
-        await supabase.storage.from(AVATAR_BUCKET).remove([prevPath]).catch(()=>{});
-      }
-      const { error:uuErr } = await supabase.auth.updateUser({ data:{ avatar_url:url, avatar_path:path } });
-      upProgress.value=100; setTimeout(()=> upProgress.style.display='none', 600);
-      if(uuErr){ toast('Subido, pero no se pudo actualizar el perfil'); return; }
-
-      iAvatarUrl.value = url;
-      pfAvatar.src = url + '#'+Date.now();
-      edAvatar.src = pfAvatar.src;
-      toast('Avatar actualizado');
-    }
-
-    const dropZone = document.getElementById('dropZone');
-    const upProgress = document.getElementById('upProgress');
-    const fileInput = document.getElementById('avatarFile');
-    fileInput.addEventListener('change', e=> handleFile(e.target.files?.[0]));
-    ;['dragenter','dragover'].forEach(ev=> dropZone.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropZone.classList.add('drag'); }));
-    ;['dragleave','drop'].forEach(ev=> dropZone.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('drag'); }));
-    dropZone.addEventListener('drop', e=> handleFile(e.dataTransfer.files?.[0]));
-    dropZone.addEventListener('click', ()=> fileInput.click());
-
-    /* ===== Calendario simple (Panel) ===== */
+    /* ===== Calendario simple ===== */
     const weekNames = ['L','M','X','J','V','S','D'];
     const monthNames = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
     const calWeek = document.getElementById('calWeek'), calDays = document.getElementById('calDays'); let cur = new Date();
@@ -553,6 +460,157 @@
     if (calPrev) calPrev.onclick = ()=>{ cur.setMonth(cur.getMonth()-1); renderCalendar(cur); };
     if (calNext) calNext.onclick = ()=>{ cur.setMonth(cur.getMonth()+1); renderCalendar(cur); };
     if (calTodayBtn) calTodayBtn.onclick = ()=>{ cur = new Date(); renderCalendar(cur); };
+
+    /* ===== AUTH: login y registro ===== */
+    const authMsg = $('#authMsg');
+    function setAuthMsg(s){ authMsg.textContent=s||''; }
+
+    // Login
+    $('#btnLogin').addEventListener('click', async ()=>{
+      setAuthMsg('Iniciando sesión…');
+      const email = $('#liEmail').value.trim();
+      const password = $('#liPass').value.trim();
+      if(!email || !password){ setAuthMsg('Faltan correo y contraseña.'); return; }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if(error){ setAuthMsg('Error: '+error.message); return; }
+      setAuthMsg('Listo. Redirigiendo…');
+      // la UI cambiará por evento de sesión
+    });
+
+    // Registro
+    $('#btnSignup').addEventListener('click', async ()=>{
+      setAuthMsg('Creando cuenta…');
+      const email = $('#suEmail').value.trim();
+      const password = $('#suPass').value.trim();
+      const display_name = $('#suName').value.trim();
+      const phone = $('#suPhone').value.trim();
+      const birthdate = $('#suBirth').value || null;
+      const categoria = $('#suCategoria').value.trim();
+      const adscripcion = $('#suAds').value.trim();
+
+      if(!email || !password){ setAuthMsg('Correo y contraseña son obligatorios.'); return; }
+
+      const { error } = await supabase.auth.signUp({
+        email, password,
+        options: { data: { display_name, phone, birthdate, categoria, adscripcion } }
+      });
+      if(error){ setAuthMsg('Error: '+error.message); return; }
+      setAuthMsg('¡Cuenta creada! Revisa tu correo para confirmar el registro.');
+    });
+
+    // Logout
+    const goLogout = async ()=>{ await supabase.auth.signOut(); showAuth(); };
+    $('#btnLogout')?.addEventListener('click', goLogout);
+    $('#btnLogoutTop')?.addEventListener('click', goLogout);
+
+    /* ===== Pintar perfil (social) y edición ===== */
+    const pfAvatar=$('#pfAvatar'), pfName=$('#pfName'), pfCategory=$('#pfCategory'), pfAds=$('#pfAdscripcion');
+    const pfEmailMask=$('#pfEmailMask'), pfPhoneMask=$('#pfPhoneMask'), pfBirthNice=$('#pfBirthNice'), pfUid=$('#pfUid'), pfSince=$('#pfSince');
+
+    const edAvatar=$('#edAvatar'), iName=$('#iName'), iPhone=$('#iPhone'), iBirth=$('#iBirth'), iCategoria=$('#iCategoria'), iAds=$('#iAds'), iAvatarUrl=$('#iAvatarUrl'), saveMsg=$('#saveMsg');
+
+    const maskEmail = (e) => e?.replace(/(.{2}).+(@.+)/, (m,a,b)=> a+'***'+b) || '—';
+    const maskPhone = (p) => p ? p.replace(/\d(?=\d{2})/g,'•') : '—';
+    const fdate = (iso) => iso ? new Date(iso).toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' }) : '—';
+
+    function paintAll(session){
+      const u = session.user;
+      const m = u.user_metadata || {};
+      const avatar = m.avatar_url || "https://avatars.githubusercontent.com/u/9919?v=4";
+
+      // PERFIL (social)
+      pfAvatar.src = avatar; edAvatar.src = avatar;
+      pfName.textContent = m.display_name || '(Sin nombre)';
+      pfCategory.textContent = m.categoria || 'Sin categoría';
+      pfAds.textContent = m.adscripcion || 'Sin adscripción';
+
+      pfEmailMask.textContent = maskEmail(u.email);
+      pfPhoneMask.textContent = maskPhone(m.phone||'');
+      pfBirthNice.textContent = fdate(m.birthdate);
+      pfUid.textContent = u.id;
+      pfSince.textContent = "Desde " + fdate(u.created_at);
+
+      // EDITAR (form)
+      iName.value = m.display_name || '';
+      iPhone.value = m.phone || '';
+      iBirth.value = (m.birthdate||'').slice(0,10);
+      iCategoria.value = m.categoria || '';
+      iAds.value = m.adscripcion || '';
+      iAvatarUrl.value = m.avatar_url || '';
+
+      showApp();
+    }
+
+    // Guardar metadatos
+    $('#fEdit').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      saveMsg.textContent = 'Guardando…';
+      const display_name = iName.value.trim();
+      const phone = iPhone.value.trim();
+      const birthdate = iBirth.value || null;
+      const categoria = iCategoria.value.trim();
+      const adscripcion = iAds.value.trim();
+      const avatar_url = iAvatarUrl.value.trim();
+
+      const { error } = await supabase.auth.updateUser({ data: { display_name, phone, birthdate, categoria, adscripcion, avatar_url } });
+      if (error){ saveMsg.textContent = 'Error: ' + error.message; return; }
+      saveMsg.textContent = 'Cambios guardados.';
+      if (avatar_url){ pfAvatar.src = avatar_url + '#'+Date.now(); edAvatar.src = pfAvatar.src; }
+      toast('Perfil guardado');
+    });
+
+    /* ===== Subida de avatar a Supabase Storage ===== */
+    const dropZone = document.getElementById('dropZone');
+    const upProgress = document.getElementById('upProgress');
+    const fileInput = document.getElementById('avatarFile');
+
+    function extFromType(t){ return t==='image/png'?'png':t==='image/jpeg'?'jpg':t==='image/webp'?'webp':'bin'; }
+
+    async function handleFile(file){
+      if(!file) return;
+      if(!['image/png','image/jpeg','image/webp'].includes(file.type)){ toast('Formato no soportado'); return; }
+      if(file.size > 2*1024*1024){ toast('Máximo 2MB'); return; }
+
+      const { data:{ session } } = await supabase.auth.getSession();
+      if(!session){ toast('Sin sesión'); return; }
+      const uid = session.user.id;
+      const path = `${uid}/${Date.now()}.${extFromType(file.type)}`;
+
+      upProgress.style.display='block'; upProgress.value=25;
+      const { error:upErr } = await supabase.storage.from(AVATAR_BUCKET).upload(path, file, { cacheControl:'3600', upsert:false, contentType:file.type });
+      if(upErr){ upProgress.style.display='none'; toast('Error al subir: '+upErr.message); return; }
+      upProgress.value=70;
+
+      const { data:pub } = supabase.storage.from(AVATAR_BUCKET).getPublicUrl(path);
+      const url = pub?.publicUrl; if(!url){ upProgress.style.display='none'; toast('No se pudo obtener URL pública'); return; }
+
+      const { error:uuErr } = await supabase.auth.updateUser({ data:{ avatar_url:url, avatar_path:path } });
+      upProgress.value=100; setTimeout(()=> upProgress.style.display='none', 600);
+      if(uuErr){ toast('Subido, pero no se pudo actualizar el perfil'); return; }
+
+      iAvatarUrl.value = url;
+      pfAvatar.src = url + '#'+Date.now();
+      edAvatar.src = pfAvatar.src;
+      toast('Avatar actualizado');
+    }
+
+    fileInput.addEventListener('change', e=> handleFile(e.target.files?.[0]));
+    ;['dragenter','dragover'].forEach(ev=> dropZone.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropZone.classList.add('drag'); }));
+    ;['dragleave','drop'].forEach(ev=> dropZone.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('drag'); }));
+    dropZone.addEventListener('drop', e=> handleFile(e.dataTransfer.files?.[0]));
+    dropZone.addEventListener('click', ()=> fileInput.click());
+
+    /* ===== Sesión inicial y cambios ===== */
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'INITIAL_SESSION'){ if(session){ paintAll(session); } else { showAuth(); } }
+      else if (event === 'SIGNED_IN'){ paintAll(session); toast('Sesión iniciada.'); }
+      else if (event === 'SIGNED_OUT'){ showAuth(); }
+      else if (event === 'USER_UPDATED'){ supabase.auth.getSession().then(({data})=> data?.session && paintAll(data.session)); }
+    });
+
+    // Disparar inicial
+    const { data:{ session } } = await supabase.auth.getSession();
+    if(session){ paintAll(session); } else { showAuth(); }
 
   })();
   </script>
