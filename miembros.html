@@ -4,6 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Unidad en Acción — Miembros</title>
+
+<!-- PWA -->
+<link rel="manifest" href="/InnovacionSindical/manifest.webmanifest">
+<meta name="theme-color" content="#0b1022">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/InnovacionSindical/icons/icon-192.png">
+
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <style>
   :root{
@@ -30,7 +38,7 @@
   .brand{display:flex;align-items:center;gap:12px}
   .logo{width:44px;height:44px;border-radius:12px;border:1px solid rgba(91,215,242,.25);background:#061022;object-fit:contain}
   .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .muted{color:var(--muted)}
+  .muted{color:#aee9f7}
   .btn{
     appearance:none;border:1px solid rgba(91,215,242,.35);
     background:rgba(91,215,242,.14);color:#e6fbff;border-radius:12px;
@@ -313,18 +321,29 @@
     const LOGIN_URL = "login.html";
     const AVATAR_BUCKET = "avatars";
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-    });
+    /* ===== Registro SW (PWA) ===== */
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/InnovacionSindical/sw.js').catch(()=>{});
+    }
 
     /* ===== Helpers UI ===== */
     const $ = s => document.querySelector(s);
     const toast = (t) => { const el = $('#toast'); el.textContent = t||''; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'), 2800); };
     const overlay = $('#overlay'); const hideOverlay = ()=> overlay.classList.add('hide');
 
-    const maskEmail = (e) => e?.replace(/(.{2}).+(@.+)/, (m,a,b)=> a+'***'+b) || '—';
-    const maskPhone = (p) => p ? p.replace(/\d(?=\d{2})/g,'•') : '—';
-    const fdate = (iso) => iso ? new Date(iso).toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' }) : '—';
+    // ⛑️ Paracaídas del loader: se oculta sí o sí a los 6s
+    let __bootFallback = setTimeout(() => hideOverlay(), 6000);
+    // Si falla el SDK de Supabase, ocultamos overlay y avisamos
+    window.addEventListener('error', (e) => {
+      if (String(e?.filename||'').includes('supabase-js')) {
+        hideOverlay();
+        alert('No se pudo cargar Supabase. Revisa tu conexión e intenta de nuevo.');
+      }
+    });
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    });
 
     /* ===== Tabs ===== */
     const tabBtns = document.querySelectorAll('.tabbtn');
@@ -370,7 +389,12 @@
       stExp.textContent = new Date(exp*1000).toLocaleString('es-MX',{hour12:false});
     }
 
+    const maskEmail = (e) => e?.replace(/(.{2}).+(@.+)/, (m,a,b)=> a+'***'+b) || '—';
+    const maskPhone = (p) => p ? p.replace(/\d(?=\d{2})/g,'•') : '—';
+    const fdate = (iso) => iso ? new Date(iso).toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' }) : '—';
+
     function paintAll(session){
+      clearTimeout(__bootFallback); // ya cargó
       const u = session.user;
       const m = u.user_metadata || {};
       const avatar = m.avatar_url || "https://avatars.githubusercontent.com/u/9919?v=4";
@@ -403,18 +427,19 @@
       stUid.textContent = u.id;
 
       scheduleExpiryWatcher(session);
+      hideOverlay();
     }
 
     supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'INITIAL_SESSION'){ hideOverlay(); if(session) paintAll(session); else goLogin(); }
+      if (event === 'INITIAL_SESSION'){ if(session){ paintAll(session); } else { hideOverlay(); goLogin(); } }
       else if (event === 'SIGNED_IN'){ paintAll(session); toast('Sesión iniciada.'); }
       else if (event === 'SIGNED_OUT'){ goLogin(); }
       else if (event === 'TOKEN_REFRESHED'){ stState.textContent='Activa (refrescada)'; }
       else if (event === 'USER_UPDATED'){ toast('Perfil actualizado.'); supabase.auth.getSession().then(({data})=> data?.session && paintAll(data.session)); }
     });
 
-    // Paracaídas de overlay
-    setTimeout(()=> hideOverlay(), 2500);
+    // Paracaídas extra por si algo raro ocurre
+    setTimeout(()=> hideOverlay(), 6500);
 
     /* ===== Guardar metadatos ===== */
     $('#fEdit').addEventListener('submit', async (e)=>{
@@ -472,8 +497,8 @@
     }
 
     const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('avatarFile');
     const upProgress = document.getElementById('upProgress');
+    const fileInput = document.getElementById('avatarFile');
     fileInput.addEventListener('change', e=> handleFile(e.target.files?.[0]));
     ;['dragenter','dragover'].forEach(ev=> dropZone.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropZone.classList.add('drag'); }));
     ;['dragleave','drop'].forEach(ev=> dropZone.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('drag'); }));
