@@ -105,12 +105,15 @@
   .drop.drag{background:rgba(91,215,242,.12)}
   progress{width:100%}
 
-  /* Overlay de carga */
+  /* Overlay de carga — auto cierre con CSS a los 7s */
   .overlay{
     position:fixed; inset:0; display:grid; place-items:center; z-index:50;
-    background:radial-gradient(60vmax 60vmax at 50% 40%, rgba(96,165,250,.16), transparent 60%), linear-gradient(180deg,#071122,#0a0f1d);
+    background:radial-gradient(60vmax 60vmax at 50% 40%, rgba(96,165,250,.16), transparent 60%),
+               linear-gradient(180deg,#071122,#0a0f1d);
     transition:opacity .35s ease, visibility .35s ease;
+    animation:ov-hide 7s forwards;   /* 👈 fallback puro CSS */
   }
+  @keyframes ov-hide { to{ opacity:0; visibility:hidden; } }
   .overlay.hide{opacity:0; visibility:hidden}
   .loader{
     width:86px;height:86px;border-radius:22px;border:1px solid rgba(91,215,242,.38);
@@ -132,7 +135,7 @@
       <div class="brand">
         <img class="logo" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20Unidad%20en%20Accion.png" alt="Unidad en Acción">
         <div>
-          <h1 style="margin:0;font-size:18px;color:#d8fbff">Unidad en Acción</h1>
+          <h1 style="margin:0;font-size:18px;color:#d6fbff">Unidad en Acción</h1>
           <div class="muted">Panel de miembros</div>
         </div>
       </div>
@@ -306,10 +309,19 @@
     </section>
   </div>
 
-  <!-- Overlay -->
-  <div id="overlay" class="overlay">
+  <!-- Overlay (clic para ocultar) -->
+  <div id="overlay" class="overlay" onclick="this.classList.add('hide')">
     <div class="loader"><div class="spinner"></div></div>
   </div>
+
+  <!-- Botón de recarga dura (borra SW + cachés) -->
+  <button id="btnHardReload"
+    style="position:fixed;right:12px;bottom:12px;z-index:70;
+           padding:8px 10px;border-radius:10px;border:1px solid rgba(91,215,242,.35);
+           background:rgba(91,215,242,.14);color:#e6fbff;cursor:pointer">
+    🔄 Recargar app
+  </button>
+
   <div id="toast" role="status" aria-live="polite"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -321,9 +333,12 @@
     const LOGIN_URL = "login.html";
     const AVATAR_BUCKET = "avatars";
 
-    /* ===== Registro SW (PWA) ===== */
+    /* ===== Registro SW con bypass ===== */
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/InnovacionSindical/sw.js').catch(()=>{});
+      const qs = new URLSearchParams(location.search);
+      if (!qs.has('bypass')) {
+        navigator.serviceWorker.register('/InnovacionSindical/sw.js').catch(()=>{});
+      }
     }
 
     /* ===== Helpers UI ===== */
@@ -331,8 +346,9 @@
     const toast = (t) => { const el = $('#toast'); el.textContent = t||''; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'), 2800); };
     const overlay = $('#overlay'); const hideOverlay = ()=> overlay.classList.add('hide');
 
-    // ⛑️ Paracaídas del loader: se oculta sí o sí a los 6s
-    let __bootFallback = setTimeout(() => hideOverlay(), 6000);
+    // ⛑️ Paracaídas extra JS a los 6.5s
+    setTimeout(() => hideOverlay(), 6500);
+
     // Si falla el SDK de Supabase, ocultamos overlay y avisamos
     window.addEventListener('error', (e) => {
       if (String(e?.filename||'').includes('supabase-js')) {
@@ -340,6 +356,27 @@
         alert('No se pudo cargar Supabase. Revisa tu conexión e intenta de nuevo.');
       }
     });
+
+    /* ===== Botón Recarga dura ===== */
+    (function(){
+      const btn = document.getElementById('btnHardReload');
+      async function hardReload(){
+        try{
+          if ('serviceWorker' in navigator) {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(regs.map(r=>r.unregister().catch(()=>{})));
+          }
+          if (window.caches){
+            const keys = await caches.keys();
+            await Promise.all(keys.map(k=>caches.delete(k)));
+          }
+        }catch(e){}
+        const url = new URL(location.href);
+        url.searchParams.set('bust', Date.now());
+        location.replace(url.toString());
+      }
+      btn.addEventListener('click', hardReload);
+    })();
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
@@ -394,7 +431,6 @@
     const fdate = (iso) => iso ? new Date(iso).toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' }) : '—';
 
     function paintAll(session){
-      clearTimeout(__bootFallback); // ya cargó
       const u = session.user;
       const m = u.user_metadata || {};
       const avatar = m.avatar_url || "https://avatars.githubusercontent.com/u/9919?v=4";
@@ -438,27 +474,6 @@
       else if (event === 'USER_UPDATED'){ toast('Perfil actualizado.'); supabase.auth.getSession().then(({data})=> data?.session && paintAll(data.session)); }
     });
 
-    // Paracaídas extra por si algo raro ocurre
-    setTimeout(()=> hideOverlay(), 6500);
-
-    /* ===== Guardar metadatos ===== */
-    $('#fEdit').addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      saveMsg.textContent = 'Guardando…';
-      const display_name = iName.value.trim();
-      const phone = iPhone.value.trim();
-      const birthdate = iBirth.value || null;
-      const categoria = iCategoria.value.trim();
-      const adscripcion = iAds.value.trim();
-      const avatar_url = iAvatarUrl.value.trim();
-
-      const { error } = await supabase.auth.updateUser({ data: { display_name, phone, birthdate, categoria, adscripcion, avatar_url } });
-      if (error){ saveMsg.textContent = 'Error: ' + error.message; return; }
-      saveMsg.textContent = 'Cambios guardados.';
-      if (avatar_url){ pfAvatar.src = avatar_url + '#'+Date.now(); edAvatar.src = pfAvatar.src; }
-      toast('Perfil guardado');
-    });
-
     /* ===== Subida avatar a Storage (con borrado del anterior) ===== */
     function extFromType(t){ return t==='image/png'?'png':t==='image/jpeg'?'jpg':t==='image/webp'?'webp':'bin'; }
 
@@ -480,16 +495,17 @@
       const { data:pub } = supabase.storage.from(AVATAR_BUCKET).getPublicUrl(path);
       const url = pub?.publicUrl; if(!url){ upProgress.style.display='none'; toast('No se pudo obtener URL pública'); return; }
 
-      // Borrar el anterior si existe y es distinto
-      if(currentAvatarPath && currentAvatarPath !== path){
-        await supabase.storage.from(AVATAR_BUCKET).remove([currentAvatarPath]).catch(()=>{});
+      // Borrar anterior si existe y es distinto
+      const { data:{ session: sess2 } } = await supabase.auth.getSession();
+      const prevPath = sess2?.user?.user_metadata?.avatar_path || null;
+
+      if(prevPath && prevPath !== path){
+        await supabase.storage.from(AVATAR_BUCKET).remove([prevPath]).catch(()=>{});
       }
       const { error:uuErr } = await supabase.auth.updateUser({ data:{ avatar_url:url, avatar_path:path } });
       upProgress.value=100; setTimeout(()=> upProgress.style.display='none', 600);
       if(uuErr){ toast('Subido, pero no se pudo actualizar el perfil'); return; }
 
-      // refrescar UI
-      currentAvatarPath = path;
       iAvatarUrl.value = url;
       pfAvatar.src = url + '#'+Date.now();
       edAvatar.src = pfAvatar.src;
