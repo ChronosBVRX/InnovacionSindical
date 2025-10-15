@@ -10,7 +10,7 @@
     --bg:#0b1022; --panel:#101a33; --ring:rgba(91,215,242,.35);
     --txt:#e6fbff; --muted:#aee9f7; --primary:#5bd7f2; --sky:#60a5fa;
   }
-  *{box-sizing:border-box; margin:0; padding:0; font-family:system-ui, -apple-system, Segoe UI, Roboto;}
+  *{box-sizing:border-box; margin:0; padding:0; font-family:system-ui,-apple-system,Segoe UI,Roboto;}
   body {
     background:linear-gradient(180deg,#0b1220,#0b1022);
     color:var(--txt); min-height:100vh; display:flex; flex-direction:column;
@@ -64,6 +64,20 @@
     border:1px solid rgba(91,215,242,.35);
   }
   .profile-data p{margin:2px 0;}
+  form{display:grid;gap:10px;max-width:420px;margin-top:10px;}
+  label{font-size:13px;color:#bdefff;}
+  input{
+    background:#0a1329;border:1px solid rgba(91,215,242,.3);
+    color:#e6fbff;padding:8px 10px;border-radius:10px;
+  }
+  .btn {
+    appearance:none;border:none;cursor:pointer;
+    background:linear-gradient(90deg,var(--primary),var(--sky));
+    color:#072133;font-weight:600;padding:10px 16px;
+    border-radius:12px;margin-top:6px;transition:.2s;
+  }
+  .btn:hover{filter:brightness(1.15);}
+  .status{margin-top:6px;font-size:13px;color:var(--muted);}
 </style>
 </head>
 <body>
@@ -82,6 +96,7 @@
       <button class="tab" data-tab="personaliza">⚙️ Personaliza tu perfil</button>
     </nav>
 
+    <!-- PERFIL -->
     <section id="perfil" class="content active">
       <div class="card">
         <h2>👋 Bienvenido</h2>
@@ -91,6 +106,8 @@
           <div class="profile-data">
             <p><strong>Nombre:</strong> <span id="pfName">Cargando...</span></p>
             <p><strong>Email:</strong> <span id="pfEmail">...</span></p>
+            <p><strong>Teléfono:</strong> <span id="pfTelefono">...</span></p>
+            <p><strong>Cumpleaños:</strong> <span id="pfCumple">...</span></p>
             <p><strong>Categoría:</strong> <span id="pfCategoria">...</span></p>
             <p><strong>Adscripción:</strong> <span id="pfAdscripcion">...</span></p>
           </div>
@@ -98,6 +115,7 @@
       </div>
     </section>
 
+    <!-- CALENDARIO -->
     <section id="calendario" class="content">
       <div class="card">
         <h2>📅 Calendario de Actividades</h2>
@@ -106,11 +124,30 @@
       </div>
     </section>
 
+    <!-- PERSONALIZAR PERFIL -->
     <section id="personaliza" class="content">
       <div class="card">
-        <h2>⚙️ Personaliza tu perfil</h2>
-        <p class="muted">Próximamente podrás actualizar tu información y subir foto de perfil.</p>
-        <p style="margin-top:10px;">🔧 Estamos preparando esta sección.</p>
+        <h2>⚙️ Edita tu información</h2>
+        <p class="muted">Actualiza tus datos personales. Se guardan automáticamente en tu perfil.</p>
+        <form id="editForm">
+          <label>Nombre completo</label>
+          <input id="fNombre" placeholder="Tu nombre completo">
+
+          <label>Teléfono</label>
+          <input id="fTelefono" placeholder="Ej. 5532120000">
+
+          <label>Fecha de cumpleaños</label>
+          <input id="fCumple" type="date">
+
+          <label>Categoría</label>
+          <input id="fCategoria" placeholder="Ej. Enfermera General A">
+
+          <label>Adscripción</label>
+          <input id="fAdscripcion" placeholder="Ej. HGZ No. XX, Urgencias">
+
+          <button class="btn" type="submit">💾 Guardar cambios</button>
+          <div class="status" id="status"></div>
+        </form>
       </div>
     </section>
   </main>
@@ -139,15 +176,47 @@
       location.href = LOGIN_URL;
     });
 
-    // Datos usuario
+    // Sesión actual
     const { data:{session} } = await supabase.auth.getSession();
     if(!session){ location.href = LOGIN_URL; return; }
     const user = session.user;
-    document.getElementById("pfName").textContent = user.user_metadata?.display_name || "Sin nombre";
+    const meta = user.user_metadata || {};
+
+    // Mostrar datos
+    document.getElementById("pfName").textContent = meta.display_name || "Sin nombre";
     document.getElementById("pfEmail").textContent = user.email;
-    document.getElementById("pfCategoria").textContent = user.user_metadata?.categoria || "No especificada";
-    document.getElementById("pfAdscripcion").textContent = user.user_metadata?.adscripcion || "No especificada";
-    document.getElementById("userAvatar").textContent = (user.user_metadata?.display_name || "?")[0].toUpperCase();
+    document.getElementById("pfTelefono").textContent = meta.telefono || "—";
+    document.getElementById("pfCumple").textContent = meta.cumple || "—";
+    document.getElementById("pfCategoria").textContent = meta.categoria || "—";
+    document.getElementById("pfAdscripcion").textContent = meta.adscripcion || "—";
+    document.getElementById("userAvatar").textContent = (meta.display_name||"?")[0].toUpperCase();
+
+    // Prefill form
+    fNombre.value = meta.display_name || "";
+    fTelefono.value = meta.telefono || "";
+    fCumple.value = meta.cumple || "";
+    fCategoria.value = meta.categoria || "";
+    fAdscripcion.value = meta.adscripcion || "";
+
+    // Guardar cambios
+    document.getElementById("editForm").addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      document.getElementById("status").textContent = "Guardando...";
+      const updates = {
+        display_name: fNombre.value.trim(),
+        telefono: fTelefono.value.trim(),
+        cumple: fCumple.value.trim(),
+        categoria: fCategoria.value.trim(),
+        adscripcion: fAdscripcion.value.trim()
+      };
+      const { error } = await supabase.auth.updateUser({ data: updates });
+      if(error){
+        document.getElementById("status").textContent = "Error al guardar.";
+      } else {
+        document.getElementById("status").textContent = "✅ Cambios guardados.";
+        setTimeout(()=>location.reload(), 1000);
+      }
+    });
   });
   </script>
 </body>
