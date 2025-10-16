@@ -77,12 +77,14 @@
       </div>
     </section>
 
-    <!-- CALENDARIO -->
+    <!-- CALENDARIO (ID corregido: redunidadaccion@gmail.com) -->
     <section id="calendario" class="content">
       <div class="card">
         <h2>📅 Calendario de Actividades</h2>
         <p class="muted">Consulta las próximas reuniones, asambleas y eventos.</p>
-        <iframe src="https://calendar.google.com/calendar/embed?src=redunidadaccion%40gmail.com&ctz=America%2FMexico_City"></iframe>
+        <iframe
+          src="https://calendar.google.com/calendar/embed?src=redunidadaccion%40gmail.com&ctz=America%2FMexico_City&showTitle=0&showPrint=0&showTz=0&showCalendars=0"
+        ></iframe>
       </div>
     </section>
 
@@ -152,7 +154,6 @@
     location.href = LOGIN_URL;
   });
 
-  // ===== Utilidades =====
   function showStatus(msg){ document.getElementById("status").textContent = msg || ""; }
   function previewFile(file){
     const prev = document.getElementById("avatarPreview");
@@ -161,7 +162,7 @@
     prev.innerHTML = `<img src="${url}" alt="preview">`;
   }
 
-  // ===== Carga de sesión/datos =====
+  // Carga sesión + datos
   (async function init(){
     const { data: { session } } = await supabase.auth.getSession();
     if (!session){ location.href = LOGIN_URL; return; }
@@ -202,7 +203,7 @@
     });
   })();
 
-  // ===== Subir avatar a carpeta del UID (cumple RLS) =====
+  // Subir avatar a carpeta del UID (cumple políticas RLS)
   async function uploadAvatar(file){
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) { alert("Sesión expirada, vuelve a iniciar."); return null; }
@@ -219,9 +220,8 @@
 
     const uid = session.user.id;
     const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-    const path = `${uid}/${Date.now()}.${ext}`; // <== carpeta por UID (coincide con tus políticas)
+    const path = `${uid}/${Date.now()}.${ext}`;
 
-    // Sube
     const { error: upErr } = await supabase
       .storage
       .from("avatars")
@@ -233,12 +233,11 @@
       return null;
     }
 
-    // URL pública
     const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
     return pub?.publicUrl || null;
   }
 
-  // ===== Guardar perfil =====
+  // Guardar perfil
   document.getElementById("editForm").addEventListener("submit", async (e)=>{
     e.preventDefault();
     showStatus("Guardando…");
