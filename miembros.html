@@ -585,21 +585,26 @@
   }
 
   async function createPost(content, category){
-    if(!CURRENT_USER){ forumStatus('Sesión expirada'); return; }
-    const clean = (content||'').trim();
-    const cat = (category||'Asuntos Generales').trim();
-    if(!clean){ forumStatus('Escribe algo antes de publicar.'); return; }
-    if(clean.length>500){ forumStatus('Máximo 500 caracteres.'); return; }
-    if(!['Avisos','Asuntos Generales','Convivencia'].includes(cat)){
-      forumStatus('Categoría no válida'); return;
-    }
-    forumStatus('Publicando…');
-    const { error } = await supabase.from('posts').insert({ content: clean, user_id: CURRENT_USER.id, category: cat });
-    if(error){ forumStatus('❌ No se pudo publicar.'); return; }
-    $("forumInput").value = '';
-    forumStatus('✅ Publicado');
-    loadPosts();
+  if(!CURRENT_USER){ forumStatus('Sesión expirada'); return; }
+  const clean = (content||'').trim();
+  const cat = (category||'Asuntos Generales').trim();
+  if(!clean){ forumStatus('Escribe algo antes de publicar.'); return; }
+  forumStatus('Publicando…');
+
+  const { data, error } = await supabase
+    .from('posts')
+    .insert({ content: clean, user_id: CURRENT_USER.id, category: cat });
+
+  if (error) {
+    forumStatus('❌ No se pudo publicar: ' + (error.message || 'Error'));
+    console.error('[posts.insert]', error);
+    return;
   }
+  $('forumInput').value = '';
+  forumStatus('✅ Publicado');
+  loadPosts();
+}
+
 
   // === NOTAS ===
   // - Revisa que tu ANON KEY esté completa.
