@@ -17,11 +17,11 @@
   header h1{font-size:18px;color:#bff4ff;display:flex;align-items:center;gap:10px}
   #btnLogout{background:rgba(255,70,70,.15);color:#ffaaaa;border:1px solid rgba(255,100,100,.35);padding:8px 12px;border-radius:10px;cursor:pointer}
   #btnLogout:hover{background:#ff5555;color:#fff}
-  main{flex:1;display:flex}
+  main{flex:1;display:flex;min-height:0}
   nav{width:220px;background:rgba(11,18,32,.75);border-right:1px solid rgba(91,215,242,.25);padding:12px;display:flex;flex-direction:column;gap:10px}
   nav button{appearance:none;border:none;background:rgba(91,215,242,.12);color:var(--txt);padding:10px;border-radius:10px;text-align:left;cursor:pointer;transition:.2s}
   nav button:hover,nav button.active{background:linear-gradient(90deg,var(--primary),var(--sky));color:#072133;font-weight:600}
-  section.content{flex:1;padding:20px;display:none}
+  section.content{flex:1;padding:20px;display:none;min-width:0}
   section.content.active{display:block}
   .card{background:var(--panel);border:1px solid rgba(91,215,242,.25);border-radius:16px;padding:20px;box-shadow:0 8px 25px rgba(0,0,0,.25);animation:fade .4s ease}
   @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -33,13 +33,21 @@
   .profile-data p{margin:2px 0}
   form{display:grid;gap:10px;max-width:460px;margin-top:10px}
   label{font-size:13px;color:#bdefff}
-  input{background:#0a1329;border:1px solid rgba(91,215,242,.3);color:#e6fbff;padding:9px 11px;border-radius:10px}
+  input, textarea{background:#0a1329;border:1px solid rgba(91,215,242,.3);color:#e6fbff;padding:9px 11px;border-radius:10px}
+  textarea{min-height:90px;resize:vertical}
   .btn{appearance:none;border:none;cursor:pointer;background:linear-gradient(90deg,var(--primary),var(--sky));color:#072133;font-weight:600;padding:10px 16px;border-radius:12px;margin-top:6px;transition:.2s}
   .btn:hover{filter:brightness(1.12)}
-  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .status{margin-top:6px;font-size:13px;color:var(--muted)}
+  .subtle-btn{appearance:none;border:1px solid rgba(91,215,242,.28);background:rgba(91,215,242,.08);color:var(--txt);padding:6px 10px;border-radius:10px;cursor:pointer;font-size:13px}
+  .subtle-btn:hover{background:rgba(91,215,242,.18)}
+  .meta{font-size:12px;color:#9fdcf0}
+  .comment-box{display:grid;gap:8px;margin-top:10px}
+  .comment{border-top:1px solid rgba(91,215,242,.18);padding-top:8px;margin-top:8px}
+  .comment small{color:#9fdcf0}
+  .actions{display:flex;gap:6px;align-items:center;margin-top:10px}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.35);font-size:12px;color:#cfefff}
   iframe{width:100%;min-height:600px;border:0;border-radius:12px}
   .hint{font-size:12px;color:#9fdcf0}
+  @media (max-width: 880px){ nav{width:100%; flex-direction:row; position:sticky; top:52px; z-index:9; overflow:auto;} main{flex-direction:column} }
 </style>
 </head>
 <body>
@@ -55,6 +63,7 @@
     <nav>
       <button class="tab active" data-tab="perfil">👤 Perfil</button>
       <button class="tab" data-tab="calendario">📅 Calendario</button>
+      <button class="tab" data-tab="foro">🗣️ Foro</button>
       <button class="tab" data-tab="personaliza">⚙️ Personaliza tu perfil</button>
     </nav>
 
@@ -77,12 +86,29 @@
       </div>
     </section>
 
-    <!-- CALENDARIO (ID corregido: redunidadaccion@gmail.com) -->
+    <!-- CALENDARIO -->
     <section id="calendario" class="content">
       <div class="card">
         <h2>📅 Calendario de Actividades</h2>
         <p class="muted">Consulta las próximas reuniones, asambleas y eventos.</p>
-       <iframe src="https://calendar.google.com/calendar/embed?src=redunidadenaccion%40gmail.com&ctz=America%2FMexico_City" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=redunidadenaccion%40gmail.com&ctz=America%2FMexico_City&showTitle=0&showPrint=0&showTz=0&showCalendars=0"></iframe>
+      </div>
+    </section>
+
+    <!-- FORO -->
+    <section id="foro" class="content">
+      <div class="card">
+        <h2>🗣️ Foro de Miembros</h2>
+        <p class="muted">Publica anuncios, dudas o propuestas. Mantén el respeto y evita datos sensibles.</p>
+
+        <form id="forumForm" style="margin-top:10px">
+          <label>Escribe una publicación (máx. 500 caracteres)</label>
+          <textarea id="forumInput" maxlength="500" placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
+          <button class="btn" type="submit">➕ Publicar</button>
+          <div class="status" id="forumStatus"></div>
+        </form>
+
+        <div id="postsList" style="margin-top:16px;display:grid;gap:12px"></div>
       </div>
     </section>
 
@@ -135,62 +161,106 @@
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: true, autoRefreshToken: true }
   });
+  let CURRENT_USER = null;
+  let OPEN_COMMENT_PANELS = new Map(); // postId -> container element
 
-  // Tabs
-  document.querySelectorAll(".tab").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
-      document.querySelectorAll(".content").forEach(c=>c.classList.remove("active"));
-      btn.classList.add("active");
-      document.getElementById(btn.dataset.tab).classList.add("active");
-    });
-  });
-
-  // Logout
-  document.getElementById("btnLogout").addEventListener("click", async ()=>{
-    await supabase.auth.signOut();
-    location.href = LOGIN_URL;
-  });
-
+  // ===== Utilidades UI =====
   function showStatus(msg){ document.getElementById("status").textContent = msg || ""; }
+  function forumStatus(msg){ document.getElementById('forumStatus').textContent = msg || ''; }
+
   function previewFile(file){
     const prev = document.getElementById("avatarPreview");
     if (!file) return;
     const url = URL.createObjectURL(file);
     prev.innerHTML = `<img src="${url}" alt="preview">`;
   }
+  function maskPhone(t){
+    const s = (t||"").replace(/\D+/g,"");
+    if(s.length < 8) return t || "—";
+    return `••• ••${s.slice(-4)}`; // solo últimos 4
+  }
+  function formatDateISOtoMX(iso){
+    if(!iso) return "—";
+    try{
+      const d = iso.length<=10 ? new Date(iso+"T00:00:00") : new Date(iso);
+      return new Intl.DateTimeFormat('es-MX', { day:'2-digit', month:'long', year:'numeric' }).format(d);
+    }catch{ return iso; }
+  }
+  function timeAgo(iso){
+    try{
+      const d = new Date(iso);
+      const diff = (Date.now() - d.getTime())/1000;
+      if(diff<60) return 'hace unos segundos';
+      if(diff<3600) return `hace ${Math.floor(diff/60)} min`;
+      if(diff<86400) return `hace ${Math.floor(diff/3600)} h`;
+      return new Intl.DateTimeFormat('es-MX',{dateStyle:'medium', timeStyle:'short'}).format(d);
+    }catch{ return iso; }
+  }
+  function escapeHtml(str){
+    return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s]));
+  }
 
-  // Carga sesión + datos
+  // ===== Navegación (tabs) + hash =====
+  document.querySelectorAll(".tab").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+      document.querySelectorAll(".content").forEach(c=>c.classList.remove("active"));
+      btn.classList.add("active");
+      const id = btn.dataset.tab;
+      document.getElementById(id).classList.add("active");
+      location.hash = id; // guarda en URL
+    });
+  });
+  // abrir la pestaña por hash directo
+  if(location.hash){
+    const id = location.hash.replace('#','');
+    const tab = document.querySelector(`.tab[data-tab="${id}"]`);
+    if(tab) tab.click();
+  }
+
+  // ===== Logout =====
+  document.getElementById("btnLogout").addEventListener("click", async ()=>{
+    await supabase.auth.signOut();
+    location.href = LOGIN_URL;
+  });
+
+  // ===== Carga sesión + datos =====
   (async function init(){
     const { data: { session } } = await supabase.auth.getSession();
     if (!session){ location.href = LOGIN_URL; return; }
-    const user = session.user;
+    const user = session.user; CURRENT_USER = user;
     const meta = user.user_metadata || {};
-    const avatar = meta.avatar_url;
 
-    // Perfil
-    document.getElementById("pfName").textContent = meta.display_name || "Sin nombre";
-    document.getElementById("pfEmail").textContent = user.email;
-    document.getElementById("pfTelefono").textContent = meta.telefono || "—";
-    document.getElementById("pfCumple").textContent = meta.cumple || "—";
-    document.getElementById("pfCategoria").textContent = meta.categoria || "—";
+    // Perfil (lectura segura)
+    document.getElementById("pfName").textContent     = meta.display_name || "Sin nombre";
+    document.getElementById("pfEmail").textContent    = user.email || "—";
+    document.getElementById("pfTelefono").textContent = maskPhone(meta.telefono);
+    document.getElementById("pfCumple").textContent   = formatDateISOtoMX(meta.cumple);
+    document.getElementById("pfCategoria").textContent= meta.categoria || "—";
     document.getElementById("pfAdscripcion").textContent = meta.adscripcion || "—";
 
+    const avatar = meta.avatar_url;
     const avatarEl = document.getElementById("userAvatar");
-    const prevEl = document.getElementById("avatarPreview");
+    const prevEl   = document.getElementById("avatarPreview");
     if (avatar) {
       avatarEl.innerHTML = `<img src="${avatar}" alt="avatar">`;
-      prevEl.innerHTML = `<img src="${avatar}" alt="avatar">`;
+      prevEl.innerHTML   = `<img src="${avatar}" alt="avatar">`;
     } else {
-      const ini = (meta.display_name || "?")[0].toUpperCase();
+      const ini = (meta.display_name || user.email || "?")[0].toUpperCase();
       avatarEl.textContent = ini;
-      prevEl.textContent = ini;
+      prevEl.textContent   = ini;
     }
 
     // Prefill form
-    fNombre.value = meta.display_name || "";
-    fTelefono.value = meta.telefono || "";
-    fCumple.value = meta.cumple || "";
+    fNombre.value    = meta.display_name || "";
+    fTelefono.value  = meta.telefono || "";
+    try{
+      if(meta.cumple){
+        const d = new Date(meta.cumple.length<=10 ? meta.cumple+"T00:00:00" : meta.cumple);
+        const iso = d.toISOString().slice(0,10);
+        fCumple.value = iso;
+      }
+    }catch{}
     fCategoria.value = meta.categoria || "";
     fAdscripcion.value = meta.adscripcion || "";
 
@@ -199,9 +269,12 @@
       const file = e.target.files?.[0];
       if (file) previewFile(file);
     });
+
+    // Inicializa foro
+    initForum();
   })();
 
-  // Subir avatar a carpeta del UID (cumple políticas RLS)
+  // ===== Subir avatar a carpeta del UID =====
   async function uploadAvatar(file){
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) { alert("Sesión expirada, vuelve a iniciar."); return null; }
@@ -235,43 +308,219 @@
     return pub?.publicUrl || null;
   }
 
-  // Guardar perfil
+  // ===== Guardar perfil =====
   document.getElementById("editForm").addEventListener("submit", async (e)=>{
     e.preventDefault();
     showStatus("Guardando…");
 
-    const file = document.getElementById("fAvatar").files?.[0];
-    let avatar_url = null;
-    if (file) {
-      avatar_url = await uploadAvatar(file);
-      if (!avatar_url){ showStatus("❌ Error al subir la imagen."); return; }
-    }
+    try{
+      const file = document.getElementById("fAvatar").files?.[0];
+      let avatar_url = null;
+      if (file) {
+        avatar_url = await uploadAvatar(file);
+        if (!avatar_url){ showStatus("❌ Error al subir la imagen."); return; }
+      }
 
-    const updates = {
-      display_name: fNombre.value.trim(),
-      telefono: fTelefono.value.trim(),
-      cumple: fCumple.value.trim(),
-      categoria: fCategoria.value.trim(),
-      adscripcion: fAdscripcion.value.trim()
-    };
-    if (avatar_url) updates.avatar_url = avatar_url;
+      const updates = {
+        display_name: fNombre.value.trim(),
+        telefono: fTelefono.value.trim(),
+        cumple: fCumple.value.trim(),
+        categoria: fCategoria.value.trim(),
+        adscripcion: fAdscripcion.value.trim()
+      };
+      if (avatar_url) updates.avatar_url = avatar_url;
 
-    const { error } = await supabase.auth.updateUser({ data: updates });
-    if (error){ showStatus("❌ Error al guardar: " + error.message); return; }
+      const { error } = await supabase.auth.updateUser({ data: updates });
+      if (error){ showStatus("❌ Error al guardar: " + error.message); return; }
 
-    // Refresca UI sin recargar
-    showStatus("✅ Cambios guardados.");
-    document.getElementById("pfName").textContent = updates.display_name || "Sin nombre";
-    document.getElementById("pfTelefono").textContent = updates.telefono || "—";
-    document.getElementById("pfCumple").textContent = updates.cumple || "—";
-    document.getElementById("pfCategoria").textContent = updates.categoria || "—";
-    document.getElementById("pfAdscripcion").textContent = updates.adscripcion || "—";
+      // Refresca UI sin recargar
+      showStatus("✅ Cambios guardados.");
+      document.getElementById("pfName").textContent       = updates.display_name || "Sin nombre";
+      document.getElementById("pfTelefono").textContent   = maskPhone(updates.telefono);
+      document.getElementById("pfCumple").textContent     = formatDateISOtoMX(updates.cumple);
+      document.getElementById("pfCategoria").textContent  = updates.categoria || "—";
+      document.getElementById("pfAdscripcion").textContent= updates.adscripcion || "—";
 
-    if (avatar_url){
-      document.getElementById("userAvatar").innerHTML = `<img src="${avatar_url}#${Date.now()}" alt="avatar">`;
-      document.getElementById("avatarPreview").innerHTML = `<img src="${avatar_url}#${Date.now()}" alt="avatar">`;
+      if (updates.avatar_url){
+        const bust = `#${Date.now()}`;
+        document.getElementById("userAvatar").innerHTML  = `<img src="${updates.avatar_url}${bust}" alt="avatar">`;
+        document.getElementById("avatarPreview").innerHTML= `<img src="${updates.avatar_url}${bust}" alt="avatar">`;
+      }
+    }catch(err){
+      console.error(err);
+      showStatus("❌ Ocurrió un error inesperado. Intenta de nuevo.");
     }
   });
+
+  // ======== Foro: posts/comentarios/likes en Supabase ========
+  async function loadLikesAndCommentsMaps(ids){
+    if(ids.length===0) return { likesMap:{}, userLikes:new Set(), commentsCount:{} };
+    const { data: likesRows } = await supabase.from('likes')
+      .select('post_id,user_id')
+      .in('post_id', ids);
+    const likesMap = {};
+    const userLikes = new Set();
+    (likesRows||[]).forEach(r=>{
+      likesMap[r.post_id] = (likesMap[r.post_id]||0)+1;
+      if(CURRENT_USER && r.user_id===CURRENT_USER.id) userLikes.add(r.post_id);
+    });
+    const { data: commentsRows } = await supabase.from('comments')
+      .select('post_id')
+      .in('post_id', ids);
+    const commentsCount = {};
+    (commentsRows||[]).forEach(r=>{ commentsCount[r.post_id] = (commentsCount[r.post_id]||0)+1; });
+    return { likesMap, userLikes, commentsCount };
+  }
+
+  function renderPost(row, meta){
+    const own = (CURRENT_USER && row.user_id === CURRENT_USER.id);
+    const likeCount = meta.likesMap[row.id]||0;
+    const liked = meta.userLikes.has(row.id);
+    const commentCount = meta.commentsCount[row.id]||0;
+
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
+        <div class="meta">${own?'Tú':'Miembro'} • <span>${timeAgo(row.created_at)}</span></div>
+        <div class="pill">💬 ${commentCount} • ❤️ ${likeCount}</div>
+      </div>
+      <div style="margin-top:8px;white-space:pre-wrap;line-height:1.45">${escapeHtml(row.content)}</div>
+      <div class="actions">
+        <button class="subtle-btn like-btn" data-liked="${liked?1:0}" data-id="${row.id}">${liked?'❤️ Quitar me gusta':'🤍 Me gusta'}</button>
+        <button class="subtle-btn comment-toggle" data-id="${row.id}">💬 Comentar</button>
+      </div>
+      <div class="comment-panel" id="cp-${row.id}" style="display:none"></div>
+    `;
+
+    // like handler
+    el.querySelector('.like-btn').addEventListener('click', async (e)=>{
+      const btn = e.currentTarget; const pid = row.id; const isLiked = btn.getAttribute('data-liked')==='1';
+      try{
+        if(isLiked){
+          await supabase.from('likes').delete().match({ post_id: pid, user_id: CURRENT_USER.id });
+        }else{
+          await supabase.from('likes').insert({ post_id: pid, user_id: CURRENT_USER.id });
+        }
+      }catch{}
+    });
+
+    // comment toggle
+    el.querySelector('.comment-toggle').addEventListener('click', ()=>{
+      const panel = el.querySelector(`#cp-${row.id}`);
+      const visible = panel.style.display !== 'none';
+      panel.style.display = visible ? 'none' : 'block';
+      if(!visible){
+        OPEN_COMMENT_PANELS.set(row.id, panel);
+        loadComments(row.id, panel);
+      }
+    });
+
+    return el;
+  }
+
+  async function loadPosts(){
+    const { data, error } = await supabase
+      .from('posts')
+      .select('id, content, created_at, user_id')
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if(error){ forumStatus('❌ No se pudieron cargar las publicaciones.'); return; }
+
+    const ids = (data||[]).map(r=>r.id);
+    const meta = await loadLikesAndCommentsMaps(ids);
+
+    const list = document.getElementById('postsList');
+    list.innerHTML = '';
+    (data||[]).forEach(row=>{ list.appendChild(renderPost(row, meta)); });
+  }
+
+  async function loadComments(postId, container){
+    container.innerHTML = '<div class="meta">Cargando comentarios…</div>';
+    const { data, error } = await supabase
+      .from('comments')
+      .select('id, content, created_at, user_id')
+      .eq('post_id', postId)
+      .order('created_at', { ascending: true })
+      .limit(100);
+    if(error){ container.innerHTML = '<div class="meta">No se pudieron cargar comentarios.</div>'; return; }
+
+    const wrap = document.createElement('div');
+    wrap.className = 'comment-box';
+    const list = document.createElement('div');
+    (data||[]).forEach(c=>{
+      const own = (CURRENT_USER && c.user_id===CURRENT_USER.id);
+      const ci = document.createElement('div');
+      ci.className = 'comment';
+      ci.innerHTML = `<div style="white-space:pre-wrap">${escapeHtml(c.content)}</div><small>${own?'Tú':'Miembro'} • ${timeAgo(c.created_at)}</small>`;
+      list.appendChild(ci);
+    });
+
+    const form = document.createElement('form');
+    form.innerHTML = `
+      <label style="font-size:12px;color:#bdefff">Añadir comentario</label>
+      <textarea maxlength="300" placeholder="Escribe un comentario (máx. 300)"></textarea>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn" type="submit">Enviar</button>
+        <span class="meta comment-status"></span>
+      </div>
+    `;
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const ta = form.querySelector('textarea');
+      const st = form.querySelector('.comment-status');
+      const text = (ta.value||'').trim();
+      if(!text){ st.textContent = 'Escribe algo'; return; }
+      st.textContent = 'Publicando…';
+      const { error } = await supabase.from('comments').insert({ post_id: postId, user_id: CURRENT_USER.id, content: text });
+      if(error){ st.textContent = 'No se pudo publicar'; return; }
+      ta.value=''; st.textContent='';
+      loadComments(postId, container);
+    });
+
+    wrap.appendChild(list);
+    wrap.appendChild(form);
+    container.innerHTML = '';
+    container.appendChild(wrap);
+  }
+
+  function initForum(){
+    // cargar posts iniciales
+    loadPosts();
+    // manejar submit
+    const form = document.getElementById('forumForm');
+    form.addEventListener('submit', (e)=>{ e.preventDefault(); createPost(document.getElementById('forumInput').value); });
+    // realtime: escucha inserciones/borrados/updates
+    supabase.channel('realtime-all')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, ()=>{ loadPosts(); })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, ()=>{ loadPosts(); })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, (payload)=>{
+        const pid = payload?.new?.post_id || payload?.old?.post_id;
+        const panel = OPEN_COMMENT_PANELS.get(pid);
+        if(panel){ loadComments(pid, panel); }
+        else { loadPosts(); }
+      })
+      .subscribe();
+  }
+
+  async function createPost(content){
+    if(!CURRENT_USER){ forumStatus('Sesión expirada'); return; }
+    const clean = (content||'').trim();
+    if(!clean){ forumStatus('Escribe algo antes de publicar.'); return; }
+    if(clean.length>500){ forumStatus('Máximo 500 caracteres.'); return; }
+
+    forumStatus('Publicando…');
+    const { error } = await supabase.from('posts').insert({ content: clean, user_id: CURRENT_USER.id });
+    if(error){ forumStatus('❌ No se pudo publicar.'); return; }
+    document.getElementById('forumInput').value = '';
+    forumStatus('✅ Publicado');
+    loadPosts();
+  }
+
+  // === NOTA de políticas (para tu backend Supabase) ===
+  // Asegúrate de tener un bucket "avatars" y políticas RLS que permitan al usuario autenticado
+  // subir a su propia carpeta y lectura pública si quieres mostrar avatares a todos.
+  // También recuerda activar Realtime para posts, likes y comments en Database → Replication.
   </script>
 </body>
 </html>
