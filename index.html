@@ -175,7 +175,8 @@
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn" onclick="SInOS.goHome()">🏠 Inicio</button>
-          <button class="btn" id="btn-open-new" style="display:none" onclick="SInOS.openExternal()">🔗 Abrir en pestaña nueva</button>
+          <!-- Botón para abrir nueva pestaña deshabilitado por política -->
+          <button class="btn" id="btn-open-new" style="display:none" disabled>🔗 Abrir</button>
           <button class="btn" onclick="SInOS.closeApp()">✖ Cerrar</button>
         </div>
       </div>
@@ -207,17 +208,18 @@
 
   <!-- APPS -->
   <script>
+    /* Reemplaza "Prestaciones" por "Calculadora de prestaciones" */
     const APPS = [
-      { id:'trascendencia', title:'TrascendencIA Sindical', desc:'Asistente IA en nueva pestaña.', icon:'🤖',
-        href:'https://trascendencia-sindical-7t85.onrender.com/', externalDirect:true, quick:true },
+      { id:'trascendencia', title:'TrascendencIA Sindical', desc:'Asistente IA.', icon:'🤖',
+        href:'https://trascendencia-sindical-7t85.onrender.com/', quick:true },
 
       { id:'noticias', title:'Noticias', desc:'Circulares y comunicados en tiempo real.', icon:'📰', type:'internal' },
 
       { id:'agenda', title:'Red Unidad en Acción', desc:'Accede con tu usuario para ver la agenda.', icon:'📅',
-        href:'https://chronosbvrx.github.io/InnovacionSindical/login.html', externalDirect:true, quick:true },
+        href:'https://chronosbvrx.github.io/InnovacionSindical/login.html', quick:true },
 
       { id:'denuncias', title:'Denuncias y Reportes', desc:'Genera un escrito formal en PDF, listo para imprimir.', icon:'🛡️',
-        href:'https://chronosbvrx.github.io/InnovacionSindical/denuncias', externalDirect:true, quick:true },
+        href:'https://chronosbvrx.github.io/InnovacionSindical/denuncias', quick:true },
 
       { id:'directorio', title:'Directorio', desc:'Delegados, jurídicos y atención a trabajadores.', icon:'📞',
         iframe:'https://chronosbvrx.github.io/InnovacionSindical/directorio', quick:true },
@@ -226,7 +228,9 @@
       { id:'miniapp', title:'MiniApp WhatsApp', desc:'Automatizaciones por palabras clave y avisos.', icon:'💬',
         href:'https://wa.me/XXXXXXXXXXX', hidden:true },
 
-      { id:'prestaciones', title:'Prestaciones', desc:'Vacaciones, licencias, estímulos y antigüedad.', icon:'📄', iframe:'about:blank' },
+      /* Renombrado */
+      { id:'calculadora', title:'Calculadora de prestaciones', desc:'Vacaciones, licencias, estímulos y antigüedad.', icon:'📄',
+        iframe:'about:blank' },
 
       { id:'ajustes', title:'Ajustes', desc:'Tema, accesibilidad y personalización.', icon:'⚙️', iframe:'about:blank', hidden:true }
     ];
@@ -277,6 +281,12 @@
           // Recalcula simetría al redimensionar
           window.addEventListener('resize', ()=>this.renderTiles());
 
+          // Sanitizador global: evita target="_blank" en cualquier enlace agregado dinámicamente
+          document.addEventListener('click', (e)=>{
+            const a = e.target.closest && e.target.closest('a[target="_blank"]');
+            if(a){ a.removeAttribute('target'); }
+          });
+
         }catch(err){ console.error('Init:',err); this.forceShowUI(); }
       },
 
@@ -296,11 +306,14 @@
         visible.forEach(a=>{
           const b=document.createElement('button');
           b.className='tile';
-          if (a.externalDirect && a.href){
-            b.onclick=()=>window.open(a.href,'_blank','noopener,noreferrer');
+
+          // Política: si tiene href y no es "internal" y no usa iframe, navegar en MISMA pestaña
+          if (a.href && !a.iframe && a.type!=='internal'){
+            b.onclick = () => location.assign(a.href);
           } else {
-            b.onclick=()=>this.openApp(a.id);
+            b.onclick = () => this.openApp(a.id);
           }
+
           b.setAttribute('aria-label',`${a.title}. ${a.desc||''}`);
           b.innerHTML=`
             <div style="display:flex;gap:14px;align-items:center">
@@ -324,8 +337,9 @@
         const app=APPS.find(x=>x.id===id); if(!app) return;
         this.currentApp=app;
 
-        if (app.externalDirect && app.href){
-          window.open(app.href,'_blank','noopener,noreferrer');
+        // Política: si es externa (sin iframe y no 'internal'), abrir en MISMA pestaña
+        if (app.href && !app.iframe && app.type!=='internal'){
+          location.assign(app.href);
           return;
         }
 
@@ -340,14 +354,14 @@
 
         this.appIframe.style.display='none'; this.appIframe.src='about:blank';
         this.appInternal.style.display='none'; this.appInternal.innerHTML='';
-        this.btnOpenNew.style.display='none';
+        this.btnOpenNew.style.display='none'; // nunca mostrar para evitar nuevas pestañas
 
         if(app.type==='internal' && app.id==='noticias'){
           this.renderNoticias();
         }else if(app.iframe){
           this.appIframe.style.display='block'; this.appIframe.src=app.iframe;
         }else if(app.href){
-          this.btnOpenNew.style.display='inline-flex';
+          // Sin acción: ya cubierto arriba con location.assign
         }
 
         if('vibrate' in navigator){ try{ navigator.vibrate(8); }catch{} }
@@ -386,7 +400,7 @@
         this._cleanupNoticias = () => window.removeEventListener('resize', onResize);
       },
 
-      openExternal(){ if(this.currentApp?.href){ window.open(this.currentApp.href,'_blank','noopener,noreferrer'); } },
+      openExternal(){ if(this.currentApp?.href){ location.assign(this.currentApp.href); } },
       closeApp(){ this.goHome(); },
       goHome(){
         if (this._cleanupNoticias) { try{ this._cleanupNoticias(); }catch{} this._cleanupNoticias=null; }
