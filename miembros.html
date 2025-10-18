@@ -49,6 +49,20 @@
   iframe{width:100%;min-height:600px;border:0;border-radius:12px}
   .hint{font-size:12px;color:#9fdcf0}
   @media (max-width: 880px){ nav{width:100%; flex-direction:row; position:sticky; top:52px; z-index:9; overflow:auto;} main{flex-direction:column} }
+
+  /* --- NUEVO: estilo para el desplegable del formulario --- */
+  details.forum-toggle{margin-top:16px}
+  details.forum-toggle > summary{
+    list-style:none; cursor:pointer; user-select:none;
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:12px;
+    background:rgba(91,215,242,.10); border:1px solid rgba(91,215,242,.28);
+    font-weight:600; color:#bff4ff;
+  }
+  details.forum-toggle[open] > summary{background:rgba(91,215,242,.18)}
+  details.forum-toggle > summary::-webkit-details-marker{display:none}
+  .rotate{transition:transform .2s ease}
+  details[open] .rotate{transform:rotate(90deg)}
 </style>
 </head>
 <body>
@@ -102,22 +116,8 @@
         <h2>🗣️ Foro de Miembros</h2>
         <p class="muted">Publica anuncios, dudas o propuestas. Mantén el respeto y evita datos sensibles.</p>
 
-        <form id="forumForm" style="margin-top:10px">
-          <label>Escribe una publicación (máx. 500 caracteres)</label>
-          <textarea id="forumInput" maxlength="500" placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
-          <div class="row">
-            <label style="font-size:13px">Categoría</label>
-            <select id="forumCategory">
-              <option>Avisos</option>
-              <option selected>Asuntos Generales</option>
-              <option>Convivencia</option>
-            </select>
-          </div>
-          <button class="btn" type="submit">➕ Publicar</button>
-          <div class="status" id="forumStatus"></div>
-        </form>
-
-        <div class="row" style="margin-top:14px">
+        <!-- Filtros arriba -->
+        <div class="row" style="margin-top:6px">
           <span class="meta">Filtrar: </span>
           <button class="subtle-btn post-filter" data-filter="Todas">Todas</button>
           <button class="subtle-btn post-filter" data-filter="Avisos">Avisos</button>
@@ -125,7 +125,30 @@
           <button class="subtle-btn post-filter" data-filter="Convivencia">Convivencia</button>
         </div>
 
-        <div id="postsList" style="margin-top:16px;display:grid;gap:12px"></div>
+        <!-- Lista de posts al inicio -->
+        <div id="postsList" style="margin-top:14px;display:grid;gap:12px"></div>
+
+        <!-- NUEVO: formulario dentro de desplegable para optimizar espacio -->
+        <details class="forum-toggle" id="newPostToggle">
+          <summary>
+            <span class="rotate">▸</span>
+            <span>Crear una publicación</span>
+          </summary>
+          <form id="forumForm" style="margin-top:12px">
+            <label>Escribe una publicación (máx. 500 caracteres)</label>
+            <textarea id="forumInput" maxlength="500" placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
+            <div class="row">
+              <label style="font-size:13px">Categoría</label>
+              <select id="forumCategory">
+                <option>Avisos</option>
+                <option selected>Asuntos Generales</option>
+                <option>Convivencia</option>
+              </select>
+            </div>
+            <button class="btn" type="submit">➕ Publicar</button>
+            <div class="status" id="forumStatus"></div>
+          </form>
+        </details>
       </div>
     </section>
 
@@ -171,8 +194,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
   // ====== CREDENCIALES ======
-const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs"; // tu anon key completa
+  const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs"; // tu anon key completa
   const LOGIN_URL = "login.html";
 
   // ====== CLIENTE ======
@@ -253,10 +276,16 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
     });
 
     $("editForm").addEventListener("submit", onSaveProfile);
-    $("forumForm").addEventListener("submit", (e)=>{
-      e.preventDefault();
-      createPost($("forumInput").value, $("forumCategory").value);
-    });
+
+    // Nuevo: escucha del formulario dentro del <details>
+    const forumForm = document.getElementById('forumForm');
+    if (forumForm){
+      forumForm.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        createPost($("forumInput").value, $("forumCategory").value);
+      });
+    }
+
     document.querySelectorAll('.post-filter').forEach(btn=>{
       btn.addEventListener('click', ()=>{ CURRENT_FILTER = btn.dataset.filter; loadPosts(); });
     });
@@ -585,26 +614,30 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
   }
 
   async function createPost(content, category){
-  if(!CURRENT_USER){ forumStatus('Sesión expirada'); return; }
-  const clean = (content||'').trim();
-  const cat = (category||'Asuntos Generales').trim();
-  if(!clean){ forumStatus('Escribe algo antes de publicar.'); return; }
-  forumStatus('Publicando…');
+    if(!CURRENT_USER){ forumStatus('Sesión expirada'); return; }
+    const clean = (content||'').trim();
+    const cat = (category||'Asuntos Generales').trim();
+    if(!clean){ forumStatus('Escribe algo antes de publicar.'); return; }
+    forumStatus('Publicando…');
 
-  const { data, error } = await supabase
-    .from('posts')
-    .insert({ content: clean, user_id: CURRENT_USER.id, category: cat });
+    const { data, error } = await supabase
+      .from('posts')
+      .insert({ content: clean, user_id: CURRENT_USER.id, category: cat });
 
-  if (error) {
-    forumStatus('❌ No se pudo publicar: ' + (error.message || 'Error'));
-    console.error('[posts.insert]', error);
-    return;
+    if (error) {
+      forumStatus('❌ No se pudo publicar: ' + (error.message || 'Error'));
+      console.error('[posts.insert]', error);
+      return;
+    }
+    $('forumInput').value = '';
+    forumStatus('✅ Publicado');
+
+    // Cerrar el desplegable tras publicar para mantener la vista limpia
+    const toggle = document.getElementById('newPostToggle');
+    if(toggle) toggle.open = false;
+
+    loadPosts();
   }
-  $('forumInput').value = '';
-  forumStatus('✅ Publicado');
-  loadPosts();
-}
-
 
   // === NOTAS ===
   // - Revisa que tu ANON KEY esté completa.
