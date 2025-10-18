@@ -59,7 +59,10 @@
   .sheet .dest{font-weight:700;margin-top:6px;margin-bottom:8px}
   .sheet .pres{margin:0 0 14px 0}
   .sheet h6{font-weight:700;margin:18px 0 6px 0}
-  .sheet .pie{position:absolute;bottom:72px;left:64px;right:64px}
+  .sheet .pie{
+    position:absolute;bottom:72px;left:64px;right:64px;
+    text-align:center; /* 👈 centrado en la vista previa */
+  }
 </style>
 </head>
 <body>
@@ -69,7 +72,7 @@
     </div>
 
     <h1>Denuncias y Reportes</h1>
-    <p class="muted">Previsualiza el documento y luego imprime o descarga. Los datos no se borran.</p>
+    <p class="muted">Previsualiza el documento y luego imprime o descarga. Tus datos se guardan localmente en este navegador.</p>
 
     <div class="card">
       <form id="fDenuncia" autocomplete="on" novalidate>
@@ -153,7 +156,7 @@
         </div>
         <div>
           <label for="matricula">Matrícula</label>
-          <input id="matricula" name="matricula" required placeholder="Ej. 123456">
+          <input id="matricula" name="matricula" required placeholder="Ej. 123456" inputmode="numeric" pattern="\\d+">
         </div>
         <div>
           <label for="categoria">Categoría</label>
@@ -182,7 +185,7 @@
 
   <!-- Modal de vista previa -->
   <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <div class="modal-card">
+    <div class="modal-card" tabindex="-1">
       <div class="modal-h">
         <div class="modal-t" id="modal-title">Vista previa del escrito</div>
         <div class="modal-a">
@@ -207,6 +210,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     // === CONFIG ===
     const API_BASE = "https://sinos-api.onrender.com"; // tu API pública en Render
+    const FORM_KEY = 'sinos_denuncias_v1';
 
     const $ = s => document.querySelector(s);
     const N = s => (s||'').toString().trim();
@@ -234,8 +238,17 @@
       return d.toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
     };
 
-    // ===== IA: redacta usando SOLO problematica =====
+    // ===== Utils de seguridad: escapar HTML =====
+    function escapeHTML(s){
+      return (s||'').replace(/[&<>"']/g, m => (
+        { "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[m]
+      ));
+    }
+
+    // ===== IA: redacta usando SOLO problematica con timeout =====
     async function redactarIA(d){
+      const ctrl = new AbortController();
+      const timeout = setTimeout(()=> ctrl.abort(), 12000); // 12 s
       try{
         setStatus("Redactando texto con IA…");
 
@@ -254,7 +267,8 @@
         const res = await fetch(`${API_BASE}/escritor`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
+          signal: ctrl.signal
         });
 
         if(!res.ok){
@@ -274,9 +288,10 @@
       }catch(e){
         console.error(e);
         setStatus("Error al redactar.");
-        alert("No se pudo redactar con la IA.\n" + e.message);
+        alert("No se pudo redactar con la IA.\n" + (e.name==='AbortError' ? 'Tiempo de espera agotado.' : e.message));
         return "";
       }finally{
+        clearTimeout(timeout);
         setTimeout(()=>setStatus(""), 4000);
       }
     }
@@ -308,18 +323,28 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
       };
     }
 
+    function setDatos(d){
+      if(!d) return;
+      const ids = ['ciudad','fecha','destinatario','cargo','nombre','matricula','categoria','lugar','problematica'];
+      ids.forEach(id=>{
+        const el = document.getElementById(id);
+        if(el && d[id] !== undefined) el.value = d[id] || '';
+      });
+    }
+
     function buildPreviewHTML(encabezadoTop, dest, cuerpo, pie){
-      const parrafos = (cuerpo||"").split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
+      const toParas = (txt)=> (txt||"").split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
+      const esc = (s)=> escapeHTML(s).replace(/\n/g,'<br>');
       let html = `
-        <header>${encabezadoTop}</header>
-        <div class="dest">${dest.replace(/\n/g,'<br>')}</div>
+        <header>${esc(encabezadoTop)}</header>
+        <div class="dest">${esc(dest)}</div>
         <p class="pres">Presente.</p>
       `;
-      parrafos.forEach(p=>{
-        if(/^[A-ZÁÉÍÓÚÑ\s\/]+:$/.test(p)){ html += `<h6>${p}</h6>`; }
-        else { html += `<p>${p.replace(/\n/g,'<br>')}</p>`; }
+      toParas(cuerpo).forEach(p=>{
+        if(/^[A-ZÁÉÍÓÚÑ\s\/]+:$/.test(p)){ html += `<h6>${esc(p)}</h6>`; }
+        else { html += `<p>${esc(p)}</p>`; }
       });
-      html += `<div class="pie">${pie.replace(/\n/g,'<br>')}</div>`;
+      html += `<div class="pie">${esc(pie)}</div>`;
       return html;
     }
 
@@ -336,13 +361,13 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         if(!cuerpo){ return; }
 
         sheet.innerHTML = buildPreviewHTML(encabezadoTop, dest, cuerpo, pie);
-        $('#modal').classList.add('show');
+        openModal();
       }catch(e){
         console.error(e);
         alert('Ocurrió un error generando la vista previa.');
       }
     }
-    function cerrarPreview(){ $('#modal').classList.remove('show'); }
+    function cerrarPreview(){ closeModal(); }
 
     async function generarPDF(d, {action='print'} = {}){
       setStatus('Generando PDF…');
@@ -376,24 +401,44 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         const parrafos = (cuerpo||"").split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
         const lineHeight = 16;
 
-        parrafos.forEach(p=>{
+        for (let i=0;i<parrafos.length;i++){
+          const p = parrafos[i];
           if(/^[A-ZÁÉÍÓÚÑ\s\/]+:$/.test(p)){
+            // Si es título, intenta mantenerlo con al menos 2 líneas después
+            const next = parrafos[i+1] || '';
+            const linesNext = doc.splitTextToSize(next, width).length;
+            if (y + (lineHeight + 2) + (linesNext*lineHeight) > dims.H - 160){
+              doc.addPage(); y = topBase;
+            }
             doc.setFont('Times','Bold'); doc.text(p, M, y); y += lineHeight+2; doc.setFont('Times','Normal');
           }else{
             const lines = doc.splitTextToSize(p, width);
-            if(y + lines.length*lineHeight > dims.H - 120){ doc.addPage(); y = topBase; }
+            if(y + lines.length*lineHeight > dims.H - 160){ doc.addPage(); y = topBase; }
             doc.text(lines, M, y); y += lines.length*lineHeight + 6;
           }
-        });
+        }
 
-        // Pie / firma
+        // Pie / firma centrado
         if(y < dims.H - 140) y = dims.H - 140;
-        doc.setFont('Times','Bold'); doc.text('ATENTAMENTE', M, y); y += 28;
+        const cx = dims.W / 2;
+
+        doc.setFont('Times','Bold');
+        doc.text('ATENTAMENTE', cx, y, { align: 'center' }); 
+        y += 28;
+
         doc.setFont('Times','Normal');
-        doc.text(d.nombre, M, y); y += 16;
-        doc.text(`Matrícula: ${d.matricula}`, M, y); y += 16;
-        doc.text(`Categoría: ${d.categoria}`, M, y); y += 16;
-        if(N(d.lugar)) doc.text(d.lugar, M, y);
+        doc.text(d.nombre, cx, y, { align: 'center' }); 
+        y += 16;
+
+        doc.text(`Matrícula: ${d.matricula}`, cx, y, { align: 'center' }); 
+        y += 16;
+
+        doc.text(`Categoría: ${d.categoria}`, cx, y, { align: 'center' }); 
+        y += 16;
+
+        if (N(d.lugar)) {
+          doc.text(d.lugar, cx, y, { align: 'center' });
+        }
 
         const blob = doc.output('blob');
         const url = URL.createObjectURL(blob);
@@ -401,7 +446,7 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         if(action==='download'){
           const a = document.createElement('a');
           a.href = url; a.download = 'Escrito.pdf'; document.body.appendChild(a);
-          a.click(); setTimeout(()=>{ a.remove(); URL.revokeObjectURL(url); }, 50);
+          a.click(); setTimeout(()=>{ a.remove(); URL.revokeObjectURL(url); }, 1000);
           setStatus('PDF descargado.');
         } else {
           let iframe = document.getElementById('print-iframe');
@@ -413,7 +458,17 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
             document.body.appendChild(iframe);
           }
           await new Promise(res=>{
-            iframe.onload = ()=>{ try{ iframe.contentWindow.focus(); setTimeout(()=>{ iframe.contentWindow.print(); res(); }, 120);}catch(e){ res(); } };
+            iframe.onload = ()=>{
+              try{
+                iframe.contentWindow.focus();
+                setTimeout(()=>{
+                  iframe.contentWindow.print();
+                  // revoca el URL después de enviar a imprimir
+                  setTimeout(()=> URL.revokeObjectURL(url), 5000);
+                  res();
+                }, 120);
+              }catch(e){ res(); }
+            };
             iframe.src = url;
           });
           setStatus('Listo para imprimir. Si no aparece, usa Ctrl/Cmd + P.');
@@ -425,6 +480,44 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
       }finally{
         setTimeout(()=>setStatus(""), 5000);
       }
+    }
+
+    // ===== Persistencia local =====
+    function saveLocal(){ try{ localStorage.setItem(FORM_KEY, JSON.stringify(datos())); }catch{} }
+    function loadLocal(){ try{ const s = localStorage.getItem(FORM_KEY); if(s) setDatos(JSON.parse(s)); }catch{} }
+
+    // ===== Modal: focus trap + Esc =====
+    const modal = $('#modal');
+    const modalCard = modal.querySelector('.modal-card');
+    let lastFocused = null;
+
+    function getFocusable(){
+      return modalCard.querySelectorAll('button,[href],[tabindex]:not([tabindex="-1"])');
+    }
+    function trapFocus(e){
+      if(e.key !== 'Tab') return;
+      const f = getFocusable();
+      if(!f.length) return;
+      const first = f[0], last = f[f.length-1];
+      if (e.shiftKey && document.activeElement === first){ last.focus(); e.preventDefault(); }
+      else if (!e.shiftKey && document.activeElement === last){ first.focus(); e.preventDefault(); }
+    }
+
+    function openModal(){
+      lastFocused = document.activeElement;
+      modal.classList.add('show');
+      const f = getFocusable();
+      (f[0] || modalCard).focus();
+      document.addEventListener('keydown', onKeydown);
+    }
+    function closeModal(){
+      modal.classList.remove('show');
+      document.removeEventListener('keydown', onKeydown);
+      if(lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+    }
+    function onKeydown(e){
+      if(e.key === 'Escape') closeModal();
+      if(e.key === 'Tab') trapFocus(e);
     }
 
     // ===== Eventos =====
@@ -467,10 +560,18 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
       const [cargoTxt, titular] = val.split('|');
       if(cargoTxt) cargo.value = cargoTxt;
       if(titular) dest.value = titular;
+      saveLocal();
     });
 
+    // ► Guardado local al cambiar campos
+    document.getElementById('fDenuncia').addEventListener('input', saveLocal);
+
     // cerrar modal clic fuera
-    document.getElementById('modal').addEventListener('click', (e)=>{ if(e.target.id==='modal') cerrarPreview(); });
+    document.getElementById('modal').addEventListener('click', (e)=>{ if(e.target.id==='modal') closeModal(); });
+
+    // ► Cargar local y defaults
+    loadLocal();
+    const f = $('#fecha'); if(f && !f.value) f.value = hoyISO();
   });
   </script>
 </body>
