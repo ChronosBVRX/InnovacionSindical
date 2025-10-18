@@ -586,7 +586,7 @@
     // Render tarjetas
     pageItems.forEach(p=>{
       const card = document.createElement('div'); card.className = 'card';
-      const dot = `<span class=\"pill\" title=\"Última vez\">${isOnline(p.user_id) ? '🟢 Online' : '⚪ Últ. vez: ' + timeAgo(p.last_seen)}</span>`;
+      const dot = `<span class=\"pill\" title=\"En línea\">${isOnline(p.user_id) ? '🟢 Online' : '⚪ Offline'}</span>`;
       card.innerHTML = `
         <div class=\"row\" style=\"align-items:center\">
           <div class=\"avatar\" style=\"width:64px;height:64px\">${p.avatar_url? `<img src=\"${p.avatar_url}\">` : (p.display_name||'?')[0]?.toUpperCase() }</div>
