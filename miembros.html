@@ -85,7 +85,7 @@
     <section id="perfil" class="content active">
       <div class="card">
         <h2>👋 Bienvenido</h2>
-        <p class="muted">Esta es tu página de miembro dentro de Unidad en Acción </p>
+        <p class="muted">Esta es tu página de miembro dentro de Innovación Sindical.</p>
         <div class="profile-info">
           <div class="avatar" id="userAvatar">🧑</div>
           <div class="profile-data">
@@ -110,6 +110,17 @@
           <select id="fCategoria"><option value="">Todas las categorías</option></select>
           <button class="subtle-btn" id="btnRefreshMembers">Actualizar</button>
         </div>
+        <div class="row" style="margin-top:8px;justify-content:space-between">
+          <label class="row" style="gap:8px;align-items:center">
+            <input type="checkbox" id="chkOnlineOnly">
+            <span>👁️ Solo online</span>
+          </label>
+          <div id="pager" class="row" style="gap:8px">
+            <button class="subtle-btn" id="btnPrevPage">⬅️ Anterior</button>
+            <span class="meta" id="pageInfo">Página 1/1</span>
+            <button class="subtle-btn" id="btnNextPage">Siguiente ➡️</button>
+          </div>
+        </div>
         <div id="membersList" style="margin-top:14px;display:grid;gap:12px"></div>
       </div>
     </section>
@@ -118,7 +129,7 @@
     <section id="calendario" class="content">
       <div class="card">
         <h2>📅 Calendario de Actividades</h2>
-        <p class="muted">Consulta las próximas reuniones, actvidades y eventos.</p>
+        <p class="muted">Consulta las próximas reuniones, asambleas y eventos.</p>
         <iframe src="https://calendar.google.com/calendar/embed?src=redunidadenaccion%40gmail.com&ctz=America%2FMexico_City&showTitle=0&showPrint=0&showTz=0&showCalendars=0"></iframe>
       </div>
     </section>
@@ -225,6 +236,11 @@
   let OPEN_COMMENT_PANELS = new Map();
   let CURRENT_FILTER = 'Todas';
   const presence = { online: new Set() };
+  // Paginación y filtro
+  let CURRENT_PAGE = 1;
+  const PAGE_SIZE = 20;
+  let ONLINE_ONLY = false;
+  let LAST_CACHE_MEMBERS = []; // para paginar sin reconsultar cada vez
   let DM = { thread_id:null, target_id:null, channel:null };
 
   function showStatus(msg){ $("status").textContent = msg || ""; }
@@ -264,8 +280,11 @@
     document.querySelectorAll('.post-filter').forEach(btn=>{ btn.addEventListener('click', ()=>{ CURRENT_FILTER = btn.dataset.filter; loadPosts(); }); });
 
     // Miembros
-    $("btnRefreshMembers")?.addEventListener('click', loadMembers);
-    $("qMembers")?.addEventListener('input', debounce(loadMembers, 300));
+    $("btnRefreshMembers")?.addEventListener('click', ()=>{ CURRENT_PAGE = 1; loadMembers(true); });
+    $("qMembers")?.addEventListener('input', debounce(()=>{ CURRENT_PAGE = 1; loadMembers(true); }, 300));
+    $("chkOnlineOnly")?.addEventListener('change', (e)=>{ ONLINE_ONLY = !!e.target.checked; CURRENT_PAGE = 1; renderMembers(); });
+    $("btnPrevPage")?.addEventListener('click', ()=>{ if (CURRENT_PAGE>1){ CURRENT_PAGE--; renderMembers(); } });
+    $("btnNextPage")?.addEventListener('click', ()=>{ const totalPages = Math.max(1, Math.ceil(getWorkingSet().length / PAGE_SIZE)); if (CURRENT_PAGE<totalPages){ CURRENT_PAGE++; renderMembers(); } });
 
     // Init app
     init();
@@ -493,33 +512,99 @@
   }
   function isOnline(user_id){ return presence.online.has(user_id); }
 
-  async function loadMembers(){
-    const q = ($("qMembers")?.value || "").trim(); const cat = $("fCategoria")?.value || "";
-    let query = supabase.from('profiles').select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, is_visible').eq('is_visible', true).order('display_name', { ascending: true }).limit(100);
-    if (cat) query = query.ilike('categoria', `%${cat}%`);
-    if (q) query = query.or(`display_name.ilike.%${q}%,adscripcion.ilike.%${q}%,categoria.ilike.%${q}%`);
-    const { data, error } = await query; if (error){ console.error(error); return; }
-    const sel = $("fCategoria"); if (sel && sel.options.length === 1) { const cats = [...new Set((data||[]).map(d=>d.categoria).filter(Boolean))].sort(); cats.forEach(c=>{ const opt = document.createElement('option'); opt.value = c; opt.textContent = c; sel.appendChild(opt); }); }
+  async function loadMembers(forceFetch=false){
+    const q = ("qMembers" in window && $("qMembers")?.value || "").trim();
+    const cat = ("fCategoria" in window && $("fCategoria")?.value || "");
+
+    if (forceFetch || LAST_CACHE_MEMBERS.length === 0){
+      // Trae TODOS los visibles ordenados por última conexión y nombre
+      let query = supabase
+        .from('profiles')
+        .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, is_visible')
+        .eq('is_visible', true)
+        .order('last_seen', { ascending: false })
+        .order('display_name', { ascending: true })
+        .limit(1000);
+      const { data, error } = await query;
+      if (error){ console.error(error); return; }
+      LAST_CACHE_MEMBERS = data || [];
+
+      // Poblar filtro de categorías una vez
+      const sel = $("fCategoria");
+      if (sel && sel.options.length === 1) {
+        const cats = [...new Set((LAST_CACHE_MEMBERS||[]).map(d=>d.categoria).filter(Boolean))].sort();
+        cats.forEach(c=>{ const opt = document.createElement('option'); opt.value = c; opt.textContent = c; sel.appendChild(opt); });
+      }
+    }
+
+    // Aplica filtros de texto/categoría sobre el cache
+    let filtered = LAST_CACHE_MEMBERS.filter(p=> true);
+    if (cat) filtered = filtered.filter(p => (p.categoria||'').toLowerCase().includes(cat.toLowerCase()));
+    if (q) {
+      const Q = q.toLowerCase();
+      filtered = filtered.filter(p => (p.display_name||'').toLowerCase().includes(Q) || (p.adscripcion||'').toLowerCase().includes(Q) || (p.categoria||'').toLowerCase().includes(Q));
+    }
+
+    // Separa por presencia y compone orden final
+    const online = [], offline = [];
+    filtered.forEach(p => (isOnline(p.user_id) ? online : offline).push(p));
+    const ordered = [...online, ...offline];
+
+    // Guarda conjunto de trabajo para render/paginación
+    WINDOW_MEMBERS_ORDERED = ordered;
+    renderMembers();
+  }
+
+  // Conjunto actual (aplica Solo Online si procede)
+  function getWorkingSet(){
+    const base = WINDOW_MEMBERS_ORDERED || [];
+    return ONLINE_ONLY ? base.filter(p=> isOnline(p.user_id)) : base;
+  }
+
+  function renderMembers(){
+    const listAll = getWorkingSet();
     const wrap = $("membersList"); wrap.innerHTML = '';
-    (data||[]).forEach(p=>{
-      const card = document.createElement('div'); card.className = 'card'; const dot = `<span class="pill" title="Última vez">${isOnline(p.user_id) ? '🟢 Online' : '⚪ Últ. vez: ' + timeAgo(p.last_seen)}</span>`;
+
+    // Encabezado con conteo
+    const onlineCount = listAll.filter(p=> isOnline(p.user_id)).length;
+    const totalAll = listAll.length;
+    const head = document.createElement('div');
+    head.className = 'meta'; head.style.margin = '6px 0 4px';
+    head.textContent = `Mostrando: ${totalAll} • Online: ${onlineCount}`;
+    wrap.appendChild(head);
+
+    // Paginación
+    const totalPages = Math.max(1, Math.ceil(totalAll / PAGE_SIZE));
+    if (CURRENT_PAGE > totalPages) CURRENT_PAGE = totalPages;
+    const start = (CURRENT_PAGE-1)*PAGE_SIZE;
+    const pageItems = listAll.slice(start, start + PAGE_SIZE);
+
+    // Render tarjetas
+    pageItems.forEach(p=>{
+      const card = document.createElement('div'); card.className = 'card';
+      const dot = `<span class=\"pill\" title=\"Última vez\">${isOnline(p.user_id) ? '🟢 Online' : '⚪ Últ. vez: ' + timeAgo(p.last_seen)}</span>`;
       card.innerHTML = `
-        <div class="row" style="align-items:center">
-          <div class="avatar" style="width:64px;height:64px">${p.avatar_url? `<img src="${p.avatar_url}">` : (p.display_name||'?')[0]?.toUpperCase() }</div>
-          <div style="flex:1;min-width:200px">
-            <div style="font-weight:700">${escapeHtml(p.display_name||'—')}</div>
-            <div class="meta">${escapeHtml(p.categoria||'—')} • ${escapeHtml(p.adscripcion||'—')}</div>
+        <div class=\"row\" style=\"align-items:center\">
+          <div class=\"avatar\" style=\"width:64px;height:64px\">${p.avatar_url? `<img src=\"${p.avatar_url}\">` : (p.display_name||'?')[0]?.toUpperCase() }</div>
+          <div style=\"flex:1;min-width:200px\">
+            <div style=\"font-weight:700\">${escapeHtml(p.display_name||'—')}</div>
+            <div class=\"meta\">${escapeHtml(p.categoria||'—')} • ${escapeHtml(p.adscripcion||'—')}</div>
           </div>
           ${dot}
         </div>
-        <div class="actions">
-          <button class="subtle-btn" data-dm="${p.user_id}">💬 Mensaje</button>
-          <button class="subtle-btn" data-follow="${p.user_id}">➕ Seguir</button>
+        <div class=\"actions\">
+          <button class=\"subtle-btn\" data-dm=\"${p.user_id}\">💬 Mensaje</button>
+          <button class=\"subtle-btn\" data-follow=\"${p.user_id}\">➕ Seguir</button>
         </div>`;
       card.querySelector('[data-dm]')?.addEventListener('click', ()=> openDM(p.user_id, p.display_name, p.avatar_url));
       card.querySelector('[data-follow]')?.addEventListener('click', ()=> toggleFollow(p.user_id));
       wrap.appendChild(card);
     });
+
+    // Actualiza pager
+    const info = $("pageInfo"); if (info) info.textContent = `Página ${CURRENT_PAGE}/${totalPages}`;
+    $("btnPrevPage") && ($("btnPrevPage").disabled = CURRENT_PAGE <= 1);
+    $("btnNextPage") && ($("btnNextPage").disabled = CURRENT_PAGE >= totalPages);
   }
 
   // ====== SEGUIR ======
