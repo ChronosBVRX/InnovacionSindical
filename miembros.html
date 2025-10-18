@@ -261,7 +261,7 @@
         document.querySelectorAll(".content").forEach(c=>c.classList.remove("active"));
         btn.classList.add("active");
         const id = btn.dataset.tab; $(id).classList.add("active"); location.hash = id;
-        if (id === 'miembros') loadMembers();
+        if (id === 'miembros') loadMembers(true);
       });
     });
     if(location.hash){ const id = location.hash.replace('#',''); const tab = document.querySelector(`.tab[data-tab="${id}"]`); if(tab) tab.click(); }
@@ -502,7 +502,11 @@
   // ====== PRESENCIA y DIRECTORIO ======
   function initPresence(){
     const ch = supabase.channel('presence:members', { config: { presence: { key: CURRENT_USER.id } }});
-    ch.on('presence', {event: 'sync'}, () => { presence.online = new Set(Object.keys(ch.presenceState())); });
+    ch.on('presence', {event: 'sync'}, () => {
+      presence.online = new Set(Object.keys(ch.presenceState()));
+      // Re-render para que suban/bajen los online sin recargar
+      try { renderMembers(); } catch(_) {}
+    });
     ch.subscribe(async (status) => {
       if (status === 'SUBSCRIBED') {
         ch.track({ last_active: Date.now() });
