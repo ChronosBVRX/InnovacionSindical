@@ -58,9 +58,40 @@
   .rotate{transition:transform .2s ease}
   details[open] .rotate{transform:rotate(90deg)}
 
-  /* Modal DM */
-  #dmModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter:blur(2px)}
-  #dmBox{max-width:620px;margin:6vh auto;background:var(--panel);border:1px solid rgba(91,215,242,.25);border-radius:16px;padding:16px}
+  /* ===== Modal DM (centrado + accesible) ===== */
+  /* Bloquea el scroll del fondo cuando el modal esté abierto */
+  body.modal-open{overflow:hidden; touch-action:none}
+
+  #dmModal{
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(0,0,0,.45);
+    backdrop-filter:blur(2px);
+    z-index:50;
+    /* Centrado perfecto en cualquier pantalla */
+    display:grid; place-items:center;
+    padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
+  }
+  #dmModal.open{display:grid;}
+
+  #dmBox{
+    width:min(640px, 96vw);
+    max-height:90vh;               /* evita que se salga de pantalla */
+    overflow:auto;                 /* scroll interno si el hilo es largo */
+    background:var(--panel);
+    border:1px solid rgba(91,215,242,.25);
+    border-radius:16px;
+    padding:16px;
+    box-shadow:0 20px 50px rgba(0,0,0,.5);
+    animation:pop .12s ease;
+  }
+  @keyframes pop{from{transform:scale(.98);opacity:.7}to{transform:scale(1);opacity:1}}
+  /* Área de mensajes con altura flexible */
+  #dmList{margin:10px 0; max-height:55vh; overflow:auto; display:grid; gap:8px}
+
+  /* Botón de cerrar siempre visible en móviles */
+  .dm-head{position:sticky; top:0; background:linear-gradient(180deg, rgba(16,27,52,.98), rgba(16,27,52,.92)); padding-bottom:8px; margin-bottom:8px; z-index:1}
+
 </style>
 </head>
 <body>
@@ -205,13 +236,13 @@
   </main>
 
   <!-- Modal DM -->
-  <div id="dmModal">
-    <div id="dmBox">
-      <div class="row" style="justify-content:space-between;align-items:center">
+  <div id="dmModal" aria-hidden="true">
+    <div id="dmBox" role="dialog" aria-modal="true" aria-labelledby="dmTitle">
+      <div class="dm-head row" style="justify-content:space-between;align-items:center">
         <h3 id="dmTitle">💬 Mensaje</h3>
-        <button class="subtle-btn" onclick="closeDM()">Cerrar</button>
+        <button class="subtle-btn" id="dmCloseBtn" aria-label="Cerrar conversación">Cerrar</button>
       </div>
-      <div id="dmList" style="margin:10px 0;max-height:50vh;overflow:auto;display:grid;gap:8px"></div>
+      <div id="dmList"></div>
       <form id="dmForm" class="row" style="margin-top:8px">
         <input id="dmInput" placeholder="Escribe un mensaje…" style="flex:1">
         <button class="btn" type="submit">Enviar</button>
@@ -224,7 +255,7 @@
   <script>
   // ====== CREDENCIALES ======
   const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs"; // tu anon key completa
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
   const LOGIN_URL = "login.html";
 
   // ====== CLIENTE ======
@@ -241,6 +272,7 @@
   const PAGE_SIZE = 20;
   let ONLINE_ONLY = false;
   let LAST_CACHE_MEMBERS = []; // para paginar sin reconsultar cada vez
+  let WINDOW_MEMBERS_ORDERED = [];
   let DM = { thread_id:null, target_id:null, channel:null };
 
   function showStatus(msg){ $("status").textContent = msg || ""; }
@@ -285,6 +317,11 @@
     $("chkOnlineOnly")?.addEventListener('change', (e)=>{ ONLINE_ONLY = !!e.target.checked; CURRENT_PAGE = 1; renderMembers(); });
     $("btnPrevPage")?.addEventListener('click', ()=>{ if (CURRENT_PAGE>1){ CURRENT_PAGE--; renderMembers(); } });
     $("btnNextPage")?.addEventListener('click', ()=>{ const totalPages = Math.max(1, Math.ceil(getWorkingSet().length / PAGE_SIZE)); if (CURRENT_PAGE<totalPages){ CURRENT_PAGE++; renderMembers(); } });
+
+    // Controles de modal DM globales
+    $("dmCloseBtn").addEventListener('click', closeDM);
+    $("dmModal").addEventListener('click', (e)=>{ if(e.target === $("dmModal")) closeDM(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && $("dmModal").classList.contains('open')) closeDM(); });
 
     // Init app
     init();
@@ -504,7 +541,6 @@
     const ch = supabase.channel('presence:members', { config: { presence: { key: CURRENT_USER.id } }});
     ch.on('presence', {event: 'sync'}, () => {
       presence.online = new Set(Object.keys(ch.presenceState()));
-      // Re-render para que suban/bajen los online sin recargar
       try { renderMembers(); } catch(_) {}
     });
     ch.subscribe(async (status) => {
@@ -521,7 +557,6 @@
     const cat = ("fCategoria" in window && $("fCategoria")?.value || "");
 
     if (forceFetch || LAST_CACHE_MEMBERS.length === 0){
-      // Trae TODOS los visibles ordenados por última conexión y nombre
       let query = supabase
         .from('profiles')
         .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, is_visible')
@@ -541,25 +576,26 @@
       }
     }
 
-    // Aplica filtros de texto/categoría sobre el cache
-    let filtered = LAST_CACHE_MEMBERS.filter(p=> true);
+    // Aplica filtros
+    let filtered = LAST_CACHE_MEMBERS.slice();
     if (cat) filtered = filtered.filter(p => (p.categoria||'').toLowerCase().includes(cat.toLowerCase()));
     if (q) {
       const Q = q.toLowerCase();
-      filtered = filtered.filter(p => (p.display_name||'').toLowerCase().includes(Q) || (p.adscripcion||'').toLowerCase().includes(Q) || (p.categoria||'').toLowerCase().includes(Q));
+      filtered = filtered.filter(p =>
+        (p.display_name||'').toLowerCase().includes(Q) ||
+        (p.adscripcion||'').toLowerCase().includes(Q) ||
+        (p.categoria||'').toLowerCase().includes(Q)
+      );
     }
 
-    // Separa por presencia y compone orden final
+    // Orden: online primero
     const online = [], offline = [];
     filtered.forEach(p => (isOnline(p.user_id) ? online : offline).push(p));
-    const ordered = [...online, ...offline];
+    WINDOW_MEMBERS_ORDERED = [...online, ...offline];
 
-    // Guarda conjunto de trabajo para render/paginación
-    WINDOW_MEMBERS_ORDERED = ordered;
     renderMembers();
   }
 
-  // Conjunto actual (aplica Solo Online si procede)
   function getWorkingSet(){
     const base = WINDOW_MEMBERS_ORDERED || [];
     return ONLINE_ONLY ? base.filter(p=> isOnline(p.user_id)) : base;
@@ -583,25 +619,23 @@
     const start = (CURRENT_PAGE-1)*PAGE_SIZE;
     const pageItems = listAll.slice(start, start + PAGE_SIZE);
 
-    // Render tarjetas
+    // Render tarjetas (SIN botón "Seguir")
     pageItems.forEach(p=>{
       const card = document.createElement('div'); card.className = 'card';
-      const dot = `<span class=\"pill\" title=\"En línea\">${isOnline(p.user_id) ? '🟢 Online' : '⚪ Offline'}</span>`;
+      const dot = `<span class="pill" title="En línea">${isOnline(p.user_id) ? '🟢 Online' : '⚪ Offline'}</span>`;
       card.innerHTML = `
-        <div class=\"row\" style=\"align-items:center\">
-          <div class=\"avatar\" style=\"width:64px;height:64px\">${p.avatar_url? `<img src=\"${p.avatar_url}\">` : (p.display_name||'?')[0]?.toUpperCase() }</div>
-          <div style=\"flex:1;min-width:200px\">
-            <div style=\"font-weight:700\">${escapeHtml(p.display_name||'—')}</div>
-            <div class=\"meta\">${escapeHtml(p.categoria||'—')} • ${escapeHtml(p.adscripcion||'—')}</div>
+        <div class="row" style="align-items:center">
+          <div class="avatar" style="width:64px;height:64px">${p.avatar_url? `<img src="${p.avatar_url}">` : (p.display_name||'?')[0]?.toUpperCase() }</div>
+          <div style="flex:1;min-width:200px">
+            <div style="font-weight:700">${escapeHtml(p.display_name||'—')}</div>
+            <div class="meta">${escapeHtml(p.categoria||'—')} • ${escapeHtml(p.adscripcion||'—')}</div>
           </div>
           ${dot}
         </div>
-        <div class=\"actions\">
-          <button class=\"subtle-btn\" data-dm=\"${p.user_id}\">💬 Mensaje</button>
-          <button class=\"subtle-btn\" data-follow=\"${p.user_id}\">➕ Seguir</button>
+        <div class="actions">
+          <button class="subtle-btn" data-dm="${p.user_id}">💬 Mensaje</button>
         </div>`;
-      card.querySelector('[data-dm]')?.addEventListener('click', ()=> openDM(p.user_id, p.display_name, p.avatar_url));
-      card.querySelector('[data-follow]')?.addEventListener('click', ()=> toggleFollow(p.user_id));
+      card.querySelector('[data-dm]')?.addEventListener('click', ()=> openDM(p.user_id, p.display_name));
       wrap.appendChild(card);
     });
 
@@ -611,29 +645,72 @@
     $("btnNextPage") && ($("btnNextPage").disabled = CURRENT_PAGE >= totalPages);
   }
 
-  // ====== SEGUIR ======
-  async function toggleFollow(targetId){
-    if (targetId === CURRENT_USER.id) return;
-    const { data } = await supabase.from('follows').select('follower,followed').eq('follower', CURRENT_USER.id).eq('followed', targetId).maybeSingle();
-    if (data) await supabase.from('follows').delete().eq('follower', CURRENT_USER.id).eq('followed', targetId);
-    else await supabase.from('follows').insert({ follower: CURRENT_USER.id, followed: targetId });
-    loadMembers();
-  }
-
   // ====== DM ======
   async function openDM(target_id, name){
     const a = CURRENT_USER.id, b = target_id;
     const { data: found } = await supabase.from('dm_threads').select('id').or(`and(a.eq.${a},b.eq.${b}),and(a.eq.${b},b.eq.${a})`).maybeSingle();
-    if (found?.id) DM.thread_id = found.id; else { const { data: created, error } = await supabase.from('dm_threads').insert({ a, b }).select('id').single(); if (error) { alert('No se pudo iniciar el chat'); return; } DM.thread_id = created.id; }
-    DM.target_id = target_id; $("dmTitle").textContent = `💬 Chat con ${name}`; $("dmList").innerHTML = '<div class="meta">Cargando…</div>'; $("dmModal").style.display = 'block'; await loadDM(); subscribeDM();
+    if (found?.id) DM.thread_id = found.id;
+    else {
+      const { data: created, error } = await supabase.from('dm_threads').insert({ a, b }).select('id').single();
+      if (error) { alert('No se pudo iniciar el chat'); return; }
+      DM.thread_id = created.id;
+    }
+    DM.target_id = target_id;
+    $("dmTitle").textContent = `💬 Chat con ${name || 'miembro'}`;
+    $("dmList").innerHTML = '<div class="meta">Cargando…</div>';
+    openModalDM();
+    await loadDM();
+    subscribeDM();
   }
-  function closeDM(){ $("dmModal").style.display = 'none'; if (DM.channel){ supabase.removeChannel(DM.channel); DM.channel = null; } DM.thread_id = null; DM.target_id = null; }
-  async function loadDM(){ const { data, error } = await supabase.from('dm_messages').select('id, sender, content, created_at').eq('thread_id', DM.thread_id).order('created_at', { ascending: true }).limit(200); if (error){ console.error(error); return; } const box = $("dmList"); box.innerHTML = ''; (data||[]).forEach(m=>{ const mine = m.sender === CURRENT_USER.id; const bubble = document.createElement('div'); bubble.style.cssText = `max-width:80%;padding:10px 12px;border-radius:12px;${mine?'margin-left:auto;background:rgba(96,165,250,.18);border:1px solid rgba(96,165,250,.35)':'background:rgba(91,215,242,.10);border:1px solid rgba(91,215,242,.25)'}`; bubble.innerHTML = `<div style="white-space:pre-wrap">${escapeHtml(m.content)}</div><div class="meta" style="margin-top:4px">${timeAgo(m.created_at)}</div>`; box.appendChild(bubble); }); box.scrollTop = box.scrollHeight; }
-  function subscribeDM(){ if (DM.channel){ supabase.removeChannel(DM.channel); } DM.channel = supabase.channel(`dm:${DM.thread_id}`).on('postgres_changes', { event:'INSERT', schema:'public', table:'dm_messages', filter:`thread_id=eq.${DM.thread_id}` }, loadDM).subscribe(); }
-  document.getElementById('dmForm')?.addEventListener('submit', async (e)=>{ e.preventDefault(); const text = ($("dmInput").value||'').trim(); if(!text || !DM.thread_id) return; $("dmInput").value = ''; await supabase.from('dm_messages').insert({ thread_id: DM.thread_id, sender: CURRENT_USER.id, content: text }); });
+
+  function openModalDM(){
+    $("dmModal").classList.add('open');
+    $("dmModal").setAttribute('aria-hidden','false');
+    document.body.classList.add('modal-open');
+    // Lleva el foco al input
+    setTimeout(()=> $("dmInput")?.focus(), 50);
+  }
+
+  function closeDM(){
+    if (DM.channel){ supabase.removeChannel(DM.channel); DM.channel = null; }
+    DM.thread_id = null; DM.target_id = null;
+    $("dmModal").classList.remove('open');
+    $("dmModal").setAttribute('aria-hidden','true');
+    document.body.classList.remove('modal-open');
+  }
+
+  async function loadDM(){
+    const { data, error } = await supabase.from('dm_messages').select('id, sender, content, created_at').eq('thread_id', DM.thread_id).order('created_at', { ascending: true }).limit(200);
+    if (error){ console.error(error); return; }
+    const box = $("dmList");
+    box.innerHTML = '';
+    (data||[]).forEach(m=>{
+      const mine = m.sender === CURRENT_USER.id;
+      const bubble = document.createElement('div');
+      bubble.style.cssText = `max-width:80%;padding:10px 12px;border-radius:12px;${mine?'margin-left:auto;background:rgba(96,165,250,.18);border:1px solid rgba(96,165,250,.35)':'background:rgba(91,215,242,.10);border:1px solid rgba(91,215,242,.25)'}`;
+      bubble.innerHTML = `<div style="white-space:pre-wrap">${escapeHtml(m.content)}</div><div class="meta" style="margin-top:4px">${timeAgo(m.created_at)}</div>`;
+      box.appendChild(bubble);
+    });
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function subscribeDM(){
+    if (DM.channel){ supabase.removeChannel(DM.channel); }
+    DM.channel = supabase.channel(`dm:${DM.thread_id}`)
+      .on('postgres_changes', { event:'INSERT', schema:'public', table:'dm_messages', filter:`thread_id=eq.${DM.thread_id}` }, loadDM)
+      .subscribe();
+  }
+
+  document.getElementById('dmForm')?.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const text = ($("dmInput").value||'').trim();
+    if(!text || !DM.thread_id) return;
+    $("dmInput").value = '';
+    await supabase.from('dm_messages').insert({ thread_id: DM.thread_id, sender: CURRENT_USER.id, content: text });
+  });
 
   // === NOTAS ===
-  // - Crea tablas y políticas: profiles, follows, dm_threads, dm_messages y activa Realtime para dm_messages.
+  // - Crea tablas y políticas: profiles, follows (opcional si la usabas), dm_threads, dm_messages y activa Realtime para dm_messages.
   // - Presence usa Realtime Presence; sin servidor adicional.
   </script>
 </body>
