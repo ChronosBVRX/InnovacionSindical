@@ -18,7 +18,7 @@
   #btnLogout{background:rgba(255,70,70,.15);color:#ffaaaa;border:1px solid rgba(255,100,100,.35);padding:8px 12px;border-radius:10px;cursor:pointer}
   #btnLogout:hover{background:#ff5555;color:#fff}
   main{flex:1;display:flex;min-height:0}
-  nav{width:240px;background:rgba(11,18,32,.75);border-right:1px solid rgba(91,215,242,.25);padding:12px;display:flex;flex-direction:column;gap:10px}
+  nav{width:220px;background:rgba(11,18,32,.75);border-right:1px solid rgba(91,215,242,.25);padding:12px;display:flex;flex-direction:column;gap:10px}
   nav button{appearance:none;border:none;background:rgba(91,215,242,.12);color:var(--txt);padding:10px;border-radius:10px;text-align:left;cursor:pointer;transition:.2s}
   nav button:hover,nav button.active{background:linear-gradient(90deg,var(--primary),var(--sky));color:#072133;font-weight:600}
   section.content{flex:1;padding:20px;display:none;min-width:0}
@@ -31,13 +31,13 @@
   .avatar{width:110px;height:110px;border-radius:50%;background:#0a1329;border:1px solid rgba(91,215,242,.35);display:grid;place-items:center;font-size:28px;overflow:hidden}
   .avatar img{width:100%;height:100%;object-fit:cover}
   .profile-data p{margin:2px 0}
-  form{display:grid;gap:10px;max-width:560px;margin-top:10px}
+  form{display:grid;gap:10px;max-width:460px;margin-top:10px}
   label{font-size:13px;color:#bdefff}
   input, textarea, select{background:#0a1329;border:1px solid rgba(91,215,242,.3);color:#e6fbff;padding:9px 11px;border-radius:10px}
   textarea{min-height:90px;resize:vertical}
   .btn{appearance:none;border:none;cursor:pointer;background:linear-gradient(90deg,var(--primary),var(--sky));color:#072133;font-weight:600;padding:10px 16px;border-radius:12px;margin-top:6px;transition:.2s}
   .btn:hover{filter:brightness(1.12)}
-  .subtle-btn{appearance:none;border:1px solid rgba(91,215,242,.28);background:rgba(91,215,242,.08);color:#fff;padding:6px 10px;border-radius:10px;cursor:pointer;font-size:13px}
+  .subtle-btn{appearance:none;border:1px solid rgba(91,215,242,.28);background:rgba(91,215,242,.08);color:var(--txt);padding:6px 10px;border-radius:10px;cursor:pointer;font-size:13px}
   .subtle-btn:hover{background:rgba(91,215,242,.18)}
   .meta{font-size:12px;color:#9fdcf0}
   .comment-box{display:grid;gap:8px;margin-top:10px}
@@ -48,19 +48,40 @@
   .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.35);font-size:12px;color:#cfefff}
   iframe{width:100%;min-height:600px;border:0;border-radius:12px}
   .hint{font-size:12px;color:#9fdcf0}
-  @media (max-width: 980px){ nav{width:100%; flex-direction:row; position:sticky; top:52px; z-index:9; overflow:auto;} main{flex-direction:column} }
 
-  /* Desplegable formulario foro */
-  details.forum-toggle{margin-top:16px}
-  details.forum-toggle > summary{list-style:none; cursor:pointer; user-select:none; display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:rgba(91,215,242,.10); border:1px solid rgba(91,215,242,.28); font-weight:600; color:#bff4ff}
-  details.forum-toggle[open] > summary{background:rgba(91,215,242,.18)}
-  details.forum-toggle > summary::-webkit-details-marker{display:none}
-  .rotate{transition:transform .2s ease}
-  details[open] .rotate{transform:rotate(90deg)}
+  /* ==== INBOX MODAL ==== */
+  .inbox-overlay{
+    position:fixed; inset:0; z-index:9999;
+    background:rgba(0,0,0,.4); display:none;
+  }
+  .inbox-overlay.active{ display:block; }
+  .inbox-modal{
+    position:absolute; left:50%; top:50%;
+    transform:translate(-50%,-50%);
+    width:min(520px, calc(100% - 28px));
+    background:var(--panel);
+    border:1px solid rgba(91,215,242,.25);
+    border-radius:16px; padding:16px;
+    box-shadow:0 20px 40px rgba(0,0,0,.45);
+  }
+  .inbox-header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .inbox-title{font-weight:700;color:#bff4ff}
+  .inbox-close{appearance:none;border:1px solid rgba(91,215,242,.28);
+    background:rgba(91,215,242,.08);color:var(--txt);padding:6px 10px;border-radius:10px;cursor:pointer}
+  .inbox-close:hover{background:rgba(91,215,242,.18)}
+  .inbox-meta{font-size:12px;color:#9fdcf0;margin:6px 0 8px}
+  .inbox-text{width:100%;min-height:110px;resize:vertical;
+    background:#0a1329;border:1px solid rgba(91,215,242,.3);color:#e6fbff;padding:10px;border-radius:12px}
+  /* Oculta “Seguir” por si quedó en algún HTML anterior */
+  .btn-follow{ display:none !important; }
 
-  /* Modal DM */
-  #dmModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter:blur(2px)}
-  #dmBox{max-width:620px;margin:6vh auto;background:var(--panel);border:1px solid rgba(91,215,242,.25);border-radius:16px;padding:16px}
+  @media (max-width: 880px){
+    nav{width:100%; flex-direction:row; position:sticky; top:52px; z-index:9; overflow:auto}
+    main{flex-direction:column}
+  }
+  @media (max-width:640px){
+    .inbox-modal{ left:50%; top:auto; bottom:0; transform:translateX(-50%); width:100%; border-radius:16px 16px 0 0;}
+  }
 </style>
 </head>
 <body>
@@ -75,7 +96,7 @@
   <main>
     <nav>
       <button class="tab active" data-tab="perfil">👤 Perfil</button>
-      <button class="tab" data-tab="miembros">👥 Miembros</button>
+      <button class="tab" data-tab="usuarios">👥 Miembros</button>
       <button class="tab" data-tab="calendario">📅 Calendario</button>
       <button class="tab" data-tab="foro">🗣️ Foro</button>
       <button class="tab" data-tab="personaliza">⚙️ Personaliza tu perfil</button>
@@ -101,27 +122,18 @@
     </section>
 
     <!-- MIEMBROS -->
-    <section id="miembros" class="content">
+    <section id="usuarios" class="content">
       <div class="card">
-        <h2>👥 Directorio de Miembros</h2>
-        <p class="muted">Busca compañeros, mira quién está en línea y envía mensajes directos.</p>
-        <div class="row" style="margin-top:6px">
-          <input id="qMembers" placeholder="Buscar por nombre, adscripción o categoría" style="min-width:280px">
-          <select id="fCategoria"><option value="">Todas las categorías</option></select>
-          <button class="subtle-btn" id="btnRefreshMembers">Actualizar</button>
+        <h2>👥 Usuarios registrados</h2>
+        <p class="muted">Directorio visible sólo para miembros autenticados.</p>
+
+        <div class="row" style="margin-top:10px">
+          <input id="uSearch" placeholder="Buscar por nombre o adscripción…" style="flex:1;min-width:220px">
+          <input id="uAdscripcion" placeholder="Filtrar adscripción (ej. HGZ)">
+          <button class="subtle-btn" id="uClear">Limpiar</button>
         </div>
-        <div class="row" style="margin-top:8px;justify-content:space-between">
-          <label class="row" style="gap:8px;align-items:center">
-            <input type="checkbox" id="chkOnlineOnly">
-            <span>👁️ Solo online</span>
-          </label>
-          <div id="pager" class="row" style="gap:8px">
-            <button class="subtle-btn" id="btnPrevPage">⬅️ Anterior</button>
-            <span class="meta" id="pageInfo">Página 1/1</span>
-            <button class="subtle-btn" id="btnNextPage">Siguiente ➡️</button>
-          </div>
-        </div>
-        <div id="membersList" style="margin-top:14px;display:grid;gap:12px"></div>
+
+        <div id="uList" style="margin-top:14px;display:grid;gap:10px"></div>
       </div>
     </section>
 
@@ -139,31 +151,31 @@
       <div class="card">
         <h2>🗣️ Foro de Miembros</h2>
         <p class="muted">Publica anuncios, dudas o propuestas. Mantén el respeto y evita datos sensibles.</p>
-        <div class="row" style="margin-top:6px">
+
+        <form id="forumForm" style="margin-top:10px">
+          <label>Escribe una publicación (máx. 500 caracteres)</label>
+          <textarea id="forumInput" maxlength="500" placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
+          <div class="row">
+            <label style="font-size:13px">Categoría</label>
+            <select id="forumCategory">
+              <option>Avisos</option>
+              <option selected>Asuntos Generales</option>
+              <option>Convivencia</option>
+            </select>
+          </div>
+          <button class="btn" type="submit">➕ Publicar</button>
+          <div class="status" id="forumStatus"></div>
+        </form>
+
+        <div class="row" style="margin-top:14px">
           <span class="meta">Filtrar: </span>
           <button class="subtle-btn post-filter" data-filter="Todas">Todas</button>
           <button class="subtle-btn post-filter" data-filter="Avisos">Avisos</button>
           <button class="subtle-btn post-filter" data-filter="Asuntos Generales">Asuntos Generales</button>
           <button class="subtle-btn post-filter" data-filter="Convivencia">Convivencia</button>
         </div>
-        <div id="postsList" style="margin-top:14px;display:grid;gap:12px"></div>
-        <details class="forum-toggle" id="newPostToggle">
-          <summary><span class="rotate">▸</span><span>Crear una publicación</span></summary>
-          <form id="forumForm" style="margin-top:12px">
-            <label>Escribe una publicación (máx. 500 caracteres)</label>
-            <textarea id="forumInput" maxlength="500" placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
-            <div class="row">
-              <label style="font-size:13px">Categoría</label>
-              <select id="forumCategory">
-                <option>Avisos</option>
-                <option selected>Asuntos Generales</option>
-                <option>Convivencia</option>
-              </select>
-            </div>
-            <button class="btn" type="submit">➕ Publicar</button>
-            <div class="status" id="forumStatus"></div>
-          </form>
-        </details>
+
+        <div id="postsList" style="margin-top:16px;display:grid;gap:12px"></div>
       </div>
     </section>
 
@@ -172,6 +184,7 @@
       <div class="card">
         <h2>⚙️ Edita tu información</h2>
         <p class="muted">Actualiza tus datos personales y tu foto de perfil.</p>
+
         <div class="row" style="margin-top:10px">
           <div class="avatar" id="avatarPreview">🧑</div>
           <div>
@@ -180,23 +193,23 @@
             <div class="hint">Se previsualiza al seleccionar; se sube al guardar.</div>
           </div>
         </div>
+
         <form id="editForm">
           <label>Nombre completo</label>
           <input id="fNombre" placeholder="Tu nombre completo">
+
           <label>Teléfono</label>
           <input id="fTelefono" placeholder="Ej. 5532120000">
+
           <label>Fecha de cumpleaños</label>
           <input id="fCumple" type="date">
+
           <label>Categoría</label>
           <input id="fCategoria" placeholder="Ej. Enfermera General A">
+
           <label>Adscripción</label>
           <input id="fAdscripcion" placeholder="Ej. HGZ No. XX, Urgencias">
-          <label>Biografía corta</label>
-          <textarea id="fBio" placeholder="Cuéntanos brevemente sobre ti (opcional)"></textarea>
-          <div class="row" style="align-items:center">
-            <input type="checkbox" id="fVisible" checked>
-            <label for="fVisible">Aparecer en el directorio de miembros</label>
-          </div>
+
           <button class="btn" type="submit">💾 Guardar cambios</button>
           <div class="status" id="status"></div>
         </form>
@@ -204,18 +217,19 @@
     </section>
   </main>
 
-  <!-- Modal DM -->
-  <div id="dmModal">
-    <div id="dmBox">
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <h3 id="dmTitle">💬 Mensaje</h3>
-        <button class="subtle-btn" onclick="closeDM()">Cerrar</button>
+  <!-- INBOX OVERLAY GLOBAL -->
+  <div id="inboxOverlay" class="inbox-overlay" aria-hidden="true">
+    <div class="inbox-modal" role="dialog" aria-modal="true" aria-labelledby="inboxTitle">
+      <div class="inbox-header">
+        <h3 id="inboxTitle" class="inbox-title">Enviar mensaje</h3>
+        <button id="inboxClose" class="inbox-close" type="button">✖ Cerrar</button>
       </div>
-      <div id="dmList" style="margin:10px 0;max-height:50vh;overflow:auto;display:grid;gap:8px"></div>
-      <form id="dmForm" class="row" style="margin-top:8px">
-        <input id="dmInput" placeholder="Escribe un mensaje…" style="flex:1">
-        <button class="btn" type="submit">Enviar</button>
-      </form>
+      <div id="inboxUser" class="inbox-meta"></div>
+      <textarea id="inboxText" class="inbox-text" maxlength="500" placeholder="Escribe tu mensaje…"></textarea>
+      <div class="actions">
+        <button class="btn" id="inboxSend" type="button">Enviar</button>
+        <span class="meta" id="inboxStatus"></span>
+      </div>
     </div>
   </div>
 
@@ -224,33 +238,89 @@
   <script>
   // ====== CREDENCIALES ======
   const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs"; // tu anon key completa
+  const SUPABASE_ANON_KEY = "PEGA_AQUI_TU_ANON_KEY_COMPLETA"; // <- Sustituir
   const LOGIN_URL = "login.html";
 
   // ====== CLIENTE ======
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true }
+  });
 
   // ====== HELPERS ======
   const $ = (id) => document.getElementById(id);
   let CURRENT_USER = null;
   let OPEN_COMMENT_PANELS = new Map();
   let CURRENT_FILTER = 'Todas';
-  const presence = { online: new Set() };
-  // Paginación y filtro
-  let CURRENT_PAGE = 1;
-  const PAGE_SIZE = 20;
-  let ONLINE_ONLY = false;
-  let LAST_CACHE_MEMBERS = []; // para paginar sin reconsultar cada vez
-  let DM = { thread_id:null, target_id:null, channel:null };
 
+  // UI helpers
   function showStatus(msg){ $("status").textContent = msg || ""; }
-  function forumStatus(msg){ $("forumStatus") && ($("forumStatus").textContent = msg || ""); }
-  function previewFile(file){ const prev = $("avatarPreview"); if (!file) return; const url = URL.createObjectURL(file); prev.innerHTML = `<img src="${url}" alt="preview">`; }
-  function maskPhone(t){ const s = (t||"").replace(/\D+/g,""); if(s.length < 8) return t || "—"; return `••• ••${s.slice(-4)}`; }
-  function formatDateISOtoMX(iso){ if(!iso) return "—"; try{ const d = iso.length<=10 ? new Date(iso+"T00:00:00") : new Date(iso); return new Intl.DateTimeFormat('es-MX', { day:'2-digit', month:'long', year:'numeric' }).format(d);}catch{ return iso; } }
-  function timeAgo(iso){ try{ const d = new Date(iso); const diff = (Date.now() - d.getTime())/1000; if(diff<60) return 'hace unos segundos'; if(diff<3600) return `hace ${Math.floor(diff/60)} min`; if(diff<86400) return `hace ${Math.floor(diff/3600)} h`; return new Intl.DateTimeFormat('es-MX',{dateStyle:'medium', timeStyle:'short'}).format(d);}catch{ return iso; } }
-  function escapeHtml(str){ return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
-  const debounce = (fn, ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; };
+  function forumStatus(msg){ $("forumStatus").textContent = msg || ""; }
+  function previewFile(file){
+    const prev = $("avatarPreview");
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    prev.innerHTML = `<img src="${url}" alt="preview">`;
+  }
+  function maskPhone(t){
+    const s = (t||"").replace(/\D+/g,"");
+    if(s.length < 8) return t || "—";
+    return `••• ••${s.slice(-4)}`;
+  }
+  function formatDateISOtoMX(iso){
+    if(!iso) return "—";
+    try{
+      const d = iso.length<=10 ? new Date(iso+"T00:00:00") : new Date(iso);
+      return new Intl.DateTimeFormat('es-MX', { day:'2-digit', month:'long', year:'numeric' }).format(d);
+    }catch{ return iso; }
+  }
+  function timeAgo(iso){
+    try{
+      const d = new Date(iso);
+      const diff = (Date.now() - d.getTime())/1000;
+      if(diff<60) return 'hace unos segundos';
+      if(diff<3600) return `hace ${Math.floor(diff/60)} min`;
+      if(diff<86400) return `hace ${Math.floor(diff/3600)} h`;
+      return new Intl.DateTimeFormat('es-MX',{dateStyle:'medium', timeStyle:'short'}).format(d);
+    }catch{ return iso; }
+  }
+  function escapeHtml(str){
+    return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s]));
+  }
+
+  // ====== INBOX STATE ======
+  let INBOX_TO_USER_ID = null;
+  let INBOX_TO_USER_NAME = '';
+  function openInbox(user){
+    INBOX_TO_USER_ID = user.id;
+    INBOX_TO_USER_NAME = user.display_name || user.email || 'Miembro';
+    $('inboxUser').textContent = `Para: ${INBOX_TO_USER_NAME}`;
+    $('inboxText').value = '';
+    $('inboxStatus').textContent = '';
+    $('inboxOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+    setTimeout(()=> $('inboxText').focus(), 0);
+  }
+  function closeInbox(){
+    $('inboxOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+    INBOX_TO_USER_ID = null;
+  }
+  async function sendInbox(){
+    const text = ($('inboxText').value || '').trim();
+    if(!INBOX_TO_USER_ID){ $('inboxStatus').textContent = 'Receptor inválido.'; return; }
+    if(!text){ $('inboxStatus').textContent = 'Escribe algo.'; return; }
+    $('inboxStatus').textContent = 'Enviando…';
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error } = await supabase.from('messages')
+      .insert({ from_id: user.id, to_id: INBOX_TO_USER_ID, content: text });
+    if(error){
+      $('inboxStatus').textContent = '❌ ' + (error.message || 'No se pudo enviar');
+      console.error('[messages.insert]', error);
+      return;
+    }
+    $('inboxStatus').textContent = '✅ Enviado';
+    setTimeout(closeInbox, 350);
+  }
 
   // ====== INICIO DOM ======
   document.addEventListener('DOMContentLoaded', () => {
@@ -260,31 +330,53 @@
         document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
         document.querySelectorAll(".content").forEach(c=>c.classList.remove("active"));
         btn.classList.add("active");
-        const id = btn.dataset.tab; $(id).classList.add("active"); location.hash = id;
-        if (id === 'miembros') loadMembers(true);
+        const id = btn.dataset.tab;
+        $(id).classList.add("active");
+        location.hash = id;
+        if(id==='usuarios') loadUsers();
       });
     });
-    if(location.hash){ const id = location.hash.replace('#',''); const tab = document.querySelector(`.tab[data-tab="${id}"]`); if(tab) tab.click(); }
+    if(location.hash){
+      const id = location.hash.replace('#','');
+      const tab = document.querySelector(`.tab[data-tab="${id}"]`);
+      if(tab) tab.click();
+    }
 
     // Logout
-    $("btnLogout").addEventListener("click", async ()=>{ await supabase.auth.signOut(); location.href = LOGIN_URL; });
+    $("btnLogout").addEventListener("click", async ()=>{
+      await supabase.auth.signOut();
+      location.href = LOGIN_URL;
+    });
 
     // Listeners
-    $("fAvatar").addEventListener("change", (e)=>{ const file = e.target.files?.[0]; if (file) previewFile(file); });
+    $("fAvatar").addEventListener("change", (e)=>{
+      const file = e.target.files?.[0];
+      if (file) previewFile(file);
+    });
 
     $("editForm").addEventListener("submit", onSaveProfile);
+    $("forumForm").addEventListener("submit", (e)=>{
+      e.preventDefault();
+      createPost($("forumInput").value, $("forumCategory").value);
+    });
+    document.querySelectorAll('.post-filter').forEach(btn=>{
+      btn.addEventListener('click', ()=>{ CURRENT_FILTER = btn.dataset.filter; loadPosts(); });
+    });
 
-    // Foro
-    const forumForm = document.getElementById('forumForm');
-    forumForm && forumForm.addEventListener('submit', (e)=>{ e.preventDefault(); createPost($("forumInput").value, $("forumCategory").value); });
-    document.querySelectorAll('.post-filter').forEach(btn=>{ btn.addEventListener('click', ()=>{ CURRENT_FILTER = btn.dataset.filter; loadPosts(); }); });
+    // Usuarios: filtros
+    $('uSearch')?.addEventListener('input', ()=>loadUsers());
+    $('uAdscripcion')?.addEventListener('input', ()=>loadUsers());
+    $('uClear')?.addEventListener('click', ()=>{
+      $('uSearch').value = '';
+      $('uAdscripcion').value = '';
+      loadUsers();
+    });
 
-    // Miembros
-    $("btnRefreshMembers")?.addEventListener('click', ()=>{ CURRENT_PAGE = 1; loadMembers(true); });
-    $("qMembers")?.addEventListener('input', debounce(()=>{ CURRENT_PAGE = 1; loadMembers(true); }, 300));
-    $("chkOnlineOnly")?.addEventListener('change', (e)=>{ ONLINE_ONLY = !!e.target.checked; CURRENT_PAGE = 1; renderMembers(); });
-    $("btnPrevPage")?.addEventListener('click', ()=>{ if (CURRENT_PAGE>1){ CURRENT_PAGE--; renderMembers(); } });
-    $("btnNextPage")?.addEventListener('click', ()=>{ const totalPages = Math.max(1, Math.ceil(getWorkingSet().length / PAGE_SIZE)); if (CURRENT_PAGE<totalPages){ CURRENT_PAGE++; renderMembers(); } });
+    // Inbox listeners
+    $('inboxClose')?.addEventListener('click', closeInbox);
+    $('inboxOverlay')?.addEventListener('click', (e)=>{ if(e.target === $('inboxOverlay')) closeInbox(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && $('inboxOverlay').classList.contains('active')) closeInbox(); });
+    $('inboxSend')?.addEventListener('click', sendInbox);
 
     // Init app
     init();
@@ -306,46 +398,48 @@
     $("pfAdscripcion").textContent = meta.adscripcion || "—";
 
     const avatar = meta.avatar_url;
-    if (avatar) { $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`; $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`; }
-    else { const ini = (meta.display_name || CURRENT_USER.email || "?")[0].toUpperCase(); $("userAvatar").textContent = ini; $("avatarPreview").textContent = ini; }
+    if (avatar) {
+      $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`;
+      $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`;
+    } else {
+      const ini = (meta.display_name || CURRENT_USER.email || "?")[0].toUpperCase();
+      $("userAvatar").textContent = ini;
+      $("avatarPreview").textContent = ini;
+    }
 
     // Prefill form
     $("fNombre").value      = meta.display_name || "";
     $("fTelefono").value    = meta.telefono || "";
-    try{ if(meta.cumple){ const d = new Date(meta.cumple.length<=10 ? meta.cumple+"T00:00:00" : meta.cumple); $("fCumple").value = d.toISOString().slice(0,10); } }catch{}
+    try{
+      if(meta.cumple){
+        const d = new Date(meta.cumple.length<=10 ? meta.cumple+"T00:00:00" : meta.cumple);
+        $("fCumple").value = d.toISOString().slice(0,10);
+      }
+    }catch{}
     $("fCategoria").value   = meta.categoria || "";
     $("fAdscripcion").value = meta.adscripcion || "";
-    $("fBio").value         = meta.bio || "";
-    $("fVisible").checked   = true; // por defecto visible
 
-    // Sincroniza/crea fila en profiles al iniciar
-    await upsertProfile({
-      display_name: meta.display_name || null,
-      avatar_url: meta.avatar_url || null,
-      categoria: meta.categoria || null,
-      adscripcion: meta.adscripcion || null,
-      bio: meta.bio || null,
-      is_visible: true
-    });
-
-    // Foro + Presencia
+    // Foro
     initForum();
-    initPresence();
   }
 
   // ====== AVATAR UPLOAD ======
   async function uploadAvatar(file){
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) { alert("Sesión expirada, vuelve a iniciar."); return null; }
+
     if (!file){ return null; }
-    if (!['image/png','image/jpeg','image/webp'].includes(file.type)){ alert("Formato no soportado. Usa PNG, JPG o WebP."); return null; }
+    if (!['image/png','image/jpeg','image/webp'].includes(file.type)){
+      alert("Formato no soportado. Usa PNG, JPG o WebP."); return null;
+    }
     if (file.size > 2 * 1024 * 1024){ alert("La imagen excede 2MB."); return null; }
 
     const uid = session.user.id;
     const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
     const path = `${uid}/${Date.now()}.${ext}`;
 
-    const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
+    const { error: upErr } = await supabase.storage.from("avatars")
+      .upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
     if (upErr){ console.error("Upload error:", upErr); alert("No se pudo subir la imagen: " + (upErr.message || "Error")); return null; }
 
     const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
@@ -359,56 +453,99 @@
     try{
       const file = $("fAvatar").files?.[0];
       let avatar_url = null;
-      if (file) { avatar_url = await uploadAvatar(file); if (!avatar_url){ showStatus("❌ Error al subir la imagen."); return; } }
+      if (file) {
+        avatar_url = await uploadAvatar(file);
+        if (!avatar_url){ showStatus("❌ Error al subir la imagen."); return; }
+      }
 
       const updates = {
         display_name: $("fNombre").value.trim(),
         telefono:     $("fTelefono").value.trim(),
         cumple:       $("fCumple").value.trim(),
         categoria:    $("fCategoria").value.trim(),
-        adscripcion:  $("fAdscripcion").value.trim(),
-        bio:          $("fBio").value.trim()
+        adscripcion:  $("fAdscripcion").value.trim()
       };
       if (avatar_url) updates.avatar_url = avatar_url;
 
       const { error } = await supabase.auth.updateUser({ data: updates });
       if (error){ showStatus("❌ Error al guardar: " + error.message); return; }
 
-      // Refresca UI básica
+      // Refresca UI
       showStatus("✅ Cambios guardados.");
       $("pfName").textContent       = updates.display_name || "Sin nombre";
       $("pfTelefono").textContent   = maskPhone(updates.telefono);
       $("pfCumple").textContent     = formatDateISOtoMX(updates.cumple);
       $("pfCategoria").textContent  = updates.categoria || "—";
       $("pfAdscripcion").textContent= updates.adscripcion || "—";
-      if (updates.avatar_url){ const bust = `#${Date.now()}`; $("userAvatar").innerHTML  = `<img src="${updates.avatar_url}${bust}" alt="avatar">`; $("avatarPreview").innerHTML= `<img src="${updates.avatar_url}${bust}" alt="avatar">`; }
 
-      // Sincroniza en tabla profiles
-      await upsertProfile({
+      if (updates.avatar_url){
+        const bust = `#${Date.now()}`;
+        $("userAvatar").innerHTML   = `<img src="${updates.avatar_url}${bust}" alt="avatar">`;
+        $("avatarPreview").innerHTML= `<img src="${updates.avatar_url}${bust}" alt="avatar">`;
+      }
+
+      // Sincroniza/crea fila en public.profiles
+      await supabase.from('profiles').upsert({
+        id: CURRENT_USER.id,
+        email: CURRENT_USER.email,
         display_name: updates.display_name || null,
-        avatar_url: updates.avatar_url || (CURRENT_USER.user_metadata?.avatar_url ?? null),
+        telefono: updates.telefono || null,
+        cumple: updates.cumple || null,
         categoria: updates.categoria || null,
         adscripcion: updates.adscripcion || null,
-        bio: updates.bio || null,
-        is_visible: $("fVisible").checked
-      });
-    }catch(err){ console.error(err); showStatus("❌ Ocurrió un error inesperado. Intenta de nuevo."); }
+        avatar_url: updates.avatar_url || (CURRENT_USER.user_metadata?.avatar_url ?? null)
+      }, { onConflict: 'id' });
+
+    }catch(err){
+      console.error(err);
+      showStatus("❌ Ocurrió un error inesperado. Intenta de nuevo.");
+    }
   }
 
-  async function upsertProfile(p){
-    await supabase.from('profiles').upsert({
-      user_id: CURRENT_USER.id,
-      display_name: p.display_name,
-      avatar_url: p.avatar_url,
-      categoria: p.categoria,
-      adscripcion: p.adscripcion,
-      bio: p.bio,
-      is_visible: p.is_visible,
-      last_seen: new Date().toISOString()
-    });
+  // ====== DIRECTORIO DE USUARIOS ======
+  function renderUserCard(p){
+    const card = document.createElement('div');
+    card.className = 'card';
+    const avatar = p.avatar_url 
+      ? `<img src="${p.avatar_url}" alt="avatar" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid rgba(91,215,242,.35)">`
+      : `<div class="avatar" style="width:56px;height:56px;font-size:20px">${(p.display_name||p.email||'?')[0].toUpperCase()}</div>`;
+    card.innerHTML = `
+      <div style="display:flex;gap:12px;align-items:center">
+        ${avatar}
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+            ${escapeHtml(p.display_name || 'Sin nombre')}
+          </div>
+          <div class="meta" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+            ${escapeHtml(p.adscripcion || '—')}${p.categoria ? ' • ' + escapeHtml(p.categoria) : ''}
+          </div>
+          <div class="actions" style="margin-top:8px">
+            <button class="subtle-btn btn-message">💬 Mensaje</button>
+          </div>
+        </div>
+      </div>
+    `;
+    card.querySelector('.btn-message').addEventListener('click', ()=> openInbox(p));
+    return card;
+  }
+  async function loadUsers(){
+    const q   = ($('uSearch')?.value || '').trim();
+    const ads = ($('uAdscripcion')?.value || '').trim();
+    let query = supabase.from('profiles')
+      .select('id, email, display_name, telefono, categoria, adscripcion, avatar_url')
+      .order('display_name', { ascending: true })
+      .limit(200);
+    if (ads) query = query.ilike('adscripcion', `%${ads}%`);
+    if (q)   query = query.or(`display_name.ilike.%${q}%,adscripcion.ilike.%${q}%`);
+
+    const { data, error } = await query;
+    const list = $("uList");
+    if (error){ list.innerHTML = `<div class="meta">No se pudieron cargar usuarios.</div>`; console.error('profiles.select', error); return; }
+    list.innerHTML = '';
+    (data||[]).forEach(p => list.appendChild(renderUserCard(p)));
   }
 
-  // ====== FORO ======
+  // ======== Foro: posts/comentarios/likes ========
   async function loadLikesAndCommentsMaps(ids){
     if(ids.length===0) return { likesMap:{}, userLikes:new Set(), commentsCount:{} };
     const { data: likesRows } = await supabase.from('likes').select('post_id,user_id').in('post_id', ids);
@@ -421,8 +558,12 @@
 
   function renderPost(row, meta){
     const own = (CURRENT_USER && row.user_id === CURRENT_USER.id);
-    const likeCount = meta.likesMap[row.id]||0; const liked = meta.userLikes.has(row.id); const commentCount = meta.commentsCount[row.id]||0;
-    const el = document.createElement('div'); el.className = 'card';
+    const likeCount = meta.likesMap[row.id]||0;
+    const liked = meta.userLikes.has(row.id);
+    const commentCount = meta.commentsCount[row.id]||0;
+
+    const el = document.createElement('div');
+    el.className = 'card';
     el.innerHTML = `
       <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
         <div class="meta">${own?'Tú':'Miembro'} • <span>${timeAgo(row.created_at)}</span></div>
@@ -435,206 +576,157 @@
       <div class="actions">
         <button class="subtle-btn like-btn" data-liked="${liked?1:0}" data-id="${row.id}">${liked?'❤️ Quitar me gusta':'🤍 Me gusta'}</button>
         <button class="subtle-btn comment-toggle" data-id="${row.id}">💬 Comentar</button>
-        ${own ? `<button class="subtle-btn edit-toggle" data-id="${row.id}">✏️ Editar</button><button class="subtle-btn delete-post" data-id="${row.id}">🗑️ Eliminar</button>` : ''}
+        ${own ? `<button class="subtle-btn edit-toggle" data-id="${row.id}">✏️ Editar</button>
+                 <button class="subtle-btn delete-post" data-id="${row.id}">🗑️ Eliminar</button>` : ''}
       </div>
       <div class="edit-panel" id="ep-${row.id}" style="display:none;margin-top:10px">
         <label style="font-size:12px;color:#bdefff">Editar publicación</label>
         <textarea class="edit-text" maxlength="500">${escapeHtml(row.content)}</textarea>
-        <div class="row"><label style="font-size:12px;color:#bdefff">Categoría</label>
-          <select class="edit-cat"><option ${row.category==='Avisos'? 'selected':''}>Avisos</option><option ${row.category==='Asuntos Generales'? 'selected':''}>Asuntos Generales</option><option ${row.category==='Convivencia'? 'selected':''}>Convivencia</option></select>
+        <div class="row">
+          <label style="font-size:12px;color:#bdefff">Categoría</label>
+          <select class="edit-cat">
+            <option ${row.category==='Avisos'? 'selected':''}>Avisos</option>
+            <option ${row.category==='Asuntos Generales'? 'selected':''}>Asuntos Generales</option>
+            <option ${row.category==='Convivencia'? 'selected':''}>Convivencia</option>
+          </select>
         </div>
-        <div class="actions"><button class="btn save-edit" data-id="${row.id}">Guardar</button><button class="subtle-btn cancel-edit" data-id="${row.id}">Cancelar</button><span class="meta edit-status"></span></div>
+        <div class="actions">
+          <button class="btn save-edit" data-id="${row.id}">Guardar</button>
+          <button class="subtle-btn cancel-edit" data-id="${row.id}">Cancelar</button>
+          <span class="meta edit-status"></span>
+        </div>
       </div>
-      <div class="comment-panel" id="cp-${row.id}" style="display:none"></div>`;
+      <div class="comment-panel" id="cp-${row.id}" style="display:none"></div>
+    `;
 
-    el.querySelector('.like-btn').addEventListener('click', async (e)=>{ const btn = e.currentTarget; const pid = row.id; const isLiked = btn.getAttribute('data-liked')==='1'; try{ if(isLiked){ await supabase.from('likes').delete().match({ post_id: pid, user_id: CURRENT_USER.id }); }else{ await supabase.from('likes').insert({ post_id: pid, user_id: CURRENT_USER.id }); } }catch{} });
-    el.querySelector('.comment-toggle').addEventListener('click', ()=>{ const panel = el.querySelector(`#cp-${row.id}`); const visible = panel.style.display !== 'none'; panel.style.display = visible ? 'none' : 'block'; if(!visible){ OPEN_COMMENT_PANELS.set(row.id, panel); loadComments(row.id, panel); } });
+    // like
+    el.querySelector('.like-btn').addEventListener('click', async (e)=>{
+      const btn = e.currentTarget; const pid = row.id; const isLiked = btn.getAttribute('data-liked')==='1';
+      try{
+        if(isLiked){ await supabase.from('likes').delete().match({ post_id: pid, user_id: CURRENT_USER.id }); }
+        else{ await supabase.from('likes').insert({ post_id: pid, user_id: CURRENT_USER.id }); }
+      }catch{}
+    });
+
+    // comment toggle
+    el.querySelector('.comment-toggle').addEventListener('click', ()=>{
+      const panel = el.querySelector(`#cp-${row.id}`);
+      const visible = panel.style.display !== 'none';
+      panel.style.display = visible ? 'none' : 'block';
+      if(!visible){
+        OPEN_COMMENT_PANELS.set(row.id, panel);
+        loadComments(row.id, panel);
+      }
+    });
+
+    // edit/delete
     if(el.querySelector('.edit-toggle')){
-      el.querySelector('.edit-toggle').addEventListener('click', ()=>{ const ep = el.querySelector(`#ep-${row.id}`); ep.style.display = (ep.style.display==='none' ? 'block' : 'none'); });
-      el.querySelector('.cancel-edit').addEventListener('click', ()=>{ const ep = el.querySelector(`#ep-${row.id}`); ep.style.display = 'none'; });
-      el.querySelector('.save-edit').addEventListener('click', async ()=>{ const ep = el.querySelector(`#ep-${row.id}`); const ta = ep.querySelector('.edit-text'); const sc = ep.querySelector('.edit-cat'); const st = ep.querySelector('.edit-status'); const text = (ta.value||'').trim(); if(!text){ st.textContent='Escribe algo'; return; } st.textContent='Guardando…'; const { error } = await supabase.from('posts').update({ content: text, category: sc.value }).eq('id', row.id).eq('user_id', CURRENT_USER.id); if(error){ st.textContent='No se pudo guardar'; return; } st.textContent=''; ep.style.display='none'; loadPosts(); });
-      el.querySelector('.delete-post').addEventListener('click', async ()=>{ if(!confirm('¿Eliminar esta publicación? Esta acción no se puede deshacer.')) return; await supabase.from('posts').delete().eq('id', row.id).eq('user_id', CURRENT_USER.id); });
+      el.querySelector('.edit-toggle').addEventListener('click', ()=>{
+        const ep = el.querySelector(`#ep-${row.id}`); ep.style.display = (ep.style.display==='none' ? 'block' : 'none');
+      });
+      el.querySelector('.cancel-edit').addEventListener('click', ()=>{
+        const ep = el.querySelector(`#ep-${row.id}`); ep.style.display = 'none';
+      });
+      el.querySelector('.save-edit').addEventListener('click', async ()=>{
+        const ep = el.querySelector(`#ep-${row.id}`);
+        const ta = ep.querySelector('.edit-text'); const sc = ep.querySelector('.edit-cat'); const st = ep.querySelector('.edit-status');
+        const text = (ta.value||'').trim(); if(!text){ st.textContent='Escribe algo'; return; }
+        st.textContent='Guardando…';
+        const { error } = await supabase.from('posts').update({ content: text, category: sc.value }).eq('id', row.id).eq('user_id', CURRENT_USER.id);
+        if(error){ st.textContent='No se pudo guardar'; return; }
+        st.textContent=''; ep.style.display='none'; loadPosts();
+      });
+      el.querySelector('.delete-post').addEventListener('click', async ()=>{
+        if(!confirm('¿Eliminar esta publicación? Esta acción no se puede deshacer.')) return;
+        await supabase.from('posts').delete().eq('id', row.id).eq('user_id', CURRENT_USER.id);
+      });
     }
+
     return el;
   }
 
   async function loadPosts(){
-    let query = supabase.from('posts').select('id, content, category, created_at, user_id').order('created_at', { ascending: false }).limit(50);
+    let query = supabase.from('posts').select('id, content, category, created_at, user_id')
+      .order('created_at', { ascending: false }).limit(50);
     if(CURRENT_FILTER && CURRENT_FILTER!=='Todas'){ query = query.eq('category', CURRENT_FILTER); }
-    const { data, error } = await query; if(error){ forumStatus('❌ No se pudieron cargar las publicaciones.'); return; }
-    const ids = (data||[]).map(r=>r.id); const meta = await loadLikesAndCommentsMaps(ids);
-    const list = $("postsList"); list.innerHTML = ''; (data||[]).forEach(row=>{ list.appendChild(renderPost(row, meta)); });
+    const { data, error } = await query;
+    if(error){ forumStatus('❌ No se pudieron cargar las publicaciones.'); return; }
+
+    const ids = (data||[]).map(r=>r.id);
+    const meta = await loadLikesAndCommentsMaps(ids);
+
+    const list = $("postsList"); list.innerHTML = '';
+    (data||[]).forEach(row=>{ list.appendChild(renderPost(row, meta)); });
   }
 
   async function loadComments(postId, container){
     container.innerHTML = '<div class="meta">Cargando comentarios…</div>';
-    const { data, error } = await supabase.from('comments').select('id, content, created_at, user_id').eq('post_id', postId).order('created_at', { ascending: true }).limit(100);
+    const { data, error } = await supabase.from('comments')
+      .select('id, content, created_at, user_id').eq('post_id', postId)
+      .order('created_at', { ascending: true }).limit(100);
     if(error){ container.innerHTML = '<div class="meta">No se pudieron cargar comentarios.</div>'; return; }
-    const wrap = document.createElement('div'); wrap.className = 'comment-box'; const list = document.createElement('div');
-    (data||[]).forEach(c=>{ const own = (CURRENT_USER && c.user_id===CURRENT_USER.id); const ci = document.createElement('div'); ci.className = 'comment'; ci.innerHTML = `<div style="white-space:pre-wrap">${escapeHtml(c.content)}</div><small>${own?'Tú':'Miembro'} • ${timeAgo(c.created_at)}</small>`; list.appendChild(ci); });
-    const form = document.createElement('form'); form.innerHTML = `
+
+    const wrap = document.createElement('div'); wrap.className = 'comment-box';
+    const list = document.createElement('div');
+    (data||[]).forEach(c=>{
+      const own = (CURRENT_USER && c.user_id===CURRENT_USER.id);
+      const ci = document.createElement('div'); ci.className = 'comment';
+      ci.innerHTML = `<div style="white-space:pre-wrap">${escapeHtml(c.content)}</div><small>${own?'Tú':'Miembro'} • ${timeAgo(c.created_at)}</small>`;
+      list.appendChild(ci);
+    });
+
+    const form = document.createElement('form');
+    form.innerHTML = `
       <label style="font-size:12px;color:#bdefff">Añadir comentario</label>
       <textarea maxlength="300" placeholder="Escribe un comentario (máx. 300)"></textarea>
-      <div style="display:flex;gap:8px;align-items:center"><button class="btn" type="submit">Enviar</button><span class="meta comment-status"></span></div>`;
-    form.addEventListener('submit', async (e)=>{ e.preventDefault(); const ta = form.querySelector('textarea'); const st = form.querySelector('.comment-status'); const text = (ta.value||'').trim(); if(!text){ st.textContent = 'Escribe algo'; return; } st.textContent = 'Publicando…'; const { error } = await supabase.from('comments').insert({ post_id: postId, user_id: CURRENT_USER.id, content: text }); if(error){ st.textContent = 'No se pudo publicar'; return; } ta.value=''; st.textContent=''; loadComments(postId, container); });
-    wrap.appendChild(list); wrap.appendChild(form); container.innerHTML = ''; container.appendChild(wrap);
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn" type="submit">Enviar</button>
+        <span class="meta comment-status"></span>
+      </div>`;
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const ta = form.querySelector('textarea'); const st = form.querySelector('.comment-status');
+      const text = (ta.value||'').trim(); if(!text){ st.textContent = 'Escribe algo'; return; }
+      st.textContent = 'Publicando…';
+      const { error } = await supabase.from('comments').insert({ post_id: postId, user_id: CURRENT_USER.id, content: text });
+      if(error){ st.textContent = 'No se pudo publicar'; return; }
+      ta.value=''; st.textContent=''; loadComments(postId, container);
+    });
+
+    wrap.appendChild(list); wrap.appendChild(form);
+    container.innerHTML = ''; container.appendChild(wrap);
   }
 
   function initForum(){
     loadPosts();
-    supabase.channel('realtime-foro')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPosts)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, loadPosts)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, (payload)=>{ const pid = payload?.new?.post_id || payload?.old?.post_id; const panel = OPEN_COMMENT_PANELS.get(pid); if(panel){ loadComments(pid, panel); } else { loadPosts(); } })
+    supabase.channel('realtime-all')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, ()=>{ loadPosts(); })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, ()=>{ loadPosts(); })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, (payload)=>{
+        const pid = payload?.new?.post_id || payload?.old?.post_id;
+        const panel = OPEN_COMMENT_PANELS.get(pid);
+        if(panel){ loadComments(pid, panel); } else { loadPosts(); }
+      })
       .subscribe();
   }
 
   async function createPost(content, category){
     if(!CURRENT_USER){ forumStatus('Sesión expirada'); return; }
-    const clean = (content||'').trim(); const cat = (category||'Asuntos Generales').trim();
+    const clean = (content||'').trim();
+    const cat = (category||'Asuntos Generales').trim();
     if(!clean){ forumStatus('Escribe algo antes de publicar.'); return; }
+    if(clean.length>500){ forumStatus('Máximo 500 caracteres.'); return; }
+    if(!['Avisos','Asuntos Generales','Convivencia'].includes(cat)){ forumStatus('Categoría no válida'); return; }
     forumStatus('Publicando…');
     const { error } = await supabase.from('posts').insert({ content: clean, user_id: CURRENT_USER.id, category: cat });
     if (error) { forumStatus('❌ No se pudo publicar: ' + (error.message || 'Error')); console.error('[posts.insert]', error); return; }
-    $('forumInput').value = ''; forumStatus('✅ Publicado'); const toggle = document.getElementById('newPostToggle'); if(toggle) toggle.open = false; loadPosts();
+    $("forumInput").value = ''; forumStatus('✅ Publicado'); loadPosts();
   }
-
-  // ====== PRESENCIA y DIRECTORIO ======
-  function initPresence(){
-    const ch = supabase.channel('presence:members', { config: { presence: { key: CURRENT_USER.id } }});
-    ch.on('presence', {event: 'sync'}, () => {
-      presence.online = new Set(Object.keys(ch.presenceState()));
-      // Re-render para que suban/bajen los online sin recargar
-      try { renderMembers(); } catch(_) {}
-    });
-    ch.subscribe(async (status) => {
-      if (status === 'SUBSCRIBED') {
-        ch.track({ last_active: Date.now() });
-        await supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('user_id', CURRENT_USER.id);
-      }
-    });
-  }
-  function isOnline(user_id){ return presence.online.has(user_id); }
-
-  async function loadMembers(forceFetch=false){
-    const q = ("qMembers" in window && $("qMembers")?.value || "").trim();
-    const cat = ("fCategoria" in window && $("fCategoria")?.value || "");
-
-    if (forceFetch || LAST_CACHE_MEMBERS.length === 0){
-      // Trae TODOS los visibles ordenados por última conexión y nombre
-      let query = supabase
-        .from('profiles')
-        .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, is_visible')
-        .eq('is_visible', true)
-        .order('last_seen', { ascending: false })
-        .order('display_name', { ascending: true })
-        .limit(1000);
-      const { data, error } = await query;
-      if (error){ console.error(error); return; }
-      LAST_CACHE_MEMBERS = data || [];
-
-      // Poblar filtro de categorías una vez
-      const sel = $("fCategoria");
-      if (sel && sel.options.length === 1) {
-        const cats = [...new Set((LAST_CACHE_MEMBERS||[]).map(d=>d.categoria).filter(Boolean))].sort();
-        cats.forEach(c=>{ const opt = document.createElement('option'); opt.value = c; opt.textContent = c; sel.appendChild(opt); });
-      }
-    }
-
-    // Aplica filtros de texto/categoría sobre el cache
-    let filtered = LAST_CACHE_MEMBERS.filter(p=> true);
-    if (cat) filtered = filtered.filter(p => (p.categoria||'').toLowerCase().includes(cat.toLowerCase()));
-    if (q) {
-      const Q = q.toLowerCase();
-      filtered = filtered.filter(p => (p.display_name||'').toLowerCase().includes(Q) || (p.adscripcion||'').toLowerCase().includes(Q) || (p.categoria||'').toLowerCase().includes(Q));
-    }
-
-    // Separa por presencia y compone orden final
-    const online = [], offline = [];
-    filtered.forEach(p => (isOnline(p.user_id) ? online : offline).push(p));
-    const ordered = [...online, ...offline];
-
-    // Guarda conjunto de trabajo para render/paginación
-    WINDOW_MEMBERS_ORDERED = ordered;
-    renderMembers();
-  }
-
-  // Conjunto actual (aplica Solo Online si procede)
-  function getWorkingSet(){
-    const base = WINDOW_MEMBERS_ORDERED || [];
-    return ONLINE_ONLY ? base.filter(p=> isOnline(p.user_id)) : base;
-  }
-
-  function renderMembers(){
-    const listAll = getWorkingSet();
-    const wrap = $("membersList"); wrap.innerHTML = '';
-
-    // Encabezado con conteo
-    const onlineCount = listAll.filter(p=> isOnline(p.user_id)).length;
-    const totalAll = listAll.length;
-    const head = document.createElement('div');
-    head.className = 'meta'; head.style.margin = '6px 0 4px';
-    head.textContent = `Mostrando: ${totalAll} • Online: ${onlineCount}`;
-    wrap.appendChild(head);
-
-    // Paginación
-    const totalPages = Math.max(1, Math.ceil(totalAll / PAGE_SIZE));
-    if (CURRENT_PAGE > totalPages) CURRENT_PAGE = totalPages;
-    const start = (CURRENT_PAGE-1)*PAGE_SIZE;
-    const pageItems = listAll.slice(start, start + PAGE_SIZE);
-
-    // Render tarjetas
-    pageItems.forEach(p=>{
-      const card = document.createElement('div'); card.className = 'card';
-      const dot = `<span class=\"pill\" title=\"En línea\">${isOnline(p.user_id) ? '🟢 Online' : '⚪ Offline'}</span>`;
-      card.innerHTML = `
-        <div class=\"row\" style=\"align-items:center\">
-          <div class=\"avatar\" style=\"width:64px;height:64px\">${p.avatar_url? `<img src=\"${p.avatar_url}\">` : (p.display_name||'?')[0]?.toUpperCase() }</div>
-          <div style=\"flex:1;min-width:200px\">
-            <div style=\"font-weight:700\">${escapeHtml(p.display_name||'—')}</div>
-            <div class=\"meta\">${escapeHtml(p.categoria||'—')} • ${escapeHtml(p.adscripcion||'—')}</div>
-          </div>
-          ${dot}
-        </div>
-        <div class=\"actions\">
-          <button class=\"subtle-btn\" data-dm=\"${p.user_id}\">💬 Mensaje</button>
-          <button class=\"subtle-btn\" data-follow=\"${p.user_id}\">➕ Seguir</button>
-        </div>`;
-      card.querySelector('[data-dm]')?.addEventListener('click', ()=> openDM(p.user_id, p.display_name, p.avatar_url));
-      card.querySelector('[data-follow]')?.addEventListener('click', ()=> toggleFollow(p.user_id));
-      wrap.appendChild(card);
-    });
-
-    // Actualiza pager
-    const info = $("pageInfo"); if (info) info.textContent = `Página ${CURRENT_PAGE}/${totalPages}`;
-    $("btnPrevPage") && ($("btnPrevPage").disabled = CURRENT_PAGE <= 1);
-    $("btnNextPage") && ($("btnNextPage").disabled = CURRENT_PAGE >= totalPages);
-  }
-
-  // ====== SEGUIR ======
-  async function toggleFollow(targetId){
-    if (targetId === CURRENT_USER.id) return;
-    const { data } = await supabase.from('follows').select('follower,followed').eq('follower', CURRENT_USER.id).eq('followed', targetId).maybeSingle();
-    if (data) await supabase.from('follows').delete().eq('follower', CURRENT_USER.id).eq('followed', targetId);
-    else await supabase.from('follows').insert({ follower: CURRENT_USER.id, followed: targetId });
-    loadMembers();
-  }
-
-  // ====== DM ======
-  async function openDM(target_id, name){
-    const a = CURRENT_USER.id, b = target_id;
-    const { data: found } = await supabase.from('dm_threads').select('id').or(`and(a.eq.${a},b.eq.${b}),and(a.eq.${b},b.eq.${a})`).maybeSingle();
-    if (found?.id) DM.thread_id = found.id; else { const { data: created, error } = await supabase.from('dm_threads').insert({ a, b }).select('id').single(); if (error) { alert('No se pudo iniciar el chat'); return; } DM.thread_id = created.id; }
-    DM.target_id = target_id; $("dmTitle").textContent = `💬 Chat con ${name}`; $("dmList").innerHTML = '<div class="meta">Cargando…</div>'; $("dmModal").style.display = 'block'; await loadDM(); subscribeDM();
-  }
-  function closeDM(){ $("dmModal").style.display = 'none'; if (DM.channel){ supabase.removeChannel(DM.channel); DM.channel = null; } DM.thread_id = null; DM.target_id = null; }
-  async function loadDM(){ const { data, error } = await supabase.from('dm_messages').select('id, sender, content, created_at').eq('thread_id', DM.thread_id).order('created_at', { ascending: true }).limit(200); if (error){ console.error(error); return; } const box = $("dmList"); box.innerHTML = ''; (data||[]).forEach(m=>{ const mine = m.sender === CURRENT_USER.id; const bubble = document.createElement('div'); bubble.style.cssText = `max-width:80%;padding:10px 12px;border-radius:12px;${mine?'margin-left:auto;background:rgba(96,165,250,.18);border:1px solid rgba(96,165,250,.35)':'background:rgba(91,215,242,.10);border:1px solid rgba(91,215,242,.25)'}`; bubble.innerHTML = `<div style="white-space:pre-wrap">${escapeHtml(m.content)}</div><div class="meta" style="margin-top:4px">${timeAgo(m.created_at)}</div>`; box.appendChild(bubble); }); box.scrollTop = box.scrollHeight; }
-  function subscribeDM(){ if (DM.channel){ supabase.removeChannel(DM.channel); } DM.channel = supabase.channel(`dm:${DM.thread_id}`).on('postgres_changes', { event:'INSERT', schema:'public', table:'dm_messages', filter:`thread_id=eq.${DM.thread_id}` }, loadDM).subscribe(); }
-  document.getElementById('dmForm')?.addEventListener('submit', async (e)=>{ e.preventDefault(); const text = ($("dmInput").value||'').trim(); if(!text || !DM.thread_id) return; $("dmInput").value = ''; await supabase.from('dm_messages').insert({ thread_id: DM.thread_id, sender: CURRENT_USER.id, content: text }); });
 
   // === NOTAS ===
-  // - Crea tablas y políticas: profiles, follows, dm_threads, dm_messages y activa Realtime para dm_messages.
-  // - Presence usa Realtime Presence; sin servidor adicional.
+  // - Sustituye SUPABASE_ANON_KEY por tu anon key completa.
+  // - Realtime: activa publications para posts/likes/comments.
+  // - Buckets/políticas de avatars y tablas/políticas de profiles/messages como te pasé.
   </script>
 </body>
 </html>
