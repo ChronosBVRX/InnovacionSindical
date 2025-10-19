@@ -59,25 +59,25 @@
   details[open] .rotate{transform:rotate(90deg)}
 
   /* ===== Modal DM (centrado + accesible) ===== */
-  /* Bloquea el scroll del fondo cuando el modal esté abierto */
   body.modal-open{overflow:hidden; touch-action:none}
 
   #dmModal{
-    display:none;
+    display:none;                 /* oculto por defecto */
     position:fixed; inset:0;
     background:rgba(0,0,0,.45);
     backdrop-filter:blur(2px);
     z-index:50;
-    /* Centrado perfecto en cualquier pantalla */
-    display:grid; place-items:center;
     padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
   }
-  #dmModal.open{display:grid;}
+  #dmModal.open{
+    display:grid;                 /* visible solo al abrirlo */
+    place-items:center;           /* centrado perfecto */
+  }
 
   #dmBox{
     width:min(640px, 96vw);
-    max-height:90vh;               /* evita que se salga de pantalla */
-    overflow:auto;                 /* scroll interno si el hilo es largo */
+    max-height:90vh;              /* evita salir de la pantalla */
+    overflow:auto;                /* scroll interno si el hilo es largo */
     background:var(--panel);
     border:1px solid rgba(91,215,242,.25);
     border-radius:16px;
@@ -86,12 +86,9 @@
     animation:pop .12s ease;
   }
   @keyframes pop{from{transform:scale(.98);opacity:.7}to{transform:scale(1);opacity:1}}
-  /* Área de mensajes con altura flexible */
+
   #dmList{margin:10px 0; max-height:55vh; overflow:auto; display:grid; gap:8px}
-
-  /* Botón de cerrar siempre visible en móviles */
   .dm-head{position:sticky; top:0; background:linear-gradient(180deg, rgba(16,27,52,.98), rgba(16,27,52,.92)); padding-bottom:8px; margin-bottom:8px; z-index:1}
-
 </style>
 </head>
 <body>
@@ -271,7 +268,7 @@
   let CURRENT_PAGE = 1;
   const PAGE_SIZE = 20;
   let ONLINE_ONLY = false;
-  let LAST_CACHE_MEMBERS = []; // para paginar sin reconsultar cada vez
+  let LAST_CACHE_MEMBERS = [];
   let WINDOW_MEMBERS_ORDERED = [];
   let DM = { thread_id:null, target_id:null, channel:null };
 
@@ -323,6 +320,11 @@
     $("dmModal").addEventListener('click', (e)=>{ if(e.target === $("dmModal")) closeDM(); });
     document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && $("dmModal").classList.contains('open')) closeDM(); });
 
+    // Estado defensivo del modal (por si quedó abierto en una navegación previa)
+    $("dmModal").classList.remove("open");
+    $("dmModal").setAttribute("aria-hidden","true");
+    document.body.classList.remove("modal-open");
+
     // Init app
     init();
   });
@@ -353,7 +355,7 @@
     $("fCategoria").value   = meta.categoria || "";
     $("fAdscripcion").value = meta.adscripcion || "";
     $("fBio").value         = meta.bio || "";
-    $("fVisible").checked   = true; // por defecto visible
+    $("fVisible").checked   = true;
 
     // Sincroniza/crea fila en profiles al iniciar
     await upsertProfile({
@@ -619,7 +621,7 @@
     const start = (CURRENT_PAGE-1)*PAGE_SIZE;
     const pageItems = listAll.slice(start, start + PAGE_SIZE);
 
-    // Render tarjetas (SIN botón "Seguir")
+    // Render tarjetas (solo botón Mensaje)
     pageItems.forEach(p=>{
       const card = document.createElement('div'); card.className = 'card';
       const dot = `<span class="pill" title="En línea">${isOnline(p.user_id) ? '🟢 Online' : '⚪ Offline'}</span>`;
@@ -667,7 +669,6 @@
     $("dmModal").classList.add('open');
     $("dmModal").setAttribute('aria-hidden','false');
     document.body.classList.add('modal-open');
-    // Lleva el foco al input
     setTimeout(()=> $("dmInput")?.focus(), 50);
   }
 
@@ -710,7 +711,7 @@
   });
 
   // === NOTAS ===
-  // - Crea tablas y políticas: profiles, follows (opcional si la usabas), dm_threads, dm_messages y activa Realtime para dm_messages.
+  // - Crea tablas y políticas: profiles, dm_threads, dm_messages y activa Realtime para dm_messages.
   // - Presence usa Realtime Presence; sin servidor adicional.
   </script>
 </body>
