@@ -62,7 +62,6 @@
   /* ===== Verificación ===== */
   .event-box{display:grid; gap:8px}
   .event-title{font-weight:800; font-size:18px; color:#bff4ff}
-  .event-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
   .rsvp-wrap{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
   .qr-card{display:grid; place-items:center; background:rgba(96,165,250,.08); border:1px solid rgba(96,165,250,.25); border-radius:12px; padding:12px; width:220px}
   .qr-card canvas{width:196px !important; height:196px !important}
@@ -261,9 +260,10 @@
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
   const LOGIN_URL = "login.html";
 
-  // Google Calendar (API pública)
-  const GOOGLE_API_KEY = "AIzaSyDdtYPPE-jTvw_Gypxrq2c5UePpbK9ZxZ0"; // << TU API KEY
-  const CALENDAR_ID = "redunidadenaccion@gmail.com";
+  // Verificación → Edge Function (prioridad) y Google API (respaldo)
+  const NEXT_EVENT_URL = "https://axsncdwshdvsysrpikwj.supabase.co/functions/v1/next-event";
+  const GOOGLE_API_KEY = ""; // opcional: tu API key (p.ej. AIzaSyDdtYPPE-...); puedes dejarla vacía
+  const CALENDAR_ID = "redunidadenaccion@gmail.com"; // público o con API habilitada
 
   // ====== CLIENTE ======
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
@@ -288,10 +288,7 @@
   function formatDate(d){ try{ return new Intl.DateTimeFormat('es-MX',{dateStyle:'full', timeStyle:'short'}).format(new Date(d)); }catch{ return d; } }
   function formatDateISOtoMX(iso){ if(!iso) return "—"; try{ const d = iso.length<=10 ? new Date(iso+"T00:00:00") : new Date(iso); return new Intl.DateTimeFormat('es-MX', { day:'2-digit', month:'long', year:'numeric' }).format(d);}catch{ return iso; } }
   function timeAgo(iso){ try{ const d = new Date(iso); const diff = (Date.now() - d.getTime())/1000; if(diff<60) return 'hace unos segundos'; if(diff<3600) return `hace ${Math.floor(diff/60)} min`; if(diff<86400) return `hace ${Math.floor(diff/3600)} h`; return new Intl.DateTimeFormat('es-MX',{dateStyle:'medium', timeStyle:'short'}).format(d);}catch{ return iso; } }
-  function escapeHtml(str){
-    const map = {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"};
-    return (str||'').replace(/[&<>"']/g, ch => map[ch]);
-  }
+  function escapeHtml(str){ return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
   const debounce = (fn, ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; };
 
   // ====== INICIO DOM ======
@@ -337,6 +334,7 @@
     $("dmModal").addEventListener('click', (e)=>{ if(e.target === $("dmModal")) closeDM(); });
     document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && $("dmModal").classList.contains('open')) closeDM(); });
 
+    // Estado defensivo del modal
     $("dmModal").classList.remove("open");
     $("dmModal").setAttribute("aria-hidden","true");
     document.body.classList.remove("modal-open");
@@ -429,7 +427,7 @@
       const { error } = await supabase.auth.updateUser({ data: updates });
       if (error){ showStatus("❌ Error al guardar: " + error.message); return; }
 
-      // Refresca UI
+      // Refresca UI básica
       showStatus("✅ Cambios guardados.");
       $("pfName").textContent       = updates.display_name || "Sin nombre";
       $("pfTelefono").textContent   = maskPhone(updates.telefono);
@@ -438,7 +436,7 @@
       $("pfAdscripcion").textContent= updates.adscripcion || "—";
       if (updates.avatar_url){ const bust = `#${Date.now()}`; $("userAvatar").innerHTML  = `<img src="${updates.avatar_url}${bust}" alt="avatar">`; $("avatarPreview").innerHTML= `<img src="${updates.avatar_url}${bust}" alt="avatar">`; }
 
-      // Sincroniza tabla profiles
+      // Sincroniza en tabla profiles
       await upsertProfile({
         display_name: updates.display_name || null,
         avatar_url: updates.avatar_url || (CURRENT_USER.user_metadata?.avatar_url ?? null),
@@ -508,7 +506,7 @@
       el.querySelector('.edit-toggle').addEventListener('click', ()=>{ const ep = el.querySelector(`#ep-${row.id}`); ep.style.display = (ep.style.display==='none' ? 'block' : 'none'); });
       el.querySelector('.cancel-edit').addEventListener('click', ()=>{ const ep = el.querySelector(`#ep-${row.id}`); ep.style.display = 'none'; });
       el.querySelector('.save-edit').addEventListener('click', async ()=>{ const ep = el.querySelector(`#ep-${row.id}`); const ta = ep.querySelector('.edit-text'); const sc = ep.querySelector('.edit-cat'); const st = ep.querySelector('.edit-status'); const text = (ta.value||'').trim(); if(!text){ st.textContent='Escribe algo'; return; } st.textContent='Guardando…'; const { error } = await supabase.from('posts').update({ content: text, category: sc.value }).eq('id', row.id).eq('user_id', CURRENT_USER.id); if(error){ st.textContent='No se pudo guardar'; return; } st.textContent=''; ep.style.display='none'; loadPosts(); });
-      el.querySelector('.delete-post').addEventListener('click', async ()=>{ if(!confirm('¿Eliminar esta publicación? Esta acción no se puede deshacer.')) return; await supabase.from('posts').delete().eq('id', row.id).eq('user_id', CURRENT_USER.id); });
+      el.querySelector('.delete-post').addEventListener('click', async ()=>{ if(!confirm('¿Eliminar esta publicación?')) return; await supabase.from('posts').delete().eq('id', row.id).eq('user_id', CURRENT_USER.id); });
     }
     return el;
   }
@@ -542,16 +540,6 @@
       .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, loadPosts)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, (payload)=>{ const pid = payload?.new?.post_id || payload?.old?.post_id; const panel = OPEN_COMMENT_PANELS.get(pid); if(panel){ loadComments(pid, panel); } else { loadPosts(); } })
       .subscribe();
-  }
-
-  async function createPost(content, category){
-    if(!CURRENT_USER){ forumStatus('Sesión expirada'); return; }
-    const clean = (content||'').trim(); const cat = (category||'Asuntos Generales').trim();
-    if(!clean){ forumStatus('Escribe algo antes de publicar.'); return; }
-    forumStatus('Publicando…');
-    const { error } = await supabase.from('posts').insert({ content: clean, user_id: CURRENT_USER.id, category: cat });
-    if (error) { forumStatus('❌ No se pudo publicar: ' + (error.message || 'Error')); console.error('[posts.insert]', error); return; }
-    $('forumInput').value = ''; forumStatus('✅ Publicado'); const toggle = document.getElementById('newPostToggle'); if(toggle) toggle.open = false; loadPosts();
   }
 
   // ====== PRESENCIA y DIRECTORIO ======
@@ -719,7 +707,7 @@
     await supabase.from('dm_messages').insert({ thread_id: DM.thread_id, sender: CURRENT_USER.id, content: text });
   });
 
-  // ====== VERIFICACIÓN (Google Calendar + RSVP + QR) ======
+  // ====== VERIFICACIÓN (Edge Function + Google respaldo) ======
   async function initVerification(){
     $("rsvpBox").style.display = CURRENT_USER ? 'block' : 'none';
     await loadNextEventAndRSVP();
@@ -727,11 +715,42 @@
     $("btnNo").onclick  = ()=> setRSVP('no');
   }
 
-  async function fetchNextEvent(){
-    if(!GOOGLE_API_KEY){
-      $("eventBox").innerHTML = `<div class="meta">Agrega tu GOOGLE_API_KEY para mostrar el próximo evento automáticamente.</div>`;
+  async function fetchNextEventFromEdge(){
+    try{
+      const res = await fetch(NEXT_EVENT_URL, { headers: { "accept":"application/json" } });
+      if(!res.ok) throw new Error("HTTP "+res.status);
+      const data = await res.json();
+
+      if (data && (data.uid || data.id)) {
+        return {
+          uid: data.uid || data.id,
+          title: data.title || data.summary || "Evento",
+          start: data.start,
+          end: data.end,
+          location: data.location || "",
+          description: data.description || ""
+        };
+      }
+      const evt = (data.items||[])[0];
+      if (evt){
+        return {
+          uid: evt.id,
+          title: evt.summary || "Evento",
+          start: evt.start?.dateTime || evt.start?.date,
+          end:   evt.end?.dateTime   || evt.end?.date,
+          location: evt.location || "",
+          description: evt.description || ""
+        };
+      }
+      return null;
+    }catch(e){
+      console.error("Edge next-event error:", e);
       return null;
     }
+  }
+
+  async function fetchNextEvent(){
+    if(!GOOGLE_API_KEY) return null;
     const timeMin = new Date().toISOString();
     const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?singleEvents=true&orderBy=startTime&timeMin=${encodeURIComponent(timeMin)}&maxResults=1&key=${encodeURIComponent(GOOGLE_API_KEY)}`;
     try{
@@ -750,19 +769,27 @@
       };
     }catch(e){
       console.error('Calendar fetch error:', e);
-      $("eventBox").innerHTML = `<div class="meta">No se pudo leer el evento del calendario. Revisa tu API key y que el calendario sea público.</div>`;
       return null;
     }
   }
 
   async function loadNextEventAndRSVP(){
     $("eventBox").innerHTML = `<div class="meta">Buscando el próximo evento…</div>`;
-    const evt = await fetchNextEvent();
+
+    // Primero Edge Function
+    let evt = await fetchNextEventFromEdge();
+
+    // Respaldo: Google API si no hubo evento
+    if(!evt){
+      evt = await fetchNextEvent();
+    }
+
     if(!evt){
       $("eventBox").innerHTML = `<div class="meta">No hay eventos próximos o no fue posible consultarlos.</div>`;
       $("rsvpBox").style.display = 'none';
       return;
     }
+
     const when = formatDate(evt.start);
     const where = evt.location ? ` • 📍 ${escapeHtml(evt.location)}` : '';
     $("eventBox").innerHTML = `
