@@ -264,12 +264,12 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
   <script>
-  // ====== CREDENCIALES SUPABASE (las tuyas) ======
+  // ====== CREDENCIALES SUPABASE ======
   const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
   const LOGIN_URL = "login.html";
 
-  // ====== URL de tu EDGE FUNCTION (ya con tu dirección) ======
+  // ====== URL de Edge Function ======
   const NEXT_EVENT_URL = "https://axsncdwshdvsysrpikwj.supabase.co/functions/v1/next-event";
 
   // ====== CLIENTE SUPABASE ======
@@ -732,15 +732,25 @@
     $("btnNo").onclick  = ()=> setRSVP('no');
   }
 
+  // <<<<<< ACTUALIZADO: con cabeceras Authorization y apikey >>>>>>
   async function fetchNextEvent(){
     try{
-      const res = await fetch(NEXT_EVENT_URL, { method: "GET" });
-      if(!res.ok) throw new Error("HTTP " + res.status);
+      const res = await fetch(NEXT_EVENT_URL, {
+        method: "GET",
+        headers: {
+          "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+          "apikey": SUPABASE_ANON_KEY
+        }
+      });
+      if(!res.ok){
+        const text = await res.text().catch(()=> "");
+        throw new Error(`HTTP ${res.status} ${text}`);
+      }
       const { event } = await res.json();
       return event; // { uid, title, start, end, location, description }
     }catch(e){
       console.error("Edge error:", e);
-      $("eventBox").innerHTML = `<div class="meta">No se pudo leer el calendario. Revisa la función y los secretos.</div>`;
+      $("eventBox").innerHTML = `<div class="meta">No se pudo leer el calendario (${e.message}).</div>`;
       return null;
     }
   }
