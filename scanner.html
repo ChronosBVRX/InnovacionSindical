@@ -1,132 +1,112 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Lector de Asistencia — Unidad en Acción</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escáner de Asistencia — Unidad en Acción</title>
+<link rel="icon" href="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20Unidad%20en%20Accion.png?raw=true">
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root{ --panel:#101a33; --txt:#e6fbff; --ok:#22c55e; --bad:#ef4444; --muted:#9fdcf0 }
-  *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto}
-  body{margin:0;min-height:100vh;background:linear-gradient(180deg,#0b1220,#0b1022);
-       color:var(--txt);display:grid;place-items:center;padding:16px}
-  .card{width:min(720px,96vw);background:var(--panel);border:1px solid rgba(91,215,242,.25);
-        border-radius:16px;padding:16px}
-  h1{margin:0 0 12px}
-  #video{width:100%;max-height:50vh;border-radius:12px;background:black}
-  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .meta{color:var(--muted);font-size:13px}
-  .badge{padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.2)}
-  .ok{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.4)}
-  .bad{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.4)}
-  button{appearance:none;border:none;border-radius:10px;padding:10px 14px;cursor:pointer}
-  .btn{background:linear-gradient(90deg,#5bd7f2,#60a5fa);color:#072133;font-weight:700}
-  .ghost{background:rgba(91,215,242,.12);color:#fff;border:1px solid rgba(91,215,242,.3)}
-  pre{white-space:pre-wrap;background:rgba(0,0,0,.25);padding:8px;border-radius:8px;
-      max-height:160px;overflow:auto}
+  body{background:#0b1022;color:#e6fbff;font-family:system-ui,-apple-system,Segoe UI,Roboto;text-align:center;padding:20px}
+  h2{color:#5bd7f2;margin-bottom:10px}
+  #reader{width:320px;margin:20px auto;border:1px solid rgba(91,215,242,.3);border-radius:10px;overflow:hidden}
+  #loginBox{display:grid;gap:10px;max-width:320px;margin:40px auto}
+  input{padding:10px;border-radius:8px;border:1px solid rgba(91,215,242,.35);background:#101a33;color:#e6fbff}
+  button{padding:10px;background:linear-gradient(90deg,#5bd7f2,#60a5fa);border:none;border-radius:8px;color:#072133;font-weight:600;cursor:pointer}
+  .meta{font-size:13px;color:#9fdcf0;margin-top:10px}
+  .ok{color:#80ff9b}
+  .err{color:#ff8080}
 </style>
 </head>
 <body>
-  <div class="card">
-    <h1>📷 Lector de Asistencia</h1>
-    <div class="meta">Escanea el QR de “Asistiré” del miembro. Requiere sesión de personal.</div>
+<h2>🎟️ Escáner de Asistencia</h2>
 
-    <video id="video" playsinline></video>
-    <div class="row" style="margin-top:10px">
-      <button id="btnStart" class="btn">Iniciar cámara</button>
-      <button id="btnStop" class="ghost">Detener</button>
-      <span id="status" class="meta"></span>
-    </div>
+<div id="loginBox">
+  <input id="email" type="email" placeholder="Correo de verificador">
+  <input id="password" type="password" placeholder="Contraseña">
+  <button id="btnLogin">Iniciar sesión</button>
+  <div id="loginStatus" class="meta"></div>
+</div>
 
-    <div id="result" style="margin-top:12px;display:none">
-      <div class="row">
-        <span id="badge" class="badge">—</span>
-        <div id="msg" class="meta"></div>
-      </div>
-      <pre id="info"></pre>
-    </div>
-  </div>
+<div id="scannerBox" style="display:none">
+  <div class="meta">Apunta la cámara al código QR</div>
+  <div id="reader"></div>
+  <div id="result" class="meta"></div>
+  <button id="btnLogout">Cerrar sesión</button>
+</div>
 
-  <!-- Librerías -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-  <script>
-  const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
-  const LOGIN_URL = "login.html";
+<script>
+const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const loginBox = document.getElementById("loginBox");
+const scannerBox = document.getElementById("scannerBox");
+const loginStatus = document.getElementById("loginStatus");
+const readerElem = document.getElementById("reader");
+let reader;
 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true } });
-  const $ = id => document.getElementById(id);
-  let stream = null, raf = null;
-  const video = $("video");
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
+document.getElementById("btnLogin").onclick = async () => {
+  loginStatus.textContent = "Verificando credenciales...";
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-  async function ensureStaff(){
-    const { data: { session } } = await supabase.auth.getSession();
-    if(!session){ location.href = LOGIN_URL; return false; }
-    const { data: me } = await supabase.from('profiles').select('is_staff').eq('user_id', session.user.id).maybeSingle();
-    if(!me?.is_staff){ alert('Tu cuenta no tiene permisos de personal.'); return false; }
-    return true;
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) { loginStatus.textContent = "❌ " + error.message; return; }
+
+  const user = data.user;
+  const { data: profile } = await supabase.from("profiles").select("is_staff").eq("user_id", user.id).single();
+  if (!profile?.is_staff) {
+    loginStatus.textContent = "❌ No tienes permisos de verificador.";
+    await supabase.auth.signOut();
+    return;
   }
 
-  async function start(){
-    if(!(await ensureStaff())) return;
-    try{
-      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
-      video.srcObject = stream; await video.play(); loop();
-      $("status").textContent = "Cámara activa. Apunta al QR…";
-    }catch(e){ $("status").textContent = "No se pudo abrir la cámara."; }
-  }
+  loginBox.style.display = "none";
+  scannerBox.style.display = "block";
+  startScanner();
+};
 
-  function stop(){
-    if(raf) cancelAnimationFrame(raf);
-    if(stream) stream.getTracks().forEach(t=>t.stop());
-    $("status").textContent = "Cámara detenida."; stream = null;
-  }
+document.getElementById("btnLogout").onclick = async () => {
+  await supabase.auth.signOut();
+  stopScanner();
+  loginBox.style.display = "grid";
+  scannerBox.style.display = "none";
+  loginStatus.textContent = "";
+};
 
-  async function loop(){
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const img = ctx.getImageData(0,0,canvas.width,canvas.height);
-    const code = jsQR(img.data, img.width, img.height);
-    if(code?.data){ await handleQR(code.data); stop(); return; }
-    raf = requestAnimationFrame(loop);
-  }
+function startScanner() {
+  reader = new Html5Qrcode("reader");
+  reader.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    async (decoded) => { await handleQR(decoded); }
+  );
+}
 
-  function showResult(ok,msg,extra){
-    $("result").style.display='block';
-    $("badge").textContent = ok ? "VÁLIDO" : "NO VÁLIDO";
-    $("badge").className = "badge " + (ok?"ok":"bad");
-    $("msg").textContent = msg;
-    $("info").textContent = extra || "";
-  }
+function stopScanner() {
+  try { reader?.stop(); } catch {}
+}
 
-  async function handleQR(text){
-    let payload;
-    try{ payload = JSON.parse(text); }catch{ showResult(false,"QR no reconocido",text); return; }
-    if(!payload?.event || !payload?.user){ showResult(false,"QR incompleto",text); return; }
+async function handleQR(decoded) {
+  const resultEl = document.getElementById("result");
+  try {
+    const data = JSON.parse(decoded);
+    const { user, event } = data;
+    const { error } = await supabase.from("rsvps")
+      .update({ status: "checked_in", updated_at: new Date().toISOString() })
+      .eq("user_id", user)
+      .eq("event_uid", event);
 
-    const { data: rsvp } = await supabase.from('rsvps')
-      .select('user_id,event_uid,status,qr_payload')
-      .eq('user_id', payload.user).eq('event_uid', payload.event)
-      .maybeSingle();
-
-    if(!rsvp || rsvp.status!=='yes' || rsvp.qr_payload!==text){
-      showResult(false,"Confirmación inválida",JSON.stringify(rsvp,null,2)); return;
+    if (error) {
+      resultEl.innerHTML = `<span class='err'>❌ Error: ${error.message}</span>`;
+    } else {
+      resultEl.innerHTML = `<span class='ok'>✅ Asistencia registrada correctamente</span>`;
     }
-
-    const { data: { session } } = await supabase.auth.getSession();
-    const { error } = await supabase.from('attendances')
-      .upsert({ user_id:payload.user, event_uid:payload.event, scanned_by:session.user.id },
-              { onConflict:'user_id,event_uid' });
-
-    if(error){ showResult(false,"Error al registrar",error.message); return; }
-    showResult(true,"Asistencia registrada",JSON.stringify(payload,null,2));
+  } catch (e) {
+    resultEl.innerHTML = "<span class='err'>❌ QR inválido</span>";
   }
-
-  $("btnStart").onclick=start;
-  $("btnStop").onclick=stop;
-  </script>
+}
+</script>
 </body>
 </html>
