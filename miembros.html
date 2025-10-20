@@ -50,7 +50,7 @@
   .hint{font-size:12px;color:#9fdcf0}
   @media (max-width: 980px){ nav{width:100%; flex-direction:row; position:sticky; top:52px; z-index:9; overflow:auto;} main{flex-direction:column} }
 
-  /* Desplegable formulario foro */
+  /* Toggle foro */
   details.forum-toggle{margin-top:16px}
   details.forum-toggle > summary{list-style:none; cursor:pointer; user-select:none; display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:rgba(91,215,242,.10); border:1px solid rgba(91,215,242,.28); font-weight:600; color:#bff4ff}
   details.forum-toggle[open] > summary{background:rgba(91,215,242,.18)}
@@ -264,16 +264,16 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
   <script>
-  // ====== CREDENCIALES SUPABASE ======
+  // ====== SUPABASE (igual que ya usas) ======
   const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
   const LOGIN_URL = "login.html";
-
-  // ====== URL de Edge Function ======
-  const NEXT_EVENT_URL = "https://axsncdwshdvsysrpikwj.supabase.co/functions/v1/next-event";
-
-  // ====== CLIENTE SUPABASE ======
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+
+  // ====== GOOGLE CALENDAR (tu API key) ======
+  const GCAL_API_KEY = "AIzaSyDdtYPPE-jTvw_Gypxrq2c5UePpbK9ZxZ0";  // TU API KEY
+  const CALENDAR_ID  = "redunidadenaccion@gmail.com";              // ID del calendario
+  const TIMEZONE     = "America/Mexico_City";
 
   // ====== HELPERS ======
   const $ = (id) => document.getElementById(id);
@@ -295,7 +295,7 @@
   function formatDate(d){ try{ return new Intl.DateTimeFormat('es-MX',{dateStyle:'full', timeStyle:'short'}).format(new Date(d)); }catch{ return d; } }
   function formatDateISOtoMX(iso){ if(!iso) return "—"; try{ const d = iso.length<=10 ? iso+"T00:00:00" : iso; return new Intl.DateTimeFormat('es-MX',{day:'2-digit', month:'long', year:'numeric'}).format(new Date(d)); }catch{ return iso; } }
   function timeAgo(iso){ try{ const d = new Date(iso); const diff = (Date.now() - d.getTime())/1000; if(diff<60) return 'hace unos segundos'; if(diff<3600) return `hace ${Math.floor(diff/60)} min`; if(diff<86400) return `hace ${Math.floor(diff/3600)} h`; return new Intl.DateTimeFormat('es-MX',{dateStyle:'medium', timeStyle:'short'}).format(d);}catch{ return iso; } }
-  function escapeHtml(str){ return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
+  function escapeHtml(str){ return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&lt;","">":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
   const debounce = (fn, ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; };
 
   // ====== INICIO DOM ======
@@ -311,11 +311,7 @@
         if (id === 'verificacion') initVerification();
       });
     });
-    if(location.hash){
-      const id = location.hash.replace('#','');
-      const tab = document.querySelector(`.tab[data-tab="${id}"]`);
-      if(tab) tab.click();
-    }
+    if(location.hash){ const id = location.hash.replace('#',''); const tab = document.querySelector(`.tab[data-tab="${id}"]`); if(tab) tab.click(); }
 
     // Logout
     $("btnLogout").addEventListener("click", async ()=>{ await supabase.auth.signOut(); location.href = LOGIN_URL; });
@@ -724,7 +720,43 @@
     await supabase.from('dm_messages').insert({ thread_id: DM.thread_id, sender: CURRENT_USER.id, content: text });
   });
 
-  // ====== VERIFICACIÓN (Edge Function + RSVP + QR) ======
+  // ====== VERIFICACIÓN — usando Google Calendar API KEY ======
+  async function fetchNextEvent(){
+    try{
+      const timeMin = new Date().toISOString(); // ahora en RFC3339
+      const url = new URL(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events`);
+      url.searchParams.set("key", GCAL_API_KEY);
+      url.searchParams.set("singleEvents", "true");
+      url.searchParams.set("orderBy", "startTime");
+      url.searchParams.set("timeMin", timeMin);
+      url.searchParams.set("maxResults", "1");
+      url.searchParams.set("timeZone", TIMEZONE);
+
+      const res = await fetch(url);
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+
+      const item = (data.items && data.items[0]) || null;
+      if(!item) return null;
+
+      const start = item.start?.dateTime || (item.start?.date ? `${item.start.date}T00:00:00` : null);
+      const end   = item.end?.dateTime   || (item.end?.date   ? `${item.end.date}T23:59:59` : null);
+
+      return {
+        uid: item.id,
+        title: item.summary || "Evento",
+        start,
+        end,
+        location: item.location || "",
+        description: item.description || "",
+        htmlLink: item.htmlLink || ""
+      };
+    }catch(e){
+      console.error("Calendar API error:", e);
+      return null;
+    }
+  }
+
   async function initVerification(){
     $("rsvpBox").style.display = CURRENT_USER ? 'block' : 'none';
     await loadNextEventAndRSVP();
@@ -732,34 +764,11 @@
     $("btnNo").onclick  = ()=> setRSVP('no');
   }
 
-  // <<<<<< ACTUALIZADO: con cabeceras Authorization y apikey >>>>>>
-  async function fetchNextEvent(){
-    try{
-      const res = await fetch(NEXT_EVENT_URL, {
-        method: "GET",
-        headers: {
-          "Authorization": "Bearer " + SUPABASE_ANON_KEY,
-          "apikey": SUPABASE_ANON_KEY
-        }
-      });
-      if(!res.ok){
-        const text = await res.text().catch(()=> "");
-        throw new Error(`HTTP ${res.status} ${text}`);
-      }
-      const { event } = await res.json();
-      return event; // { uid, title, start, end, location, description }
-    }catch(e){
-      console.error("Edge error:", e);
-      $("eventBox").innerHTML = `<div class="meta">No se pudo leer el calendario (${e.message}).</div>`;
-      return null;
-    }
-  }
-
   async function loadNextEventAndRSVP(){
     $("eventBox").innerHTML = `<div class="meta">Buscando el próximo evento…</div>`;
     const evt = await fetchNextEvent();
     if(!evt){
-      $("eventBox").innerHTML = `<div class="meta">No hay eventos próximos o no fue posible consultarlos.</div>`;
+      $("eventBox").innerHTML = `<div class="meta">No hay eventos próximos o el calendario no es público.</div>`;
       $("rsvpBox").style.display = 'none';
       return;
     }
@@ -800,9 +809,7 @@
     if(status === 'yes'){
       qrPayload = buildQRPayload(evt.uid);
       $("qrWrap").style.display = 'block';
-      try{
-        await QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel: 'M' });
-      }catch(e){ console.error(e); }
+      try{ await QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel: 'M' }); }catch(e){ console.error(e); }
     }else{
       $("qrWrap").style.display = 'none';
     }
