@@ -8,54 +8,81 @@
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  body{background:#0b1022;color:#e6fbff;font-family:system-ui,-apple-system,Segoe UI,Roboto;text-align:center;padding:20px}
-  h2{color:#5bd7f2;margin-bottom:10px}
-  #reader{width:320px;margin:20px auto;border:1px solid rgba(91,215,242,.3);border-radius:10px;overflow:hidden}
-  #loginBox{display:grid;gap:10px;max-width:320px;margin:40px auto}
-  input{padding:10px;border-radius:8px;border:1px solid rgba(91,215,242,.35);background:#101a33;color:#e6fbff}
-  button{padding:10px;background:linear-gradient(90deg,#5bd7f2,#60a5fa);border:none;border-radius:8px;color:#072133;font-weight:600;cursor:pointer}
-  .meta{font-size:13px;color:#9fdcf0;margin-top:10px}
+  :root{ --bg:#0b1022; --panel:#101a33; --txt:#e6fbff; --muted:#9fdcf0; --pri:#5bd7f2; --sky:#60a5fa; }
+  body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto;text-align:center;padding:20px}
+  h2{color:var(--pri);margin-bottom:10px}
+  #loginBox{display:grid;gap:10px;max-width:340px;margin:24px auto}
+  input,select{padding:10px;border-radius:8px;border:1px solid rgba(91,215,242,.35);background:var(--panel);color:var(--txt)}
+  button{padding:10px;background:linear-gradient(90deg,var(--pri),var(--sky));border:none;border-radius:8px;color:#072133;font-weight:600;cursor:pointer}
+  .meta{font-size:13px;color:var(--muted);margin-top:10px}
   .ok{color:#80ff9b}
   .err{color:#ff8080}
+  #scannerBox{max-width:520px;margin:0 auto;display:none}
+  #reader{width:min(480px,92vw);min-height:320px;margin:16px auto;border:1px solid rgba(91,215,242,.3);border-radius:10px;overflow:hidden}
+  .row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;max-width:340px;margin:0 auto}
 </style>
 </head>
 <body>
 <h2>🎟️ Escáner de Asistencia</h2>
 
 <div id="loginBox">
-  <input id="email" type="email" placeholder="Correo de verificador">
-  <input id="password" type="password" placeholder="Contraseña">
+  <input id="email" type="email" placeholder="Correo de verificador" autocomplete="username">
+  <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password">
   <button id="btnLogin">Iniciar sesión</button>
   <div id="loginStatus" class="meta"></div>
+  <div class="meta" id="secureHint"></div>
 </div>
 
-<div id="scannerBox" style="display:none">
+<div id="scannerBox">
+  <div class="row">
+    <select id="cameraSelect" title="Selecciona cámara"></select>
+    <button id="btnSwitch">Cambiar</button>
+  </div>
   <div class="meta">Apunta la cámara al código QR</div>
   <div id="reader"></div>
   <div id="result" class="meta"></div>
   <button id="btnLogout">Cerrar sesión</button>
+  <div id="scanStatus" class="meta"></div>
 </div>
 
 <script>
+/* ====== Supabase ====== */
 const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-const loginBox = document.getElementById("loginBox");
-const scannerBox = document.getElementById("scannerBox");
-const loginStatus = document.getElementById("loginStatus");
-const readerElem = document.getElementById("reader");
-let reader;
 
+/* ====== UI refs ====== */
+const loginBox     = document.getElementById("loginBox");
+const scannerBox   = document.getElementById("scannerBox");
+const loginStatus  = document.getElementById("loginStatus");
+const secureHint   = document.getElementById("secureHint");
+const readerElem   = document.getElementById("reader");
+const cameraSelect = document.getElementById("cameraSelect");
+const resultEl     = document.getElementById("result");
+const scanStatus   = document.getElementById("scanStatus");
+
+let reader = null;
+let currentCameraId = null;
+
+/* ====== HTTPS hint ====== */
+secureHint.textContent = (location.protocol === "https:" || location.hostname === "localhost")
+  ? "" : "⚠️ Para usar la cámara necesitas servir esta página en HTTPS o en localhost.";
+
+/* ====== Auth flow ====== */
 document.getElementById("btnLogin").onclick = async () => {
-  loginStatus.textContent = "Verificando credenciales...";
+  loginStatus.textContent = "Verificando credenciales…";
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) { loginStatus.textContent = "❌ " + error.message; return; }
+  if (error) { loginStatus.innerHTML = "❌ " + error.message; return; }
 
+  // Verifica rol
   const user = data.user;
-  const { data: profile } = await supabase.from("profiles").select("is_staff").eq("user_id", user.id).single();
+  const { data: profile, error: pErr } = await supabase
+      .from("profiles").select("is_staff").eq("user_id", user.id).single();
+
+  if (pErr) { loginStatus.innerHTML = "❌ " + pErr.message; await supabase.auth.signOut(); return; }
   if (!profile?.is_staff) {
     loginStatus.textContent = "❌ No tienes permisos de verificador.";
     await supabase.auth.signOut();
@@ -64,47 +91,119 @@ document.getElementById("btnLogin").onclick = async () => {
 
   loginBox.style.display = "none";
   scannerBox.style.display = "block";
-  startScanner();
+  await setupAndStartScanner();
 };
 
 document.getElementById("btnLogout").onclick = async () => {
   await supabase.auth.signOut();
-  stopScanner();
+  await stopScanner();
   loginBox.style.display = "grid";
   scannerBox.style.display = "none";
   loginStatus.textContent = "";
 };
 
-function startScanner() {
-  reader = new Html5Qrcode("reader");
-  reader.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 250 },
-    async (decoded) => { await handleQR(decoded); }
-  );
+/* ====== Cámara / Scanner ====== */
+async function setupAndStartScanner(preferredId = null) {
+  scanStatus.textContent = "Buscando cámaras…";
+  try {
+    const devices = await Html5Qrcode.getCameras();
+
+    if (!devices || devices.length === 0) {
+      scanStatus.innerHTML = "❌ No se detectaron cámaras.";
+      return;
+    }
+
+    // Rellena selector
+    cameraSelect.innerHTML = "";
+    devices.forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = d.id;
+      opt.textContent = d.label || `Cámara ${cameraSelect.length + 1}`;
+      cameraSelect.appendChild(opt);
+    });
+
+    // Elige trasera si existe
+    let chosen = preferredId
+      || devices.find(d => /back|rear|environment|trasera/i.test(d.label))?.id
+      || devices[0].id;
+
+    cameraSelect.value = chosen;
+    currentCameraId = chosen;
+
+    await startScannerWith(chosen);
+  } catch (e) {
+    scanStatus.innerHTML = "❌ Error obteniendo cámaras: " + (e?.message || e);
+  }
 }
 
-function stopScanner() {
-  try { reader?.stop(); } catch {}
+async function startScannerWith(cameraId) {
+  // Asegura un lector limpio
+  await stopScanner();
+
+  reader = new Html5Qrcode("reader", { verbose: false });
+  scanStatus.textContent = "Iniciando cámara…";
+
+  const config = {
+    fps: 10,
+    qrbox: { width: Math.min(300, readerElem.clientWidth - 24), height: Math.min(300, readerElem.clientWidth - 24) },
+    rememberLastUsedCamera: true,
+    aspectRatio: 1.0,
+    experimentalFeatures: { useBarCodeDetectorIfSupported: true }
+  };
+
+  try {
+    await reader.start(
+      { deviceId: { exact: cameraId } },  // ← cameraId explícito evita fallos con facingMode
+      config,
+      async (decodedText/*, decodedResult*/) => { await handleQR(decodedText); },
+      (scanErr) => { /* errores de frames; silenciado para no saturar */ }
+    );
+    scanStatus.innerHTML = "<span class='ok'>📷 Cámara lista</span>";
+  } catch (e) {
+    scanStatus.innerHTML = "❌ No se pudo iniciar la cámara: " + (e?.message || e);
+  }
 }
 
+async function stopScanner() {
+  if (reader) {
+    try { await reader.stop(); } catch {}
+    try { await reader.clear(); } catch {}
+    reader = null;
+  }
+}
+
+document.getElementById("btnSwitch").onclick = async () => {
+  const id = cameraSelect.value;
+  currentCameraId = id;
+  scanStatus.textContent = "Cambiando de cámara…";
+  await startScannerWith(id);
+};
+
+/* ====== Manejo de QR ====== */
+let lastOkAt = 0;
 async function handleQR(decoded) {
-  const resultEl = document.getElementById("result");
+  // Anti-doble lectura en ráfaga
+  const now = Date.now();
+  if (now - lastOkAt < 1200) return;
+  lastOkAt = now;
+
   try {
     const data = JSON.parse(decoded);
     const { user, event } = data;
+    if (!user || !event) throw new Error("Faltan campos user/event en el QR");
+
     const { error } = await supabase.from("rsvps")
       .update({ status: "checked_in", updated_at: new Date().toISOString() })
       .eq("user_id", user)
       .eq("event_uid", event);
 
     if (error) {
-      resultEl.innerHTML = `<span class='err'>❌ Error: ${error.message}</span>`;
+      resultEl.innerHTML = `<span class='err'>❌ Error registrando: ${error.message}</span>`;
     } else {
-      resultEl.innerHTML = `<span class='ok'>✅ Asistencia registrada correctamente</span>`;
+      resultEl.innerHTML = `<span class='ok'>✅ Asistencia registrada</span>`;
     }
   } catch (e) {
-    resultEl.innerHTML = "<span class='err'>❌ QR inválido</span>";
+    resultEl.innerHTML = `<span class='err'>❌ QR inválido: ${(e?.message||e)}</span>`;
   }
 }
 </script>
