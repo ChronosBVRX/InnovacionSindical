@@ -23,7 +23,7 @@
   #scannerBox{display:none}
   .row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;max-width:360px;margin:0 auto 8px}
 
-  /* CONTENEDOR del video: altura fija para evitar 0px dentro de iframes/pestañas */
+  /* Contenedor con altura fija: clave para iframes/pestañas */
   #reader{
     width:min(560px,94vw);
     height:420px;
@@ -33,15 +33,13 @@
     background:rgba(255,255,255,.03);
     position:relative;
   }
-  /* Forzar visibilidad del <video>/<canvas> que crea html5-qrcode */
+  /* Forzar <video>/<canvas> visibles */
   #reader video, #reader canvas, #reader img {
     position:absolute; inset:0;
     width:100% !important; height:100% !important;
     display:block !important; visibility:visible !important; opacity:1 !important;
     object-fit:cover;
   }
-  #reader video { transform:none !important; }
-
   #result{min-height:20px}
 </style>
 </head>
@@ -49,7 +47,6 @@
   <div id="wrap">
     <h2>🎟️ Escáner de Asistencia</h2>
 
-    <!-- Login -->
     <div id="loginBox">
       <input id="email" type="email" placeholder="Correo de verificador" autocomplete="username">
       <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password">
@@ -58,19 +55,15 @@
       <div id="secureHint" class="meta"></div>
     </div>
 
-    <!-- Scanner -->
     <div id="scannerBox">
       <div class="row">
         <select id="cameraSelect" title="Selecciona cámara"></select>
         <button id="btnSwitch">Cambiar</button>
       </div>
-
       <div class="meta">Apunta la cámara al código QR</div>
       <div id="reader"></div>
-
       <div id="result" class="meta"></div>
       <div id="scanStatus" class="meta"></div>
-
       <button id="btnLogout">Cerrar sesión</button>
     </div>
   </div>
@@ -90,9 +83,6 @@ const readerElem   = document.getElementById("reader");
 const cameraSelect = document.getElementById("cameraSelect");
 const resultEl     = document.getElementById("result");
 const scanStatus   = document.getElementById("scanStatus");
-const btnLogin     = document.getElementById("btnLogin");
-const btnSwitch    = document.getElementById("btnSwitch");
-const btnLogout    = document.getElementById("btnLogout");
 
 let reader = null;
 let currentCameraId = null;
@@ -101,14 +91,12 @@ let resizeObs = null;
 
 /* HTTPS aviso */
 secureHint.textContent = (location.protocol === "https:" || location.hostname === "localhost")
-  ? "" : "⚠️ Para usar la cámara, abre esta página por HTTPS (o en localhost).";
+  ? "" : "⚠️ Abre esta página por HTTPS (o en localhost) para usar la cámara.";
 
 /* ===== Login ===== */
-btnLogin.onclick = async () => {
+document.getElementById("btnLogin").onclick = async () => {
   try {
-    btnLogin.disabled = true;
     loginStatus.textContent = "Verificando credenciales…";
-
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
 
@@ -125,17 +113,14 @@ btnLogin.onclick = async () => {
 
     loginBox.style.display = "none";
     scannerBox.style.display = "block";
-
     await setupAndStartScanner();
   } catch (e) {
     console.error(e);
     loginStatus.textContent = "❌ " + (e?.message || e);
-  } finally {
-    btnLogin.disabled = false;
   }
 };
 
-btnLogout.onclick = async () => {
+document.getElementById("btnLogout").onclick = async () => {
   await supabase.auth.signOut();
   await stopScanner();
   loginBox.style.display = "grid";
@@ -143,39 +128,34 @@ btnLogout.onclick = async () => {
   loginStatus.textContent = "";
 };
 
-/* ===== Util: visible ===== */
+/* ===== Util ===== */
 function isVisible(el){
   const s = getComputedStyle(el);
-  if (s.display === "none" || s.visibility === "hidden" || parseFloat(s.opacity) === 0) return false;
-  const r = el.getBoundingClientRect();
-  return r.width > 0 && r.height > 0;
+  if (s.display === "none" || s.visibility === "hidden" || +s.opacity === 0) return false;
+  const r = el.getBoundingClientRect(); return r.width>0 && r.height>0;
 }
-function waitForVisible(el, timeoutMs = 3000){
-  return new Promise((resolve) => {
-    if (isVisible(el)) return resolve();
+function waitForVisible(el, timeout=3000){
+  return new Promise(res=>{
+    if (isVisible(el)) return res();
     const t0 = performance.now();
-    const iv = setInterval(() => {
-      if (isVisible(el) || performance.now() - t0 > timeoutMs) { clearInterval(iv); resolve(); }
+    const iv = setInterval(()=>{
+      if (isVisible(el) || performance.now()-t0>timeout){ clearInterval(iv); res(); }
     }, 100);
   });
 }
 
-/* ===== Cámara / Scanner ===== */
-async function setupAndStartScanner(preferredId = null) {
+/* ===== Scanner ===== */
+async function setupAndStartScanner(preferredId=null){
   scanStatus.textContent = "Buscando cámaras…";
-  try {
+  try{
     const devices = await Html5Qrcode.getCameras();
-    if (!devices || devices.length === 0) {
-      scanStatus.innerHTML = "❌ No se detectaron cámaras.";
-      return;
-    }
+    if(!devices?.length){ scanStatus.innerHTML = "❌ No se detectaron cámaras."; return; }
 
     cameraSelect.innerHTML = "";
-    devices.forEach((d, i) => {
-      const opt = document.createElement("option");
-      opt.value = d.id;
-      opt.textContent = d.label || `Cámara ${i+1}`;
-      cameraSelect.appendChild(opt);
+    devices.forEach((d,i)=>{
+      const o = document.createElement("option");
+      o.value = d.id; o.textContent = d.label || `Cámara ${i+1}`;
+      cameraSelect.appendChild(o);
     });
 
     let chosen = preferredId
@@ -189,26 +169,24 @@ async function setupAndStartScanner(preferredId = null) {
     await startScannerWith(chosen);
 
     if (resizeObs) resizeObs.disconnect();
-    resizeObs = new ResizeObserver(async () => {
+    resizeObs = new ResizeObserver(async ()=>{
       if (!reader) return;
       await startScannerWith(currentCameraId);
     });
     resizeObs.observe(readerElem);
-
-  } catch (e) {
+  }catch(e){
     console.error(e);
     scanStatus.innerHTML = "❌ Error obteniendo cámaras: " + (e?.message || e);
   }
 }
 
-async function startScannerWith(cameraId) {
+async function startScannerWith(cameraId){
   await stopScanner();
-
-  reader = new Html5Qrcode("reader", { verbose: false });
+  reader = new Html5Qrcode("reader", { verbose:false });
   scanStatus.textContent = "Iniciando cámara…";
 
   const rect = readerElem.getBoundingClientRect();
-  const side = Math.max(220, Math.min(380, Math.min(rect.width, rect.height) - 24));
+  const side = Math.max(220, Math.min(380, Math.min(rect.width, rect.height)-24));
   const config = {
     fps: 10,
     qrbox: { width: side, height: side },
@@ -217,7 +195,7 @@ async function startScannerWith(cameraId) {
     experimentalFeatures: { useBarCodeDetectorIfSupported: true }
   };
 
-  try {
+  try{
     await reader.start(
       { deviceId: { exact: cameraId } },
       config,
@@ -225,16 +203,16 @@ async function startScannerWith(cameraId) {
       () => {}
     );
     scanStatus.innerHTML = "<span class='ok'>📷 Cámara lista</span>";
-  } catch (e) {
+  }catch(e){
     console.error(e);
     scanStatus.innerHTML = "❌ No se pudo iniciar la cámara: " + (e?.message || e);
   }
 }
 
-async function stopScanner() {
+async function stopScanner(){
   if (!reader) return;
-  try { await reader.stop(); } catch {}
-  try { await reader.clear(); } catch {}
+  try{ await reader.stop(); }catch{}
+  try{ await reader.clear(); }catch{}
   reader = null;
 }
 
@@ -245,27 +223,27 @@ document.getElementById("btnSwitch").onclick = async () => {
   await startScannerWith(id);
 };
 
-/* ===== QR ===== */
-async function onScanSuccess(decodedText) {
+/* ===== QR handler ===== */
+async function onScanSuccess(decodedText){
   const now = Date.now();
-  if (now - lastOkAt < 1200) return;
-  lastOkAt = now;
+  if (now - (window.__lastScan||0) < 1200) return;
+  window.__lastScan = now;
 
-  try {
+  try{
     const data = JSON.parse(decodedText);
     const { user, event } = data;
-    if (!user || !event) throw new Error("Faltan campos 'user' o 'event' en el QR.");
+    if (!user || !event) throw new Error("Faltan 'user' o 'event' en el QR.");
 
-    const { error } = await supabase.from("rsvps")
+    const { error } = await supabase
+      .from("rsvps")
       .update({ status: "checked_in", updated_at: new Date().toISOString() })
       .eq("user_id", user)
       .eq("event_uid", event);
 
     if (error) resultEl.innerHTML = `<span class='err'>❌ Error registrando: ${error.message}</span>`;
     else       resultEl.innerHTML = `<span class='ok'>✅ Asistencia registrada</span>`;
-  } catch (e) {
-    console.error("QR inválido:", e);
-    resultEl.innerHTML = `<span class='err'>❌ QR inválido: ${(e?.message || e)}</span>`;
+  }catch(e){
+    resultEl.innerHTML = `<span class='err'>❌ QR inválido: ${(e?.message||e)}</span>`;
   }
 }
 </script>
