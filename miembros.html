@@ -62,6 +62,7 @@
   /* ===== Verificación ===== */
   .event-box{display:grid; gap:8px}
   .event-title{font-weight:800; font-size:18px; color:#bff4ff}
+  .event-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
   .rsvp-wrap{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
   .qr-card{display:grid; place-items:center; background:rgba(96,165,250,.08); border:1px solid rgba(96,165,250,.25); border-radius:12px; padding:12px; width:220px}
   .qr-card canvas{width:196px !important; height:196px !important}
@@ -260,8 +261,8 @@
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
   const LOGIN_URL = "login.html";
 
-  // Google Calendar API (SOLO API)
-  const GOOGLE_API_KEY = "AIzaSyDdtYPPE-jTvw_Gypxrq2c5UePpbK9ZxZ0";
+  // Google Calendar (PON TU API KEY)
+  const GOOGLE_API_KEY = ""; // <-- pon aquí tu API key
   const CALENDAR_ID = "redunidadenaccion@gmail.com";
 
   // ====== CLIENTE ======
@@ -285,10 +286,24 @@
   function previewFile(file){ const prev = $("avatarPreview"); if (!file) return; const url = URL.createObjectURL(file); prev.innerHTML = `<img src="${url}" alt="preview">`; }
   function maskPhone(t){ const s = (t||"").replace(/\D+/g,""); if(s.length < 8) return t || "—"; return `••• ••${s.slice(-4)}`; }
   function formatDate(d){ try{ return new Intl.DateTimeFormat('es-MX',{dateStyle:'full', timeStyle:'short'}).format(new Date(d)); }catch{ return d; } }
-  function formatDateISOtoMX(iso){ if(!iso) return "—"; try{ const d = iso.length<=10 ? new Date(iso+"T00:00:00") : new Date(iso); return new Intl.DateTimeFormat('es-MX', { day:'2-digit', month:'long', year:'numeric' }).format(d);}catch{ return iso; } }
+  function formatDateISOtoMX(iso){ if(!iso) return "—"; try{ const d = iso.length<=10 ? new Date(iso+"T00:00:00" : iso); return new Intl.DateTimeFormat('es-MX', { day:'2-digit', month:'long', year:'numeric' }).format(new Date(iso)); }catch{ return iso; } }
   function timeAgo(iso){ try{ const d = new Date(iso); const diff = (Date.now() - d.getTime())/1000; if(diff<60) return 'hace unos segundos'; if(diff<3600) return `hace ${Math.floor(diff/60)} min`; if(diff<86400) return `hace ${Math.floor(diff/3600)} h`; return new Intl.DateTimeFormat('es-MX',{dateStyle:'medium', timeStyle:'short'}).format(d);}catch{ return iso; } }
-  function escapeHtml(str){ return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
+  function escapeHtml(str){ return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
   const debounce = (fn, ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; };
+
+  // Limpia descripciones HTML de Google Calendar -> texto plano legible
+  function cleanDescription(html){
+    if(!html) return '';
+    let h = String(html)
+      .replace(/<\/(p|div|li|tr|h[1-6])>/gi, '\n')
+      .replace(/<br\s*\/?>/gi, '\n');
+    h = h.replace(/<style[\s\S]*?<\/style>/gi,'').replace(/<script[\s\S]*?<\/script>/gi,'');
+    const tmp = document.createElement('div');
+    tmp.innerHTML = h;
+    let text = tmp.textContent || tmp.innerText || '';
+    text = text.replace(/\r/g,'').replace(/\n{3,}/g,'\n\n').replace(/[ \t]{2,}/g,' ').trim();
+    return text;
+  }
 
   // ====== INICIO DOM ======
   document.addEventListener('DOMContentLoaded', () => {
@@ -302,9 +317,14 @@
         if (id === 'verificacion') initVerification();
       });
     });
-    if(location.hash){ const id = location.hash.replace('#',''); const tab = document.querySelector(`.tab[data-tab="${id}"]`); if(tab) tab.click(); }
+    if(location.hash){
+      const id = location.hash.replace('#','');
+      const tab = document.querySelector(`.tab[data-tab="${id}"]`);
+      if(tab) tab.click();
+    }
 
     $("btnLogout").addEventListener("click", async ()=>{ await supabase.auth.signOut(); location.href = LOGIN_URL; });
+
     $("fAvatar") && $("fAvatar").addEventListener("change", (e)=>{ const file = e.target.files?.[0]; if (file) previewFile(file); });
     $("editForm") && $("editForm").addEventListener("submit", onSaveProfile);
 
@@ -522,7 +542,7 @@
       .subscribe();
   }
 
-  // ====== PRESENCIA y DIRECTORIO ======
+  // ====== PRESENCIA & DIRECTORIO ======
   function initPresence(){
     const ch = supabase.channel('presence:members', { config: { presence: { key: CURRENT_USER.id } }});
     ch.on('presence', {event: 'sync'}, () => {
@@ -687,7 +707,7 @@
     await supabase.from('dm_messages').insert({ thread_id: DM.thread_id, sender: CURRENT_USER.id, content: text });
   });
 
-  // ====== VERIFICACIÓN (SOLO Google Calendar API) ======
+  // ====== VERIFICACIÓN (Google Calendar + RSVP + QR) ======
   async function initVerification(){
     $("rsvpBox").style.display = CURRENT_USER ? 'block' : 'none';
     await loadNextEventAndRSVP();
@@ -696,6 +716,10 @@
   }
 
   async function fetchNextEvent(){
+    if(!GOOGLE_API_KEY){
+      $("eventBox").innerHTML = `<div class="meta">Para mostrar el próximo evento automáticamente, agrega tu GOOGLE_API_KEY en el código. Mientras, puedes usar el iframe del calendario en la pestaña “Calendario”.</div>`;
+      return null;
+    }
     const timeMin = new Date().toISOString();
     const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?singleEvents=true&orderBy=startTime&timeMin=${encodeURIComponent(timeMin)}&maxResults=1&key=${encodeURIComponent(GOOGLE_API_KEY)}`;
     try{
@@ -714,6 +738,7 @@
       };
     }catch(e){
       console.error('Calendar fetch error:', e);
+      $("eventBox").innerHTML = `<div class="meta">No se pudo leer el evento del calendario. Revisa tu API key y que el calendario sea público.</div>`;
       return null;
     }
   }
@@ -728,11 +753,12 @@
     }
     const when = formatDate(evt.start);
     const where = evt.location ? ` • 📍 ${escapeHtml(evt.location)}` : '';
+    const desc = cleanDescription(evt.description);
     $("eventBox").innerHTML = `
       <div class="event-title">Próximo evento</div>
       <div><strong>${escapeHtml(evt.title)}</strong></div>
       <div class="meta">🗓️ ${when}${where}</div>
-      ${evt.description? `<div class="muted" style="white-space:pre-wrap">${escapeHtml(evt.description)}</div>`:''}
+      ${desc ? `<div class="muted" style="white-space:pre-wrap">${escapeHtml(desc)}</div>`:''}
     `;
     window.__NEXT_EVENT__ = evt;
 
