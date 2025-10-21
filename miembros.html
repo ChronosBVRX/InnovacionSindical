@@ -286,7 +286,18 @@
   function previewFile(file){ const prev = $("avatarPreview"); if (!file) return; const url = URL.createObjectURL(file); prev.innerHTML = `<img src="${url}" alt="preview">`; }
   function maskPhone(t){ const s = (t||"").replace(/\D+/g,""); if(s.length < 8) return t || "—"; return `••• ••${s.slice(-4)}`; }
   function formatDate(d){ try{ return new Intl.DateTimeFormat('es-MX',{dateStyle:'full', timeStyle:'short'}).format(new Date(d)); }catch{ return d; } }
-  function formatDateISOtoMX(iso){ if(!iso) return "—"; try{ const d = iso.length<=10 ? new Date(iso+"T00:00:00" : iso); return new Intl.DateTimeFormat('es-MX', { day:'2-digit', month:'long', year:'numeric' }).format(new Date(iso)); }catch{ return iso; } }
+  function formatDateISOtoMX(iso){
+  if (!iso) return "—";
+  try{
+    const d = iso.length <= 10 ? new Date(iso + "T00:00:00") : new Date(iso);
+    return new Intl.DateTimeFormat('es-MX', {
+      day:'2-digit', month:'long', year:'numeric'
+    }).format(d);
+  }catch{
+    return iso;
+  }
+}
+
   function timeAgo(iso){ try{ const d = new Date(iso); const diff = (Date.now() - d.getTime())/1000; if(diff<60) return 'hace unos segundos'; if(diff<3600) return `hace ${Math.floor(diff/60)} min`; if(diff<86400) return `hace ${Math.floor(diff/3600)} h`; return new Intl.DateTimeFormat('es-MX',{dateStyle:'medium', timeStyle:'short'}).format(d);}catch{ return iso; } }
   function escapeHtml(str){ return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
   const debounce = (fn, ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; };
