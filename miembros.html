@@ -260,10 +260,9 @@
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
   const LOGIN_URL = "login.html";
 
-  // Verificación → Edge Function (prioridad) y Google API (respaldo)
-  const NEXT_EVENT_URL = "https://axsncdwshdvsysrpikwj.supabase.co/functions/v1/next-event";
-  const GOOGLE_API_KEY = ""; // opcional: tu API key (p.ej. AIzaSyDdtYPPE-...); puedes dejarla vacía
-  const CALENDAR_ID = "redunidadenaccion@gmail.com"; // público o con API habilitada
+  // Google Calendar API (SOLO API)
+  const GOOGLE_API_KEY = "AIzaSyDdtYPPE-jTvw_Gypxrq2c5UePpbK9ZxZ0";
+  const CALENDAR_ID = "redunidadenaccion@gmail.com";
 
   // ====== CLIENTE ======
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
@@ -293,7 +292,6 @@
 
   // ====== INICIO DOM ======
   document.addEventListener('DOMContentLoaded', () => {
-    // Tabs
     document.querySelectorAll(".tab").forEach(btn=>{
       btn.addEventListener("click",()=>{
         document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
@@ -304,42 +302,30 @@
         if (id === 'verificacion') initVerification();
       });
     });
-    if(location.hash){
-      const id = location.hash.replace('#','');
-      const tab = document.querySelector(`.tab[data-tab="${id}"]`);
-      if(tab) tab.click();
-    }
+    if(location.hash){ const id = location.hash.replace('#',''); const tab = document.querySelector(`.tab[data-tab="${id}"]`); if(tab) tab.click(); }
 
-    // Logout
     $("btnLogout").addEventListener("click", async ()=>{ await supabase.auth.signOut(); location.href = LOGIN_URL; });
-
-    // Listeners
     $("fAvatar") && $("fAvatar").addEventListener("change", (e)=>{ const file = e.target.files?.[0]; if (file) previewFile(file); });
     $("editForm") && $("editForm").addEventListener("submit", onSaveProfile);
 
-    // Foro
     const forumForm = document.getElementById('forumForm');
     forumForm && forumForm.addEventListener('submit', (e)=>{ e.preventDefault(); createPost($("forumInput").value, $("forumCategory").value); });
     document.querySelectorAll('.post-filter').forEach(btn=>{ btn.addEventListener('click', ()=>{ CURRENT_FILTER = btn.dataset.filter; loadPosts(); }); });
 
-    // Miembros
     $("btnRefreshMembers")?.addEventListener('click', ()=>{ CURRENT_PAGE = 1; loadMembers(true); });
     $("qMembers")?.addEventListener('input', debounce(()=>{ CURRENT_PAGE = 1; loadMembers(true); }, 300));
     $("chkOnlineOnly")?.addEventListener('change', (e)=>{ ONLINE_ONLY = !!e.target.checked; CURRENT_PAGE = 1; renderMembers(); });
     $("btnPrevPage")?.addEventListener('click', ()=>{ if (CURRENT_PAGE>1){ CURRENT_PAGE--; renderMembers(); } });
     $("btnNextPage")?.addEventListener('click', ()=>{ const totalPages = Math.max(1, Math.ceil(getWorkingSet().length / PAGE_SIZE)); if (CURRENT_PAGE<totalPages){ CURRENT_PAGE++; renderMembers(); } });
 
-    // Modal DM controles
     $("dmCloseBtn").addEventListener('click', closeDM);
     $("dmModal").addEventListener('click', (e)=>{ if(e.target === $("dmModal")) closeDM(); });
     document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && $("dmModal").classList.contains('open')) closeDM(); });
 
-    // Estado defensivo del modal
     $("dmModal").classList.remove("open");
     $("dmModal").setAttribute("aria-hidden","true");
     document.body.classList.remove("modal-open");
 
-    // Init app
     init();
   });
 
@@ -350,7 +336,6 @@
     CURRENT_USER = session.user;
     const meta = CURRENT_USER.user_metadata || {};
 
-    // Perfil
     $("pfName").textContent     = meta.display_name || "Sin nombre";
     $("pfEmail").textContent    = CURRENT_USER.email || "—";
     $("pfTelefono").textContent = maskPhone(meta.telefono);
@@ -362,7 +347,6 @@
     if (avatar) { $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`; $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`; }
     else { const ini = (meta.display_name || CURRENT_USER.email || "?")[0].toUpperCase(); $("userAvatar").textContent = ini; $("avatarPreview").textContent = ini; }
 
-    // Prefill form
     $("fNombre").value      = meta.display_name || "";
     $("fTelefono").value    = meta.telefono || "";
     try{ if(meta.cumple){ const d = new Date(meta.cumple.length<=10 ? meta.cumple+"T00:00:00" : meta.cumple); $("fCumple").value = d.toISOString().slice(0,10); } }catch{}
@@ -371,7 +355,6 @@
     $("fBio").value         = meta.bio || "";
     $("fVisible").checked   = true;
 
-    // Sincroniza/crea fila en profiles al iniciar
     await upsertProfile({
       display_name: meta.display_name || null,
       avatar_url: meta.avatar_url || null,
@@ -381,7 +364,6 @@
       is_visible: true
     });
 
-    // Foro + Presencia
     initForum();
     initPresence();
   }
@@ -427,7 +409,6 @@
       const { error } = await supabase.auth.updateUser({ data: updates });
       if (error){ showStatus("❌ Error al guardar: " + error.message); return; }
 
-      // Refresca UI básica
       showStatus("✅ Cambios guardados.");
       $("pfName").textContent       = updates.display_name || "Sin nombre";
       $("pfTelefono").textContent   = maskPhone(updates.telefono);
@@ -436,7 +417,6 @@
       $("pfAdscripcion").textContent= updates.adscripcion || "—";
       if (updates.avatar_url){ const bust = `#${Date.now()}`; $("userAvatar").innerHTML  = `<img src="${updates.avatar_url}${bust}" alt="avatar">`; $("avatarPreview").innerHTML= `<img src="${updates.avatar_url}${bust}" alt="avatar">`; }
 
-      // Sincroniza en tabla profiles
       await upsertProfile({
         display_name: updates.display_name || null,
         avatar_url: updates.avatar_url || (CURRENT_USER.user_metadata?.avatar_url ?? null),
@@ -707,7 +687,7 @@
     await supabase.from('dm_messages').insert({ thread_id: DM.thread_id, sender: CURRENT_USER.id, content: text });
   });
 
-  // ====== VERIFICACIÓN (Edge Function + Google respaldo) ======
+  // ====== VERIFICACIÓN (SOLO Google Calendar API) ======
   async function initVerification(){
     $("rsvpBox").style.display = CURRENT_USER ? 'block' : 'none';
     await loadNextEventAndRSVP();
@@ -715,42 +695,7 @@
     $("btnNo").onclick  = ()=> setRSVP('no');
   }
 
-  async function fetchNextEventFromEdge(){
-    try{
-      const res = await fetch(NEXT_EVENT_URL, { headers: { "accept":"application/json" } });
-      if(!res.ok) throw new Error("HTTP "+res.status);
-      const data = await res.json();
-
-      if (data && (data.uid || data.id)) {
-        return {
-          uid: data.uid || data.id,
-          title: data.title || data.summary || "Evento",
-          start: data.start,
-          end: data.end,
-          location: data.location || "",
-          description: data.description || ""
-        };
-      }
-      const evt = (data.items||[])[0];
-      if (evt){
-        return {
-          uid: evt.id,
-          title: evt.summary || "Evento",
-          start: evt.start?.dateTime || evt.start?.date,
-          end:   evt.end?.dateTime   || evt.end?.date,
-          location: evt.location || "",
-          description: evt.description || ""
-        };
-      }
-      return null;
-    }catch(e){
-      console.error("Edge next-event error:", e);
-      return null;
-    }
-  }
-
   async function fetchNextEvent(){
-    if(!GOOGLE_API_KEY) return null;
     const timeMin = new Date().toISOString();
     const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?singleEvents=true&orderBy=startTime&timeMin=${encodeURIComponent(timeMin)}&maxResults=1&key=${encodeURIComponent(GOOGLE_API_KEY)}`;
     try{
@@ -775,21 +720,12 @@
 
   async function loadNextEventAndRSVP(){
     $("eventBox").innerHTML = `<div class="meta">Buscando el próximo evento…</div>`;
-
-    // Primero Edge Function
-    let evt = await fetchNextEventFromEdge();
-
-    // Respaldo: Google API si no hubo evento
-    if(!evt){
-      evt = await fetchNextEvent();
-    }
-
+    const evt = await fetchNextEvent();
     if(!evt){
       $("eventBox").innerHTML = `<div class="meta">No hay eventos próximos o no fue posible consultarlos.</div>`;
       $("rsvpBox").style.display = 'none';
       return;
     }
-
     const when = formatDate(evt.start);
     const where = evt.location ? ` • 📍 ${escapeHtml(evt.location)}` : '';
     $("eventBox").innerHTML = `
