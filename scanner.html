@@ -15,7 +15,7 @@
   *{box-sizing:border-box}
   body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto;min-height:100vh;margin:0}
   h2{color:var(--pri);margin:16px 0;text-align:center}
-  #wrap{max-width:640px;margin:0 auto;padding:20px}
+  #wrap{max-width:680px;margin:0 auto;padding:20px}
   #loginBox{display:grid;gap:10px;max-width:360px;margin:16px auto}
   input,select{padding:10px;border-radius:8px;border:1px solid var(--ring);background:var(--panel);color:var(--txt)}
   button{padding:10px;background:linear-gradient(90deg,var(--pri),var(--sky));border:none;border-radius:8px;color:#072133;font-weight:600;cursor:pointer}
@@ -25,13 +25,15 @@
   .err{color:#ff8080}
   #scannerBox{display:none}
   .row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;max-width:360px;margin:0 auto 8px}
+  /* CLAVE: altura explícita, no solo min-height */
   #reader{
-    width:min(520px,92vw);
-    min-height:340px;        /* clave para que el video sea visible */
+    width:min(560px,94vw);
+    height:420px;            /* <— fija */
     margin:16px auto;
     border:1px solid rgba(91,215,242,.3);
     border-radius:12px;overflow:hidden;
     background:rgba(255,255,255,.03);
+    position:relative;
   }
   #result{min-height:20px}
 </style>
@@ -88,6 +90,7 @@ const btnLogout    = document.getElementById("btnLogout");
 let reader = null;
 let currentCameraId = null;
 let lastOkAt = 0;
+let resizeObs = null;
 
 /* ============== HTTPS Hint ============== */
 secureHint.textContent = (location.protocol === "https:" || location.hostname === "localhost")
@@ -103,11 +106,9 @@ btnLogin.onclick = async () => {
     const password = document.getElementById("password").value.trim();
 
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) { throw error; }
+    if (error) throw error;
 
     const user = data.user;
-
-    // IMPORTANTE: el rol viene en app_metadata dentro del JWT
     const role = user?.app_metadata?.role;
     if (role !== "admin") {
       await supabase.auth.signOut();
@@ -115,7 +116,6 @@ btnLogin.onclick = async () => {
       return;
     }
 
-    // Mostrar scanner
     loginBox.style.display = "none";
     scannerBox.style.display = "block";
 
@@ -136,6 +136,24 @@ btnLogout.onclick = async () => {
   loginStatus.textContent = "";
 };
 
+/* ====== Util: esperar a que #reader esté visible con tamaño > 0 ====== */
+function isVisible(el){
+  const s = getComputedStyle(el);
+  if (s.display === "none" || s.visibility === "hidden" || parseFloat(s.opacity) === 0) return false;
+  const rect = el.getBoundingClientRect();
+  return rect.width > 0 && rect.height > 0;
+}
+function waitForVisible(el, timeoutMs = 3000){
+  return new Promise((resolve, reject) => {
+    if (isVisible(el)) return resolve();
+    const start = performance.now();
+    const iv = setInterval(() => {
+      if (isVisible(el)) { clearInterval(iv); resolve(); }
+      else if (performance.now() - start > timeoutMs) { clearInterval(iv); reject(new Error("Contenedor no visible")); }
+    }, 100);
+  });
+}
+
 /* ============== Cámara / Scanner ============== */
 async function setupAndStartScanner(preferredId = null) {
   scanStatus.textContent = "Buscando cámaras…";
@@ -146,7 +164,6 @@ async function setupAndStartScanner(preferredId = null) {
       return;
     }
 
-    // Rellena selector
     cameraSelect.innerHTML = "";
     devices.forEach((d, i) => {
       const opt = document.createElement("option");
@@ -155,7 +172,6 @@ async function setupAndStartScanner(preferredId = null) {
       cameraSelect.appendChild(opt);
     });
 
-    // Elegir cámara trasera si existe
     let chosen = preferredId
       || devices.find(d => /back|rear|environment|trasera/i.test(d.label))?.id
       || devices[0].id;
@@ -163,7 +179,23 @@ async function setupAndStartScanner(preferredId = null) {
     cameraSelect.value = chosen;
     currentCameraId = chosen;
 
+    // Espera a que el reader realmente tenga tamaño (pestañas/spa)
+    await waitForVisible(readerElem).catch(()=>{ /* no cortar, seguimos igual */ });
+
     await startScannerWith(chosen);
+
+    // Observa cambios de tamaño (p. ej., si abres la pestaña luego)
+    if (resizeObs) resizeObs.disconnect();
+    resizeObs = new ResizeObserver(async entries => {
+      for (const e of entries) {
+        if (!reader) return;
+        // Si el tamaño cambió mucho, reinicia para recalcular el canvas
+        await startScannerWith(currentCameraId);
+        break;
+      }
+    });
+    resizeObs.observe(readerElem);
+
   } catch (e) {
     console.error(e);
     scanStatus.innerHTML = "❌ Error obteniendo cámaras: " + (e?.message || e);
@@ -171,12 +203,15 @@ async function setupAndStartScanner(preferredId = null) {
 }
 
 async function startScannerWith(cameraId) {
-  await stopScanner(); // limpiamos cualquier instancia previa
+  await stopScanner(); // limpia instancias previas
 
   reader = new Html5Qrcode("reader", { verbose: false });
   scanStatus.textContent = "Iniciando cámara…";
 
-  const side = Math.min(360, Math.max(240, readerElem.clientWidth - 24));
+  // Calcula un qrbox cuadrado dentro del contenedor real
+  const rect = readerElem.getBoundingClientRect();
+  const side = Math.max(220, Math.min(380, Math.min(rect.width, rect.height) - 24));
+
   const config = {
     fps: 10,
     qrbox: { width: side, height: side },
@@ -187,10 +222,10 @@ async function startScannerWith(cameraId) {
 
   try {
     await reader.start(
-      { deviceId: { exact: cameraId } },        // usar id explícito es más confiable que facingMode
+      { deviceId: { exact: cameraId } },
       config,
       onScanSuccess,
-      () => {}                                  // errores de frame: ignorar para no saturar
+      () => {}
     );
     scanStatus.innerHTML = "<span class='ok'>📷 Cámara lista</span>";
   } catch (e) {
@@ -214,8 +249,7 @@ btnSwitch.onclick = async () => {
 };
 
 /* ============== QR Handler ============== */
-async function onScanSuccess(decodedText /*, decodedResult */) {
-  // Anti doble-lectura en ráfaga
+async function onScanSuccess(decodedText) {
   const now = Date.now();
   if (now - lastOkAt < 1200) return;
   lastOkAt = now;
