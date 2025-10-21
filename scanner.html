@@ -23,29 +23,23 @@
   #scannerBox{display:none}
   .row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;max-width:360px;margin:0 auto 8px}
 
-  /* CONTENEDOR con altura fija (clave) */
+  /* CONTENEDOR del video: altura fija para evitar 0px dentro de iframes/pestañas */
   #reader{
     width:min(560px,94vw);
-    height:420px;            /* fuerza espacio para el <video> */
+    height:420px;
     margin:16px auto;
     border:1px solid rgba(91,215,242,.3);
     border-radius:12px;overflow:hidden;
     background:rgba(255,255,255,.03);
     position:relative;
   }
-
-  /* OVERRIDES: aseguran que nada lo oculte */
+  /* Forzar visibilidad del <video>/<canvas> que crea html5-qrcode */
   #reader video, #reader canvas, #reader img {
-    position:absolute;
-    inset:0;
-    width:100% !important;
-    height:100% !important;
-    display:block !important;       /* evita reglas globales que pongan none */
-    visibility:visible !important;
-    opacity:1 !important;
-    object-fit:cover;               /* llena el recuadro */
+    position:absolute; inset:0;
+    width:100% !important; height:100% !important;
+    display:block !important; visibility:visible !important; opacity:1 !important;
+    object-fit:cover;
   }
-  /* Algunas hojas ponen transform raros; normalizamos */
   #reader video { transform:none !important; }
 
   #result{min-height:20px}
@@ -149,7 +143,7 @@ btnLogout.onclick = async () => {
   loginStatus.textContent = "";
 };
 
-/* ===== Util: esperar a que #reader tenga tamaño > 0 ===== */
+/* ===== Util: visible ===== */
 function isVisible(el){
   const s = getComputedStyle(el);
   if (s.display === "none" || s.visibility === "hidden" || parseFloat(s.opacity) === 0) return false;
@@ -157,12 +151,11 @@ function isVisible(el){
   return r.width > 0 && r.height > 0;
 }
 function waitForVisible(el, timeoutMs = 3000){
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     if (isVisible(el)) return resolve();
     const t0 = performance.now();
     const iv = setInterval(() => {
-      if (isVisible(el)) { clearInterval(iv); resolve(); }
-      else if (performance.now() - t0 > timeoutMs) { clearInterval(iv); resolve(); } // no abortamos
+      if (isVisible(el) || performance.now() - t0 > timeoutMs) { clearInterval(iv); resolve(); }
     }, 100);
   });
 }
@@ -192,13 +185,12 @@ async function setupAndStartScanner(preferredId = null) {
     cameraSelect.value = chosen;
     currentCameraId = chosen;
 
-    await waitForVisible(readerElem); // asegura tamaño real
+    await waitForVisible(readerElem);
     await startScannerWith(chosen);
 
     if (resizeObs) resizeObs.disconnect();
     resizeObs = new ResizeObserver(async () => {
       if (!reader) return;
-      // Reinicia para recalcular canvas si cambió el tamaño (pestañas/SPA)
       await startScannerWith(currentCameraId);
     });
     resizeObs.observe(readerElem);
