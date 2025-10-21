@@ -42,11 +42,28 @@
   .meta{font-size:12px;color:#9fdcf0}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.35);font-size:12px;color:#cfefff}
-  iframe.scanner-frame{width:100%; height:700px; border:0; border-radius:12px; background:#0b1022}
-  .hint{font-size:12px;color:#9fdcf0}
-  @media (max-width: 980px){ nav{width:100%; flex-direction:row; position:sticky; top:52px; z-index:9; overflow:auto;} main{flex-direction:column} }
 
-  /* (resto de estilos de foro/directorio/QR como los tenías) */
+  /* Calendario / Iframe */
+  iframe{width:100%;min-height:600px;border:0;border-radius:12px}
+
+  /* Foro */
+  details.forum-toggle{margin-top:16px}
+  details.forum-toggle > summary{list-style:none; cursor:pointer; user-select:none; display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:rgba(91,215,242,.10); border:1px solid rgba(91,215,242,.28); font-weight:600; color:#bff4ff}
+  details.forum-toggle[open] > summary{background:rgba(91,215,242,.18)}
+  details.forum-toggle > summary::-webkit-details-marker{display:none}
+  .rotate{transition:transform .2s ease}
+  details[open] .rotate{transform:rotate(90deg)}
+
+  .qr-card{display:grid; place-items:center; background:rgba(96,165,250,.08); border:1px solid rgba(96,165,250,.25); border-radius:12px; padding:12px; width:220px}
+  .qr-card canvas{width:196px !important; height:196px !important}
+
+  /* Scanner iframe */
+  iframe.scanner-frame{width:100%; height:700px; border:0; border-radius:12px; background:#0b1022}
+
+  @media (max-width: 980px){
+    nav{width:100%; flex-direction:row; position:sticky; top:52px; z-index:9; overflow:auto;}
+    main{flex-direction:column}
+  }
 </style>
 </head>
 <body>
@@ -72,7 +89,6 @@
 
     <!-- PERFIL -->
     <section id="perfil" class="content active">
-      <!-- … (tu bloque de perfil tal cual) … -->
       <div class="card">
         <h2>👋 Bienvenido</h2>
         <p class="muted">Esta es tu página de miembro dentro de Innovación Sindical.</p>
@@ -90,126 +106,425 @@
       </div>
     </section>
 
-    <!-- (Miembros / Calendario / Foro / Verificación / Personaliza) -->
-    <!-- … conserva tus secciones tal cual … -->
+    <!-- MIEMBROS (listado básico) -->
+    <section id="miembros" class="content">
+      <div class="card">
+        <h2>👥 Directorio de Miembros</h2>
+        <div class="row" style="margin-top:6px">
+          <input id="qMembers" placeholder="Buscar por nombre o adscripción" style="min-width:260px">
+          <button class="subtle-btn" id="btnRefreshMembers">Actualizar</button>
+          <label class="row" style="gap:8px;align-items:center;margin-left:auto">
+            <input type="checkbox" id="chkOnlineOnly">
+            <span>👁️ Solo online</span>
+          </label>
+        </div>
+        <div id="membersList" style="margin-top:14px;display:grid;gap:12px"></div>
+      </div>
+    </section>
+
+    <!-- CALENDARIO -->
+    <section id="calendario" class="content">
+      <div class="card">
+        <h2>📅 Calendario de Actividades</h2>
+        <iframe src="https://calendar.google.com/calendar/embed?src=redunidadenaccion%40gmail.com&ctz=America%2FMexico_City&showTitle=0&showPrint=0&showTz=0&showCalendars=0"></iframe>
+      </div>
+    </section>
+
+    <!-- FORO (simple) -->
+    <section id="foro" class="content">
+      <div class="card">
+        <h2>🗣️ Foro de Miembros</h2>
+        <div id="postsList" style="display:grid;gap:12px"></div>
+        <details class="forum-toggle" id="newPostToggle">
+          <summary><span class="rotate">▸</span><span>Crear una publicación</span></summary>
+          <form id="forumForm" style="margin-top:12px">
+            <label>Escribe una publicación (máx. 500 caracteres)</label>
+            <textarea id="forumInput" maxlength="500" placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
+            <div class="row">
+              <label style="font-size:13px">Categoría</label>
+              <select id="forumCategory">
+                <option>Avisos</option>
+                <option selected>Asuntos Generales</option>
+                <option>Convivencia</option>
+              </select>
+            </div>
+            <button class="btn" type="submit">➕ Publicar</button>
+            <div class="status meta" id="forumStatus"></div>
+          </form>
+        </details>
+      </div>
+    </section>
+
+    <!-- VERIFICACIÓN -->
+    <section id="verificacion" class="content">
+      <div class="card">
+        <h2>✅ Verificación de Asistencia</h2>
+        <p class="muted">Confirma si asistirás al próximo evento. Si confirmas, obtendrás un QR para registrar tu llegada.</p>
+        <div id="eventBox" class="meta">Buscando el próximo evento…</div>
+        <div id="rsvpBox" style="margin-top:12px; display:none">
+          <div class="row">
+            <button class="btn" id="btnYes">✔️ Asistiré</button>
+            <button class="subtle-btn" id="btnNo">✖️ No asistiré</button>
+            <span class="meta" id="rsvpStatus"></span>
+          </div>
+          <div id="qrWrap" style="margin-top:12px; display:none">
+            <div class="qr-card">
+              <canvas id="qrCanvas" aria-label="Código QR"></canvas>
+            </div>
+            <div class="meta" style="margin-top:6px">Muestra este QR al llegar.</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- SCANNER (solo admins) -->
     <section id="scanner" class="content" style="display:none">
       <div class="card">
         <h2>🔎 Scanner de Asistencia (solo admins)</h2>
         <p class="muted">Escanea el QR para registrar la llegada.</p>
-
-        <!-- Lazy-load del escáner en iframe -->
-        <div id="scannerWrap">
-          <iframe
-            id="scannerFrame"
-            class="scanner-frame"
-            title="Escáner de asistencia"
-            loading="lazy"
-            allow="camera; microphone; autoplay; clipboard-read; clipboard-write"
-            sandbox="allow-same-origin allow-scripts allow-forms allow-modals allow-popups allow-downloads allow-presentation allow-top-navigation-by-user-activation">
-          </iframe>
-        </div>
-
+        <iframe
+          id="scannerFrame"
+          class="scanner-frame"
+          title="Escáner de asistencia"
+          loading="lazy"
+          allow="camera; microphone; autoplay; clipboard-read; clipboard-write"
+          sandbox="allow-same-origin allow-scripts allow-forms allow-modals allow-popups allow-downloads allow-presentation allow-top-navigation-by-user-activation">
+        </iframe>
         <div class="meta" id="scanStatus"></div>
       </div>
     </section>
 
     <!-- PERSONALIZA -->
     <section id="personaliza" class="content">
-      <!-- … tu formulario de edición tal cual … -->
       <div class="card">
         <h2>⚙️ Edita tu información</h2>
-        <!-- (resto del formulario igual que ya tienes) -->
+        <div class="row" style="margin-top:10px">
+          <div class="avatar" id="avatarPreview">🧑</div>
+          <div>
+            <label>Foto de perfil (PNG/JPG/WebP, máx 2MB)</label>
+            <input type="file" id="fAvatar" accept="image/png,image/jpeg,image/webp">
+            <div class="meta">Se previsualiza al seleccionar; se sube al guardar.</div>
+          </div>
+        </div>
+        <form id="editForm">
+          <label>Nombre completo</label><input id="fNombre" placeholder="Tu nombre completo">
+          <label>Teléfono</label><input id="fTelefono" placeholder="Ej. 5532120000">
+          <label>Fecha de cumpleaños</label><input id="fCumple" type="date">
+          <label>Categoría</label><input id="fCategoria" placeholder="Ej. Enfermera General A">
+          <label>Adscripción</label><input id="fAdscripcion" placeholder="Ej. HGZ No. XX, Urgencias">
+          <label>Biografía corta</label><textarea id="fBio" placeholder="Cuéntanos algo breve"></textarea>
+          <div class="row" style="align-items:center"><input type="checkbox" id="fVisible" checked><label for="fVisible">Aparecer en el directorio</label></div>
+          <button class="btn" type="submit">💾 Guardar cambios</button>
+          <div class="status meta" id="status"></div>
+        </form>
       </div>
     </section>
   </main>
 
-  <!-- Modal de DM / Librerías que ya usas (Supabase + qrcode) -->
+  <!-- Librerías -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
 <script>
-/* ========= Config ========= */
+/* ====== Config ====== */
 const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
 const LOGIN_URL = "login.html";
 
-/* Ruta a tu scanner en producción (HTTPS) */
+/* Cambia por la URL HTTPS donde publicaste scanner.html */
 const SCANNER_URL = "https://TU-DOMINIO/scanner.html";
 
-/* ========= Cliente ========= */
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession:true, autoRefreshToken:true }
-});
+/* Google Calendar (opcional para auto evento) */
+const GOOGLE_API_KEY = "AIzaSyDdtYPPE-jTvw_Gypxrq2c5UePpbK9ZxZ0";
+const CALENDAR_ID = "redunidadenaccion@gmail.com";
 
-const $ = id => document.getElementById(id);
+/* ====== Cliente ====== */
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true }
+});
+const $ = (id) => document.getElementById(id);
+
 let CURRENT_USER = null;
 let IS_ADMIN = false;
+let MEMBERS_CACHE = [];
+let ONLINE_SET = new Set();
+let iframeLoaded = false;
 
-/* ========= Navegación de tabs ========= */
+/* ====== Tabs ====== */
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll(".tab").forEach(btn=>{
     btn.addEventListener("click",()=>{
       const id = btn.dataset.tab;
-      if (id === 'scanner' && !IS_ADMIN) {
-        alert('Necesitas rol admin para acceder al Scanner.');
-        return;
-      }
+      if (id === 'scanner' && !IS_ADMIN) { alert('Necesitas rol admin para acceder al Scanner.'); return; }
       document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
       document.querySelectorAll(".content").forEach(c=>c.classList.remove("active"));
       btn.classList.add("active");
       $(id).classList.add("active");
       location.hash = id;
-      if (id === 'scanner') mountScannerIframe(); // ← carga el iframe con permisos
+      if (id === 'miembros') renderMembers();
+      if (id === 'verificacion') initVerification();
+      if (id === 'scanner') mountScannerIframe();
     });
   });
 
-  $("btnLogout").addEventListener("click", async ()=>{
-    await supabase.auth.signOut(); location.href = LOGIN_URL;
-  });
+  $("btnLogout").addEventListener("click", async ()=>{ await supabase.auth.signOut(); location.href = LOGIN_URL; });
+  $("btnRefreshMembers")?.addEventListener('click', ()=> loadMembers(true));
+  $("qMembers")?.addEventListener('input', ()=> renderMembers());
+  $("chkOnlineOnly")?.addEventListener('change', ()=> renderMembers());
+  $("editForm")?.addEventListener('submit', onSaveProfile);
+  $("fAvatar")?.addEventListener('change', (e)=>{ const f = e.target.files?.[0]; if(f){ const u = URL.createObjectURL(f); $("avatarPreview").innerHTML = `<img src="${u}">`; } });
 
   initApp();
 });
 
-/* ========= App init ========= */
+/* ====== App init ====== */
 async function initApp(){
   await supabase.auth.refreshSession();
   const { data: { session } } = await supabase.auth.getSession();
   if (!session){ location.href = LOGIN_URL; return; }
 
   CURRENT_USER = session.user;
-  const role = CURRENT_USER.app_metadata?.role || null;
-  IS_ADMIN = (role === 'admin');
+  IS_ADMIN = (CURRENT_USER.app_metadata?.role === 'admin');
 
-  if (IS_ADMIN) {
-    $("tabScanner").style.removeProperty('display');
-  }
+  if (IS_ADMIN) $("tabScanner").style.removeProperty('display');
 
-  // Navegación inicial (respetando permisos)
+  await loadProfile();
+  await loadMembers(true);
+  initPresence();
+  initForum();
+
   const wanted = (location.hash || '#perfil').slice(1);
   const initial = (wanted === 'scanner' && !IS_ADMIN) ? 'perfil' : wanted;
   (document.querySelector(`.tab[data-tab="${initial}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click();
-
-  // (Rellena tu UI de perfil / miembros / foro / etc… aquí igual que ya lo tenías)
 }
 
-/* ========= Scanner iframe ========= */
-let iframeLoaded = false;
+/* ====== Perfil ====== */
+async function loadProfile(){
+  const { data: prof } = await supabase
+    .from('profiles')
+    .select('display_name, avatar_url, categoria, adscripcion, bio, cumple, telefono')
+    .eq('user_id', CURRENT_USER.id).maybeSingle();
+
+  $("pfName").textContent = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "Sin nombre";
+  $("pfEmail").textContent = CURRENT_USER.email || "—";
+  $("pfTelefono").textContent = maskPhone(prof?.telefono || CURRENT_USER.user_metadata?.telefono);
+  $("pfCumple").textContent = formatDateISOtoMX(prof?.cumple || CURRENT_USER.user_metadata?.cumple);
+  $("pfCategoria").textContent = prof?.categoria || "—";
+  $("pfAdscripcion").textContent = prof?.adscripcion || "—";
+
+  const avatar = prof?.avatar_url || CURRENT_USER.user_metadata?.avatar_url;
+  if (avatar) { $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`; $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`; }
+  else { const ini = (prof?.display_name || CURRENT_USER.email || "?")[0].toUpperCase(); $("userAvatar").textContent = ini; $("avatarPreview").textContent = ini; }
+
+  // Prefill form
+  $("fNombre").value      = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "";
+  $("fTelefono").value    = prof?.telefono || CURRENT_USER.user_metadata?.telefono || "";
+  try{ const c=(prof?.cumple || CURRENT_USER.user_metadata?.cumple); if(c){ const d = new Date(c.length<=10? c+"T00:00:00":c); $("fCumple").value = d.toISOString().slice(0,10); } }catch{}
+  $("fCategoria").value   = prof?.categoria || CURRENT_USER.user_metadata?.categoria || "";
+  $("fAdscripcion").value = prof?.adscripcion || CURRENT_USER.user_metadata?.adscripcion || "";
+  $("fBio").value         = prof?.bio || CURRENT_USER.user_metadata?.bio || "";
+}
+
+function maskPhone(t){ const s=(t||"").replace(/\D+/g,""); if(s.length<8) return t||"—"; return `••• ••${s.slice(-4)}`; }
+function formatDateISOtoMX(iso){ if(!iso) return "—"; try{ const d = new Date(iso.length<=10? iso+"T00:00:00":iso); return new Intl.DateTimeFormat('es-MX',{day:'2-digit', month:'long', year:'numeric'}).format(d);}catch{ return iso; } }
+
+async function uploadAvatar(file){
+  if(!file) return null;
+  if(!['image/png','image/jpeg','image/webp'].includes(file.type)){ alert("Formato no soportado"); return null; }
+  if(file.size > 2*1024*1024){ alert("Máx 2MB"); return null; }
+  const uid = CURRENT_USER.id;
+  const ext = (file.name.split(".").pop()||"jpg").toLowerCase();
+  const path = `${uid}/${Date.now()}.${ext}`;
+  const { error } = await supabase.storage.from("avatars").upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
+  if(error){ alert("No se pudo subir la imagen"); return null; }
+  const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+  return data?.publicUrl || null;
+}
+
+async function onSaveProfile(e){
+  e.preventDefault();
+  $("status").textContent = "Guardando…";
+  try{
+    const file = $("fAvatar").files?.[0];
+    let avatar_url = null;
+    if (file){ avatar_url = await uploadAvatar(file); }
+
+    const updates = {
+      display_name: $("fNombre").value.trim(),
+      telefono: $("fTelefono").value.trim(),
+      cumple: $("fCumple").value.trim(),
+      categoria: $("fCategoria").value.trim(),
+      adscripcion: $("fAdscripcion").value.trim(),
+      bio: $("fBio").value.trim()
+    };
+    if (avatar_url) updates.avatar_url = avatar_url;
+
+    const { error } = await supabase.auth.updateUser({ data: updates });
+    if (error) throw error;
+
+    // reflejar en profiles (útil para búsquedas/directorio)
+    await supabase.from('profiles').upsert({
+      user_id: CURRENT_USER.id,
+      display_name: updates.display_name,
+      avatar_url: updates.avatar_url || CURRENT_USER.user_metadata?.avatar_url || null,
+      categoria: updates.categoria,
+      adscripcion: updates.adscripcion,
+      bio: updates.bio,
+      last_seen: new Date().toISOString(),
+      is_visible: $("fVisible").checked
+    });
+
+    $("status").textContent = "✅ Cambios guardados.";
+    await loadProfile();
+  }catch(e){ console.error(e); $("status").textContent = "❌ Error al guardar."; }
+}
+
+/* ====== Miembros ====== */
+async function loadMembers(force=false){
+  if (!force && MEMBERS_CACHE.length) return;
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, is_visible')
+    .eq('is_visible', true)
+    .order('last_seen', { ascending: false })
+    .limit(1000);
+  if (error){ console.error(error); return; }
+  MEMBERS_CACHE = data || [];
+  renderMembers();
+}
+
+function renderMembers(){
+  const q = $("qMembers").value.trim().toLowerCase();
+  const onlyOnline = $("chkOnlineOnly").checked;
+  let list = MEMBERS_CACHE.slice();
+  if (q) list = list.filter(p =>
+    (p.display_name||'').toLowerCase().includes(q) ||
+    (p.adscripcion||'').toLowerCase().includes(q) ||
+    (p.categoria||'').toLowerCase().includes(q)
+  );
+  if (onlyOnline) list = list.filter(p => ONLINE_SET.has(p.user_id));
+
+  const online = [], offline = [];
+  list.forEach(p => (ONLINE_SET.has(p.user_id) ? online : offline).push(p));
+  list = [...online, ...offline];
+
+  const wrap = $("membersList"); wrap.innerHTML = '';
+  list.forEach(p=>{
+    const card = document.createElement('div'); card.className = 'card';
+    const dot = ONLINE_SET.has(p.user_id) ? '🟢 Online' : '⚪ Offline';
+    card.innerHTML = `
+      <div class="row" style="align-items:center">
+        <div class="avatar" style="width:64px;height:64px">${p.avatar_url? `<img src="${p.avatar_url}">` : (p.display_name||'?')[0]?.toUpperCase() }</div>
+        <div style="flex:1;min-width:200px">
+          <div style="font-weight:700">${escapeHtml(p.display_name||'—')}</div>
+          <div class="meta">${escapeHtml(p.categoria||'—')} • ${escapeHtml(p.adscripcion||'—')}</div>
+        </div>
+        <span class="pill">${dot}</span>
+      </div>`;
+    wrap.appendChild(card);
+  });
+}
+function escapeHtml(str){ return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
+
+/* ====== Presencia ====== */
+function initPresence(){
+  const ch = supabase.channel('presence:members', { config: { presence: { key: CURRENT_USER.id } }});
+  ch.on('presence', {event:'sync'}, () => {
+    ONLINE_SET = new Set(Object.keys(ch.presenceState()));
+    try { renderMembers(); } catch {}
+  });
+  ch.subscribe(async (status) => {
+    if (status === 'SUBSCRIBED') {
+      ch.track({ last_active: Date.now() });
+      await supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('user_id', CURRENT_USER.id);
+    }
+  });
+}
+
+/* ====== Foro ====== */
+function initForum(){ loadPosts(); supabase.channel('realtime-foro')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPosts)
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, loadPosts)
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, loadPosts)
+  .subscribe();
+  $("forumForm")?.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const text = ($("forumInput").value||'').trim(); if(!text) return;
+    $("forumStatus").textContent = "Publicando…";
+    const cat = $("forumCategory").value || "Asuntos Generales";
+    const { error } = await supabase.from('posts').insert({ content: text, user_id: CURRENT_USER.id, category: cat });
+    $("forumStatus").textContent = error ? "❌ No se pudo publicar" : "✅ Publicado";
+    $("forumInput").value = ""; loadPosts();
+  });
+}
+async function loadPosts(){
+  const { data, error } = await supabase.from('posts').select('id, content, category, created_at, user_id').order('created_at',{ascending:false}).limit(50);
+  if (error){ console.error(error); return; }
+  const list = $("postsList"); list.innerHTML = '';
+  (data||[]).forEach(row=>{
+    const el = document.createElement('div'); el.className='card';
+    el.innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
+        <div class="meta">${row.user_id===CURRENT_USER.id?'Tú':'Miembro'} • ${new Date(row.created_at).toLocaleString('es-MX')}</div>
+        <div class="pill">🏷️ ${escapeHtml(row.category||'Asuntos Generales')}</div>
+      </div>
+      <div style="margin-top:8px;white-space:pre-wrap;line-height:1.45">${escapeHtml(row.content)}</div>`;
+    list.appendChild(el);
+  });
+}
+
+/* ====== Verificación (QR) ====== */
+function formatDateFancy(d){ try{ return new Intl.DateTimeFormat('es-MX',{dateStyle:'full', timeStyle:'short'}).format(new Date(d)); }catch{ return d; } }
+async function fetchNextEvent(){
+  if (!GOOGLE_API_KEY) return null;
+  const timeMin = new Date().toISOString();
+  const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?singleEvents=true&orderBy=startTime&timeMin=${encodeURIComponent(timeMin)}&maxResults=1&key=${encodeURIComponent(GOOGLE_API_KEY)}`;
+  try{ const res = await fetch(url); if(!res.ok) throw new Error('HTTP '+res.status); const json = await res.json(); const evt=(json.items||[])[0]; if(!evt) return null; return { uid:evt.id, title:evt.summary||'Evento', start:evt.start?.dateTime||evt.start?.date, location:evt.location||'', description:(evt.description||'').replace(/<[^>]*>/g,'') }; }
+  catch(e){ console.error(e); return null; }
+}
+async function initVerification(){
+  $("rsvpBox").style.display = CURRENT_USER ? 'block' : 'none';
+  $("rsvpStatus").textContent = '';
+  $("qrWrap").style.display = 'none';
+
+  const evt = await fetchNextEvent();
+  if(!evt){ $("eventBox").textContent = "No hay eventos próximos o no fue posible consultarlos."; $("rsvpBox").style.display='none'; return; }
+  $("eventBox").innerHTML = `<div><strong>${escapeHtml(evt.title)}</strong></div><div class="meta">🗓️ ${formatDateFancy(evt.start)} ${evt.location? ' • 📍 '+escapeHtml(evt.location):''}</div>${evt.description? `<div class="muted" style="white-space:pre-wrap;margin-top:6px">${escapeHtml(evt.description)}</div>`:''}`;
+  window.__NEXT_EVENT__ = evt;
+
+  // carga estado previo
+  const { data } = await supabase.from('rsvps').select('status, qr_payload').eq('user_id', CURRENT_USER.id).eq('event_uid', evt.uid).maybeSingle();
+  updateRSVPUI(data?.status || null, data?.qr_payload || null);
+
+  $("btnYes").onclick = ()=> setRSVP('yes');
+  $("btnNo").onclick  = ()=> setRSVP('no');
+}
+function buildQRPayload(evtUid){ return JSON.stringify({ v:1, event:evtUid, user:CURRENT_USER.id, ts:Date.now() }); }
+async function setRSVP(status){
+  const evt = window.__NEXT_EVENT__; if(!evt) return;
+  let qrPayload = null;
+  if (status==='yes'){ qrPayload = buildQRPayload(evt.uid); $("qrWrap").style.display='block'; try{ await QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel:'M' }); }catch{} }
+  else { $("qrWrap").style.display='none'; }
+
+  const { error } = await supabase.from('rsvps').upsert({ user_id: CURRENT_USER.id, event_uid: evt.uid, status, qr_payload: qrPayload, updated_at: new Date().toISOString() }, { onConflict:'user_id,event_uid' });
+  $("rsvpStatus").textContent = error ? 'No se pudo guardar tu respuesta.' : (status==='yes' ? 'Confirmado ✔️' : 'Registrado como no asistente.');
+  updateRSVPUI(status, qrPayload);
+}
+function updateRSVPUI(status, qrPayload){
+  const yesBtn=$("btnYes"), noBtn=$("btnNo");
+  if(status==='yes'){ yesBtn.disabled=true; noBtn.disabled=false; $("qrWrap").style.display='block'; if(qrPayload){ QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel:'M' }).catch(()=>{}); } }
+  else if(status==='no'){ yesBtn.disabled=false; noBtn.disabled=true; $("qrWrap").style.display='none'; }
+  else { yesBtn.disabled=false; noBtn.disabled=false; $("qrWrap").style.display='none'; $("rsvpStatus").textContent=''; }
+}
+
+/* ====== Scanner iframe ====== */
 function mountScannerIframe(){
   if (iframeLoaded) return;
   const frame = $("scannerFrame");
-  if (!frame) return;
-
-  // Asigna el src SOLO al abrir la pestaña (evita iniciar cámara en background)
-  frame.src = SCANNER_URL;
+  frame.src = SCANNER_URL; // carga solo al abrir la pestaña
   iframeLoaded = true;
-
-  // Mensaje de ayuda
   $("scanStatus").textContent = "Si el navegador pregunta, autoriza el acceso a la cámara.";
 }
-
-/* ========= (Resto de tu lógica de miembros/foro/QR se mantiene) ========= */
 </script>
 </body>
 </html>
