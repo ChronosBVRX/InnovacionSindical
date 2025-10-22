@@ -6,10 +6,8 @@
 <title>Unidad en Acción — Miembros</title>
 <link rel="icon" href="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20Unidad%20en%20Accion.png?raw=true">
 <style>
-  :root{
-    --bg:#0b1022; --panel:#101a33; --ring:rgba(91,215,242,.35);
-    --txt:#e6fbff; --muted:#aee9f7; --primary:#5bd7f2; --sky:#60a5fa;
-  }
+  :root{ --bg:#0b1022; --panel:#101a33; --ring:rgba(91,215,242,.35);
+    --txt:#e6fbff; --muted:#aee9f7; --primary:#5bd7f2; --sky:#60a5fa;}
   *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto}
   body{min-height:100vh;background:linear-gradient(180deg,#0b1220,#0b1022);color:var(--txt);display:flex;flex-direction:column}
   header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(9,14,26,.55);backdrop-filter:blur(8px);border-bottom:1px solid rgba(91,215,242,.25)}
@@ -42,25 +40,11 @@
   .meta{font-size:12px;color:#9fdcf0}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.35);font-size:12px;color:#cfefff}
-
   iframe{width:100%;min-height:600px;border:0;border-radius:12px}
-
-  details.forum-toggle{margin-top:16px}
-  details.forum-toggle > summary{list-style:none; cursor:pointer; user-select:none; display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:rgba(91,215,242,.10); border:1px solid rgba(91,215,242,.28); font-weight:600; color:#bff4ff}
-  details.forum-toggle[open] > summary{background:rgba(91,215,242,.18)}
-  details.forum-toggle > summary::-webkit-details-marker{display:none}
-  .rotate{transition:transform .2s ease}
-  details[open] .rotate{transform:rotate(90deg)}
-
   .qr-card{display:grid; place-items:center; background:rgba(96,165,250,.08); border:1px solid rgba(96,165,250,.25); border-radius:12px; padding:12px; width:220px}
   .qr-card canvas{width:196px !important; height:196px !important}
-
   @keyframes fadeInSmall{from{opacity:.6; transform:translateY(4px)} to{opacity:1; transform:none}}
-
-  @media (max-width: 980px){
-    nav{width:100%; flex-direction:row; position:sticky; top:52px; z-index:9; overflow:auto;}
-    main{flex-direction:column}
-  }
+  @media (max-width: 980px){ nav{width:100%;flex-direction:row;position:sticky;top:52px;z-index:9;overflow:auto;} main{flex-direction:column} }
 </style>
 </head>
 <body>
@@ -79,7 +63,6 @@
       <button class="tab" data-tab="calendario">📅 Calendario</button>
       <button class="tab" data-tab="foro">🗣️ Foro</button>
       <button class="tab" data-tab="verificacion">✅ Verificación</button>
-      <!-- Scanner: oculto hasta confirmar admin -->
       <button class="tab" data-tab="scanner" id="tabScanner" style="display:none">🔎 Scanner</button>
       <button class="tab" data-tab="personaliza">⚙️ Personaliza tu perfil</button>
     </nav>
@@ -106,26 +89,12 @@
           <h3>📊 Asistencia y recompensas</h3>
           <div id="asistData" class="meta" style="margin-bottom:8px">Cargando tus datos...</div>
           <div class="row" style="flex-wrap:wrap;gap:20px">
-            <div>
-              <div class="meta">Eventos asistidos (temporada)</div>
-              <div id="asistTotal" style="font-size:26px;font-weight:700">0</div>
-            </div>
-            <div>
-              <div class="meta">Racha actual (días)</div>
-              <div id="asistRacha" style="font-size:26px;font-weight:700">0</div>
-            </div>
-            <div>
-              <div class="meta">Puntos</div>
-              <div id="asistPuntos" style="font-size:26px;font-weight:700">0</div>
-            </div>
-            <div>
-              <div class="meta">Posición en ranking</div>
-              <div id="asistTop" style="font-size:26px;font-weight:700">—</div>
-            </div>
+            <div><div class="meta">Eventos asistidos (temporada)</div><div id="asistTotal" style="font-size:26px;font-weight:700">0</div></div>
+            <div><div class="meta">Racha actual (días)</div><div id="asistRacha" style="font-size:26px;font-weight:700">0</div></div>
+            <div><div class="meta">Puntos</div><div id="asistPuntos" style="font-size:26px;font-weight:700">0</div></div>
+            <div><div class="meta">Posición en ranking</div><div id="asistTop" style="font-size:26px;font-weight:700">—</div></div>
           </div>
-          <div class="meta" style="margin-top:10px">
-            🎁 <strong>Recompensas</strong>: Los más asiduos reciben reconocimientos y premios al cierre de cada temporada.
-          </div>
+          <div class="meta" style="margin-top:10px">🎁 <strong>Recompensas</strong>: Los más asiduos reciben reconocimientos y premios al cierre de cada temporada.</div>
         </div>
 
         <!-- MINI TOP -->
@@ -173,11 +142,7 @@
             <textarea id="forumInput" maxlength="500" placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
             <div class="row">
               <label style="font-size:13px">Categoría</label>
-              <select id="forumCategory">
-                <option>Avisos</option>
-                <option selected>Asuntos Generales</option>
-                <option>Convivencia</option>
-              </select>
+              <select id="forumCategory"><option>Avisos</option><option selected>Asuntos Generales</option><option>Convivencia</option></select>
             </div>
             <button class="btn" type="submit">➕ Publicar</button>
             <div class="status meta" id="forumStatus"></div>
@@ -199,9 +164,7 @@
             <span class="meta" id="rsvpStatus"></span>
           </div>
           <div id="qrWrap" style="margin-top:12px; display:none">
-            <div class="qr-card">
-              <canvas id="qrCanvas" aria-label="Código QR"></canvas>
-            </div>
+            <div class="qr-card"><canvas id="qrCanvas" aria-label="Código QR"></canvas></div>
             <div class="meta" style="margin-top:6px">Muestra este QR al llegar.</div>
           </div>
         </div>
@@ -225,9 +188,9 @@
           <label>Teléfono</label><input id="fTelefono" placeholder="Ej. 5532120000">
           <label>Fecha de cumpleaños</label><input id="fCumple" type="date">
           <label>Categoría</label><input id="fCategoria" placeholder="Ej. Enfermera General A">
-          <label>Adscripción</label><input id="fAdscripcion" placeholder="Ej. HGZ No. XX, Urgencias">
+          <label>Adscripción</label><input id="fAdscripcion" placeholder="Ej. HGR 1, Urgencias">
           <label>Biografía corta</label><textarea id="fBio" placeholder="Cuéntanos algo breve"></textarea>
-          <div class="row" style="align-items:center"><input type="checkbox" id="fVisible" checked><label for="fVisible">Aparecer en el directorio</label></div>
+          <!-- Se quitó: 'Aparecer en el directorio' -->
           <button class="btn" type="submit">💾 Guardar cambios</button>
           <div class="status meta" id="status"></div>
         </form>
@@ -244,62 +207,36 @@
 const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
 const LOGIN_URL = "login.html";
-
-/* Scanner redirección MISMA pestaña */
 const SCANNER_REDIRECT_URL = "https://chronosbvrx.github.io/InnovacionSindical/scanner";
-
-/* Google Calendar (opcional) */
 const GOOGLE_API_KEY = "AIzaSyDdtYPPE-jTvw_Gypxrq2c5UePpbK9ZxZ0";
 const CALENDAR_ID = "redunidadenaccion@gmail.com";
 
 /* ====== Cliente ====== */
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true }
-});
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true }});
 const $ = (id) => document.getElementById(id);
 
-let CURRENT_USER = null;
-let IS_ADMIN = false;
-let MEMBERS_CACHE = [];
-let ONLINE_SET = new Set();
+let CURRENT_USER=null, IS_ADMIN=false, MEMBERS_CACHE=[], ONLINE_SET=new Set();
 
 /* ====== Tabs ====== */
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll(".tab").forEach(btn=>{
     btn.addEventListener("click",()=>{
       const id = btn.dataset.tab;
-
-      // Scanner: validar admin y redirigir
-      if (id === 'scanner') {
-        if (!IS_ADMIN) { alert('Necesitas rol admin para acceder al Scanner.'); return; }
-        window.location.assign(SCANNER_REDIRECT_URL);
-        return;
-      }
-
+      if (id === 'scanner') { if (!IS_ADMIN) { alert('Necesitas rol admin para acceder al Scanner.'); return; } window.location.assign(SCANNER_REDIRECT_URL); return; }
       document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
       document.querySelectorAll(".content").forEach(c=>c.classList.remove("active"));
-      btn.classList.add("active");
-      $(id).classList.add("active");
-      location.hash = id;
-
+      btn.classList.add("active"); $(id).classList.add("active"); location.hash = id;
       if (id === 'miembros') renderMembers();
       if (id === 'verificacion') initVerification();
     });
   });
 
-  $("btnLogout").addEventListener("click", async ()=>{
-    await supabase.auth.signOut();
-    location.href = LOGIN_URL;
-  });
-
+  $("btnLogout").addEventListener("click", async ()=>{ await supabase.auth.signOut(); location.href = LOGIN_URL; });
   $("btnRefreshMembers")?.addEventListener('click', ()=> loadMembers(true));
   $("qMembers")?.addEventListener('input', ()=> renderMembers());
   $("chkOnlineOnly")?.addEventListener('change', ()=> renderMembers());
   $("editForm")?.addEventListener('submit', onSaveProfile);
-  $("fAvatar")?.addEventListener('change', (e)=>{
-    const f = e.target.files?.[0];
-    if(f){ const u = URL.createObjectURL(f); $("avatarPreview").innerHTML = `<img src="${u}">`; }
-  });
+  $("fAvatar")?.addEventListener('change', (e)=>{ const f = e.target.files?.[0]; if(f){ const u = URL.createObjectURL(f); $("avatarPreview").innerHTML = `<img src="${u}">`; } });
 
   initApp();
 });
@@ -309,23 +246,16 @@ async function initApp(){
   await supabase.auth.refreshSession();
   const { data: { session } } = await supabase.auth.getSession();
   if (!session){ location.href = LOGIN_URL; return; }
-
   CURRENT_USER = session.user;
   IS_ADMIN = (CURRENT_USER.app_metadata?.role === 'admin');
   if (IS_ADMIN) $("tabScanner").style.removeProperty('display');
-
   await loadProfile();
   await loadMembers(true);
   initPresence();
   initForum();
-
   const wanted = (location.hash || '#perfil').slice(1);
-  if (wanted === 'scanner') {
-    if (IS_ADMIN) window.location.replace(SCANNER_REDIRECT_URL);
-    else (document.querySelector('.tab[data-tab="perfil"]'))?.click();
-  } else {
-    (document.querySelector(`.tab[data-tab="${wanted}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click();
-  }
+  if (wanted === 'scanner') { if (IS_ADMIN) window.location.replace(SCANNER_REDIRECT_URL); else (document.querySelector('.tab[data-tab="perfil"]'))?.click(); }
+  else { (document.querySelector(`.tab[data-tab="${wanted}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click(); }
 }
 
 /* ====== Perfil ====== */
@@ -343,22 +273,13 @@ async function loadProfile(){
   $("pfAdscripcion").textContent = prof?.adscripcion || "—";
 
   const avatar = prof?.avatar_url || CURRENT_USER.user_metadata?.avatar_url;
-  if (avatar) {
-    $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`;
-    $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`;
-  } else {
-    const ini = (prof?.display_name || CURRENT_USER.email || "?")[0].toUpperCase();
-    $("userAvatar").textContent = ini;
-    $("avatarPreview").textContent = ini;
-  }
+  if (avatar) { $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`; $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`; }
+  else { const ini = (prof?.display_name || CURRENT_USER.email || "?")[0].toUpperCase(); $("userAvatar").textContent = ini; $("avatarPreview").textContent = ini; }
 
   // Prefill form
   $("fNombre").value      = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "";
   $("fTelefono").value    = prof?.telefono || CURRENT_USER.user_metadata?.telefono || "";
-  try{
-    const c=(prof?.cumple || CURRENT_USER.user_metadata?.cumple);
-    if(c){ const d = new Date(c.length<=10? c+"T00:00:00":c); $("fCumple").value = d.toISOString().slice(0,10); }
-  }catch{}
+  try{ const c=(prof?.cumple || CURRENT_USER.user_metadata?.cumple); if(c){ const d = new Date(c.length<=10? c+"T00:00:00":c); $("fCumple").value = d.toISOString().slice(0,10); } }catch{}
   $("fCategoria").value   = prof?.categoria || CURRENT_USER.user_metadata?.categoria || "";
   $("fAdscripcion").value = prof?.adscripcion || CURRENT_USER.user_metadata?.adscripcion || "";
   $("fBio").value         = prof?.bio || CURRENT_USER.user_metadata?.bio || "";
@@ -367,18 +288,8 @@ async function loadProfile(){
   await loadMiniTopPerfil();
 }
 
-function maskPhone(t){
-  const s=(t||"").replace(/\D+/g,"");
-  if(s.length<8) return t||"—";
-  return `••• ••${s.slice(-4)}`;
-}
-function formatDateISOtoMX(iso){
-  if(!iso) return "—";
-  try{
-    const d = new Date(iso.length<=10? iso+"T00:00:00":iso);
-    return new Intl.DateTimeFormat('es-MX',{day:'2-digit', month:'long', year:'numeric'}).format(d);
-  }catch{ return iso; }
-}
+function maskPhone(t){ const s=(t||"").replace(/\D+/g,""); if(s.length<8) return t||"—"; return `••• ••${s.slice(-4)}`; }
+function formatDateISOtoMX(iso){ if(!iso) return "—"; try{ const d = new Date(iso.length<=10? iso+"T00:00:00":iso); return new Intl.DateTimeFormat('es-MX',{day:'2-digit', month:'long', year:'numeric'}).format(d);}catch{ return iso; } }
 
 /* ====== Upload avatar ====== */
 async function uploadAvatar(file){
@@ -397,7 +308,7 @@ async function uploadAvatar(file){
 /* ====== Normalizador ====== */
 const nz = (v) => { if (v == null) return null; const t = String(v).trim(); return t === "" ? null : t; };
 
-/* ====== Guardar perfil (FIX incluido) ====== */
+/* ====== Guardar perfil (sin is_visible) ====== */
 async function onSaveProfile(e){
   e.preventDefault();
   $("status").textContent = "Guardando…";
@@ -419,11 +330,9 @@ async function onSaveProfile(e){
     };
     if (avatar_url) updates.avatar_url = avatar_url;
 
-    // También lo dejamos en user_metadata para mantener consistencia de sesión
     const { error: authErr } = await supabase.auth.updateUser({ data: updates });
     if (authErr) throw authErr;
 
-    // Upsert real a profiles (incluye telefono y cumple)
     const { error: upErr } = await supabase.from('profiles').upsert({
       user_id: CURRENT_USER.id,
       display_name: updates.display_name,
@@ -433,15 +342,11 @@ async function onSaveProfile(e){
       categoria: updates.categoria,
       adscripcion: updates.adscripcion,
       bio: updates.bio,
-      last_seen: new Date().toISOString(),
-      is_visible: !!$("fVisible").checked
+      last_seen: new Date().toISOString()
+      // (quitado is_visible)
     }, { onConflict: 'user_id' });
 
-    if (upErr) {
-      console.error(upErr);
-      $("status").textContent = "❌ Error al guardar en profiles. Revisa consola.";
-      return;
-    }
+    if (upErr) { console.error(upErr); $("status").textContent = "❌ Error al guardar en profiles. Revisa consola."; return; }
 
     $("status").textContent = "✅ Cambios guardados.";
     await loadProfile();
@@ -451,13 +356,12 @@ async function onSaveProfile(e){
   }
 }
 
-/* ====== Miembros ====== */
+/* ====== Miembros (sin filtro is_visible) ====== */
 async function loadMembers(force=false){
   if (!force && MEMBERS_CACHE.length) return;
   const { data, error } = await supabase
     .from('profiles')
-    .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, is_visible')
-    .eq('is_visible', true)
+    .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen')
     .order('last_seen', { ascending: false })
     .limit(1000);
   if (error){ console.error(error); return; }
@@ -553,20 +457,9 @@ async function fetchNextEvent(){
   if (!GOOGLE_API_KEY) return null;
   const timeMin = new Date().toISOString();
   const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?singleEvents=true&orderBy=startTime&timeMin=${encodeURIComponent(timeMin)}&maxResults=1&key=${encodeURIComponent(GOOGLE_API_KEY)}`;
-  try{
-    const res = await fetch(url);
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const json = await res.json();
-    const evt=(json.items||[])[0];
-    if(!evt) return null;
-    return {
-      uid:evt.id,
-      title:evt.summary||'Evento',
-      start:evt.start?.dateTime||evt.start?.date,
-      location:evt.location||'',
-      description:(evt.description||'').replace(/<[^>]*>/g,'')
-    };
-  } catch(e){ console.error(e); return null; }
+  try{ const res = await fetch(url); if(!res.ok) throw new Error('HTTP '+res.status); const json = await res.json(); const evt=(json.items||[])[0]; if(!evt) return null;
+    return { uid:evt.id, title:evt.summary||'Evento', start:evt.start?.dateTime||evt.start?.date, location:evt.location||'', description:(evt.description||'').replace(/<[^>]*>/g,'') }; }
+  catch(e){ console.error(e); return null; }
 }
 async function initVerification(){
   $("rsvpBox").style.display = CURRENT_USER ? 'block' : 'none';
@@ -574,22 +467,11 @@ async function initVerification(){
   $("qrWrap").style.display = 'none';
 
   const evt = await fetchNextEvent();
-  if(!evt){
-    $("eventBox").textContent = "No hay eventos próximos o no fue posible consultarlos.";
-    $("rsvpBox").style.display='none';
-    return;
-  }
-  $("eventBox").innerHTML =
-    `<div><strong>${escapeHtml(evt.title)}</strong></div>
-     <div class="meta">🗓️ ${formatDateFancy(evt.start)}${evt.location? ' • 📍 '+escapeHtml(evt.location):''}</div>
-     ${evt.description? `<div class="muted" style="white-space:pre-wrap;margin-top:6px">${escapeHtml(evt.description)}</div>`:''}`;
+  if(!evt){ $("eventBox").textContent = "No hay eventos próximos o no fue posible consultarlos."; $("rsvpBox").style.display='none'; return; }
+  $("eventBox").innerHTML = `<div><strong>${escapeHtml(evt.title)}</strong></div><div class="meta">🗓️ ${formatDateFancy(evt.start)} ${evt.location? ' • 📍 '+escapeHtml(evt.location):''}</div>${evt.description? `<div class="muted" style="white-space:pre-wrap;margin-top:6px">${escapeHtml(evt.description)}</div>`:''}`;
   window.__NEXT_EVENT__ = evt;
 
-  const { data } = await supabase.from('rsvps')
-    .select('status, qr_payload')
-    .eq('user_id', CURRENT_USER.id)
-    .eq('event_uid', evt.uid)
-    .maybeSingle();
+  const { data } = await supabase.from('rsvps').select('status, qr_payload').eq('user_id', CURRENT_USER.id).eq('event_uid', evt.uid).maybeSingle();
   updateRSVPUI(data?.status || null, data?.qr_payload || null);
 
   $("btnYes").onclick = ()=> setRSVP('yes');
@@ -599,36 +481,18 @@ function buildQRPayload(evtUid){ return JSON.stringify({ v:1, event:evtUid, user
 async function setRSVP(status){
   const evt = window.__NEXT_EVENT__; if(!evt) return;
   let qrPayload = null;
-  if (status==='yes'){
-    qrPayload = buildQRPayload(evt.uid);
-    $("qrWrap").style.display='block';
-    try{ await QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel:'M' }); }catch{}
-  } else {
-    $("qrWrap").style.display='none';
-  }
+  if (status==='yes'){ qrPayload = buildQRPayload(evt.uid); $("qrWrap").style.display='block'; try{ await QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel:'M' }); }catch{} }
+  else { $("qrWrap").style.display='none'; }
 
-  const { error } = await supabase.from('rsvps').upsert({
-    user_id: CURRENT_USER.id,
-    event_uid: evt.uid,
-    status,
-    qr_payload: qrPayload,
-    updated_at: new Date().toISOString()
-  }, { onConflict:'user_id,event_uid' });
-
-  $("rsvpStatus").textContent = error ? 'No se pudo guardar tu respuesta.'
-                                     : (status==='yes' ? 'Confirmado ✔️' : 'Registrado como no asistente.');
+  const { error } = await supabase.from('rsvps').upsert({ user_id: CURRENT_USER.id, event_uid: evt.uid, status, qr_payload: qrPayload, updated_at: new Date().toISOString() }, { onConflict:'user_id,event_uid' });
+  $("rsvpStatus").textContent = error ? 'No se pudo guardar tu respuesta.' : (status==='yes' ? 'Confirmado ✔️' : 'Registrado como no asistente.');
   updateRSVPUI(status, qrPayload);
 }
 function updateRSVPUI(status, qrPayload){
   const yesBtn=$("btnYes"), noBtn=$("btnNo");
-  if(status==='yes'){
-    yesBtn.disabled=true; noBtn.disabled=false; $("qrWrap").style.display='block';
-    if(qrPayload){ QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel:'M' }).catch(()=>{}); }
-  } else if(status==='no'){
-    yesBtn.disabled=false; noBtn.disabled=true; $("qrWrap").style.display='none';
-  } else {
-    yesBtn.disabled=false; noBtn.disabled=false; $("qrWrap").style.display='none'; $("rsvpStatus").textContent='';
-  }
+  if(status==='yes'){ yesBtn.disabled=true; noBtn.disabled=false; $("qrWrap").style.display='block'; if(qrPayload){ QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel:'M' }).catch(()=>{}); } }
+  else if(status==='no'){ yesBtn.disabled=false; noBtn.disabled=true; $("qrWrap").style.display='none'; }
+  else { yesBtn.disabled=false; noBtn.disabled=false; $("qrWrap").style.display='none'; $("rsvpStatus").textContent=''; }
 }
 
 /* ====== Utilidades de asistencia / ranking ====== */
