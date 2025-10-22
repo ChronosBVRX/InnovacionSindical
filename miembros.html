@@ -77,7 +77,7 @@
     <section id="perfil" class="content active">
       <div class="card">
         <h2>👋 Bienvenido</h2>
-        <p class="muted">Esta es tu página de miembro dentro de Unidad en Acción</p>
+        <p class="muted">Esta es tu página de miembro dentro de Unidad en Accion</p>
         <div class="profile-info">
           <div class="avatar" id="userAvatar">🧑</div>
           <div class="profile-data">
@@ -227,14 +227,20 @@ let CURRENT_USER=null, IS_ADMIN=false, MEMBERS_CACHE=[], ONLINE_SET=new Set();
 /* ====== Tabs ====== */
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll(".tab").forEach(btn=>{
-    btn.addEventListener("click",()=>{
+    btn.addEventListener("click",(e)=>{
+      e.preventDefault();
       const id = btn.dataset.tab;
-      if (id === 'scanner') { if (!IS_ADMIN) { alert('Necesitas rol admin para acceder al Scanner.'); return; } window.location.assign(SCANNER_REDIRECT_URL); return; }
+      if (id === 'scanner') {
+        if (!IS_ADMIN) { alert('Necesitas rol admin para acceder al Scanner.'); return; }
+        window.location.assign(SCANNER_REDIRECT_URL);
+        return;
+      }
       document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
       document.querySelectorAll(".content").forEach(c=>c.classList.remove("active"));
       btn.classList.add("active"); $(id).classList.add("active"); location.hash = id;
       if (id === 'miembros') renderMembers();
       if (id === 'verificacion') initVerification();
+      if (id === 'foro') loadPosts(); // asegura que recargue si cambiaste de tab
     });
   });
 
@@ -256,10 +262,12 @@ async function initApp(){
   CURRENT_USER = session.user;
   IS_ADMIN = (CURRENT_USER.app_metadata?.role === 'admin');
   if (IS_ADMIN) $("tabScanner").style.removeProperty('display');
+
   await loadProfile();
   await loadMembers(true);
   initPresence();
   initForum();
+
   const wanted = (location.hash || '#perfil').slice(1);
   if (wanted === 'scanner') { if (IS_ADMIN) window.location.replace(SCANNER_REDIRECT_URL); else (document.querySelector('.tab[data-tab="perfil"]'))?.click(); }
   else { (document.querySelector(`.tab[data-tab="${wanted}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click(); }
@@ -376,7 +384,7 @@ async function loadMembers(force=false){
   renderMembers();
 }
 function renderMembers(){
-  const q = $("qMembers").value.trim().toLowerCase();
+  const q = ($("qMembers").value||"").trim().toLowerCase();
   const onlyOnline = $("chkOnlineOnly").checked;
   let list = MEMBERS_CACHE.slice();
   if (q) list = list.filter(p =>
@@ -407,9 +415,7 @@ function renderMembers(){
   });
 }
 function escapeHtml(str){
-  return (str||'').replace(/[&<>\"']/g, s=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
-  }[s]));
+  return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s]));
 }
 
 /* ====== Presencia ====== */
@@ -445,8 +451,8 @@ function initForum(){
     $("forumStatus").textContent = "Publicando…";
     const cat = $("forumCategory").value || "Asuntos Generales";
     const { error } = await supabase.from('posts').insert({ content: text, user_id: CURRENT_USER.id, category: cat });
-    $("forumStatus").textContent = error ? "❌ No se pudo publicar" : "✅ Publicado";
-    $("forumInput").value = "";
+    $("forumStatus").textContent = error ? "❌ No se pudo publicar: "+(error.message||'') : "✅ Publicado";
+    if (!error) $("forumInput").value = "";
     loadPosts();
   });
 }
@@ -469,15 +475,16 @@ async function loadPosts(){
     .order('created_at',{ascending:false})
     .limit(50);
 
-  if (error) { console.error(error); wrap.innerHTML = `<div class="meta">No se pudieron cargar las publicaciones.</div>`; return; }
+  if (error) { console.error(error); wrap.innerHTML = `<div class="meta">❌ Error cargando posts.</div>`; return; }
   if (!posts?.length) { wrap.innerHTML = `<div class="meta">Aún no hay publicaciones.</div>`; return; }
 
   const ids = posts.map(p=>p.id);
-  const [{ data: allLikes }, { data: myLikes }, { data: comments }] = await Promise.all([
+  const [{ data: allLikes, error: e1 }, { data: myLikes, error: e2 }, { data: comments, error: e3 }] = await Promise.all([
     supabase.from('likes').select('post_id, user_id').in('post_id', ids),
     supabase.from('likes').select('post_id').in('post_id', ids).eq('user_id', CURRENT_USER.id),
     supabase.from('comments').select('id, post_id, user_id, content, created_at').in('post_id', ids).order('created_at',{ascending:true})
   ]);
+  if (e1||e2||e3) { console.warn(e1||e2||e3); }
 
   const likeCount = new Map(); (allLikes||[]).forEach(l=>likeCount.set(l.post_id,(likeCount.get(l.post_id)||0)+1));
   const myLiked = new Set((myLikes||[]).map(l=>l.post_id));
@@ -527,7 +534,7 @@ async function loadPosts(){
     wrap.appendChild(card);
   });
 
-  // Like / Unlike – versión corregida (UI optimista + onConflict + sin refresh)
+  /* Like / Unlike — FIX */
   wrap.querySelectorAll('.btn-like').forEach(btn=>{
     btn.addEventListener('click', async (e)=>{
       e.preventDefault();
@@ -558,7 +565,10 @@ async function loadPosts(){
       } else {
         const { error } = await supabase
           .from('likes')
-          .upsert({ post_id: postId, user_id: CURRENT_USER.id }, { onConflict: 'post_id,user_id' });
+          .upsert(
+            { post_id: postId, user_id: CURRENT_USER.id },
+            { onConflict: 'post_id,user_id' }
+          );
 
         if (error) {
           alert('❌ No se pudo dar like: ' + (error.message || 'Error'));
@@ -570,6 +580,7 @@ async function loadPosts(){
       }
 
       btn.disabled = false;
+      // No llamamos a loadPosts() para evitar parpadeo; el realtime actualizará globalmente.
     });
   });
 
@@ -577,14 +588,17 @@ async function loadPosts(){
   wrap.querySelectorAll('.comment-form').forEach(form=>{
     form.addEventListener('submit', async (e)=>{
       e.preventDefault();
+      e.stopPropagation();
+
       const postId = +form.dataset.id;
       const ta = form.querySelector('.comment-input');
       const status = form.querySelector('.comment-status');
       const text = (ta.value||'').trim();
       if (!text) return;
+
       status.textContent = 'Enviando…';
       const { error } = await supabase.from('comments').insert({ post_id: postId, user_id: CURRENT_USER.id, content: text });
-      status.textContent = error ? '❌ No se pudo comentar' : '✅ Comentado';
+      status.textContent = error ? '❌ No se pudo comentar: '+(error.message||'') : '✅ Comentado';
       if (!error) ta.value = '';
       loadPosts();
     });
@@ -592,7 +606,10 @@ async function loadPosts(){
 
   // Editar (inline)
   wrap.querySelectorAll('.btn-edit').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
+    btn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+
       const postId = +btn.dataset.id;
       const card = btn.closest('.card');
       const contentEl = card.querySelector('.post-content');
@@ -624,7 +641,7 @@ async function loadPosts(){
         if (!newText) { status.textContent = 'El contenido no puede estar vacío.'; return; }
         status.textContent = 'Guardando…';
         const { error } = await supabase.from('posts').update({ content: newText }).eq('id', postId);
-        status.textContent = error ? '❌ No se pudo guardar' : '✅ Guardado';
+        status.textContent = error ? '❌ No se pudo guardar: '+(error.message||'') : '✅ Guardado';
         if (!error) loadPosts();
       });
     });
@@ -637,8 +654,13 @@ async function fetchNextEvent(){
   if (!GOOGLE_API_KEY) return null;
   const timeMin = new Date().toISOString();
   const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?singleEvents=true&orderBy=startTime&timeMin=${encodeURIComponent(timeMin)}&maxResults=1&key=${encodeURIComponent(GOOGLE_API_KEY)}`;
-  try{ const res = await fetch(url); if(!res.ok) throw new Error('HTTP '+res.status); const json = await res.json(); const evt=(json.items||[])[0]; if(!evt) return null; return { uid:evt.id, title:evt.summary||'Evento', start:evt.start?.dateTime||evt.start?.date, location:evt.location||'', description:(evt.description||'').replace(/<[^>]*>/g,'') }; }
-  catch(e){ console.error(e); return null; }
+  try{
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const json = await res.json();
+    const evt=(json.items||[])[0]; if(!evt) return null;
+    return { uid:evt.id, title:evt.summary||'Evento', start:evt.start?.dateTime||evt.start?.date, location:evt.location||'', description:(evt.description||'').replace(/<[^>]*>/g,'') };
+  } catch(e){ console.error(e); return null; }
 }
 async function initVerification(){
   $("rsvpBox").style.display = CURRENT_USER ? 'block' : 'none';
@@ -678,4 +700,110 @@ function seasonOf(dateLike){
   const d = new Date(dateLike);
   const year = d.toLocaleString('en-CA',{ timeZone:'America/Mexico_City', year:'numeric' });
   const m = +d.toLocaleString('en-CA',{ timeZone:'America/Mexico_City', month:'numeric' });
-  const q =
+  const q = Math.ceil(m/3);
+  return `${year}-Q${q}`;
+}
+function fmtMX(iso){
+  try { return new Intl.DateTimeFormat('es-MX',{dateStyle:'medium', timeStyle:'short'}).format(new Date(iso)); }
+  catch { return iso; }
+}
+
+/* ====== Asistencia dentro del perfil ====== */
+async function loadAsistenciaPerfil(){
+  if(!CURRENT_USER) return;
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
+
+  const { data: scans, error } = await supabase
+    .from('attendance_scans')
+    .select('event_uid, scanned_at')
+    .eq('attendee_id', CURRENT_USER.id)
+    .order('scanned_at',{ ascending:false })
+    .limit(200);
+
+  const info = document.getElementById('asistData');
+
+  if (error){ info.textContent = "No se pudieron cargar tus datos."; return; }
+  if (!scans || scans.length === 0){ info.textContent = "Aún no has registrado asistencias."; return; }
+
+  info.textContent = `Último check-in: ${fmtMX(scans[0].scanned_at)}`;
+
+  const currentSeason = seasonOf(new Date());
+  const seasonScans = scans.filter(s => seasonOf(s.scanned_at) === currentSeason);
+
+  const seasonDays = [...new Set(seasonScans.map(s => s.scanned_at.slice(0,10)))];
+  const totalTemporada = seasonDays.length;
+
+  const allDays = [...new Set(scans.map(s => s.scanned_at.slice(0,10)))].sort();
+  let racha = 0;
+  if (allDays.length){
+    let cur = new Date(); cur.setHours(0,0,0,0);
+    if (!allDays.includes(cur.toISOString().slice(0,10))) cur.setDate(cur.getDate()-1);
+    while (allDays.includes(cur.toISOString().slice(0,10))) { racha++; cur.setDate(cur.getDate()-1); }
+  }
+
+  let puntos = totalTemporada * 10;
+  try {
+    const { data: pts } = await supabase
+      .from('attendance_points')
+      .select('points')
+      .eq('user_id', CURRENT_USER.id)
+      .eq('season', currentSeason)
+      .maybeSingle();
+    if (pts?.points != null) puntos = pts.points;
+  } catch {}
+
+  let puesto = '—';
+  try{
+    const { data: lb } = await supabase
+      .from('attendance_leaderboard')
+      .select('user_id, points')
+      .eq('season', currentSeason)
+      .order('points',{ ascending:false })
+      .limit(100);
+    const pos = (lb||[]).findIndex(row => row.user_id === CURRENT_USER.id);
+    if (pos >= 0) puesto = `#${pos+1}`;
+  }catch{}
+
+  set('asistTotal', totalTemporada);
+  set('asistRacha', racha);
+  set('asistPuntos', puntos);
+  set('asistTop', puesto);
+}
+
+/* ====== Mini TOP en el perfil ====== */
+async function loadMiniTopPerfil(){
+  const meta = document.getElementById('miniTopMeta');
+  const box  = document.getElementById('miniTopList');
+  meta.textContent = 'Cargando…'; box.innerHTML = '';
+
+  const currentSeason = seasonOf(new Date());
+  try{
+    const { data } = await supabase
+      .from('attendance_leaderboard')
+      .select('user_id, display_name, avatar_url, points, total_scans, season')
+      .eq('season', currentSeason)
+      .order('points',{ ascending:false })
+      .limit(5);
+
+    if (!data || !data.length){ meta.textContent = 'Aún no hay datos en esta temporada.'; return; }
+    meta.textContent = `Temporada: ${currentSeason}`;
+
+    data.forEach((r, idx)=>{
+      const el = document.createElement('div');
+      el.className = 'row';
+      el.innerHTML = `
+        <div style="width:28px;text-align:right;font-weight:800">${idx+1}</div>
+        <div class="avatar" style="width:36px;height:36px;margin-left:8px">${r.avatar_url? `<img src="${r.avatar_url}">` : (r.display_name||'?')[0]?.toUpperCase()}</div>
+        <div style="flex:1;min-width:160px;margin-left:8px">
+          <div style="font-weight:700">${escapeHtml(r.display_name||'Miembro')}${r.user_id===CURRENT_USER.id?' <span class="pill">Tú</span>':''}</div>
+          <div class="meta">Asistencias: ${r.total_scans} • Puntos: ${r.points}</div>
+        </div>`;
+      box.appendChild(el);
+    });
+  }catch(e){
+    meta.textContent = 'No fue posible cargar el ranking.';
+  }
+}
+</script>
+</body>
+</html>
