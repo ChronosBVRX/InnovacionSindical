@@ -41,6 +41,12 @@
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.35);font-size:12px;color:#cfefff}
   iframe{width:100%;min-height:600px;border:0;border-radius:12px}
+  details.forum-toggle{margin-top:16px}
+  details.forum-toggle > summary{list-style:none; cursor:pointer; user-select:none; display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:rgba(91,215,242,.10); border:1px solid rgba(91,215,242,.28); font-weight:600; color:#bff4ff}
+  details.forum-toggle[open] > summary{background:rgba(91,215,242,.18)}
+  details.forum-toggle > summary::-webkit-details-marker{display:none}
+  .rotate{transition:transform .2s ease}
+  details[open] .rotate{transform:rotate(90deg)}
   .qr-card{display:grid; place-items:center; background:rgba(96,165,250,.08); border:1px solid rgba(96,165,250,.25); border-radius:12px; padding:12px; width:220px}
   .qr-card canvas{width:196px !important; height:196px !important}
   @keyframes fadeInSmall{from{opacity:.6; transform:translateY(4px)} to{opacity:1; transform:none}}
@@ -71,7 +77,7 @@
     <section id="perfil" class="content active">
       <div class="card">
         <h2>👋 Bienvenido</h2>
-        <p class="muted">Esta es tu página de miembro dentro de Innovación Sindical.</p>
+        <p class="muted">Esta es tu página de miembro dentro de Unidad en Accion</p>
         <div class="profile-info">
           <div class="avatar" id="userAvatar">🧑</div>
           <div class="profile-data">
@@ -98,7 +104,7 @@
 
         <!-- MINI TOP -->
         <div class="card" id="miniTop" style="margin-top:12px; animation:fadeInSmall .2s ease">
-          <h3>🏆 Top de los más asiduos (temporada actual)</h3>
+          <h3>🏆 Top de asistencia </h3>
           <div id="miniTopMeta" class="meta" style="margin-top:6px">Cargando…</div>
           <div id="miniTopList" style="margin-top:10px;display:grid;gap:8px"></div>
         </div>
@@ -271,7 +277,7 @@ async function loadProfile(){
   $("pfTelefono").textContent = maskPhone(prof?.telefono || CURRENT_USER.user_metadata?.telefono);
   $("pfCumple").textContent = formatDateISOtoMX(prof?.cumple || CURRENT_USER.user_metadata?.cumple);
 
-  /* <<< FIX: fallback a user_metadata para que SÍ se muestren >>> */
+  /* Fallback para que se muestren aunque solo estén en user_metadata */
   $("pfCategoria").textContent   = (prof?.categoria   ?? CURRENT_USER.user_metadata?.categoria)   || "—";
   $("pfAdscripcion").textContent = (prof?.adscripcion ?? CURRENT_USER.user_metadata?.adscripcion) || "—";
 
@@ -418,10 +424,11 @@ function initPresence(){
   });
 }
 
-/* ====== Foro (likes + comentarios en realtime) ====== */
+/* ====== Foro (likes + comentarios + edición) ====== */
 function initForum(){
   loadPosts();
 
+  // Realtime
   supabase
     .channel('realtime-foro')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPosts)
@@ -444,6 +451,9 @@ function initForum(){
 function fmtDate(iso){
   try { return new Intl.DateTimeFormat('es-MX',{dateStyle:'medium', timeStyle:'short'}).format(new Date(iso)); }
   catch { return iso; }
+}
+function canEditPost(postUserId){
+  return IS_ADMIN || (postUserId === CURRENT_USER.id);
 }
 
 async function loadPosts(){
@@ -483,7 +493,8 @@ async function loadPosts(){
         <div class="meta">${p.user_id===CURRENT_USER.id?'Tú':'Miembro'} • ${fmtDate(p.created_at)}</div>
         <div class="pill">🏷️ ${escapeHtml(p.category||'Asuntos Generales')}</div>
       </div>
-      <div style="margin-top:8px;white-space:pre-wrap;line-height:1.45">${escapeHtml(p.content)}</div>
+
+      <div class="post-content" style="margin-top:8px;white-space:pre-wrap;line-height:1.45">${escapeHtml(p.content)}</div>
 
       <div class="row" style="margin-top:10px;gap:10px">
         <button class="subtle-btn btn-like" data-id="${p.id}" aria-pressed="${liked}">
@@ -498,7 +509,6 @@ async function loadPosts(){
                 <div style="margin-top:6px;white-space:pre-wrap">${escapeHtml(c.content)}</div>
               </div>
             `).join('')}
-
             <form class="comment-form" data-id="${p.id}">
               <label class="meta">Añadir comentario</label>
               <textarea rows="2" class="comment-input" placeholder="Escribe algo..."></textarea>
@@ -507,6 +517,7 @@ async function loadPosts(){
             </form>
           </div>
         </details>
+        ${canEditPost(p.user_id) ? `<button class="subtle-btn btn-edit" data-id="${p.id}">✏️ Editar</button>` : ``}
       </div>
     `;
 
@@ -545,6 +556,46 @@ async function loadPosts(){
       status.textContent = error ? '❌ No se pudo comentar' : '✅ Comentado';
       if (!error) ta.value = '';
       loadPosts();
+    });
+  });
+
+  // Editar (inline)
+  wrap.querySelectorAll('.btn-edit').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const postId = +btn.dataset.id;
+      const card = btn.closest('.card');
+      const contentEl = card.querySelector('.post-content');
+      const original = contentEl.textContent;
+
+      contentEl.outerHTML = `
+        <div class="edit-wrap" style="margin-top:8px;display:grid;gap:8px">
+          <textarea class="edit-textarea" style="min-height:120px;background:#0a1329;border:1px solid rgba(91,215,242,.3);color:#e6fbff;padding:9px 11px;border-radius:10px">${escapeHtml(original)}</textarea>
+          <div class="row">
+            <button class="btn btn-save-edit" data-id="${postId}">💾 Guardar</button>
+            <button class="subtle-btn btn-cancel-edit">Cancelar</button>
+            <span class="meta edit-status"></span>
+          </div>
+        </div>
+      `;
+
+      const ta = card.querySelector('.edit-textarea');
+      const saveBtn = card.querySelector('.btn-save-edit');
+      const cancelBtn = card.querySelector('.btn-cancel-edit');
+      const status = card.querySelector('.edit-status');
+
+      cancelBtn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        loadPosts();
+      });
+
+      saveBtn.addEventListener('click', async ()=>{
+        const newText = (ta.value||'').trim();
+        if (!newText) { status.textContent = 'El contenido no puede estar vacío.'; return; }
+        status.textContent = 'Guardando…';
+        const { error } = await supabase.from('posts').update({ content: newText }).eq('id', postId);
+        status.textContent = error ? '❌ No se pudo guardar' : '✅ Guardado';
+        if (!error) loadPosts();
+      });
     });
   });
 }
