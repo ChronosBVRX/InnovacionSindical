@@ -77,7 +77,7 @@
     <section id="perfil" class="content active">
       <div class="card">
         <h2>👋 Bienvenido</h2>
-        <p class="muted">Esta es tu página de miembro dentro de Unidad en Accion</p>
+        <p class="muted">Esta es tu página de miembro dentro de Unidad en Acción</p>
         <div class="profile-info">
           <div class="avatar" id="userAvatar">🧑</div>
           <div class="profile-data">
@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.add("active"); $(id).classList.add("active"); location.hash = id;
       if (id === 'miembros') renderMembers();
       if (id === 'verificacion') initVerification();
-      if (id === 'foro') loadPosts(); // asegura que recargue si cambiaste de tab
+      if (id === 'foro') loadPosts();
     });
   });
 
@@ -479,12 +479,11 @@ async function loadPosts(){
   if (!posts?.length) { wrap.innerHTML = `<div class="meta">Aún no hay publicaciones.</div>`; return; }
 
   const ids = posts.map(p=>p.id);
-  const [{ data: allLikes, error: e1 }, { data: myLikes, error: e2 }, { data: comments, error: e3 }] = await Promise.all([
+  const [{ data: allLikes }, { data: myLikes }, { data: comments }] = await Promise.all([
     supabase.from('likes').select('post_id, user_id').in('post_id', ids),
     supabase.from('likes').select('post_id').in('post_id', ids).eq('user_id', CURRENT_USER.id),
     supabase.from('comments').select('id, post_id, user_id, content, created_at').in('post_id', ids).order('created_at',{ascending:true})
   ]);
-  if (e1||e2||e3) { console.warn(e1||e2||e3); }
 
   const likeCount = new Map(); (allLikes||[]).forEach(l=>likeCount.set(l.post_id,(likeCount.get(l.post_id)||0)+1));
   const myLiked = new Set((myLikes||[]).map(l=>l.post_id));
@@ -534,13 +533,13 @@ async function loadPosts(){
     wrap.appendChild(card);
   });
 
-  /* Like / Unlike — FIX */
+  /* Like / Unlike — UUID (no números) */
   wrap.querySelectorAll('.btn-like').forEach(btn=>{
     btn.addEventListener('click', async (e)=>{
       e.preventDefault();
       e.stopPropagation();
 
-      const postId = parseInt(btn.dataset.id, 10);
+      const postId = btn.dataset.id; // UUID en texto
       const isLiked = btn.getAttribute('aria-pressed') === 'true';
 
       const meta = btn.querySelector('.meta');
@@ -580,17 +579,16 @@ async function loadPosts(){
       }
 
       btn.disabled = false;
-      // No llamamos a loadPosts() para evitar parpadeo; el realtime actualizará globalmente.
     });
   });
 
-  // Comentar
+  // Comentar — UUID (no números)
   wrap.querySelectorAll('.comment-form').forEach(form=>{
     form.addEventListener('submit', async (e)=>{
       e.preventDefault();
       e.stopPropagation();
 
-      const postId = +form.dataset.id;
+      const postId = form.dataset.id; // UUID
       const ta = form.querySelector('.comment-input');
       const status = form.querySelector('.comment-status');
       const text = (ta.value||'').trim();
@@ -604,13 +602,13 @@ async function loadPosts(){
     });
   });
 
-  // Editar (inline)
+  // Editar — UUID (no números)
   wrap.querySelectorAll('.btn-edit').forEach(btn=>{
     btn.addEventListener('click', (e)=>{
       e.preventDefault();
       e.stopPropagation();
 
-      const postId = +btn.dataset.id;
+      const postId = btn.dataset.id; // UUID
       const card = btn.closest('.card');
       const contentEl = card.querySelector('.post-content');
       const original = contentEl.textContent;
