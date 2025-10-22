@@ -55,6 +55,8 @@
   .qr-card{display:grid; place-items:center; background:rgba(96,165,250,.08); border:1px solid rgba(96,165,250,.25); border-radius:12px; padding:12px; width:220px}
   .qr-card canvas{width:196px !important; height:196px !important}
 
+  @keyframes fadeInSmall{from{opacity:.6; transform:translateY(4px)} to{opacity:1; transform:none}}
+
   @media (max-width: 980px){
     nav{width:100%; flex-direction:row; position:sticky; top:52px; z-index:9; overflow:auto;}
     main{flex-direction:column}
@@ -97,6 +99,40 @@
             <p><strong>Categoría:</strong> <span id="pfCategoria">—</span></p>
             <p><strong>Adscripción:</strong> <span id="pfAdscripcion">—</span></p>
           </div>
+        </div>
+
+        <!-- ASISTENCIA Y RECOMPENSAS (dentro del perfil) -->
+        <div class="card" id="asistenciaResumen" style="margin-top:20px; animation:fadeInSmall .2s ease">
+          <h3>📊 Asistencia y recompensas</h3>
+          <div id="asistData" class="meta" style="margin-bottom:8px">Cargando tus datos...</div>
+          <div class="row" style="flex-wrap:wrap;gap:20px">
+            <div>
+              <div class="meta">Eventos asistidos (temporada)</div>
+              <div id="asistTotal" style="font-size:26px;font-weight:700">0</div>
+            </div>
+            <div>
+              <div class="meta">Racha actual (días)</div>
+              <div id="asistRacha" style="font-size:26px;font-weight:700">0</div>
+            </div>
+            <div>
+              <div class="meta">Puntos</div>
+              <div id="asistPuntos" style="font-size:26px;font-weight:700">0</div>
+            </div>
+            <div>
+              <div class="meta">Posición en ranking</div>
+              <div id="asistTop" style="font-size:26px;font-weight:700">—</div>
+            </div>
+          </div>
+          <div class="meta" style="margin-top:10px">
+            🎁 <strong>Recompensas</strong>: Los más asiduos reciben reconocimientos y premios al cierre de cada temporada.
+          </div>
+        </div>
+
+        <!-- MINI TOP en el perfil -->
+        <div class="card" id="miniTop" style="margin-top:12px; animation:fadeInSmall .2s ease">
+          <h3>🏆 Top de los más asiduos (temporada actual)</h3>
+          <div id="miniTopMeta" class="meta" style="margin-top:6px">Cargando…</div>
+          <div id="miniTopList" style="margin-top:10px;display:grid;gap:8px"></div>
         </div>
       </div>
     </section>
@@ -209,10 +245,10 @@ const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
 const LOGIN_URL = "login.html";
 
-/* Redirección del Scanner (MISMA PESTAÑA) */
+/* Scanner redirección MISMA pestaña */
 const SCANNER_REDIRECT_URL = "https://chronosbvrx.github.io/InnovacionSindical/scanner";
 
-/* Google Calendar (opcional para auto evento) */
+/* Google Calendar (opcional) */
 const GOOGLE_API_KEY = "AIzaSyDdtYPPE-jTvw_Gypxrq2c5UePpbK9ZxZ0";
 const CALENDAR_ID = "redunidadenaccion@gmail.com";
 
@@ -272,7 +308,7 @@ async function initApp(){
 
   if (IS_ADMIN) $("tabScanner").style.removeProperty('display');
 
-  await loadProfile();
+  await loadProfile();     // <-- dentro llama a asistencia
   await loadMembers(true);
   initPresence();
   initForum();
@@ -315,11 +351,16 @@ async function loadProfile(){
   $("fCategoria").value   = prof?.categoria || CURRENT_USER.user_metadata?.categoria || "";
   $("fAdscripcion").value = prof?.adscripcion || CURRENT_USER.user_metadata?.adscripcion || "";
   $("fBio").value         = prof?.bio || CURRENT_USER.user_metadata?.bio || "";
+
+  // --> Cargar asistencia y mini top dentro del perfil
+  await loadAsistenciaPerfil();
+  await loadMiniTopPerfil();
 }
 
 function maskPhone(t){ const s=(t||"").replace(/\D+/g,""); if(s.length<8) return t||"—"; return `••• ••${s.slice(-4)}`; }
 function formatDateISOtoMX(iso){ if(!iso) return "—"; try{ const d = new Date(iso.length<=10? iso+"T00:00:00":iso); return new Intl.DateTimeFormat('es-MX',{day:'2-digit', month:'long', year:'numeric'}).format(d);}catch{ return iso; } }
 
+/* ====== Upload avatar ====== */
 async function uploadAvatar(file){
   if(!file) return null;
   if(!['image/png','image/jpeg','image/webp'].includes(file.type)){ alert("Formato no soportado"); return null; }
@@ -332,7 +373,6 @@ async function uploadAvatar(file){
   const { data } = supabase.storage.from("avatars").getPublicUrl(path);
   return data?.publicUrl || null;
 }
-
 async function onSaveProfile(e){
   e.preventDefault();
   $("status").textContent = "Guardando…";
@@ -383,7 +423,6 @@ async function loadMembers(force=false){
   MEMBERS_CACHE = data || [];
   renderMembers();
 }
-
 function renderMembers(){
   const q = $("qMembers").value.trim().toLowerCase();
   const onlyOnline = $("chkOnlineOnly").checked;
@@ -508,6 +547,122 @@ function updateRSVPUI(status, qrPayload){
   if(status==='yes'){ yesBtn.disabled=true; noBtn.disabled=false; $("qrWrap").style.display='block'; if(qrPayload){ QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel:'M' }).catch(()=>{}); } }
   else if(status==='no'){ yesBtn.disabled=false; noBtn.disabled=true; $("qrWrap").style.display='none'; }
   else { yesBtn.disabled=false; noBtn.disabled=false; $("qrWrap").style.display='none'; $("rsvpStatus").textContent=''; }
+}
+
+/* ====== Utilidades de asistencia / ranking ====== */
+function seasonOf(dateLike){
+  const d = new Date(dateLike);
+  const year = d.toLocaleString('en-CA',{ timeZone:'America/Mexico_City', year:'numeric' });
+  const m = +d.toLocaleString('en-CA',{ timeZone:'America/Mexico_City', month:'numeric' });
+  const q = Math.ceil(m/3);
+  return `${year}-Q${q}`;
+}
+function fmtMX(iso){
+  try { return new Intl.DateTimeFormat('es-MX',{dateStyle:'medium', timeStyle:'short'}).format(new Date(iso)); }
+  catch { return iso; }
+}
+
+/* ====== Asistencia dentro del perfil ====== */
+async function loadAsistenciaPerfil(){
+  if(!CURRENT_USER) return;
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
+
+  // Tus últimos escaneos (propios)
+  const { data: scans, error } = await supabase
+    .from('attendance_scans')
+    .select('event_uid, scanned_at')
+    .eq('attendee_id', CURRENT_USER.id)
+    .order('scanned_at',{ ascending:false })
+    .limit(200);
+
+  const info = document.getElementById('asistData');
+
+  if (error){ info.textContent = "No se pudieron cargar tus datos."; return; }
+  if (!scans || scans.length === 0){ info.textContent = "Aún no has registrado asistencias."; return; }
+
+  info.textContent = `Último check-in: ${fmtMX(scans[0].scanned_at)}`;
+
+  // Temporada actual
+  const currentSeason = seasonOf(new Date());
+  const seasonScans = scans.filter(s => seasonOf(s.scanned_at) === currentSeason);
+
+  // Total por temporada = días con asistencia (si hubo varios eventos el mismo día, cuenta 1)
+  const seasonDays = [...new Set(seasonScans.map(s => s.scanned_at.slice(0,10)))];
+  const totalTemporada = seasonDays.length;
+
+  // Racha diaria (consecutiva hacia atrás)
+  const allDays = [...new Set(scans.map(s => s.scanned_at.slice(0,10)))].sort();
+  let racha = 0;
+  if (allDays.length){
+    let cur = new Date(); cur.setHours(0,0,0,0);
+    if (!allDays.includes(cur.toISOString().slice(0,10))) cur.setDate(cur.getDate()-1);
+    while (allDays.includes(cur.toISOString().slice(0,10))) { racha++; cur.setDate(cur.getDate()-1); }
+  }
+
+  // Puntos: leer tabla si existe; si no, fallback 10 por asistencia de temporada
+  let puntos = totalTemporada * 10;
+  try {
+    const { data: pts } = await supabase
+      .from('attendance_points')
+      .select('points')
+      .eq('user_id', CURRENT_USER.id)
+      .eq('season', currentSeason)
+      .maybeSingle();
+    if (pts?.points != null) puntos = pts.points;
+  } catch {}
+
+  // Posición en ranking (lee la vista; si no existe, omite)
+  let puesto = '—';
+  try{
+    const { data: lb } = await supabase
+      .from('attendance_leaderboard')
+      .select('user_id, points')
+      .eq('season', currentSeason)
+      .order('points',{ ascending:false })
+      .limit(100);
+    const pos = (lb||[]).findIndex(row => row.user_id === CURRENT_USER.id);
+    if (pos >= 0) puesto = `#${pos+1}`;
+  }catch{}
+
+  set('asistTotal', totalTemporada);
+  set('asistRacha', racha);
+  set('asistPuntos', puntos);
+  set('asistTop', puesto);
+}
+
+/* ====== Mini TOP en el perfil ====== */
+async function loadMiniTopPerfil(){
+  const meta = document.getElementById('miniTopMeta');
+  const box  = document.getElementById('miniTopList');
+  meta.textContent = 'Cargando…'; box.innerHTML = '';
+
+  const currentSeason = seasonOf(new Date());
+  try{
+    const { data } = await supabase
+      .from('attendance_leaderboard')
+      .select('user_id, display_name, avatar_url, points, total_scans, season')
+      .eq('season', currentSeason)
+      .order('points',{ ascending:false })
+      .limit(5);
+
+    if (!data || !data.length){ meta.textContent = 'Aún no hay datos en esta temporada.'; return; }
+    meta.textContent = `Temporada: ${currentSeason}`;
+
+    data.forEach((r, idx)=>{
+      const el = document.createElement('div');
+      el.className = 'row';
+      el.innerHTML = `
+        <div style="width:28px;text-align:right;font-weight:800">${idx+1}</div>
+        <div class="avatar" style="width:36px;height:36px;margin-left:8px">${r.avatar_url? `<img src="${r.avatar_url}">` : (r.display_name||'?')[0]?.toUpperCase()}</div>
+        <div style="flex:1;min-width:160px;margin-left:8px">
+          <div style="font-weight:700">${escapeHtml(r.display_name||'Miembro')}${r.user_id===CURRENT_USER.id?' <span class="pill">Tú</span>':''}</div>
+          <div class="meta">Asistencias: ${r.total_scans} • Puntos: ${r.points}</div>
+        </div>`;
+      box.appendChild(el);
+    });
+  }catch(e){
+    meta.textContent = 'No fue posible cargar el ranking.';
+  }
 }
 </script>
 </body>
