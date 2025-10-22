@@ -113,8 +113,7 @@
           <input id="qMembers" placeholder="Buscar por nombre o adscripción" style="min-width:260px">
           <button class="subtle-btn" id="btnRefreshMembers">Actualizar</button>
           <label class="row" style="gap:8px;align-items:center;margin-left:auto">
-            <input type="checkbox" id="chkOnlineOnly">
-            <span>👁️ Solo online</span>
+            <input type="checkbox" id="chkOnlineOnly"><span>👁️ Solo online</span>
           </label>
         </div>
         <div id="membersList" style="margin-top:14px;display:grid;gap:12px"></div>
@@ -271,8 +270,10 @@ async function loadProfile(){
   $("pfEmail").textContent = CURRENT_USER.email || "—";
   $("pfTelefono").textContent = maskPhone(prof?.telefono || CURRENT_USER.user_metadata?.telefono);
   $("pfCumple").textContent = formatDateISOtoMX(prof?.cumple || CURRENT_USER.user_metadata?.cumple);
-  $("pfCategoria").textContent = prof?.categoria || "—";
-  $("pfAdscripcion").textContent = prof?.adscripcion || "—";
+
+  /* <<< FIX: fallback a user_metadata para que SÍ se muestren >>> */
+  $("pfCategoria").textContent   = (prof?.categoria   ?? CURRENT_USER.user_metadata?.categoria)   || "—";
+  $("pfAdscripcion").textContent = (prof?.adscripcion ?? CURRENT_USER.user_metadata?.adscripcion) || "—";
 
   const avatar = prof?.avatar_url || CURRENT_USER.user_metadata?.avatar_url;
   if (avatar) { $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`; $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`; }
@@ -417,11 +418,10 @@ function initPresence(){
   });
 }
 
-/* ====== Foro (con likes y comentarios) ====== */
+/* ====== Foro (likes + comentarios en realtime) ====== */
 function initForum(){
   loadPosts();
 
-  // Realtime en posts/likes/comments
   supabase
     .channel('realtime-foro')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPosts)
@@ -460,28 +460,16 @@ async function loadPosts(){
   if (!posts?.length) { wrap.innerHTML = `<div class="meta">Aún no hay publicaciones.</div>`; return; }
 
   const ids = posts.map(p=>p.id);
-
-  // Likes (todos los likes de estos posts) y cuáles son míos
-  const [{ data: allLikes }, { data: myLikes }] = await Promise.all([
+  const [{ data: allLikes }, { data: myLikes }, { data: comments }] = await Promise.all([
     supabase.from('likes').select('post_id, user_id').in('post_id', ids),
-    supabase.from('likes').select('post_id').in('post_id', ids).eq('user_id', CURRENT_USER.id)
+    supabase.from('likes').select('post_id').in('post_id', ids).eq('user_id', CURRENT_USER.id),
+    supabase.from('comments').select('id, post_id, user_id, content, created_at').in('post_id', ids).order('created_at',{ascending:true})
   ]);
 
-  const likeCount = new Map(); (allLikes||[]).forEach(l=>likeCount.set(l.post_id, (likeCount.get(l.post_id)||0)+1));
+  const likeCount = new Map(); (allLikes||[]).forEach(l=>likeCount.set(l.post_id,(likeCount.get(l.post_id)||0)+1));
   const myLiked = new Set((myLikes||[]).map(l=>l.post_id));
-
-  // Comentarios
-  const { data: comments } = await supabase
-    .from('comments')
-    .select('id, post_id, user_id, content, created_at')
-    .in('post_id', ids)
-    .order('created_at', { ascending: true });
-
   const commentsByPost = new Map();
-  (comments||[]).forEach(c=>{
-    if(!commentsByPost.has(c.post_id)) commentsByPost.set(c.post_id, []);
-    commentsByPost.get(c.post_id).push(c);
-  });
+  (comments||[]).forEach(c=>{ if(!commentsByPost.has(c.post_id)) commentsByPost.set(c.post_id,[]); commentsByPost.get(c.post_id).push(c); });
 
   posts.forEach(p=>{
     const card = document.createElement('div');
@@ -525,25 +513,25 @@ async function loadPosts(){
     wrap.appendChild(card);
   });
 
-  // Listeners para like/unlike
+  // Like / Unlike
   wrap.querySelectorAll('.btn-like').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       const postId = +btn.dataset.id;
       const isLiked = btn.getAttribute('aria-pressed') === 'true';
       if (isLiked) {
-        // unlike
-        const { error } = await supabase.from('likes').delete().match({ post_id: postId, user_id: CURRENT_USER.id });
-        if (!error) { btn.setAttribute('aria-pressed','false'); btn.innerHTML = btn.innerHTML.replace('❤️','🤍'); }
+        await supabase.from('likes').delete().match({ post_id: postId, user_id: CURRENT_USER.id });
+        btn.setAttribute('aria-pressed','false');
+        btn.innerHTML = btn.innerHTML.replace('❤️','🤍');
       } else {
-        const { error } = await supabase.from('likes').upsert({ post_id: postId, user_id: CURRENT_USER.id });
-        if (!error) { btn.setAttribute('aria-pressed','true'); btn.innerHTML = btn.innerHTML.replace('🤍','❤️'); }
+        await supabase.from('likes').upsert({ post_id: postId, user_id: CURRENT_USER.id });
+        btn.setAttribute('aria-pressed','true');
+        btn.innerHTML = btn.innerHTML.replace('🤍','❤️');
       }
-      // refrescar contadores
       loadPosts();
     });
   });
 
-  // Listeners para comentar
+  // Comentar
   wrap.querySelectorAll('.comment-form').forEach(form=>{
     form.addEventListener('submit', async (e)=>{
       e.preventDefault();
@@ -592,7 +580,6 @@ async function setRSVP(status){
   let qrPayload = null;
   if (status==='yes'){ qrPayload = buildQRPayload(evt.uid); $("qrWrap").style.display='block'; try{ await QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel:'M' }); }catch{} }
   else { $("qrWrap").style.display='none'; }
-
   const { error } = await supabase.from('rsvps').upsert({ user_id: CURRENT_USER.id, event_uid: evt.uid, status, qr_payload: qrPayload, updated_at: new Date().toISOString() }, { onConflict:'user_id,event_uid' });
   $("rsvpStatus").textContent = error ? 'No se pudo guardar tu respuesta.' : (status==='yes' ? 'Confirmado ✔️' : 'Registrado como no asistente.');
   updateRSVPUI(status, qrPayload);
