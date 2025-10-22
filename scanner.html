@@ -25,7 +25,7 @@
   .ok{color:#80ff9b}
   .err{color:#ff8080}
 
-  /* Barra de sesión compacta cuando ya estás logueado */
+  /* Barra de sesión cuando ya estás logueado */
   #statusBar{display:none; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px}
   #statusBar .info{font-size:14px;color:#cfefff}
   #statusBar .btn{padding:8px 12px;border-radius:10px;background:rgba(255,80,80,.15);border:1px solid rgba(255,100,100,.35);color:#ffd1d1}
@@ -36,7 +36,7 @@
   <div class="wrap">
     <h2>🔎 Escáner de Asistencia</h2>
 
-    <!-- Barra de estado (solo visible si hay sesión) -->
+    <!-- Barra de estado (visible si hay sesión) -->
     <div id="statusBar" class="card row">
       <div class="info" id="who">Conectado como: —</div>
       <div class="row" style="margin-left:auto">
@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <!-- LOGIN (se muestra solo sin sesión) -->
+    <!-- LOGIN (solo sin sesión) -->
     <div id="loginCard" class="card" style="display:none">
       <div class="row" style="flex-direction:column;gap:10px;width:100%">
         <input id="email" type="email" placeholder="Correo de verificador" style="width:100%">
@@ -63,23 +63,30 @@
   </div>
 
 <script>
+/* ====== Config Supabase ====== */
 const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
 
-/* UI refs */
-const statusBar  = document.getElementById("statusBar");
-const who        = document.getElementById("who");
-const loginCard  = document.getElementById("loginCard");
-const loginMsg   = document.getElementById("loginStatus");
-const scannerCard= document.getElementById("scannerCard");
-let QR=null;
+/* ====== UI refs ====== */
+const statusBar   = document.getElementById("statusBar");
+const who         = document.getElementById("who");
+const loginCard   = document.getElementById("loginCard");
+const loginMsg    = document.getElementById("loginStatus");
+const scannerCard = document.getElementById("scannerCard");
+const resultEl    = document.getElementById("result");
 
-/* events */
+/* ====== Eventos ====== */
 document.getElementById("btnLogin").onclick  = onLogin;
 document.getElementById("btnLogout").onclick = onLogout;
 
-/* boot */
+/* ====== Estado del lector ====== */
+let QR = null;
+let isScanning = false;
+let lastScanAt = 0;
+const cooldownMs = 1000;
+
+/* ====== Boot ====== */
 init();
 
 async function init(){
@@ -93,12 +100,10 @@ async function init(){
   }
 }
 
+/* ====== UI ====== */
 function showSessionUI(user){
-  // Barra compacta
-  statusBar.style.display = 'flex';
+  statusBar.style.display   = 'flex';
   who.textContent = `Conectado como: ${user.email} • rol: ${user.app_metadata?.role || '—'}`;
-
-  // Ocultar login y mostrar scanner
   loginCard.style.display   = 'none';
   scannerCard.style.display = 'block';
 }
@@ -108,6 +113,7 @@ function showLoginUI(){
   loginCard.style.display   = 'block';
 }
 
+/* ====== Auth ====== */
 async function onLogin(){
   loginMsg.textContent = "Verificando credenciales…";
   const email = document.getElementById("email").value.trim();
@@ -126,7 +132,7 @@ async function onLogin(){
 
 async function onLogout(){
   try { await supabase.auth.signOut(); } catch {}
-  stopScanner();
+  await stopScanner();
   showLoginUI();
 }
 
@@ -140,27 +146,54 @@ async function isAdmin(user){
   }catch { return false; }
 }
 
-/* ===== Scanner ===== */
-function startScanner(){
-  if (QR) { try { QR.stop(); } catch {} QR = null; }
-  QR = new Html5Qrcode("reader");
-  QR.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 260 },
-    async (decoded) => { await onScan(decoded); },
-    () => {}
-  ).catch(err=>{
-    document.getElementById("result").innerHTML = `<span class='err'>❌ No se pudo iniciar la cámara: ${err}</span>`;
-  });
+/* ====== Scanner helpers ====== */
+function ensureReaderCleared(){
+  const c = document.getElementById("reader");
+  if (c) c.innerHTML = ""; // elimina overlays previos
 }
-function stopScanner(){ try { QR?.stop(); } catch {} }
 
-async function onScan(decoded){
-  const resultEl = document.getElementById("result");
+async function startScanner(){
+  if (isScanning) return;
+  ensureReaderCleared();
+  if (!QR) QR = new Html5Qrcode("reader");
   try{
-    const data = JSON.parse(decoded);           // { event, user, ... }
+    await QR.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 260 },
+      onScan,  // success
+      () => {} // failure (silenciar)
+    );
+    isScanning = true;
+  }catch(err){
+    resultEl.innerHTML = `<span class='err'>❌ No se pudo iniciar la cámara: ${err}</span>`;
+  }
+}
+
+async function stopScanner(){
+  if (!QR) return;
+  try{ await QR.pause(true); }catch(_){}
+  try{ await QR.stop(); }catch(_){}
+  try{ await QR.clear(); }catch(_){}
+  ensureReaderCleared();
+  isScanning = false;
+  // dejamos QR instanciado para reusar
+}
+
+/* ====== Handler de lectura con pausa/reanudar ====== */
+async function onScan(decoded){
+  const now = Date.now();
+  if (now - lastScanAt < cooldownMs) return; // antirebote
+  lastScanAt = now;
+
+  try { await QR.pause(true); } catch {}
+
+  try{
+    const data = JSON.parse(decoded);      // { event, user, ... }
     const evt = data.event, usr = data.user;
-    if (!evt || !usr){ resultEl.innerHTML = "<span class='err'>❌ QR inválido</span>"; return; }
+    if (!evt || !usr){
+      resultEl.innerHTML = "<span class='err'>❌ QR inválido</span>";
+      return await resumeScannerAfterCooldown();
+    }
 
     const me = (await supabase.auth.getUser())?.data?.user;
 
@@ -172,9 +205,12 @@ async function onScan(decoded){
       scanned_at: new Date().toISOString(),
       raw: data
     });
-    if (insErr){ resultEl.innerHTML = `<span class='err'>❌ No se pudo registrar: ${insErr.message}</span>`; return; }
+    if (insErr){
+      resultEl.innerHTML = `<span class='err'>❌ No se pudo registrar: ${insErr.message}</span>`;
+      return await resumeScannerAfterCooldown();
+    }
 
-    // (Opcional) marca rsvps
+    // (Opcional) actualizar rsvps
     try{
       await supabase.from("rsvps")
         .update({ status: "checked_in", updated_at: new Date().toISOString() })
@@ -182,8 +218,20 @@ async function onScan(decoded){
     }catch{}
 
     resultEl.innerHTML = `<span class='ok'>✅ Asistencia registrada correctamente</span>`;
-    stopScanner(); setTimeout(startScanner, 600); // cooldown anti doble lectura
-  }catch{ resultEl.innerHTML = "<span class='err'>❌ QR inválido</span>"; }
+  }catch{
+    resultEl.innerHTML = "<span class='err'>❌ QR inválido</span>";
+  }
+
+  await resumeScannerAfterCooldown();
+}
+
+function resumeScannerAfterCooldown(){
+  return new Promise(resolve=>{
+    setTimeout(async ()=>{
+      try { await QR.resume(); } catch {}
+      resolve();
+    }, cooldownMs);
+  });
 }
 </script>
 </body>
