@@ -44,7 +44,7 @@
   .qr-card{display:grid; place-items:center; background:rgba(96,165,250,.08); border:1px solid rgba(96,165,250,.25); border-radius:12px; padding:12px; width:220px}
   .qr-card canvas{width:196px !important; height:196px !important}
   @keyframes fadeInSmall{from{opacity:.6; transform:translateY(4px)} to{opacity:1; transform:none}}
-  @media (max-width: 980px){ nav{width:100%;flex-direction:row;position:sticky;top:52px;z-index:9;overflow:auto;} main{flex-direction:column} }
+  @media (max-width:980px){ nav{width:100%;flex-direction:row;position:sticky;top:52px;z-index:9;overflow:auto;} main{flex-direction:column} }
 </style>
 </head>
 <body>
@@ -71,7 +71,7 @@
     <section id="perfil" class="content active">
       <div class="card">
         <h2>👋 Bienvenido</h2>
-        <p class="muted">Esta es tu página de miembro dentro de Unidad en Acción.</p>
+        <p class="muted">Esta es tu página de miembro dentro de Innovación Sindical.</p>
         <div class="profile-info">
           <div class="avatar" id="userAvatar">🧑</div>
           <div class="profile-data">
@@ -84,7 +84,7 @@
           </div>
         </div>
 
-        <!-- ASISTENCIA Y RECOMPENSAS -->
+        <!-- ASISTENCIA -->
         <div class="card" id="asistenciaResumen" style="margin-top:20px; animation:fadeInSmall .2s ease">
           <h3>📊 Asistencia y recompensas</h3>
           <div id="asistData" class="meta" style="margin-bottom:8px">Cargando tus datos...</div>
@@ -94,7 +94,6 @@
             <div><div class="meta">Puntos</div><div id="asistPuntos" style="font-size:26px;font-weight:700">0</div></div>
             <div><div class="meta">Posición en ranking</div><div id="asistTop" style="font-size:26px;font-weight:700">—</div></div>
           </div>
-          <div class="meta" style="margin-top:10px">🎁 <strong>Recompensas</strong>: Los más asiduos reciben reconocimientos y recompensas.</div>
         </div>
 
         <!-- MINI TOP -->
@@ -142,7 +141,11 @@
             <textarea id="forumInput" maxlength="500" placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
             <div class="row">
               <label style="font-size:13px">Categoría</label>
-              <select id="forumCategory"><option>Avisos</option><option selected>Asuntos Generales</option><option>Convivencia</option></select>
+              <select id="forumCategory">
+                <option>Avisos</option>
+                <option selected>Asuntos Generales</option>
+                <option>Convivencia</option>
+              </select>
             </div>
             <button class="btn" type="submit">➕ Publicar</button>
             <div class="status meta" id="forumStatus"></div>
@@ -190,7 +193,6 @@
           <label>Categoría</label><input id="fCategoria" placeholder="Ej. Enfermera General A">
           <label>Adscripción</label><input id="fAdscripcion" placeholder="Ej. HGR 1, Urgencias">
           <label>Biografía corta</label><textarea id="fBio" placeholder="Cuéntanos algo breve"></textarea>
-          <!-- Se quitó: 'Aparecer en el directorio' -->
           <button class="btn" type="submit">💾 Guardar cambios</button>
           <div class="status meta" id="status"></div>
         </form>
@@ -308,7 +310,7 @@ async function uploadAvatar(file){
 /* ====== Normalizador ====== */
 const nz = (v) => { if (v == null) return null; const t = String(v).trim(); return t === "" ? null : t; };
 
-/* ====== Guardar perfil (sin is_visible) ====== */
+/* ====== Guardar perfil ====== */
 async function onSaveProfile(e){
   e.preventDefault();
   $("status").textContent = "Guardando…";
@@ -343,7 +345,6 @@ async function onSaveProfile(e){
       adscripcion: updates.adscripcion,
       bio: updates.bio,
       last_seen: new Date().toISOString()
-      // (quitado is_visible)
     }, { onConflict: 'user_id' });
 
     if (upErr) { console.error(upErr); $("status").textContent = "❌ Error al guardar en profiles. Revisa consola."; return; }
@@ -356,7 +357,7 @@ async function onSaveProfile(e){
   }
 }
 
-/* ====== Miembros (sin filtro is_visible) ====== */
+/* ====== Miembros ====== */
 async function loadMembers(force=false){
   if (!force && MEMBERS_CACHE.length) return;
   const { data, error } = await supabase
@@ -416,10 +417,13 @@ function initPresence(){
   });
 }
 
-/* ====== Foro ====== */
+/* ====== Foro (con likes y comentarios) ====== */
 function initForum(){
   loadPosts();
-  supabase.channel('realtime-foro')
+
+  // Realtime en posts/likes/comments
+  supabase
+    .channel('realtime-foro')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPosts)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, loadPosts)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, loadPosts)
@@ -432,22 +436,128 @@ function initForum(){
     const cat = $("forumCategory").value || "Asuntos Generales";
     const { error } = await supabase.from('posts').insert({ content: text, user_id: CURRENT_USER.id, category: cat });
     $("forumStatus").textContent = error ? "❌ No se pudo publicar" : "✅ Publicado";
-    $("forumInput").value = ""; loadPosts();
+    $("forumInput").value = "";
+    loadPosts();
   });
 }
+
+function fmtDate(iso){
+  try { return new Intl.DateTimeFormat('es-MX',{dateStyle:'medium', timeStyle:'short'}).format(new Date(iso)); }
+  catch { return iso; }
+}
+
 async function loadPosts(){
-  const { data, error } = await supabase.from('posts').select('id, content, category, created_at, user_id').order('created_at',{ascending:false}).limit(50);
-  if (error){ console.error(error); return; }
-  const list = $("postsList"); list.innerHTML = '';
-  (data||[]).forEach(row=>{
-    const el = document.createElement('div'); el.className='card';
-    el.innerHTML = `
+  const wrap = $("postsList");
+  wrap.innerHTML = "";
+
+  const { data: posts, error } = await supabase
+    .from('posts')
+    .select('id, content, category, created_at, user_id')
+    .order('created_at',{ascending:false})
+    .limit(50);
+
+  if (error) { console.error(error); return; }
+  if (!posts?.length) { wrap.innerHTML = `<div class="meta">Aún no hay publicaciones.</div>`; return; }
+
+  const ids = posts.map(p=>p.id);
+
+  // Likes (todos los likes de estos posts) y cuáles son míos
+  const [{ data: allLikes }, { data: myLikes }] = await Promise.all([
+    supabase.from('likes').select('post_id, user_id').in('post_id', ids),
+    supabase.from('likes').select('post_id').in('post_id', ids).eq('user_id', CURRENT_USER.id)
+  ]);
+
+  const likeCount = new Map(); (allLikes||[]).forEach(l=>likeCount.set(l.post_id, (likeCount.get(l.post_id)||0)+1));
+  const myLiked = new Set((myLikes||[]).map(l=>l.post_id));
+
+  // Comentarios
+  const { data: comments } = await supabase
+    .from('comments')
+    .select('id, post_id, user_id, content, created_at')
+    .in('post_id', ids)
+    .order('created_at', { ascending: true });
+
+  const commentsByPost = new Map();
+  (comments||[]).forEach(c=>{
+    if(!commentsByPost.has(c.post_id)) commentsByPost.set(c.post_id, []);
+    commentsByPost.get(c.post_id).push(c);
+  });
+
+  posts.forEach(p=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    const liked = myLiked.has(p.id);
+    const count = likeCount.get(p.id)||0;
+    const postComments = commentsByPost.get(p.id)||[];
+
+    card.innerHTML = `
       <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
-        <div class="meta">${row.user_id===CURRENT_USER.id?'Tú':'Miembro'} • ${new Date(row.created_at).toLocaleString('es-MX')}</div>
-        <div class="pill">🏷️ ${escapeHtml(row.category||'Asuntos Generales')}</div>
+        <div class="meta">${p.user_id===CURRENT_USER.id?'Tú':'Miembro'} • ${fmtDate(p.created_at)}</div>
+        <div class="pill">🏷️ ${escapeHtml(p.category||'Asuntos Generales')}</div>
       </div>
-      <div style="margin-top:8px;white-space:pre-wrap;line-height:1.45">${escapeHtml(row.content)}</div>`;
-    list.appendChild(el);
+      <div style="margin-top:8px;white-space:pre-wrap;line-height:1.45">${escapeHtml(p.content)}</div>
+
+      <div class="row" style="margin-top:10px;gap:10px">
+        <button class="subtle-btn btn-like" data-id="${p.id}" aria-pressed="${liked}">
+          ${liked ? '❤️' : '🤍'} Me gusta <span class="meta">(${count})</span>
+        </button>
+        <details class="forum-toggle" style="margin:0">
+          <summary><span class="rotate">▸</span><span>Comentarios (${postComments.length})</span></summary>
+          <div class="comments" style="margin-top:10px; display:grid; gap:10px">
+            ${postComments.map(c=>`
+              <div class="card" style="padding:12px">
+                <div class="meta">${c.user_id===CURRENT_USER.id?'Tú':'Miembro'} • ${fmtDate(c.created_at)}</div>
+                <div style="margin-top:6px;white-space:pre-wrap">${escapeHtml(c.content)}</div>
+              </div>
+            `).join('')}
+
+            <form class="comment-form" data-id="${p.id}">
+              <label class="meta">Añadir comentario</label>
+              <textarea rows="2" class="comment-input" placeholder="Escribe algo..."></textarea>
+              <button class="btn" type="submit">Comentar</button>
+              <div class="meta comment-status"></div>
+            </form>
+          </div>
+        </details>
+      </div>
+    `;
+
+    wrap.appendChild(card);
+  });
+
+  // Listeners para like/unlike
+  wrap.querySelectorAll('.btn-like').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const postId = +btn.dataset.id;
+      const isLiked = btn.getAttribute('aria-pressed') === 'true';
+      if (isLiked) {
+        // unlike
+        const { error } = await supabase.from('likes').delete().match({ post_id: postId, user_id: CURRENT_USER.id });
+        if (!error) { btn.setAttribute('aria-pressed','false'); btn.innerHTML = btn.innerHTML.replace('❤️','🤍'); }
+      } else {
+        const { error } = await supabase.from('likes').upsert({ post_id: postId, user_id: CURRENT_USER.id });
+        if (!error) { btn.setAttribute('aria-pressed','true'); btn.innerHTML = btn.innerHTML.replace('🤍','❤️'); }
+      }
+      // refrescar contadores
+      loadPosts();
+    });
+  });
+
+  // Listeners para comentar
+  wrap.querySelectorAll('.comment-form').forEach(form=>{
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const postId = +form.dataset.id;
+      const ta = form.querySelector('.comment-input');
+      const status = form.querySelector('.comment-status');
+      const text = (ta.value||'').trim();
+      if (!text) return;
+      status.textContent = 'Enviando…';
+      const { error } = await supabase.from('comments').insert({ post_id: postId, user_id: CURRENT_USER.id, content: text });
+      status.textContent = error ? '❌ No se pudo comentar' : '✅ Comentado';
+      if (!error) ta.value = '';
+      loadPosts();
+    });
   });
 }
 
@@ -457,8 +567,7 @@ async function fetchNextEvent(){
   if (!GOOGLE_API_KEY) return null;
   const timeMin = new Date().toISOString();
   const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?singleEvents=true&orderBy=startTime&timeMin=${encodeURIComponent(timeMin)}&maxResults=1&key=${encodeURIComponent(GOOGLE_API_KEY)}`;
-  try{ const res = await fetch(url); if(!res.ok) throw new Error('HTTP '+res.status); const json = await res.json(); const evt=(json.items||[])[0]; if(!evt) return null;
-    return { uid:evt.id, title:evt.summary||'Evento', start:evt.start?.dateTime||evt.start?.date, location:evt.location||'', description:(evt.description||'').replace(/<[^>]*>/g,'') }; }
+  try{ const res = await fetch(url); if(!res.ok) throw new Error('HTTP '+res.status); const json = await res.json(); const evt=(json.items||[])[0]; if(!evt) return null; return { uid:evt.id, title:evt.summary||'Evento', start:evt.start?.dateTime||evt.start?.date, location:evt.location||'', description:(evt.description||'').replace(/<[^>]*>/g,'') }; }
   catch(e){ console.error(e); return null; }
 }
 async function initVerification(){
