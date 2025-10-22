@@ -13,40 +13,52 @@
     --txt:#e6fbff; --muted:#aee9f7; --primary:#5bd7f2; --sky:#60a5fa;
   }
   *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto}
-  body{min-height:100vh;background:linear-gradient(180deg,#0b1220,#0b1022);color:var(--txt);display:flex;flex-direction:column;padding:20px}
-  h2{color:#5bd7f2;margin-bottom:10px}
-  .wrap{max-width:520px;margin:0 auto}
+  body{min-height:100vh;background:linear-gradient(180deg,#0b1220,#0b1022);color:var(--txt);display:flex;flex-direction:column;padding:18px}
+  h2{color:#5bd7f2;margin-bottom:12px}
+  .wrap{max-width:560px;margin:0 auto}
   .card{background:var(--panel);border:1px solid rgba(91,215,242,.25);border-radius:16px;padding:16px;box-shadow:0 8px 25px rgba(0,0,0,.25)}
-  #reader{width:100%;max-width:420px;margin:12px auto;border:1px solid rgba(91,215,242,.3);border-radius:12px;overflow:hidden}
-  #loginBox{display:grid;gap:10px;margin:20px auto}
+  #reader{width:100%;max-width:460px;margin:12px auto;border:1px solid rgba(91,215,242,.3);border-radius:12px;overflow:hidden}
   input{padding:10px;border-radius:10px;border:1px solid rgba(91,215,242,.35);background:#101a33;color:#e6fbff}
   button{padding:10px;background:linear-gradient(90deg,#5bd7f2,#60a5fa);border:none;border-radius:10px;color:#072133;font-weight:700;cursor:pointer}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .meta{font-size:13px;color:#9fdcf0;margin-top:8px}
   .ok{color:#80ff9b}
   .err{color:#ff8080}
+
+  /* Barra de sesión compacta cuando ya estás logueado */
+  #statusBar{display:none; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px}
+  #statusBar .info{font-size:14px;color:#cfefff}
+  #statusBar .btn{padding:8px 12px;border-radius:10px;background:rgba(255,80,80,.15);border:1px solid rgba(255,100,100,.35);color:#ffd1d1}
+  #statusBar .btn:hover{background:#ff5555;color:#fff}
 </style>
 </head>
 <body>
   <div class="wrap">
     <h2>🔎 Escáner de Asistencia</h2>
 
-    <!-- LOGIN -->
-    <div id="loginCard" class="card">
-      <div id="loginBox">
-        <input id="email" type="email" placeholder="Correo de verificador">
-        <input id="password" type="password" placeholder="Contraseña">
-        <button id="btnLogin">Iniciar sesión</button>
-        <div id="loginStatus" class="meta"></div>
+    <!-- Barra de estado (solo visible si hay sesión) -->
+    <div id="statusBar" class="card row">
+      <div class="info" id="who">Conectado como: —</div>
+      <div class="row" style="margin-left:auto">
+        <button id="btnLogout" class="btn">Cerrar sesión</button>
       </div>
-      <div id="who" class="meta" style="display:none"></div>
     </div>
 
-    <!-- SCANNER -->
+    <!-- LOGIN (se muestra solo sin sesión) -->
+    <div id="loginCard" class="card" style="display:none">
+      <div class="row" style="flex-direction:column;gap:10px;width:100%">
+        <input id="email" type="email" placeholder="Correo de verificador" style="width:100%">
+        <input id="password" type="password" placeholder="Contraseña" style="width:100%">
+        <button id="btnLogin" style="width:100%">Iniciar sesión</button>
+        <div id="loginStatus" class="meta"></div>
+      </div>
+    </div>
+
+    <!-- SCANNER (solo con sesión admin) -->
     <div id="scannerCard" class="card" style="margin-top:16px; display:none">
       <div class="meta">Apunta la cámara al código QR del asistente</div>
       <div id="reader"></div>
       <div id="result" class="meta"></div>
-      <button id="btnLogout" style="margin-top:10px">Cerrar sesión</button>
     </div>
   </div>
 
@@ -55,101 +67,104 @@ const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
 
-const loginCard = document.getElementById("loginCard");
-const scannerCard = document.getElementById("scannerCard");
-const loginStatus = document.getElementById("loginStatus");
-const who = document.getElementById("who");
-const readerElem = document.getElementById("reader");
-let QR;
+/* UI refs */
+const statusBar  = document.getElementById("statusBar");
+const who        = document.getElementById("who");
+const loginCard  = document.getElementById("loginCard");
+const loginMsg   = document.getElementById("loginStatus");
+const scannerCard= document.getElementById("scannerCard");
+let QR=null;
 
-document.getElementById("btnLogin").onclick = onLogin;
+/* events */
+document.getElementById("btnLogin").onclick  = onLogin;
 document.getElementById("btnLogout").onclick = onLogout;
 
+/* boot */
 init();
 
 async function init(){
   await supabase.auth.refreshSession();
   const { data: { session } } = await supabase.auth.getSession();
-  if (session) {
-    const ok = await checkIsAdmin(session.user);
-    if (ok) {
-      showScanner(session.user);
-      return;
-    }
+  if (session && await isAdmin(session.user)) {
+    showSessionUI(session.user);
+    startScanner();
+  } else {
+    showLoginUI();
   }
-  showLogin();
 }
 
-function showLogin(){
-  loginCard.style.display = 'block';
-  scannerCard.style.display = 'none';
-  who.style.display = 'none';
-}
-function showScanner(user){
-  loginCard.style.display = 'block';
-  who.style.display = 'block';
+function showSessionUI(user){
+  // Barra compacta
+  statusBar.style.display = 'flex';
   who.textContent = `Conectado como: ${user.email} • rol: ${user.app_metadata?.role || '—'}`;
+
+  // Ocultar login y mostrar scanner
+  loginCard.style.display   = 'none';
   scannerCard.style.display = 'block';
-  startScanner();
+}
+function showLoginUI(){
+  statusBar.style.display   = 'none';
+  scannerCard.style.display = 'none';
+  loginCard.style.display   = 'block';
 }
 
 async function onLogin(){
-  loginStatus.textContent = "Verificando credenciales…";
+  loginMsg.textContent = "Verificando credenciales…";
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) { loginStatus.textContent = "❌ " + error.message; return; }
-  const ok = await checkIsAdmin(data.user);
-  if (!ok) {
-    loginStatus.textContent = "❌ No tienes permisos de verificador.";
+  if (error){ loginMsg.textContent = "❌ " + error.message; return; }
+  if (!await isAdmin(data.user)){
+    loginMsg.textContent = "❌ No tienes permisos de verificador.";
     await supabase.auth.signOut();
     return;
   }
-  loginStatus.textContent = "";
-  showScanner(data.user);
+  loginMsg.textContent = "";
+  showSessionUI(data.user);
+  startScanner();
 }
 
 async function onLogout(){
   try { await supabase.auth.signOut(); } catch {}
   stopScanner();
-  showLogin();
+  showLoginUI();
 }
 
-async function checkIsAdmin(user){
-  // Preferimos app_metadata.role; como respaldo leemos profiles.role o profiles.is_staff
+async function isAdmin(user){
   if (user?.app_metadata?.role === 'admin') return true;
   try{
-    const { data: profile } = await supabase.from("profiles").select("role,is_staff").eq("user_id", user.id).maybeSingle();
+    const { data: profile } = await supabase
+      .from("profiles").select("role,is_staff")
+      .eq("user_id", user.id).maybeSingle();
     return (profile?.role === 'admin' || profile?.is_staff === true);
-  }catch{ return false; }
+  }catch { return false; }
 }
 
+/* ===== Scanner ===== */
 function startScanner(){
-  if (QR) { try{ QR.stop(); }catch{} QR = null; }
+  if (QR) { try { QR.stop(); } catch {} QR = null; }
   QR = new Html5Qrcode("reader");
   QR.start(
     { facingMode: "environment" },
     { fps: 10, qrbox: 260 },
     async (decoded) => { await onScan(decoded); },
-    (err) => { /* onScanFailure: silenciar */ }
+    () => {}
   ).catch(err=>{
     document.getElementById("result").innerHTML = `<span class='err'>❌ No se pudo iniciar la cámara: ${err}</span>`;
   });
 }
-function stopScanner(){
-  try { QR?.stop(); } catch {}
-}
+function stopScanner(){ try { QR?.stop(); } catch {} }
 
 async function onScan(decoded){
   const resultEl = document.getElementById("result");
   try{
-    const data = JSON.parse(decoded);
-    const evt = data.event;
-    const usr = data.user;
-    if (!evt || !usr) { resultEl.innerHTML = "<span class='err'>❌ QR inválido</span>"; return; }
+    const data = JSON.parse(decoded);           // { event, user, ... }
+    const evt = data.event, usr = data.user;
+    if (!evt || !usr){ resultEl.innerHTML = "<span class='err'>❌ QR inválido</span>"; return; }
 
-    // Registrar el check-in (attendance_scans)
     const me = (await supabase.auth.getUser())?.data?.user;
+
+    // Inserta check-in
     const { error: insErr } = await supabase.from("attendance_scans").insert({
       event_uid: evt,
       attendee_id: usr,
@@ -157,26 +172,18 @@ async function onScan(decoded){
       scanned_at: new Date().toISOString(),
       raw: data
     });
-    if (insErr) {
-      resultEl.innerHTML = `<span class='err'>❌ No se pudo registrar: ${insErr.message}</span>`;
-      return;
-    }
+    if (insErr){ resultEl.innerHTML = `<span class='err'>❌ No se pudo registrar: ${insErr.message}</span>`; return; }
 
-    // (Opcional) Actualiza rsvps a checked_in si usas esa tabla
+    // (Opcional) marca rsvps
     try{
       await supabase.from("rsvps")
         .update({ status: "checked_in", updated_at: new Date().toISOString() })
-        .eq("user_id", usr)
-        .eq("event_uid", evt);
+        .eq("user_id", usr).eq("event_uid", evt);
     }catch{}
 
     resultEl.innerHTML = `<span class='ok'>✅ Asistencia registrada correctamente</span>`;
-    // Pequeño cooldown para evitar dobles lecturas
-    stopScanner();
-    setTimeout(()=> startScanner(), 600);
-  }catch(e){
-    resultEl.innerHTML = "<span class='err'>❌ QR inválido</span>";
-  }
+    stopScanner(); setTimeout(startScanner, 600); // cooldown anti doble lectura
+  }catch{ resultEl.innerHTML = "<span class='err'>❌ QR inválido</span>"; }
 }
 </script>
 </body>
