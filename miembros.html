@@ -101,7 +101,7 @@
           </div>
         </div>
 
-        <!-- ASISTENCIA Y RECOMPENSAS (dentro del perfil) -->
+        <!-- ASISTENCIA Y RECOMPENSAS -->
         <div class="card" id="asistenciaResumen" style="margin-top:20px; animation:fadeInSmall .2s ease">
           <h3>📊 Asistencia y recompensas</h3>
           <div id="asistData" class="meta" style="margin-bottom:8px">Cargando tus datos...</div>
@@ -128,7 +128,7 @@
           </div>
         </div>
 
-        <!-- MINI TOP en el perfil -->
+        <!-- MINI TOP -->
         <div class="card" id="miniTop" style="margin-top:12px; animation:fadeInSmall .2s ease">
           <h3>🏆 Top de los más asiduos (temporada actual)</h3>
           <div id="miniTopMeta" class="meta" style="margin-top:6px">Cargando…</div>
@@ -269,11 +269,11 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener("click",()=>{
       const id = btn.dataset.tab;
 
-      /* Scanner: validar admin y REDIRIGIR en la misma pestaña */
+      // Scanner: validar admin y redirigir
       if (id === 'scanner') {
         if (!IS_ADMIN) { alert('Necesitas rol admin para acceder al Scanner.'); return; }
         window.location.assign(SCANNER_REDIRECT_URL);
-        return; // no activar secciones locales
+        return;
       }
 
       document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
@@ -287,12 +287,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  $("btnLogout").addEventListener("click", async ()=>{ await supabase.auth.signOut(); location.href = LOGIN_URL; });
+  $("btnLogout").addEventListener("click", async ()=>{
+    await supabase.auth.signOut();
+    location.href = LOGIN_URL;
+  });
+
   $("btnRefreshMembers")?.addEventListener('click', ()=> loadMembers(true));
   $("qMembers")?.addEventListener('input', ()=> renderMembers());
   $("chkOnlineOnly")?.addEventListener('change', ()=> renderMembers());
   $("editForm")?.addEventListener('submit', onSaveProfile);
-  $("fAvatar")?.addEventListener('change', (e)=>{ const f = e.target.files?.[0]; if(f){ const u = URL.createObjectURL(f); $("avatarPreview").innerHTML = `<img src="${u}">`; } });
+  $("fAvatar")?.addEventListener('change', (e)=>{
+    const f = e.target.files?.[0];
+    if(f){ const u = URL.createObjectURL(f); $("avatarPreview").innerHTML = `<img src="${u}">`; }
+  });
 
   initApp();
 });
@@ -305,22 +312,17 @@ async function initApp(){
 
   CURRENT_USER = session.user;
   IS_ADMIN = (CURRENT_USER.app_metadata?.role === 'admin');
-
   if (IS_ADMIN) $("tabScanner").style.removeProperty('display');
 
-  await loadProfile();     // <-- dentro llama a asistencia
+  await loadProfile();
   await loadMembers(true);
   initPresence();
   initForum();
 
-  // Navegación inicial con posible #scanner
   const wanted = (location.hash || '#perfil').slice(1);
   if (wanted === 'scanner') {
-    if (IS_ADMIN) {
-      window.location.replace(SCANNER_REDIRECT_URL); // redirige directo si es admin
-    } else {
-      (document.querySelector('.tab[data-tab="perfil"]'))?.click();
-    }
+    if (IS_ADMIN) window.location.replace(SCANNER_REDIRECT_URL);
+    else (document.querySelector('.tab[data-tab="perfil"]'))?.click();
   } else {
     (document.querySelector(`.tab[data-tab="${wanted}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click();
   }
@@ -341,24 +343,42 @@ async function loadProfile(){
   $("pfAdscripcion").textContent = prof?.adscripcion || "—";
 
   const avatar = prof?.avatar_url || CURRENT_USER.user_metadata?.avatar_url;
-  if (avatar) { $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`; $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`; }
-  else { const ini = (prof?.display_name || CURRENT_USER.email || "?")[0].toUpperCase(); $("userAvatar").textContent = ini; $("avatarPreview").textContent = ini; }
+  if (avatar) {
+    $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`;
+    $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`;
+  } else {
+    const ini = (prof?.display_name || CURRENT_USER.email || "?")[0].toUpperCase();
+    $("userAvatar").textContent = ini;
+    $("avatarPreview").textContent = ini;
+  }
 
   // Prefill form
   $("fNombre").value      = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "";
   $("fTelefono").value    = prof?.telefono || CURRENT_USER.user_metadata?.telefono || "";
-  try{ const c=(prof?.cumple || CURRENT_USER.user_metadata?.cumple); if(c){ const d = new Date(c.length<=10? c+"T00:00:00":c); $("fCumple").value = d.toISOString().slice(0,10); } }catch{}
+  try{
+    const c=(prof?.cumple || CURRENT_USER.user_metadata?.cumple);
+    if(c){ const d = new Date(c.length<=10? c+"T00:00:00":c); $("fCumple").value = d.toISOString().slice(0,10); }
+  }catch{}
   $("fCategoria").value   = prof?.categoria || CURRENT_USER.user_metadata?.categoria || "";
   $("fAdscripcion").value = prof?.adscripcion || CURRENT_USER.user_metadata?.adscripcion || "";
   $("fBio").value         = prof?.bio || CURRENT_USER.user_metadata?.bio || "";
 
-  // --> Cargar asistencia y mini top dentro del perfil
   await loadAsistenciaPerfil();
   await loadMiniTopPerfil();
 }
 
-function maskPhone(t){ const s=(t||"").replace(/\D+/g,""); if(s.length<8) return t||"—"; return `••• ••${s.slice(-4)}`; }
-function formatDateISOtoMX(iso){ if(!iso) return "—"; try{ const d = new Date(iso.length<=10? iso+"T00:00:00":iso); return new Intl.DateTimeFormat('es-MX',{day:'2-digit', month:'long', year:'numeric'}).format(d);}catch{ return iso; } }
+function maskPhone(t){
+  const s=(t||"").replace(/\D+/g,"");
+  if(s.length<8) return t||"—";
+  return `••• ••${s.slice(-4)}`;
+}
+function formatDateISOtoMX(iso){
+  if(!iso) return "—";
+  try{
+    const d = new Date(iso.length<=10? iso+"T00:00:00":iso);
+    return new Intl.DateTimeFormat('es-MX',{day:'2-digit', month:'long', year:'numeric'}).format(d);
+  }catch{ return iso; }
+}
 
 /* ====== Upload avatar ====== */
 async function uploadAvatar(file){
@@ -373,6 +393,11 @@ async function uploadAvatar(file){
   const { data } = supabase.storage.from("avatars").getPublicUrl(path);
   return data?.publicUrl || null;
 }
+
+/* ====== Normalizador ====== */
+const nz = (v) => { if (v == null) return null; const t = String(v).trim(); return t === "" ? null : t; };
+
+/* ====== Guardar perfil (FIX incluido) ====== */
 async function onSaveProfile(e){
   e.preventDefault();
   $("status").textContent = "Guardando…";
@@ -381,33 +406,49 @@ async function onSaveProfile(e){
     let avatar_url = null;
     if (file){ avatar_url = await uploadAvatar(file); }
 
+    const rawCumple = $("fCumple").value;
+    const cumple = nz(rawCumple) ? new Date(rawCumple).toISOString().slice(0,10) : null;
+
     const updates = {
-      display_name: $("fNombre").value.trim(),
-      telefono: $("fTelefono").value.trim(),
-      cumple: $("fCumple").value.trim(),
-      categoria: $("fCategoria").value.trim(),
-      adscripcion: $("fAdscripcion").value.trim(),
-      bio: $("fBio").value.trim()
+      display_name: nz($("fNombre").value),
+      telefono:     nz($("fTelefono").value),
+      cumple,
+      categoria:    nz($("fCategoria").value),
+      adscripcion:  nz($("fAdscripcion").value),
+      bio:          nz($("fBio").value)
     };
     if (avatar_url) updates.avatar_url = avatar_url;
 
-    const { error } = await supabase.auth.updateUser({ data: updates });
-    if (error) throw error;
+    // También lo dejamos en user_metadata para mantener consistencia de sesión
+    const { error: authErr } = await supabase.auth.updateUser({ data: updates });
+    if (authErr) throw authErr;
 
-    await supabase.from('profiles').upsert({
+    // Upsert real a profiles (incluye telefono y cumple)
+    const { error: upErr } = await supabase.from('profiles').upsert({
       user_id: CURRENT_USER.id,
       display_name: updates.display_name,
       avatar_url: updates.avatar_url || CURRENT_USER.user_metadata?.avatar_url || null,
+      telefono: updates.telefono,
+      cumple: updates.cumple,
       categoria: updates.categoria,
       adscripcion: updates.adscripcion,
       bio: updates.bio,
       last_seen: new Date().toISOString(),
-      is_visible: $("fVisible").checked
-    });
+      is_visible: !!$("fVisible").checked
+    }, { onConflict: 'user_id' });
+
+    if (upErr) {
+      console.error(upErr);
+      $("status").textContent = "❌ Error al guardar en profiles. Revisa consola.";
+      return;
+    }
 
     $("status").textContent = "✅ Cambios guardados.";
     await loadProfile();
-  }catch(e){ console.error(e); $("status").textContent = "❌ Error al guardar."; }
+  }catch(e){
+    console.error(e);
+    $("status").textContent = "❌ Ocurrió un error guardando tu perfil.";
+  }
 }
 
 /* ====== Miembros ====== */
@@ -512,8 +553,20 @@ async function fetchNextEvent(){
   if (!GOOGLE_API_KEY) return null;
   const timeMin = new Date().toISOString();
   const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?singleEvents=true&orderBy=startTime&timeMin=${encodeURIComponent(timeMin)}&maxResults=1&key=${encodeURIComponent(GOOGLE_API_KEY)}`;
-  try{ const res = await fetch(url); if(!res.ok) throw new Error('HTTP '+res.status); const json = await res.json(); const evt=(json.items||[])[0]; if(!evt) return null; return { uid:evt.id, title:evt.summary||'Evento', start:evt.start?.dateTime||evt.start?.date, location:evt.location||'', description:(evt.description||'').replace(/<[^>]*>/g,'') }; }
-  catch(e){ console.error(e); return null; }
+  try{
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const json = await res.json();
+    const evt=(json.items||[])[0];
+    if(!evt) return null;
+    return {
+      uid:evt.id,
+      title:evt.summary||'Evento',
+      start:evt.start?.dateTime||evt.start?.date,
+      location:evt.location||'',
+      description:(evt.description||'').replace(/<[^>]*>/g,'')
+    };
+  } catch(e){ console.error(e); return null; }
 }
 async function initVerification(){
   $("rsvpBox").style.display = CURRENT_USER ? 'block' : 'none';
@@ -521,11 +574,22 @@ async function initVerification(){
   $("qrWrap").style.display = 'none';
 
   const evt = await fetchNextEvent();
-  if(!evt){ $("eventBox").textContent = "No hay eventos próximos o no fue posible consultarlos."; $("rsvpBox").style.display='none'; return; }
-  $("eventBox").innerHTML = `<div><strong>${escapeHtml(evt.title)}</strong></div><div class="meta">🗓️ ${formatDateFancy(evt.start)} ${evt.location? ' • 📍 '+escapeHtml(evt.location):''}</div>${evt.description? `<div class="muted" style="white-space:pre-wrap;margin-top:6px">${escapeHtml(evt.description)}</div>`:''}`;
+  if(!evt){
+    $("eventBox").textContent = "No hay eventos próximos o no fue posible consultarlos.";
+    $("rsvpBox").style.display='none';
+    return;
+  }
+  $("eventBox").innerHTML =
+    `<div><strong>${escapeHtml(evt.title)}</strong></div>
+     <div class="meta">🗓️ ${formatDateFancy(evt.start)}${evt.location? ' • 📍 '+escapeHtml(evt.location):''}</div>
+     ${evt.description? `<div class="muted" style="white-space:pre-wrap;margin-top:6px">${escapeHtml(evt.description)}</div>`:''}`;
   window.__NEXT_EVENT__ = evt;
 
-  const { data } = await supabase.from('rsvps').select('status, qr_payload').eq('user_id', CURRENT_USER.id).eq('event_uid', evt.uid).maybeSingle();
+  const { data } = await supabase.from('rsvps')
+    .select('status, qr_payload')
+    .eq('user_id', CURRENT_USER.id)
+    .eq('event_uid', evt.uid)
+    .maybeSingle();
   updateRSVPUI(data?.status || null, data?.qr_payload || null);
 
   $("btnYes").onclick = ()=> setRSVP('yes');
@@ -535,18 +599,36 @@ function buildQRPayload(evtUid){ return JSON.stringify({ v:1, event:evtUid, user
 async function setRSVP(status){
   const evt = window.__NEXT_EVENT__; if(!evt) return;
   let qrPayload = null;
-  if (status==='yes'){ qrPayload = buildQRPayload(evt.uid); $("qrWrap").style.display='block'; try{ await QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel:'M' }); }catch{} }
-  else { $("qrWrap").style.display='none'; }
+  if (status==='yes'){
+    qrPayload = buildQRPayload(evt.uid);
+    $("qrWrap").style.display='block';
+    try{ await QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel:'M' }); }catch{}
+  } else {
+    $("qrWrap").style.display='none';
+  }
 
-  const { error } = await supabase.from('rsvps').upsert({ user_id: CURRENT_USER.id, event_uid: evt.uid, status, qr_payload: qrPayload, updated_at: new Date().toISOString() }, { onConflict:'user_id,event_uid' });
-  $("rsvpStatus").textContent = error ? 'No se pudo guardar tu respuesta.' : (status==='yes' ? 'Confirmado ✔️' : 'Registrado como no asistente.');
+  const { error } = await supabase.from('rsvps').upsert({
+    user_id: CURRENT_USER.id,
+    event_uid: evt.uid,
+    status,
+    qr_payload: qrPayload,
+    updated_at: new Date().toISOString()
+  }, { onConflict:'user_id,event_uid' });
+
+  $("rsvpStatus").textContent = error ? 'No se pudo guardar tu respuesta.'
+                                     : (status==='yes' ? 'Confirmado ✔️' : 'Registrado como no asistente.');
   updateRSVPUI(status, qrPayload);
 }
 function updateRSVPUI(status, qrPayload){
   const yesBtn=$("btnYes"), noBtn=$("btnNo");
-  if(status==='yes'){ yesBtn.disabled=true; noBtn.disabled=false; $("qrWrap").style.display='block'; if(qrPayload){ QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel:'M' }).catch(()=>{}); } }
-  else if(status==='no'){ yesBtn.disabled=false; noBtn.disabled=true; $("qrWrap").style.display='none'; }
-  else { yesBtn.disabled=false; noBtn.disabled=false; $("qrWrap").style.display='none'; $("rsvpStatus").textContent=''; }
+  if(status==='yes'){
+    yesBtn.disabled=true; noBtn.disabled=false; $("qrWrap").style.display='block';
+    if(qrPayload){ QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel:'M' }).catch(()=>{}); }
+  } else if(status==='no'){
+    yesBtn.disabled=false; noBtn.disabled=true; $("qrWrap").style.display='none';
+  } else {
+    yesBtn.disabled=false; noBtn.disabled=false; $("qrWrap").style.display='none'; $("rsvpStatus").textContent='';
+  }
 }
 
 /* ====== Utilidades de asistencia / ranking ====== */
@@ -567,7 +649,6 @@ async function loadAsistenciaPerfil(){
   if(!CURRENT_USER) return;
   const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
 
-  // Tus últimos escaneos (propios)
   const { data: scans, error } = await supabase
     .from('attendance_scans')
     .select('event_uid, scanned_at')
@@ -582,15 +663,12 @@ async function loadAsistenciaPerfil(){
 
   info.textContent = `Último check-in: ${fmtMX(scans[0].scanned_at)}`;
 
-  // Temporada actual
   const currentSeason = seasonOf(new Date());
   const seasonScans = scans.filter(s => seasonOf(s.scanned_at) === currentSeason);
 
-  // Total por temporada = días con asistencia (si hubo varios eventos el mismo día, cuenta 1)
   const seasonDays = [...new Set(seasonScans.map(s => s.scanned_at.slice(0,10)))];
   const totalTemporada = seasonDays.length;
 
-  // Racha diaria (consecutiva hacia atrás)
   const allDays = [...new Set(scans.map(s => s.scanned_at.slice(0,10)))].sort();
   let racha = 0;
   if (allDays.length){
@@ -599,7 +677,6 @@ async function loadAsistenciaPerfil(){
     while (allDays.includes(cur.toISOString().slice(0,10))) { racha++; cur.setDate(cur.getDate()-1); }
   }
 
-  // Puntos: leer tabla si existe; si no, fallback 10 por asistencia de temporada
   let puntos = totalTemporada * 10;
   try {
     const { data: pts } = await supabase
@@ -611,7 +688,6 @@ async function loadAsistenciaPerfil(){
     if (pts?.points != null) puntos = pts.points;
   } catch {}
 
-  // Posición en ranking (lee la vista; si no existe, omite)
   let puesto = '—';
   try{
     const { data: lb } = await supabase
