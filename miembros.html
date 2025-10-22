@@ -43,10 +43,8 @@
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.35);font-size:12px;color:#cfefff}
 
-  /* Calendario / Iframe */
   iframe{width:100%;min-height:600px;border:0;border-radius:12px}
 
-  /* Foro */
   details.forum-toggle{margin-top:16px}
   details.forum-toggle > summary{list-style:none; cursor:pointer; user-select:none; display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:rgba(91,215,242,.10); border:1px solid rgba(91,215,242,.28); font-weight:600; color:#bff4ff}
   details.forum-toggle[open] > summary{background:rgba(91,215,242,.18)}
@@ -56,9 +54,6 @@
 
   .qr-card{display:grid; place-items:center; background:rgba(96,165,250,.08); border:1px solid rgba(96,165,250,.25); border-radius:12px; padding:12px; width:220px}
   .qr-card canvas{width:196px !important; height:196px !important}
-
-  /* Scanner iframe */
-  iframe.scanner-frame{width:100%; height:700px; border:0; border-radius:12px; background:#0b1022}
 
   @media (max-width: 980px){
     nav{width:100%; flex-direction:row; position:sticky; top:52px; z-index:9; overflow:auto;}
@@ -106,7 +101,7 @@
       </div>
     </section>
 
-    <!-- MIEMBROS (listado básico) -->
+    <!-- MIEMBROS -->
     <section id="miembros" class="content">
       <div class="card">
         <h2>👥 Directorio de Miembros</h2>
@@ -130,7 +125,7 @@
       </div>
     </section>
 
-    <!-- FORO (simple) -->
+    <!-- FORO -->
     <section id="foro" class="content">
       <div class="card">
         <h2>🗣️ Foro de Miembros</h2>
@@ -177,23 +172,6 @@
       </div>
     </section>
 
-    <!-- SCANNER (solo admins) -->
-    <section id="scanner" class="content" style="display:none">
-      <div class="card">
-        <h2>🔎 Scanner de Asistencia (solo admins)</h2>
-        <p class="muted">Escanea el QR para registrar la llegada.</p>
-        <iframe
-          id="scannerFrame"
-          class="scanner-frame"
-          title="Escáner de asistencia"
-          loading="lazy"
-          allow="camera; microphone; autoplay; clipboard-read; clipboard-write"
-          sandbox="allow-same-origin allow-scripts allow-forms allow-modals allow-popups allow-downloads allow-presentation allow-top-navigation-by-user-activation">
-        </iframe>
-        <div class="meta" id="scanStatus"></div>
-      </div>
-    </section>
-
     <!-- PERSONALIZA -->
     <section id="personaliza" class="content">
       <div class="card">
@@ -231,8 +209,8 @@ const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
 const LOGIN_URL = "login.html";
 
-/* Cambia por la URL HTTPS donde publicaste scanner.html */
-const SCANNER_URL = "https://chronosbvrx.github.io/InnovacionSindical/scanner";
+/* Redirección del Scanner (MISMA PESTAÑA) */
+const SCANNER_REDIRECT_URL = "https://chronosbvrx.github.io/InnovacionSindical/scanner";
 
 /* Google Calendar (opcional para auto evento) */
 const GOOGLE_API_KEY = "AIzaSyDdtYPPE-jTvw_Gypxrq2c5UePpbK9ZxZ0";
@@ -248,22 +226,28 @@ let CURRENT_USER = null;
 let IS_ADMIN = false;
 let MEMBERS_CACHE = [];
 let ONLINE_SET = new Set();
-let iframeLoaded = false;
 
 /* ====== Tabs ====== */
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll(".tab").forEach(btn=>{
     btn.addEventListener("click",()=>{
       const id = btn.dataset.tab;
-      if (id === 'scanner' && !IS_ADMIN) { alert('Necesitas rol admin para acceder al Scanner.'); return; }
+
+      /* Scanner: validar admin y REDIRIGIR en la misma pestaña */
+      if (id === 'scanner') {
+        if (!IS_ADMIN) { alert('Necesitas rol admin para acceder al Scanner.'); return; }
+        window.location.assign(SCANNER_REDIRECT_URL);
+        return; // no activar secciones locales
+      }
+
       document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
       document.querySelectorAll(".content").forEach(c=>c.classList.remove("active"));
       btn.classList.add("active");
       $(id).classList.add("active");
       location.hash = id;
+
       if (id === 'miembros') renderMembers();
       if (id === 'verificacion') initVerification();
-      if (id === 'scanner') mountScannerIframe();
     });
   });
 
@@ -293,9 +277,17 @@ async function initApp(){
   initPresence();
   initForum();
 
+  // Navegación inicial con posible #scanner
   const wanted = (location.hash || '#perfil').slice(1);
-  const initial = (wanted === 'scanner' && !IS_ADMIN) ? 'perfil' : wanted;
-  (document.querySelector(`.tab[data-tab="${initial}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click();
+  if (wanted === 'scanner') {
+    if (IS_ADMIN) {
+      window.location.replace(SCANNER_REDIRECT_URL); // redirige directo si es admin
+    } else {
+      (document.querySelector('.tab[data-tab="perfil"]'))?.click();
+    }
+  } else {
+    (document.querySelector(`.tab[data-tab="${wanted}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click();
+  }
 }
 
 /* ====== Perfil ====== */
@@ -362,7 +354,6 @@ async function onSaveProfile(e){
     const { error } = await supabase.auth.updateUser({ data: updates });
     if (error) throw error;
 
-    // reflejar en profiles (útil para búsquedas/directorio)
     await supabase.from('profiles').upsert({
       user_id: CURRENT_USER.id,
       display_name: updates.display_name,
@@ -424,7 +415,7 @@ function renderMembers(){
     wrap.appendChild(card);
   });
 }
-function escapeHtml(str){ return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
+function escapeHtml(str){ return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
 
 /* ====== Presencia ====== */
 function initPresence(){
@@ -442,11 +433,14 @@ function initPresence(){
 }
 
 /* ====== Foro ====== */
-function initForum(){ loadPosts(); supabase.channel('realtime-foro')
-  .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPosts)
-  .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, loadPosts)
-  .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, loadPosts)
-  .subscribe();
+function initForum(){
+  loadPosts();
+  supabase.channel('realtime-foro')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPosts)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, loadPosts)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, loadPosts)
+    .subscribe();
+
   $("forumForm")?.addEventListener('submit', async (e)=>{
     e.preventDefault();
     const text = ($("forumInput").value||'').trim(); if(!text) return;
@@ -492,7 +486,6 @@ async function initVerification(){
   $("eventBox").innerHTML = `<div><strong>${escapeHtml(evt.title)}</strong></div><div class="meta">🗓️ ${formatDateFancy(evt.start)} ${evt.location? ' • 📍 '+escapeHtml(evt.location):''}</div>${evt.description? `<div class="muted" style="white-space:pre-wrap;margin-top:6px">${escapeHtml(evt.description)}</div>`:''}`;
   window.__NEXT_EVENT__ = evt;
 
-  // carga estado previo
   const { data } = await supabase.from('rsvps').select('status, qr_payload').eq('user_id', CURRENT_USER.id).eq('event_uid', evt.uid).maybeSingle();
   updateRSVPUI(data?.status || null, data?.qr_payload || null);
 
@@ -515,15 +508,6 @@ function updateRSVPUI(status, qrPayload){
   if(status==='yes'){ yesBtn.disabled=true; noBtn.disabled=false; $("qrWrap").style.display='block'; if(qrPayload){ QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel:'M' }).catch(()=>{}); } }
   else if(status==='no'){ yesBtn.disabled=false; noBtn.disabled=true; $("qrWrap").style.display='none'; }
   else { yesBtn.disabled=false; noBtn.disabled=false; $("qrWrap").style.display='none'; $("rsvpStatus").textContent=''; }
-}
-
-/* ====== Scanner iframe ====== */
-function mountScannerIframe(){
-  if (iframeLoaded) return;
-  const frame = $("scannerFrame");
-  frame.src = SCANNER_URL; // carga solo al abrir la pestaña
-  iframeLoaded = true;
-  $("scanStatus").textContent = "Si el navegador pregunta, autoriza el acceso a la cámara.";
 }
 </script>
 </body>
