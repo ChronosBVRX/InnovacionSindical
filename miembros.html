@@ -77,7 +77,7 @@
     <section id="perfil" class="content active">
       <div class="card">
         <h2>👋 Bienvenido</h2>
-        <p class="muted">Esta es tu página de miembro dentro de Unidad en Accion</p>
+        <p class="muted">Esta es tu página de miembro dentro de Unidad en Acción</p>
         <div class="profile-info">
           <div class="avatar" id="userAvatar">🧑</div>
           <div class="profile-data">
@@ -277,7 +277,6 @@ async function loadProfile(){
   $("pfTelefono").textContent = maskPhone(prof?.telefono || CURRENT_USER.user_metadata?.telefono);
   $("pfCumple").textContent = formatDateISOtoMX(prof?.cumple || CURRENT_USER.user_metadata?.cumple);
 
-  /* Fallback para que se muestren aunque solo estén en user_metadata */
   $("pfCategoria").textContent   = (prof?.categoria   ?? CURRENT_USER.user_metadata?.categoria)   || "—";
   $("pfAdscripcion").textContent = (prof?.adscripcion ?? CURRENT_USER.user_metadata?.adscripcion) || "—";
 
@@ -407,7 +406,11 @@ function renderMembers(){
     wrap.appendChild(card);
   });
 }
-function escapeHtml(str){ return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
+function escapeHtml(str){
+  return (str||'').replace(/[&<>\"']/g, s=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+  }[s]));
+}
 
 /* ====== Presencia ====== */
 function initPresence(){
@@ -466,7 +469,7 @@ async function loadPosts(){
     .order('created_at',{ascending:false})
     .limit(50);
 
-  if (error) { console.error(error); return; }
+  if (error) { console.error(error); wrap.innerHTML = `<div class="meta">No se pudieron cargar las publicaciones.</div>`; return; }
   if (!posts?.length) { wrap.innerHTML = `<div class="meta">Aún no hay publicaciones.</div>`; return; }
 
   const ids = posts.map(p=>p.id);
@@ -524,21 +527,49 @@ async function loadPosts(){
     wrap.appendChild(card);
   });
 
-  // Like / Unlike
+  // Like / Unlike – versión corregida (UI optimista + onConflict + sin refresh)
   wrap.querySelectorAll('.btn-like').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
-      const postId = +btn.dataset.id;
+    btn.addEventListener('click', async (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+
+      const postId = parseInt(btn.dataset.id, 10);
       const isLiked = btn.getAttribute('aria-pressed') === 'true';
+
+      const meta = btn.querySelector('.meta');
+      const numMatch = (meta?.textContent.match(/\d+/) || [0])[0];
+      let count = parseInt(numMatch, 10) || 0;
+
+      btn.disabled = true;
+
       if (isLiked) {
-        await supabase.from('likes').delete().match({ post_id: postId, user_id: CURRENT_USER.id });
-        btn.setAttribute('aria-pressed','false');
-        btn.innerHTML = btn.innerHTML.replace('❤️','🤍');
+        const { error } = await supabase
+          .from('likes')
+          .delete()
+          .match({ post_id: postId, user_id: CURRENT_USER.id });
+
+        if (error) {
+          alert('❌ No se pudo quitar el like: ' + (error.message || 'Error'));
+        } else {
+          btn.setAttribute('aria-pressed','false');
+          btn.innerHTML = btn.innerHTML.replace('❤️','🤍');
+          if (meta) meta.textContent = `(${Math.max(0, count - 1)})`;
+        }
       } else {
-        await supabase.from('likes').upsert({ post_id: postId, user_id: CURRENT_USER.id });
-        btn.setAttribute('aria-pressed','true');
-        btn.innerHTML = btn.innerHTML.replace('🤍','❤️');
+        const { error } = await supabase
+          .from('likes')
+          .upsert({ post_id: postId, user_id: CURRENT_USER.id }, { onConflict: 'post_id,user_id' });
+
+        if (error) {
+          alert('❌ No se pudo dar like: ' + (error.message || 'Error'));
+        } else {
+          btn.setAttribute('aria-pressed','true');
+          btn.innerHTML = btn.innerHTML.replace('🤍','❤️');
+          if (meta) meta.textContent = `(${count + 1})`;
+        }
       }
-      loadPosts();
+
+      btn.disabled = false;
     });
   });
 
@@ -647,110 +678,4 @@ function seasonOf(dateLike){
   const d = new Date(dateLike);
   const year = d.toLocaleString('en-CA',{ timeZone:'America/Mexico_City', year:'numeric' });
   const m = +d.toLocaleString('en-CA',{ timeZone:'America/Mexico_City', month:'numeric' });
-  const q = Math.ceil(m/3);
-  return `${year}-Q${q}`;
-}
-function fmtMX(iso){
-  try { return new Intl.DateTimeFormat('es-MX',{dateStyle:'medium', timeStyle:'short'}).format(new Date(iso)); }
-  catch { return iso; }
-}
-
-/* ====== Asistencia dentro del perfil ====== */
-async function loadAsistenciaPerfil(){
-  if(!CURRENT_USER) return;
-  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
-
-  const { data: scans, error } = await supabase
-    .from('attendance_scans')
-    .select('event_uid, scanned_at')
-    .eq('attendee_id', CURRENT_USER.id)
-    .order('scanned_at',{ ascending:false })
-    .limit(200);
-
-  const info = document.getElementById('asistData');
-
-  if (error){ info.textContent = "No se pudieron cargar tus datos."; return; }
-  if (!scans || scans.length === 0){ info.textContent = "Aún no has registrado asistencias."; return; }
-
-  info.textContent = `Último check-in: ${fmtMX(scans[0].scanned_at)}`;
-
-  const currentSeason = seasonOf(new Date());
-  const seasonScans = scans.filter(s => seasonOf(s.scanned_at) === currentSeason);
-
-  const seasonDays = [...new Set(seasonScans.map(s => s.scanned_at.slice(0,10)))];
-  const totalTemporada = seasonDays.length;
-
-  const allDays = [...new Set(scans.map(s => s.scanned_at.slice(0,10)))].sort();
-  let racha = 0;
-  if (allDays.length){
-    let cur = new Date(); cur.setHours(0,0,0,0);
-    if (!allDays.includes(cur.toISOString().slice(0,10))) cur.setDate(cur.getDate()-1);
-    while (allDays.includes(cur.toISOString().slice(0,10))) { racha++; cur.setDate(cur.getDate()-1); }
-  }
-
-  let puntos = totalTemporada * 10;
-  try {
-    const { data: pts } = await supabase
-      .from('attendance_points')
-      .select('points')
-      .eq('user_id', CURRENT_USER.id)
-      .eq('season', currentSeason)
-      .maybeSingle();
-    if (pts?.points != null) puntos = pts.points;
-  } catch {}
-
-  let puesto = '—';
-  try{
-    const { data: lb } = await supabase
-      .from('attendance_leaderboard')
-      .select('user_id, points')
-      .eq('season', currentSeason)
-      .order('points',{ ascending:false })
-      .limit(100);
-    const pos = (lb||[]).findIndex(row => row.user_id === CURRENT_USER.id);
-    if (pos >= 0) puesto = `#${pos+1}`;
-  }catch{}
-
-  set('asistTotal', totalTemporada);
-  set('asistRacha', racha);
-  set('asistPuntos', puntos);
-  set('asistTop', puesto);
-}
-
-/* ====== Mini TOP en el perfil ====== */
-async function loadMiniTopPerfil(){
-  const meta = document.getElementById('miniTopMeta');
-  const box  = document.getElementById('miniTopList');
-  meta.textContent = 'Cargando…'; box.innerHTML = '';
-
-  const currentSeason = seasonOf(new Date());
-  try{
-    const { data } = await supabase
-      .from('attendance_leaderboard')
-      .select('user_id, display_name, avatar_url, points, total_scans, season')
-      .eq('season', currentSeason)
-      .order('points',{ ascending:false })
-      .limit(5);
-
-    if (!data || !data.length){ meta.textContent = 'Aún no hay datos en esta temporada.'; return; }
-    meta.textContent = `Temporada: ${currentSeason}`;
-
-    data.forEach((r, idx)=>{
-      const el = document.createElement('div');
-      el.className = 'row';
-      el.innerHTML = `
-        <div style="width:28px;text-align:right;font-weight:800">${idx+1}</div>
-        <div class="avatar" style="width:36px;height:36px;margin-left:8px">${r.avatar_url? `<img src="${r.avatar_url}">` : (r.display_name||'?')[0]?.toUpperCase()}</div>
-        <div style="flex:1;min-width:160px;margin-left:8px">
-          <div style="font-weight:700">${escapeHtml(r.display_name||'Miembro')}${r.user_id===CURRENT_USER.id?' <span class="pill">Tú</span>':''}</div>
-          <div class="meta">Asistencias: ${r.total_scans} • Puntos: ${r.points}</div>
-        </div>`;
-      box.appendChild(el);
-    });
-  }catch(e){
-    meta.textContent = 'No fue posible cargar el ranking.';
-  }
-}
-</script>
-</body>
-</html>
+  const q =
