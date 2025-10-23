@@ -415,7 +415,7 @@ function renderMembers(){
   });
 }
 function escapeHtml(str){
-  return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s]));
+  return (str||'').replace(/[&<>\"']/g, s=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;","\"":"&quot;","'":"&#39;"}[s]));
 }
 
 /* ====== Presencia ====== */
@@ -433,7 +433,7 @@ function initPresence(){
   });
 }
 
-/* ====== Foro (likes + comentarios + edición) ====== */
+/* ====== Foro (likes + comentarios + edición + eliminación) ====== */
 function initForum(){
   loadPosts();
 
@@ -461,9 +461,9 @@ function fmtDate(iso){
   try { return new Intl.DateTimeFormat('es-MX',{dateStyle:'medium', timeStyle:'short'}).format(new Date(iso)); }
   catch { return iso; }
 }
-function canEditPost(postUserId){
-  return IS_ADMIN || (postUserId === CURRENT_USER.id);
-}
+function canEditPost(postUserId){ return IS_ADMIN || (postUserId === CURRENT_USER.id); }
+function canDeletePost(postUserId){ return IS_ADMIN || (postUserId === CURRENT_USER.id); }
+function canDeleteComment(commentUserId){ return IS_ADMIN || (commentUserId === CURRENT_USER.id); }
 
 async function loadPosts(){
   const wrap = $("postsList");
@@ -516,6 +516,7 @@ async function loadPosts(){
               <div class="card" style="padding:12px">
                 <div class="meta">${c.user_id===CURRENT_USER.id?'Tú':'Miembro'} • ${fmtDate(c.created_at)}</div>
                 <div style="margin-top:6px;white-space:pre-wrap">${escapeHtml(c.content)}</div>
+                ${canDeleteComment(c.user_id) ? `<button class="subtle-btn btn-del-comment" data-cid="${c.id}" data-pid="${p.id}">🗑️ Borrar comentario</button>` : ``}
               </div>
             `).join('')}
             <form class="comment-form" data-id="${p.id}">
@@ -527,6 +528,7 @@ async function loadPosts(){
           </div>
         </details>
         ${canEditPost(p.user_id) ? `<button class="subtle-btn btn-edit" data-id="${p.id}">✏️ Editar</button>` : ``}
+        ${canDeletePost(p.user_id) ? `<button class="subtle-btn btn-del-post" data-id="${p.id}">🗑️ Borrar</button>` : ``}
       </div>
     `;
 
@@ -536,48 +538,31 @@ async function loadPosts(){
   /* Like / Unlike — UUID (no números) */
   wrap.querySelectorAll('.btn-like').forEach(btn=>{
     btn.addEventListener('click', async (e)=>{
-      e.preventDefault();
-      e.stopPropagation();
-
-      const postId = btn.dataset.id; // UUID en texto
+      e.preventDefault(); e.stopPropagation();
+      const postId = btn.dataset.id; // UUID
       const isLiked = btn.getAttribute('aria-pressed') === 'true';
-
       const meta = btn.querySelector('.meta');
       const numMatch = (meta?.textContent.match(/\d+/) || [0])[0];
       let count = parseInt(numMatch, 10) || 0;
-
       btn.disabled = true;
 
       if (isLiked) {
-        const { error } = await supabase
-          .from('likes')
-          .delete()
-          .match({ post_id: postId, user_id: CURRENT_USER.id });
-
-        if (error) {
-          alert('❌ No se pudo quitar el like: ' + (error.message || 'Error'));
-        } else {
+        const { error } = await supabase.from('likes').delete().match({ post_id: postId, user_id: CURRENT_USER.id });
+        if (error) alert('❌ No se pudo quitar el like: ' + (error.message || 'Error'));
+        else {
           btn.setAttribute('aria-pressed','false');
           btn.innerHTML = btn.innerHTML.replace('❤️','🤍');
           if (meta) meta.textContent = `(${Math.max(0, count - 1)})`;
         }
       } else {
-        const { error } = await supabase
-          .from('likes')
-          .upsert(
-            { post_id: postId, user_id: CURRENT_USER.id },
-            { onConflict: 'post_id,user_id' }
-          );
-
-        if (error) {
-          alert('❌ No se pudo dar like: ' + (error.message || 'Error'));
-        } else {
+        const { error } = await supabase.from('likes').upsert({ post_id: postId, user_id: CURRENT_USER.id }, { onConflict: 'post_id,user_id' });
+        if (error) alert('❌ No se pudo dar like: ' + (error.message || 'Error'));
+        else {
           btn.setAttribute('aria-pressed','true');
           btn.innerHTML = btn.innerHTML.replace('🤍','❤️');
           if (meta) meta.textContent = `(${count + 1})`;
         }
       }
-
       btn.disabled = false;
     });
   });
@@ -585,15 +570,12 @@ async function loadPosts(){
   // Comentar — UUID (no números)
   wrap.querySelectorAll('.comment-form').forEach(form=>{
     form.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      e.stopPropagation();
-
+      e.preventDefault(); e.stopPropagation();
       const postId = form.dataset.id; // UUID
       const ta = form.querySelector('.comment-input');
       const status = form.querySelector('.comment-status');
       const text = (ta.value||'').trim();
       if (!text) return;
-
       status.textContent = 'Enviando…';
       const { error } = await supabase.from('comments').insert({ post_id: postId, user_id: CURRENT_USER.id, content: text });
       status.textContent = error ? '❌ No se pudo comentar: '+(error.message||'') : '✅ Comentado';
@@ -605,9 +587,7 @@ async function loadPosts(){
   // Editar — UUID (no números)
   wrap.querySelectorAll('.btn-edit').forEach(btn=>{
     btn.addEventListener('click', (e)=>{
-      e.preventDefault();
-      e.stopPropagation();
-
+      e.preventDefault(); e.stopPropagation();
       const postId = btn.dataset.id; // UUID
       const card = btn.closest('.card');
       const contentEl = card.querySelector('.post-content');
@@ -630,8 +610,7 @@ async function loadPosts(){
       const status = card.querySelector('.edit-status');
 
       cancelBtn.addEventListener('click', (e)=>{
-        e.preventDefault();
-        loadPosts();
+        e.preventDefault(); loadPosts();
       });
 
       saveBtn.addEventListener('click', async ()=>{
@@ -642,6 +621,33 @@ async function loadPosts(){
         status.textContent = error ? '❌ No se pudo guardar: '+(error.message||'') : '✅ Guardado';
         if (!error) loadPosts();
       });
+    });
+  });
+
+  // 🗑️ Borrar publicación (si no tienes FKs con ON DELETE CASCADE, borra dependencias primero)
+  wrap.querySelectorAll('.btn-del-post').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const postId = btn.dataset.id;
+      if (!confirm('¿Seguro que deseas borrar esta publicación? Esta acción no se puede deshacer.')) return;
+
+      // Elimina dependencias si no hay ON DELETE CASCADE
+      try { await supabase.from('comments').delete().eq('post_id', postId); } catch(_) {}
+      try { await supabase.from('likes').delete().eq('post_id', postId); } catch(_) {}
+
+      const { error } = await supabase.from('posts').delete().eq('id', postId);
+      if (error) { alert('❌ No se pudo borrar: ' + (error.message||'')); return; }
+      loadPosts();
+    });
+  });
+
+  // 🗑️ Borrar comentario
+  wrap.querySelectorAll('.btn-del-comment').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const commentId = btn.dataset.cid;
+      if (!confirm('¿Borrar este comentario?')) return;
+      const { error } = await supabase.from('comments').delete().eq('id', commentId);
+      if (error) { alert('❌ No se pudo borrar: ' + (error.message||'')); return; }
+      loadPosts();
     });
   });
 }
