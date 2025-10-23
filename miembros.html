@@ -224,6 +224,10 @@ const $ = (id) => document.getElementById(id);
 
 let CURRENT_USER=null, IS_ADMIN=false, MEMBERS_CACHE=[], ONLINE_SET=new Set();
 
+/* ====== Debounce / Tokens ====== */
+const debounce = (fn, ms=200) => { let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; };
+let POSTS_TOKEN = 0; // invalida renders viejos de loadPosts
+
 /* ====== Tabs ====== */
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll(".tab").forEach(btn=>{
@@ -240,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.add("active"); $(id).classList.add("active"); location.hash = id;
       if (id === 'miembros') renderMembers();
       if (id === 'verificacion') initVerification();
-      if (id === 'foro') loadPosts();
+      if (id === 'foro') loadPostsDeb(); // usando debounce para evitar duplicados
     });
   });
 
@@ -434,15 +438,17 @@ function initPresence(){
 }
 
 /* ====== Foro (likes + comentarios + edición + eliminación) ====== */
-function initForum(){
-  loadPosts();
+const loadPostsDeb = debounce(loadPosts, 200);
 
-  // Realtime
+function initForum(){
+  loadPostsDeb();
+
+  // Realtime (debounced)
   supabase
     .channel('realtime-foro')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPosts)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, loadPosts)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, loadPosts)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPostsDeb)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, loadPostsDeb)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, loadPostsDeb)
     .subscribe();
 
   $("forumForm")?.addEventListener('submit', async (e)=>{
@@ -452,8 +458,7 @@ function initForum(){
     const cat = $("forumCategory").value || "Asuntos Generales";
     const { error } = await supabase.from('posts').insert({ content: text, user_id: CURRENT_USER.id, category: cat });
     $("forumStatus").textContent = error ? "❌ No se pudo publicar: "+(error.message||'') : "✅ Publicado";
-    if (!error) $("forumInput").value = "";
-    loadPosts();
+    if (!error){ $("forumInput").value = ""; /* realtime refresca; si quieres forzar: */ loadPostsDeb(); }
   });
 }
 
@@ -466,8 +471,18 @@ function canDeletePost(postUserId){ return IS_ADMIN || (postUserId === CURRENT_U
 function canDeleteComment(commentUserId){ return IS_ADMIN || (commentUserId === CURRENT_USER.id); }
 
 async function loadPosts(){
+  const myToken = ++POSTS_TOKEN; // invalida render viejo
+
   const wrap = $("postsList");
-  wrap.innerHTML = "";
+  // estado de carga sin borrar lo ya pintado para evitar parpadeos
+  let loading = document.getElementById('postsLoadingMsg');
+  if (!loading){
+    loading = document.createElement('div');
+    loading.id = 'postsLoadingMsg';
+    loading.className = 'meta';
+    loading.textContent = 'Cargando publicaciones…';
+    wrap.prepend(loading);
+  }
 
   const { data: posts, error } = await supabase
     .from('posts')
@@ -475,7 +490,11 @@ async function loadPosts(){
     .order('created_at',{ascending:false})
     .limit(50);
 
-  if (error) { console.error(error); wrap.innerHTML = `<div class="meta">❌ Error cargando posts.</div>`; return; }
+  if (myToken !== POSTS_TOKEN) return; // otra llamada más nueva ganó
+
+  wrap.innerHTML = ""; // ahora sí limpiamos una vez
+
+  if (error) { wrap.innerHTML = `<div class="meta">❌ Error cargando posts.</div>`; return; }
   if (!posts?.length) { wrap.innerHTML = `<div class="meta">Aún no hay publicaciones.</div>`; return; }
 
   const ids = posts.map(p=>p.id);
@@ -485,6 +504,8 @@ async function loadPosts(){
     supabase.from('comments').select('id, post_id, user_id, content, created_at').in('post_id', ids).order('created_at',{ascending:true})
   ]);
 
+  if (myToken !== POSTS_TOKEN) return;
+
   const likeCount = new Map(); (allLikes||[]).forEach(l=>likeCount.set(l.post_id,(likeCount.get(l.post_id)||0)+1));
   const myLiked = new Set((myLikes||[]).map(l=>l.post_id));
   const commentsByPost = new Map();
@@ -493,6 +514,7 @@ async function loadPosts(){
   posts.forEach(p=>{
     const card = document.createElement('div');
     card.className = 'card';
+    card.dataset.postId = p.id; // útil para depurar
     const liked = myLiked.has(p.id);
     const count = likeCount.get(p.id)||0;
     const postComments = commentsByPost.get(p.id)||[];
@@ -535,11 +557,11 @@ async function loadPosts(){
     wrap.appendChild(card);
   });
 
-  /* Like / Unlike — UUID (no números) */
+  /* Like / Unlike */
   wrap.querySelectorAll('.btn-like').forEach(btn=>{
     btn.addEventListener('click', async (e)=>{
       e.preventDefault(); e.stopPropagation();
-      const postId = btn.dataset.id; // UUID
+      const postId = btn.dataset.id;
       const isLiked = btn.getAttribute('aria-pressed') === 'true';
       const meta = btn.querySelector('.meta');
       const numMatch = (meta?.textContent.match(/\d+/) || [0])[0];
@@ -548,30 +570,28 @@ async function loadPosts(){
 
       if (isLiked) {
         const { error } = await supabase.from('likes').delete().match({ post_id: postId, user_id: CURRENT_USER.id });
-        if (error) alert('❌ No se pudo quitar el like: ' + (error.message || 'Error'));
-        else {
+        if (!error){
           btn.setAttribute('aria-pressed','false');
           btn.innerHTML = btn.innerHTML.replace('❤️','🤍');
           if (meta) meta.textContent = `(${Math.max(0, count - 1)})`;
-        }
+        } else alert('❌ No se pudo quitar el like: ' + (error.message || 'Error'));
       } else {
         const { error } = await supabase.from('likes').upsert({ post_id: postId, user_id: CURRENT_USER.id }, { onConflict: 'post_id,user_id' });
-        if (error) alert('❌ No se pudo dar like: ' + (error.message || 'Error'));
-        else {
+        if (!error){
           btn.setAttribute('aria-pressed','true');
           btn.innerHTML = btn.innerHTML.replace('🤍','❤️');
           if (meta) meta.textContent = `(${count + 1})`;
-        }
+        } else alert('❌ No se pudo dar like: ' + (error.message || 'Error'));
       }
       btn.disabled = false;
     });
   });
 
-  // Comentar — UUID (no números)
+  // Comentar
   wrap.querySelectorAll('.comment-form').forEach(form=>{
     form.addEventListener('submit', async (e)=>{
       e.preventDefault(); e.stopPropagation();
-      const postId = form.dataset.id; // UUID
+      const postId = form.dataset.id;
       const ta = form.querySelector('.comment-input');
       const status = form.querySelector('.comment-status');
       const text = (ta.value||'').trim();
@@ -580,15 +600,15 @@ async function loadPosts(){
       const { error } = await supabase.from('comments').insert({ post_id: postId, user_id: CURRENT_USER.id, content: text });
       status.textContent = error ? '❌ No se pudo comentar: '+(error.message||'') : '✅ Comentado';
       if (!error) ta.value = '';
-      loadPosts();
+      loadPostsDeb(); // refresco ligero
     });
   });
 
-  // Editar — UUID (no números)
+  // Editar
   wrap.querySelectorAll('.btn-edit').forEach(btn=>{
     btn.addEventListener('click', (e)=>{
       e.preventDefault(); e.stopPropagation();
-      const postId = btn.dataset.id; // UUID
+      const postId = btn.dataset.id;
       const card = btn.closest('.card');
       const contentEl = card.querySelector('.post-content');
       const original = contentEl.textContent;
@@ -610,7 +630,7 @@ async function loadPosts(){
       const status = card.querySelector('.edit-status');
 
       cancelBtn.addEventListener('click', (e)=>{
-        e.preventDefault(); loadPosts();
+        e.preventDefault(); loadPostsDeb();
       });
 
       saveBtn.addEventListener('click', async ()=>{
@@ -619,35 +639,32 @@ async function loadPosts(){
         status.textContent = 'Guardando…';
         const { error } = await supabase.from('posts').update({ content: newText }).eq('id', postId);
         status.textContent = error ? '❌ No se pudo guardar: '+(error.message||'') : '✅ Guardado';
-        if (!error) loadPosts();
+        if (!error) loadPostsDeb();
       });
     });
   });
 
-  // 🗑️ Borrar publicación (si no tienes FKs con ON DELETE CASCADE, borra dependencias primero)
+  // Borrar publicación
   wrap.querySelectorAll('.btn-del-post').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       const postId = btn.dataset.id;
       if (!confirm('¿Seguro que deseas borrar esta publicación? Esta acción no se puede deshacer.')) return;
-
-      // Elimina dependencias si no hay ON DELETE CASCADE
       try { await supabase.from('comments').delete().eq('post_id', postId); } catch(_) {}
       try { await supabase.from('likes').delete().eq('post_id', postId); } catch(_) {}
-
       const { error } = await supabase.from('posts').delete().eq('id', postId);
       if (error) { alert('❌ No se pudo borrar: ' + (error.message||'')); return; }
-      loadPosts();
+      loadPostsDeb();
     });
   });
 
-  // 🗑️ Borrar comentario
+  // Borrar comentario
   wrap.querySelectorAll('.btn-del-comment').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       const commentId = btn.dataset.cid;
       if (!confirm('¿Borrar este comentario?')) return;
       const { error } = await supabase.from('comments').delete().eq('id', commentId);
       if (error) { alert('❌ No se pudo borrar: ' + (error.message||'')); return; }
-      loadPosts();
+      loadPostsDeb();
     });
   });
 }
