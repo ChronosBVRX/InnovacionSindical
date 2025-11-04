@@ -55,13 +55,14 @@
   .page{margin:0 auto;background:#fff;color:#111;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,.35); position:relative}
   .page.carta{width:816px;height:1056px}  /* ~8.5x11" @96dpi */
   .sheet{padding:72px 64px;font:14px "Times New Roman", Times, serif;line-height:1.35;white-space:pre-wrap}
-  .sheet header{font-size:12px;text-align:right;margin-bottom:16px}
+  .sheet header{font-size:12px;text-align:right;margin-bottom:16px; font-weight:700;} /* negritas para lugar/fecha */
   .sheet .dest{font-weight:700;margin-top:6px;margin-bottom:8px}
   .sheet .pres{margin:0 0 14px 0}
   .sheet h6{font-weight:700;margin:18px 0 6px 0}
+  .sheet p{ text-align: justify; } /* cuerpo justificado */
   .sheet .pie{
     position:absolute;bottom:72px;left:64px;right:64px;
-    text-align:center; /* 👈 centrado en la vista previa */
+    text-align:center;
   }
 </style>
 </head>
@@ -203,6 +204,8 @@
     </div>
   </div>
 
+  <!-- html2canvas (requerido por doc.html) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <!-- jsPDF -->
   <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -216,18 +219,18 @@
     const N = s => (s||'').toString().trim();
     const setStatus = (t='')=> $('#status').textContent=t;
 
-    // ✔ FIX jsPDF: devolvemos el namespace window.jspdf (no la clase)
+    // ✔ FIX jsPDF + html2canvas: espera a que ambos estén listos
     const ensureJsPDF = () => new Promise((resolve, reject)=>{
       let tries = 0;
       const t = setInterval(()=>{
         tries++;
-        if (window.jspdf && window.jspdf.jsPDF){
+        if (window.jspdf && window.jspdf.jsPDF && window.html2canvas){
           clearInterval(t);
           resolve(window.jspdf); // { jsPDF, ... }
         }
-        if (tries > 120){
+        if (tries > 200){ // ~10s
           clearInterval(t);
-          reject(new Error('jsPDF no cargó'));
+          reject(new Error('jsPDF/html2canvas no cargaron'));
         }
       }, 50);
     });
@@ -369,6 +372,7 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
     }
     function cerrarPreview(){ closeModal(); }
 
+    // ===== Opción B: PDF calcado a la vista previa con doc.html (justificado real) =====
     async function generarPDF(d, {action='print'} = {}){
       setStatus('Generando PDF…');
       try{
@@ -376,79 +380,50 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         const doc = new jsPDF({ unit:'pt', format:'letter' }); // Carta
 
         const dims = {W:612, H:792};
-        const M = 64;        // laterales
-        const topBase = 72;  // superior
-        const width = dims.W - M*2;
+        const M = 64;        // márgenes laterales
+        const topBase = 72;  // margen superior
 
         const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
         if(!cuerpo){ throw new Error('No se generó cuerpo del escrito.'); }
 
-        // Encabezado a la derecha
-        doc.setFont('Times','Normal'); doc.setFontSize(10);
-        doc.text(encabezadoTop, dims.W - M, 48, {align:'right'});
+        // 1) Construir el mismo HTML que la vista previa
+        const html = buildPreviewHTML(encabezadoTop, dest, cuerpo, pie);
 
-        // Destinatario
-        let y = 88;
-        doc.setFont('Times','Bold'); doc.setFontSize(12);
-        const destLines = doc.splitTextToSize(dest, width);
-        doc.text(destLines, M, y); y += destLines.length*16 + 8;
+        // 2) Montar un nodo temporal con clases .page/.sheet para respetar estilos
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'fixed';
+        wrapper.style.left = '-10000px';
+        wrapper.innerHTML = `
+          <div class="page carta">
+            <div class="sheet" style="padding:0">
+              ${html}
+            </div>
+          </div>
+        `;
+        document.body.appendChild(wrapper);
 
-        // Presente
-        doc.setFont('Times','Normal'); doc.setFontSize(12);
-        doc.text('Presente.', M, y); y += 22;
+        // 3) Ajustes inline por si acaso
+        wrapper.querySelector('.sheet header')?.style.setProperty('font-weight','700');
+        wrapper.querySelectorAll('.sheet p')?.forEach(p=> p.style.textAlign='justify');
 
-        // Cuerpo
-        const parrafos = (cuerpo||"").split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
-        const lineHeight = 16;
+        // 4) Render directo del HTML al PDF dentro de márgenes
+        await doc.html(wrapper.querySelector('.sheet'), {
+          x: M,
+          y: topBase - 24,          // pequeño ajuste visual
+          width: dims.W - M*2,      // respeta márgenes
+          windowWidth: 816,         // coincide con tu carta en px (vista previa)
+          html2canvas: { scale: 1 } // nítido sin inflar tamaño
+        });
 
-        for (let i=0;i<parrafos.length;i++){
-          const p = parrafos[i];
-          if(/^[A-ZÁÉÍÓÚÑ\s\/]+:$/.test(p)){
-            // Si es título, intenta mantenerlo con al menos 2 líneas después
-            const next = parrafos[i+1] || '';
-            const linesNext = doc.splitTextToSize(next, width).length;
-            if (y + (lineHeight + 2) + (linesNext*lineHeight) > dims.H - 160){
-              doc.addPage(); y = topBase;
-            }
-            doc.setFont('Times','Bold'); doc.text(p, M, y); y += lineHeight+2; doc.setFont('Times','Normal');
-          }else{
-            const lines = doc.splitTextToSize(p, width);
-            if(y + lines.length*lineHeight > dims.H - 160){ doc.addPage(); y = topBase; }
-            doc.text(lines, M, y); y += lines.length*lineHeight + 6;
-          }
-        }
-
-        // Pie / firma centrado
-        if(y < dims.H - 140) y = dims.H - 140;
-        const cx = dims.W / 2;
-
-        doc.setFont('Times','Bold');
-        doc.text('ATENTAMENTE', cx, y, { align: 'center' }); 
-        y += 28;
-
-        doc.setFont('Times','Normal');
-        doc.text(d.nombre, cx, y, { align: 'center' }); 
-        y += 16;
-
-        doc.text(`Matrícula: ${d.matricula}`, cx, y, { align: 'center' }); 
-        y += 16;
-
-        doc.text(`Categoría: ${d.categoria}`, cx, y, { align: 'center' }); 
-        y += 16;
-
-        if (N(d.lugar)) {
-          doc.text(d.lugar, cx, y, { align: 'center' });
-        }
-
-        const blob = doc.output('blob');
-        const url = URL.createObjectURL(blob);
+        // 5) Limpieza y salida
+        document.body.removeChild(wrapper);
 
         if(action==='download'){
-          const a = document.createElement('a');
-          a.href = url; a.download = 'Escrito.pdf'; document.body.appendChild(a);
-          a.click(); setTimeout(()=>{ a.remove(); URL.revokeObjectURL(url); }, 1000);
+          doc.save('Escrito.pdf');
           setStatus('PDF descargado.');
         } else {
+          const blob = doc.output('blob');
+          const url = URL.createObjectURL(blob);
           let iframe = document.getElementById('print-iframe');
           if(!iframe){
             iframe = document.createElement('iframe');
@@ -463,7 +438,6 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
                 iframe.contentWindow.focus();
                 setTimeout(()=>{
                   iframe.contentWindow.print();
-                  // revoca el URL después de enviar a imprimir
                   setTimeout(()=> URL.revokeObjectURL(url), 5000);
                   res();
                 }, 120);
@@ -523,8 +497,18 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
     // ===== Eventos =====
     document.getElementById('btnPreview').addEventListener('click', abrirPreview);
     document.getElementById('btnClose').addEventListener('click', cerrarPreview);
-    document.getElementById('btnDownload').addEventListener('click', async ()=>{ await generarPDF(datos(), {action:'download'}); });
-    document.getElementById('btnPrint').addEventListener('click', async ()=>{ await generarPDF(datos(), {action:'print'}); });
+    document.getElementById('btnDownload').addEventListener('click', async ()=>{ 
+      const d = datos();
+      const required = ['ciudad','destinatario','nombre','matricula','categoria','problematica'];
+      for(const k of required){ if(!d[k]){ alert('Faltan campos obligatorios.'); return; } }
+      await generarPDF(d, {action:'download'}); 
+    });
+    document.getElementById('btnPrint').addEventListener('click', async ()=>{ 
+      const d = datos();
+      const required = ['ciudad','destinatario','nombre','matricula','categoria','problematica'];
+      for(const k of required){ if(!d[k]){ alert('Faltan campos obligatorios.'); return; } }
+      await generarPDF(d, {action:'print'}); 
+    });
     document.getElementById('btnCopy').addEventListener('click', async ()=>{
       try{
         const d = datos();
