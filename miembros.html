@@ -1,375 +1,390 @@
-<img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20Unidad%20en%20Accion.png?raw=true"
-  alt="Logo">
-Unidad en Acción — Miembros
-</h1>
-<div style="display:flex;gap:8px;align-items:center">
-  <button id="btnBack" class="subtle-btn" style="font-size:16px" title="Atrás">⬅</button>
-  <button id="btnHome" class="subtle-btn" style="font-size:16px" title="Inicio">🏠</button>
-  <button id="btnLogout">Cerrar sesión</button>
-</div>
-</header>
+<!DOCTYPE html>
+<html lang="es">
 
-<main>
-  <nav>
-    <button class="tab active" data-tab="perfil">👤 Perfil</button>
-    <button class="tab" data-tab="miembros">👥 Miembros</button>
-    <button class="tab" data-tab="calendario">📅 Calendario</button>
-    <button class="tab" data-tab="foro">🗣️ Foro</button>
-    <button class="tab" data-tab="verificacion">✅ Verificación</button>
-    <button class="tab" data-tab="scanner" id="tabScanner" style="display:none">🔎 Scanner</button>
-    <button class="tab" data-tab="personaliza">⚙️ Personaliza tu perfil</button>
-  </nav>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Unidad en Acción — Miembros</title>
+  <link rel="icon"
+    href="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20Unidad%20en%20Accion.png?raw=true">
+  <link rel="stylesheet" href="theme.css">
+</head>
 
-  <!-- PERFIL -->
-  <section id="perfil" class="content active">
-    <div class="card">
-      <h2>👋 Bienvenido</h2>
-      <p class="muted">Esta es tu página de miembro dentro de Unidad en Acción</p>
-      <div class="profile-info">
-        <div class="avatar" id="userAvatar">🧑</div>
-        <div class="profile-data">
-          <p><strong>Nombre:</strong> <span id="pfName">Cargando…</span></p>
-          <p><strong>Email:</strong> <span id="pfEmail">—</span></p>
-          <p><strong>Teléfono:</strong> <span id="pfTelefono">—</span></p>
-          <p><strong>Cumpleaños:</strong> <span id="pfCumple">—</span></p>
-          <p><strong>Categoría:</strong> <span id="pfCategoria">—</span></p>
-          <p><strong>Adscripción:</strong> <span id="pfAdscripcion">—</span></p>
-        </div>
-      </div>
+<body>
+  <header class="glass-panel">
+    <h1>
+      <img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20Unidad%20en%20Accion.png?raw=true"
+        alt="Logo">
+      Unidad en Acción — Miembros
+    </h1>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="btnBack" class="subtle-btn" style="font-size:16px" title="Atrás">⬅</button>
+      <button id="btnHome" class="subtle-btn" style="font-size:16px" title="Inicio">🏠</button>
+      <button id="btnLogout">Cerrar sesión</button>
+    </div>
+  </header>
 
-      <!-- ASISTENCIA -->
-      <div class="card" id="asistenciaResumen" style="margin-top:20px; animation:fadeInSmall .2s ease">
-        <h3>📊 Asistencia y recompensas</h3>
-        <div id="asistData" class="meta" style="margin-bottom:8px">Cargando tus datos...</div>
-        <div class="row" style="flex-wrap:wrap;gap:20px">
-          <div>
-            <div class="meta">Eventos asistidos (temporada)</div>
-            <div id="asistTotal" style="font-size:26px;font-weight:700">0</div>
-          </div>
-          <div>
-            <div class="meta">Racha actual (días)</div>
-            <div id="asistRacha" style="font-size:26px;font-weight:700">0</div>
-          </div>
-          <div>
-            <div class="meta">Puntos</div>
-            <div id="asistPuntos" style="font-size:26px;font-weight:700">0</div>
-          </div>
-          <div>
-            <div class="meta">Posición en ranking</div>
-            <div id="asistTop" style="font-size:26px;font-weight:700">—</div>
+  <main>
+    <nav>
+      <button class="tab active" data-tab="perfil">👤 Perfil</button>
+      <button class="tab" data-tab="miembros">👥 Miembros</button>
+      <button class="tab" data-tab="calendario">📅 Calendario</button>
+      <button class="tab" data-tab="foro">🗣️ Foro</button>
+      <button class="tab" data-tab="verificacion">✅ Verificación</button>
+      <button class="tab" data-tab="scanner" id="tabScanner" style="display:none">🔎 Scanner</button>
+      <button class="tab" data-tab="personaliza">⚙️ Personaliza tu perfil</button>
+    </nav>
+
+    <!-- PERFIL -->
+    <section id="perfil" class="content active">
+      <div class="card">
+        <h2>👋 Bienvenido</h2>
+        <p class="muted">Esta es tu página de miembro dentro de Unidad en Acción</p>
+        <div class="profile-info">
+          <div class="avatar" id="userAvatar">🧑</div>
+          <div class="profile-data">
+            <p><strong>Nombre:</strong> <span id="pfName">Cargando…</span></p>
+            <p><strong>Email:</strong> <span id="pfEmail">—</span></p>
+            <p><strong>Teléfono:</strong> <span id="pfTelefono">—</span></p>
+            <p><strong>Cumpleaños:</strong> <span id="pfCumple">—</span></p>
+            <p><strong>Categoría:</strong> <span id="pfCategoria">—</span></p>
+            <p><strong>Adscripción:</strong> <span id="pfAdscripcion">—</span></p>
           </div>
         </div>
+
+        <!-- ASISTENCIA -->
+        <div class="card" id="asistenciaResumen" style="margin-top:20px; animation:fadeInSmall .2s ease">
+          <h3>📊 Asistencia y recompensas</h3>
+          <div id="asistData" class="meta" style="margin-bottom:8px">Cargando tus datos...</div>
+          <div class="row" style="flex-wrap:wrap;gap:20px">
+            <div>
+              <div class="meta">Eventos asistidos (temporada)</div>
+              <div id="asistTotal" style="font-size:26px;font-weight:700">0</div>
+            </div>
+            <div>
+              <div class="meta">Racha actual (días)</div>
+              <div id="asistRacha" style="font-size:26px;font-weight:700">0</div>
+            </div>
+            <div>
+              <div class="meta">Puntos</div>
+              <div id="asistPuntos" style="font-size:26px;font-weight:700">0</div>
+            </div>
+            <div>
+              <div class="meta">Posición en ranking</div>
+              <div id="asistTop" style="font-size:26px;font-weight:700">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MINI TOP -->
+        <div class="card" id="miniTop" style="margin-top:12px; animation:fadeInSmall .2s ease">
+          <h3>🏆 Top de asistencia </h3>
+          <div id="miniTopMeta" class="meta" style="margin-top:6px">Cargando…</div>
+          <div id="miniTopList" style="margin-top:10px;display:grid;gap:8px"></div>
+        </div>
       </div>
+    </section>
 
-      <!-- MINI TOP -->
-      <div class="card" id="miniTop" style="margin-top:12px; animation:fadeInSmall .2s ease">
-        <h3>🏆 Top de asistencia </h3>
-        <div id="miniTopMeta" class="meta" style="margin-top:6px">Cargando…</div>
-        <div id="miniTopList" style="margin-top:10px;display:grid;gap:8px"></div>
+    <!-- MIEMBROS -->
+    <section id="miembros" class="content">
+      <div class="card">
+        <h2>👥 Directorio de Miembros</h2>
+        <div class="row" style="margin-top:6px">
+          <input id="qMembers" placeholder="Buscar por nombre o adscripción" style="min-width:260px">
+          <button class="subtle-btn" id="btnRefreshMembers">Actualizar</button>
+          <label class="row" style="gap:8px;align-items:center;margin-left:auto">
+            <input type="checkbox" id="chkOnlineOnly"><span>👁️ Solo online</span>
+          </label>
+        </div>
+        <div id="membersList" style="margin-top:14px;display:grid;gap:12px"></div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- MIEMBROS -->
-  <section id="miembros" class="content">
-    <div class="card">
-      <h2>👥 Directorio de Miembros</h2>
-      <div class="row" style="margin-top:6px">
-        <input id="qMembers" placeholder="Buscar por nombre o adscripción" style="min-width:260px">
-        <button class="subtle-btn" id="btnRefreshMembers">Actualizar</button>
-        <label class="row" style="gap:8px;align-items:center;margin-left:auto">
-          <input type="checkbox" id="chkOnlineOnly"><span>👁️ Solo online</span>
-        </label>
+    <!-- CALENDARIO -->
+    <section id="calendario" class="content">
+      <div class="card">
+        <h2>📅 Calendario de Actividades</h2>
+        <iframe
+          src="https://calendar.google.com/calendar/embed?src=redunidadenaccion%40gmail.com&ctz=America%2FMexico_City&showTitle=0&showPrint=0&showTz=0&showCalendars=0"></iframe>
       </div>
-      <div id="membersList" style="margin-top:14px;display:grid;gap:12px"></div>
-    </div>
-  </section>
+    </section>
 
-  <!-- CALENDARIO -->
-  <section id="calendario" class="content">
-    <div class="card">
-      <h2>📅 Calendario de Actividades</h2>
-      <iframe
-        src="https://calendar.google.com/calendar/embed?src=redunidadenaccion%40gmail.com&ctz=America%2FMexico_City&showTitle=0&showPrint=0&showTz=0&showCalendars=0"></iframe>
-    </div>
-  </section>
+    <!-- FORO -->
+    <section id="foro" class="content">
+      <div class="card">
+        <h2>🗣️ Foro de Miembros</h2>
+        <div id="postsList" style="display:grid;gap:12px"></div>
+        <details class="forum-toggle" id="newPostToggle">
+          <summary><span class="rotate">▸</span><span>Crear una publicación</span></summary>
+          <form id="forumForm" style="margin-top:12px">
+            <label>Escribe una publicación (máx. 500 caracteres)</label>
+            <textarea id="forumInput" maxlength="500" placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
+            <div class="row">
+              <label style="font-size:13px">Categoría</label>
+              <select id="forumCategory">
+                <option>Avisos</option>
+                <option selected>Asuntos Generales</option>
+                <option>Convivencia</option>
+              </select>
+            </div>
+            <button class="btn" type="submit">➕ Publicar</button>
+            <div class="status meta" id="forumStatus"></div>
+          </form>
+        </details>
+      </div>
+    </section>
 
-  <!-- FORO -->
-  <section id="foro" class="content">
-    <div class="card">
-      <h2>🗣️ Foro de Miembros</h2>
-      <div id="postsList" style="display:grid;gap:12px"></div>
-      <details class="forum-toggle" id="newPostToggle">
-        <summary><span class="rotate">▸</span><span>Crear una publicación</span></summary>
-        <form id="forumForm" style="margin-top:12px">
-          <label>Escribe una publicación (máx. 500 caracteres)</label>
-          <textarea id="forumInput" maxlength="500" placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
+    <!-- VERIFICACIÓN -->
+    <section id="verificacion" class="content">
+      <div class="card">
+        <h2>✅ Verificación de Asistencia</h2>
+        <p class="muted">Confirma si asistirás al próximo evento. Si confirmas, obtendrás un QR para registrar tu
+          llegada.</p>
+        <div id="eventBox" class="meta">Buscando el próximo evento…</div>
+        <div id="rsvpBox" style="margin-top:12px; display:none">
           <div class="row">
-            <label style="font-size:13px">Categoría</label>
-            <select id="forumCategory">
-              <option>Avisos</option>
-              <option selected>Asuntos Generales</option>
-              <option>Convivencia</option>
-            </select>
+            <button class="btn" id="btnYes">✔️ Asistiré</button>
+            <button class="subtle-btn" id="btnNo">✖️ No asistiré</button>
+            <span class="meta" id="rsvpStatus"></span>
           </div>
-          <button class="btn" type="submit">➕ Publicar</button>
-          <div class="status meta" id="forumStatus"></div>
+          <div id="qrWrap" style="margin-top:12px; display:none">
+            <div class="qr-card"><canvas id="qrCanvas" aria-label="Código QR"></canvas></div>
+            <div class="meta" style="margin-top:6px">Muestra este QR al llegar.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PERSONALIZA -->
+    <section id="personaliza" class="content">
+      <div class="card">
+        <h2>⚙️ Edita tu información</h2>
+        <div class="row" style="margin-top:10px">
+          <div class="avatar" id="avatarPreview">🧑</div>
+          <div>
+            <label>Foto de perfil (PNG/JPG/WebP, máx 2MB)</label>
+            <input type="file" id="fAvatar" accept="image/png,image/jpeg,image/webp">
+            <div class="meta">Se previsualiza al seleccionar; se sube al guardar.</div>
+          </div>
+        </div>
+        <form id="editForm">
+          <label>Nombre completo</label><input id="fNombre" placeholder="Tu nombre completo">
+          <label>Teléfono</label><input id="fTelefono" placeholder="Ej. 5532120000">
+          <label>Fecha de cumpleaños</label><input id="fCumple" type="date">
+          <label>Categoría</label><input id="fCategoria" placeholder="Ej. Enfermera General A">
+          <label>Adscripción</label><input id="fAdscripcion" placeholder="Ej. HGR 1, Urgencias">
+          <label>Biografía corta</label><textarea id="fBio" placeholder="Cuéntanos algo breve"></textarea>
+          <button class="btn" type="submit">💾 Guardar cambios</button>
+          <div class="status meta" id="status"></div>
         </form>
-      </details>
-    </div>
-  </section>
-
-  <!-- VERIFICACIÓN -->
-  <section id="verificacion" class="content">
-    <div class="card">
-      <h2>✅ Verificación de Asistencia</h2>
-      <p class="muted">Confirma si asistirás al próximo evento. Si confirmas, obtendrás un QR para registrar tu
-        llegada.</p>
-      <div id="eventBox" class="meta">Buscando el próximo evento…</div>
-      <div id="rsvpBox" style="margin-top:12px; display:none">
-        <div class="row">
-          <button class="btn" id="btnYes">✔️ Asistiré</button>
-          <button class="subtle-btn" id="btnNo">✖️ No asistiré</button>
-          <span class="meta" id="rsvpStatus"></span>
-        </div>
-        <div id="qrWrap" style="margin-top:12px; display:none">
-          <div class="qr-card"><canvas id="qrCanvas" aria-label="Código QR"></canvas></div>
-          <div class="meta" style="margin-top:6px">Muestra este QR al llegar.</div>
-        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
-  <!-- PERSONALIZA -->
-  <section id="personaliza" class="content">
-    <div class="card">
-      <h2>⚙️ Edita tu información</h2>
-      <div class="row" style="margin-top:10px">
-        <div class="avatar" id="avatarPreview">🧑</div>
-        <div>
-          <label>Foto de perfil (PNG/JPG/WebP, máx 2MB)</label>
-          <input type="file" id="fAvatar" accept="image/png,image/jpeg,image/webp">
-          <div class="meta">Se previsualiza al seleccionar; se sube al guardar.</div>
-        </div>
-      </div>
-      <form id="editForm">
-        <label>Nombre completo</label><input id="fNombre" placeholder="Tu nombre completo">
-        <label>Teléfono</label><input id="fTelefono" placeholder="Ej. 5532120000">
-        <label>Fecha de cumpleaños</label><input id="fCumple" type="date">
-        <label>Categoría</label><input id="fCategoria" placeholder="Ej. Enfermera General A">
-        <label>Adscripción</label><input id="fAdscripcion" placeholder="Ej. HGR 1, Urgencias">
-        <label>Biografía corta</label><textarea id="fBio" placeholder="Cuéntanos algo breve"></textarea>
-        <button class="btn" type="submit">💾 Guardar cambios</button>
-        <div class="status meta" id="status"></div>
-      </form>
-    </div>
-  </section>
-</main>
+  <!-- Librerías -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
-<!-- Librerías -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <script>
+    /* ====== Config ====== */
+    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    const LOGIN_URL = "login.html";
+    const SCANNER_REDIRECT_URL = "https://chronosbvrx.github.io/InnovacionSindical/scanner";
+    const GOOGLE_API_KEY = "AIzaSyDdtYPPE-jTvw_Gypxrq2c5UePpbK9ZxZ0";
+    const CALENDAR_ID = "redunidadenaccion@gmail.com";
 
-<script>
-  /* ====== Config ====== */
-  const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-  const LOGIN_URL = "login.html";
-  const SCANNER_REDIRECT_URL = "https://chronosbvrx.github.io/InnovacionSindical/scanner";
-  const GOOGLE_API_KEY = "AIzaSyDdtYPPE-jTvw_Gypxrq2c5UePpbK9ZxZ0";
-  const CALENDAR_ID = "redunidadenaccion@gmail.com";
+    /* ====== Cliente ====== */
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+    const $ = (id) => document.getElementById(id);
 
-  /* ====== Cliente ====== */
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
-  const $ = (id) => document.getElementById(id);
+    let CURRENT_USER = null, IS_ADMIN = false, MEMBERS_CACHE = [], ONLINE_SET = new Set();
 
-  let CURRENT_USER = null, IS_ADMIN = false, MEMBERS_CACHE = [], ONLINE_SET = new Set();
+    /* ====== Debounce / Tokens ====== */
+    const debounce = (fn, ms = 200) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+    let POSTS_TOKEN = 0; // invalida renders viejos de loadPosts
 
-  /* ====== Debounce / Tokens ====== */
-  const debounce = (fn, ms = 200) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
-  let POSTS_TOKEN = 0; // invalida renders viejos de loadPosts
-
-  /* ====== Tabs ====== */
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll(".tab").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        const id = btn.dataset.tab;
-        if (id === 'scanner') {
-          if (!IS_ADMIN) { alert('Necesitas rol admin para acceder al Scanner.'); return; }
-          window.location.assign(SCANNER_REDIRECT_URL);
-          return;
-        }
-        document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
-        document.querySelectorAll(".content").forEach(c => c.classList.remove("active"));
-        btn.classList.add("active"); $(id).classList.add("active"); location.hash = id;
-        if (id === 'miembros') renderMembers();
-        if (id === 'verificacion') initVerification();
-        if (id === 'foro') loadPostsDeb(); // usando debounce para evitar duplicados
+    /* ====== Tabs ====== */
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll(".tab").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const id = btn.dataset.tab;
+          if (id === 'scanner') {
+            if (!IS_ADMIN) { alert('Necesitas rol admin para acceder al Scanner.'); return; }
+            window.location.assign(SCANNER_REDIRECT_URL);
+            return;
+          }
+          document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".content").forEach(c => c.classList.remove("active"));
+          btn.classList.add("active"); $(id).classList.add("active"); location.hash = id;
+          if (id === 'miembros') renderMembers();
+          if (id === 'verificacion') initVerification();
+          if (id === 'foro') loadPostsDeb(); // usando debounce para evitar duplicados
+        });
       });
+
+      $("btnLogout").addEventListener("click", async () => { await supabase.auth.signOut(); location.href = LOGIN_URL; });
+      $("btnBack")?.addEventListener("click", () => history.back());
+      $("btnHome")?.addEventListener("click", () => location.href = "index.html");
+      $("btnRefreshMembers")?.addEventListener('click', () => loadMembers(true));
+      $("qMembers")?.addEventListener('input', () => renderMembers());
+      $("chkOnlineOnly")?.addEventListener('change', () => renderMembers());
+      $("editForm")?.addEventListener('submit', onSaveProfile);
+      $("fAvatar")?.addEventListener('change', (e) => { const f = e.target.files?.[0]; if (f) { const u = URL.createObjectURL(f); $("avatarPreview").innerHTML = `<img src="${u}">`; } });
+
+      initApp();
     });
 
-    $("btnLogout").addEventListener("click", async () => { await supabase.auth.signOut(); location.href = LOGIN_URL; });
-    $("btnBack")?.addEventListener("click", () => history.back());
-    $("btnHome")?.addEventListener("click", () => location.href = "index.html");
-    $("btnRefreshMembers")?.addEventListener('click', () => loadMembers(true));
-    $("qMembers")?.addEventListener('input', () => renderMembers());
-    $("chkOnlineOnly")?.addEventListener('change', () => renderMembers());
-    $("editForm")?.addEventListener('submit', onSaveProfile);
-    $("fAvatar")?.addEventListener('change', (e) => { const f = e.target.files?.[0]; if (f) { const u = URL.createObjectURL(f); $("avatarPreview").innerHTML = `<img src="${u}">`; } });
+    /* ====== App init ====== */
+    async function initApp() {
+      await supabase.auth.refreshSession();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { location.href = LOGIN_URL; return; }
+      CURRENT_USER = session.user;
+      IS_ADMIN = (CURRENT_USER.app_metadata?.role === 'admin');
+      if (IS_ADMIN) $("tabScanner").style.removeProperty('display');
 
-    initApp();
-  });
-
-  /* ====== App init ====== */
-  async function initApp() {
-    await supabase.auth.refreshSession();
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { location.href = LOGIN_URL; return; }
-    CURRENT_USER = session.user;
-    IS_ADMIN = (CURRENT_USER.app_metadata?.role === 'admin');
-    if (IS_ADMIN) $("tabScanner").style.removeProperty('display');
-
-    await loadProfile();
-    await loadMembers(true);
-    initPresence();
-    initForum();
-
-    const wanted = (location.hash || '#perfil').slice(1);
-    if (wanted === 'scanner') { if (IS_ADMIN) window.location.replace(SCANNER_REDIRECT_URL); else (document.querySelector('.tab[data-tab="perfil"]'))?.click(); }
-    else { (document.querySelector(`.tab[data-tab="${wanted}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click(); }
-  }
-
-  /* ====== Perfil ====== */
-  async function loadProfile() {
-    const { data: prof } = await supabase
-      .from('profiles')
-      .select('display_name, avatar_url, categoria, adscripcion, bio, cumple, telefono')
-      .eq('user_id', CURRENT_USER.id).maybeSingle();
-
-    $("pfName").textContent = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "Sin nombre";
-    $("pfEmail").textContent = CURRENT_USER.email || "—";
-    $("pfTelefono").textContent = maskPhone(prof?.telefono || CURRENT_USER.user_metadata?.telefono);
-    $("pfCumple").textContent = formatDateISOtoMX(prof?.cumple || CURRENT_USER.user_metadata?.cumple);
-
-    $("pfCategoria").textContent = (prof?.categoria ?? CURRENT_USER.user_metadata?.categoria) || "—";
-    $("pfAdscripcion").textContent = (prof?.adscripcion ?? CURRENT_USER.user_metadata?.adscripcion) || "—";
-
-    const avatar = prof?.avatar_url || CURRENT_USER.user_metadata?.avatar_url;
-    if (avatar) { $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`; $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`; }
-    else { const ini = (prof?.display_name || CURRENT_USER.email || "?")[0].toUpperCase(); $("userAvatar").textContent = ini; $("avatarPreview").textContent = ini; }
-
-    // Prefill form
-    $("fNombre").value = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "";
-    $("fTelefono").value = prof?.telefono || CURRENT_USER.user_metadata?.telefono || "";
-    try { const c = (prof?.cumple || CURRENT_USER.user_metadata?.cumple); if (c) { const d = new Date(c.length <= 10 ? c + "T00:00:00" : c); $("fCumple").value = d.toISOString().slice(0, 10); } } catch { }
-    $("fCategoria").value = prof?.categoria || CURRENT_USER.user_metadata?.categoria || "";
-    $("fAdscripcion").value = prof?.adscripcion || CURRENT_USER.user_metadata?.adscripcion || "";
-    $("fBio").value = prof?.bio || CURRENT_USER.user_metadata?.bio || "";
-
-    await loadAsistenciaPerfil();
-    await loadMiniTopPerfil();
-  }
-
-  function maskPhone(t) { const s = (t || "").replace(/\D+/g, ""); if (s.length < 8) return t || "—"; return `••• ••${s.slice(-4)}`; }
-  function formatDateISOtoMX(iso) { if (!iso) return "—"; try { const d = new Date(iso.length <= 10 ? iso + "T00:00:00" : iso); return new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: 'long', year: 'numeric' }).format(d); } catch { return iso; } }
-
-  /* ====== Upload avatar ====== */
-  async function uploadAvatar(file) {
-    if (!file) return null;
-    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) { alert("Formato no soportado"); return null; }
-    if (file.size > 2 * 1024 * 1024) { alert("Máx 2MB"); return null; }
-    const uid = CURRENT_USER.id;
-    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-    const path = `${uid}/${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from("avatars").upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
-    if (error) { alert("No se pudo subir la imagen"); return null; }
-    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
-    return data?.publicUrl || null;
-  }
-
-  /* ====== Normalizador ====== */
-  const nz = (v) => { if (v == null) return null; const t = String(v).trim(); return t === "" ? null : t; };
-
-  /* ====== Guardar perfil ====== */
-  async function onSaveProfile(e) {
-    e.preventDefault();
-    $("status").textContent = "Guardando…";
-    try {
-      const file = $("fAvatar").files?.[0];
-      let avatar_url = null;
-      if (file) { avatar_url = await uploadAvatar(file); }
-
-      const rawCumple = $("fCumple").value;
-      const cumple = nz(rawCumple) ? new Date(rawCumple).toISOString().slice(0, 10) : null;
-
-      const updates = {
-        display_name: nz($("fNombre").value),
-        telefono: nz($("fTelefono").value),
-        cumple,
-        categoria: nz($("fCategoria").value),
-        adscripcion: nz($("fAdscripcion").value),
-        bio: nz($("fBio").value)
-      };
-      if (avatar_url) updates.avatar_url = avatar_url;
-
-      const { error: authErr } = await supabase.auth.updateUser({ data: updates });
-      if (authErr) throw authErr;
-
-      const { error: upErr } = await supabase.from('profiles').upsert({
-        user_id: CURRENT_USER.id,
-        display_name: updates.display_name,
-        avatar_url: updates.avatar_url || CURRENT_USER.user_metadata?.avatar_url || null,
-        telefono: updates.telefono,
-        cumple: updates.cumple,
-        categoria: updates.categoria,
-        adscripcion: updates.adscripcion,
-        bio: updates.bio,
-        last_seen: new Date().toISOString()
-      }, { onConflict: 'user_id' });
-
-      if (upErr) { console.error(upErr); $("status").textContent = "❌ Error al guardar en profiles. Revisa consola."; return; }
-
-      $("status").textContent = "✅ Cambios guardados.";
       await loadProfile();
-    } catch (e) {
-      console.error(e);
-      $("status").textContent = "❌ Ocurrió un error guardando tu perfil.";
+      await loadMembers(true);
+      initPresence();
+      initForum();
+
+      const wanted = (location.hash || '#perfil').slice(1);
+      if (wanted === 'scanner') { if (IS_ADMIN) window.location.replace(SCANNER_REDIRECT_URL); else (document.querySelector('.tab[data-tab="perfil"]'))?.click(); }
+      else { (document.querySelector(`.tab[data-tab="${wanted}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click(); }
     }
-  }
 
-  /* ====== Miembros ====== */
-  async function loadMembers(force = false) {
-    if (!force && MEMBERS_CACHE.length) return;
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen')
-      .order('last_seen', { ascending: false })
-      .limit(1000);
-    if (error) { console.error(error); return; }
-    MEMBERS_CACHE = data || [];
-    renderMembers();
-  }
-  function renderMembers() {
-    const q = ($("qMembers").value || "").trim().toLowerCase();
-    const onlyOnline = $("chkOnlineOnly").checked;
-    let list = MEMBERS_CACHE.slice();
-    if (q) list = list.filter(p =>
-      (p.display_name || '').toLowerCase().includes(q) ||
-      (p.adscripcion || '').toLowerCase().includes(q) ||
-      (p.categoria || '').toLowerCase().includes(q)
-    );
-    if (onlyOnline) list = list.filter(p => ONLINE_SET.has(p.user_id));
+    /* ====== Perfil ====== */
+    async function loadProfile() {
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('display_name, avatar_url, categoria, adscripcion, bio, cumple, telefono')
+        .eq('user_id', CURRENT_USER.id).maybeSingle();
 
-    const online = [], offline = [];
-    list.forEach(p => (ONLINE_SET.has(p.user_id) ? online : offline).push(p));
-    list = [...online, ...offline];
+      $("pfName").textContent = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "Sin nombre";
+      $("pfEmail").textContent = CURRENT_USER.email || "—";
+      $("pfTelefono").textContent = maskPhone(prof?.telefono || CURRENT_USER.user_metadata?.telefono);
+      $("pfCumple").textContent = formatDateISOtoMX(prof?.cumple || CURRENT_USER.user_metadata?.cumple);
 
-    const wrap = $("membersList"); wrap.innerHTML = '';
-    list.forEach(p => {
-      const card = document.createElement('div'); card.className = 'card';
-      const dot = ONLINE_SET.has(p.user_id) ? '🟢 Online' : '⚪ Offline';
-      card.innerHTML = `
+      $("pfCategoria").textContent = (prof?.categoria ?? CURRENT_USER.user_metadata?.categoria) || "—";
+      $("pfAdscripcion").textContent = (prof?.adscripcion ?? CURRENT_USER.user_metadata?.adscripcion) || "—";
+
+      const avatar = prof?.avatar_url || CURRENT_USER.user_metadata?.avatar_url;
+      if (avatar) { $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`; $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`; }
+      else { const ini = (prof?.display_name || CURRENT_USER.email || "?")[0].toUpperCase(); $("userAvatar").textContent = ini; $("avatarPreview").textContent = ini; }
+
+      // Prefill form
+      $("fNombre").value = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "";
+      $("fTelefono").value = prof?.telefono || CURRENT_USER.user_metadata?.telefono || "";
+      try { const c = (prof?.cumple || CURRENT_USER.user_metadata?.cumple); if (c) { const d = new Date(c.length <= 10 ? c + "T00:00:00" : c); $("fCumple").value = d.toISOString().slice(0, 10); } } catch { }
+      $("fCategoria").value = prof?.categoria || CURRENT_USER.user_metadata?.categoria || "";
+      $("fAdscripcion").value = prof?.adscripcion || CURRENT_USER.user_metadata?.adscripcion || "";
+      $("fBio").value = prof?.bio || CURRENT_USER.user_metadata?.bio || "";
+
+      await loadAsistenciaPerfil();
+      await loadMiniTopPerfil();
+    }
+
+    function maskPhone(t) { const s = (t || "").replace(/\D+/g, ""); if (s.length < 8) return t || "—"; return `••• ••${s.slice(-4)}`; }
+    function formatDateISOtoMX(iso) { if (!iso) return "—"; try { const d = new Date(iso.length <= 10 ? iso + "T00:00:00" : iso); return new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: 'long', year: 'numeric' }).format(d); } catch { return iso; } }
+
+    /* ====== Upload avatar ====== */
+    async function uploadAvatar(file) {
+      if (!file) return null;
+      if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) { alert("Formato no soportado"); return null; }
+      if (file.size > 2 * 1024 * 1024) { alert("Máx 2MB"); return null; }
+      const uid = CURRENT_USER.id;
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+      const path = `${uid}/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("avatars").upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
+      if (error) { alert("No se pudo subir la imagen"); return null; }
+      const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+      return data?.publicUrl || null;
+    }
+
+    /* ====== Normalizador ====== */
+    const nz = (v) => { if (v == null) return null; const t = String(v).trim(); return t === "" ? null : t; };
+
+    /* ====== Guardar perfil ====== */
+    async function onSaveProfile(e) {
+      e.preventDefault();
+      $("status").textContent = "Guardando…";
+      try {
+        const file = $("fAvatar").files?.[0];
+        let avatar_url = null;
+        if (file) { avatar_url = await uploadAvatar(file); }
+
+        const rawCumple = $("fCumple").value;
+        const cumple = nz(rawCumple) ? new Date(rawCumple).toISOString().slice(0, 10) : null;
+
+        const updates = {
+          display_name: nz($("fNombre").value),
+          telefono: nz($("fTelefono").value),
+          cumple,
+          categoria: nz($("fCategoria").value),
+          adscripcion: nz($("fAdscripcion").value),
+          bio: nz($("fBio").value)
+        };
+        if (avatar_url) updates.avatar_url = avatar_url;
+
+        const { error: authErr } = await supabase.auth.updateUser({ data: updates });
+        if (authErr) throw authErr;
+
+        const { error: upErr } = await supabase.from('profiles').upsert({
+          user_id: CURRENT_USER.id,
+          display_name: updates.display_name,
+          avatar_url: updates.avatar_url || CURRENT_USER.user_metadata?.avatar_url || null,
+          telefono: updates.telefono,
+          cumple: updates.cumple,
+          categoria: updates.categoria,
+          adscripcion: updates.adscripcion,
+          bio: updates.bio,
+          last_seen: new Date().toISOString()
+        }, { onConflict: 'user_id' });
+
+        if (upErr) { console.error(upErr); $("status").textContent = "❌ Error al guardar en profiles. Revisa consola."; return; }
+
+        $("status").textContent = "✅ Cambios guardados.";
+        await loadProfile();
+      } catch (e) {
+        console.error(e);
+        $("status").textContent = "❌ Ocurrió un error guardando tu perfil.";
+      }
+    }
+
+    /* ====== Miembros ====== */
+    async function loadMembers(force = false) {
+      if (!force && MEMBERS_CACHE.length) return;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen')
+        .order('last_seen', { ascending: false })
+        .limit(1000);
+      if (error) { console.error(error); return; }
+      MEMBERS_CACHE = data || [];
+      renderMembers();
+    }
+    function renderMembers() {
+      const q = ($("qMembers").value || "").trim().toLowerCase();
+      const onlyOnline = $("chkOnlineOnly").checked;
+      let list = MEMBERS_CACHE.slice();
+      if (q) list = list.filter(p =>
+        (p.display_name || '').toLowerCase().includes(q) ||
+        (p.adscripcion || '').toLowerCase().includes(q) ||
+        (p.categoria || '').toLowerCase().includes(q)
+      );
+      if (onlyOnline) list = list.filter(p => ONLINE_SET.has(p.user_id));
+
+      const online = [], offline = [];
+      list.forEach(p => (ONLINE_SET.has(p.user_id) ? online : offline).push(p));
+      list = [...online, ...offline];
+
+      const wrap = $("membersList"); wrap.innerHTML = '';
+      list.forEach(p => {
+        const card = document.createElement('div'); card.className = 'card';
+        const dot = ONLINE_SET.has(p.user_id) ? '🟢 Online' : '⚪ Offline';
+        card.innerHTML = `
       <div class="row" style="align-items:center">
         <div class="avatar" style="width:64px;height:64px">${p.avatar_url ? `<img src="${p.avatar_url}">` : (p.display_name || '?')[0]?.toUpperCase()}</div>
         <div style="flex:1;min-width:200px">
@@ -378,111 +393,111 @@ Unidad en Acción — Miembros
         </div>
         <span class="pill">${dot}</span>
       </div>`;
-      wrap.appendChild(card);
-    });
-  }
-  function escapeHtml(str) {
-    return (str || '').replace(/[&<>\"']/g, s => ({ "&": "&amp;", "<": "&lt;", "&gt;": "&gt;", "\"": "&quot;", "'": "&#39;" }[s]));
-  }
-
-  /* ====== Presencia ====== */
-  function initPresence() {
-    const ch = supabase.channel('presence:members', { config: { presence: { key: CURRENT_USER.id } } });
-    ch.on('presence', { event: 'sync' }, () => {
-      ONLINE_SET = new Set(Object.keys(ch.presenceState()));
-      try { renderMembers(); } catch { }
-    });
-    ch.subscribe(async (status) => {
-      if (status === 'SUBSCRIBED') {
-        ch.track({ last_active: Date.now() });
-        await supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('user_id', CURRENT_USER.id);
-      }
-    });
-  }
-
-  /* ====== Foro (likes + comentarios + edición + eliminación) ====== */
-  const loadPostsDeb = debounce(loadPosts, 200);
-
-  function initForum() {
-    loadPostsDeb();
-
-    // Realtime (debounced)
-    supabase
-      .channel('realtime-foro')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPostsDeb)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, loadPostsDeb)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, loadPostsDeb)
-      .subscribe();
-
-    $("forumForm")?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const text = ($("forumInput").value || '').trim(); if (!text) return;
-      $("forumStatus").textContent = "Publicando…";
-      const cat = $("forumCategory").value || "Asuntos Generales";
-      const { error } = await supabase.from('posts').insert({ content: text, user_id: CURRENT_USER.id, category: cat });
-      $("forumStatus").textContent = error ? "❌ No se pudo publicar: " + (error.message || '') : "✅ Publicado";
-      if (!error) { $("forumInput").value = ""; /* realtime refresca; si quieres forzar: */ loadPostsDeb(); }
-    });
-  }
-
-  function fmtDate(iso) {
-    try { return new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso)); }
-    catch { return iso; }
-  }
-  function canEditPost(postUserId) { return IS_ADMIN || (postUserId === CURRENT_USER.id); }
-  function canDeletePost(postUserId) { return IS_ADMIN || (postUserId === CURRENT_USER.id); }
-  function canDeleteComment(commentUserId) { return IS_ADMIN || (commentUserId === CURRENT_USER.id); }
-
-  async function loadPosts() {
-    const myToken = ++POSTS_TOKEN; // invalida render viejo
-
-    const wrap = $("postsList");
-    // estado de carga sin borrar lo ya pintado para evitar parpadeos
-    let loading = document.getElementById('postsLoadingMsg');
-    if (!loading) {
-      loading = document.createElement('div');
-      loading.id = 'postsLoadingMsg';
-      loading.className = 'meta';
-      loading.textContent = 'Cargando publicaciones…';
-      wrap.prepend(loading);
+        wrap.appendChild(card);
+      });
+    }
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>\"']/g, s => ({ "&": "&amp;", "<": "&lt;", "&gt;": "&gt;", "\"": "&quot;", "'": "&#39;" }[s]));
     }
 
-    const { data: posts, error } = await supabase
-      .from('posts')
-      .select('id, content, category, created_at, user_id')
-      .order('created_at', { ascending: false })
-      .limit(50);
+    /* ====== Presencia ====== */
+    function initPresence() {
+      const ch = supabase.channel('presence:members', { config: { presence: { key: CURRENT_USER.id } } });
+      ch.on('presence', { event: 'sync' }, () => {
+        ONLINE_SET = new Set(Object.keys(ch.presenceState()));
+        try { renderMembers(); } catch { }
+      });
+      ch.subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          ch.track({ last_active: Date.now() });
+          await supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('user_id', CURRENT_USER.id);
+        }
+      });
+    }
 
-    if (myToken !== POSTS_TOKEN) return; // otra llamada más nueva ganó
+    /* ====== Foro (likes + comentarios + edición + eliminación) ====== */
+    const loadPostsDeb = debounce(loadPosts, 200);
 
-    wrap.innerHTML = ""; // ahora sí limpiamos una vez
+    function initForum() {
+      loadPostsDeb();
 
-    if (error) { wrap.innerHTML = `<div class="meta">❌ Error cargando posts.</div>`; return; }
-    if (!posts?.length) { wrap.innerHTML = `<div class="meta">Aún no hay publicaciones.</div>`; return; }
+      // Realtime (debounced)
+      supabase
+        .channel('realtime-foro')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPostsDeb)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, loadPostsDeb)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, loadPostsDeb)
+        .subscribe();
 
-    const ids = posts.map(p => p.id);
-    const [{ data: allLikes }, { data: myLikes }, { data: comments }] = await Promise.all([
-      supabase.from('likes').select('post_id, user_id').in('post_id', ids),
-      supabase.from('likes').select('post_id').in('post_id', ids).eq('user_id', CURRENT_USER.id),
-      supabase.from('comments').select('id, post_id, user_id, content, created_at').in('post_id', ids).order('created_at', { ascending: true })
-    ]);
+      $("forumForm")?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = ($("forumInput").value || '').trim(); if (!text) return;
+        $("forumStatus").textContent = "Publicando…";
+        const cat = $("forumCategory").value || "Asuntos Generales";
+        const { error } = await supabase.from('posts').insert({ content: text, user_id: CURRENT_USER.id, category: cat });
+        $("forumStatus").textContent = error ? "❌ No se pudo publicar: " + (error.message || '') : "✅ Publicado";
+        if (!error) { $("forumInput").value = ""; /* realtime refresca; si quieres forzar: */ loadPostsDeb(); }
+      });
+    }
 
-    if (myToken !== POSTS_TOKEN) return;
+    function fmtDate(iso) {
+      try { return new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso)); }
+      catch { return iso; }
+    }
+    function canEditPost(postUserId) { return IS_ADMIN || (postUserId === CURRENT_USER.id); }
+    function canDeletePost(postUserId) { return IS_ADMIN || (postUserId === CURRENT_USER.id); }
+    function canDeleteComment(commentUserId) { return IS_ADMIN || (commentUserId === CURRENT_USER.id); }
 
-    const likeCount = new Map(); (allLikes || []).forEach(l => likeCount.set(l.post_id, (likeCount.get(l.post_id) || 0) + 1));
-    const myLiked = new Set((myLikes || []).map(l => l.post_id));
-    const commentsByPost = new Map();
-    (comments || []).forEach(c => { if (!commentsByPost.has(c.post_id)) commentsByPost.set(c.post_id, []); commentsByPost.get(c.post_id).push(c); });
+    async function loadPosts() {
+      const myToken = ++POSTS_TOKEN; // invalida render viejo
 
-    posts.forEach(p => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.dataset.postId = p.id; // útil para depurar
-      const liked = myLiked.has(p.id);
-      const count = likeCount.get(p.id) || 0;
-      const postComments = commentsByPost.get(p.id) || [];
+      const wrap = $("postsList");
+      // estado de carga sin borrar lo ya pintado para evitar parpadeos
+      let loading = document.getElementById('postsLoadingMsg');
+      if (!loading) {
+        loading = document.createElement('div');
+        loading.id = 'postsLoadingMsg';
+        loading.className = 'meta';
+        loading.textContent = 'Cargando publicaciones…';
+        wrap.prepend(loading);
+      }
 
-      card.innerHTML = `
+      const { data: posts, error } = await supabase
+        .from('posts')
+        .select('id, content, category, created_at, user_id')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (myToken !== POSTS_TOKEN) return; // otra llamada más nueva ganó
+
+      wrap.innerHTML = ""; // ahora sí limpiamos una vez
+
+      if (error) { wrap.innerHTML = `<div class="meta">❌ Error cargando posts.</div>`; return; }
+      if (!posts?.length) { wrap.innerHTML = `<div class="meta">Aún no hay publicaciones.</div>`; return; }
+
+      const ids = posts.map(p => p.id);
+      const [{ data: allLikes }, { data: myLikes }, { data: comments }] = await Promise.all([
+        supabase.from('likes').select('post_id, user_id').in('post_id', ids),
+        supabase.from('likes').select('post_id').in('post_id', ids).eq('user_id', CURRENT_USER.id),
+        supabase.from('comments').select('id, post_id, user_id, content, created_at').in('post_id', ids).order('created_at', { ascending: true })
+      ]);
+
+      if (myToken !== POSTS_TOKEN) return;
+
+      const likeCount = new Map(); (allLikes || []).forEach(l => likeCount.set(l.post_id, (likeCount.get(l.post_id) || 0) + 1));
+      const myLiked = new Set((myLikes || []).map(l => l.post_id));
+      const commentsByPost = new Map();
+      (comments || []).forEach(c => { if (!commentsByPost.has(c.post_id)) commentsByPost.set(c.post_id, []); commentsByPost.get(c.post_id).push(c); });
+
+      posts.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.postId = p.id; // útil para depurar
+        const liked = myLiked.has(p.id);
+        const count = likeCount.get(p.id) || 0;
+        const postComments = commentsByPost.get(p.id) || [];
+
+        card.innerHTML = `
       <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
         <div class="meta">${p.user_id === CURRENT_USER.id ? 'Tú' : 'Miembro'} • ${fmtDate(p.created_at)}</div>
         <div class="pill">🏷️ ${escapeHtml(p.category || 'Asuntos Generales')}</div>
@@ -517,66 +532,66 @@ Unidad en Acción — Miembros
       </div>
     `;
 
-      wrap.appendChild(card);
-    });
-
-    /* Like / Unlike */
-    wrap.querySelectorAll('.btn-like').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.preventDefault(); e.stopPropagation();
-        const postId = btn.dataset.id;
-        const isLiked = btn.getAttribute('aria-pressed') === 'true';
-        const meta = btn.querySelector('.meta');
-        const numMatch = (meta?.textContent.match(/\d+/) || [0])[0];
-        let count = parseInt(numMatch, 10) || 0;
-        btn.disabled = true;
-
-        if (isLiked) {
-          const { error } = await supabase.from('likes').delete().match({ post_id: postId, user_id: CURRENT_USER.id });
-          if (!error) {
-            btn.setAttribute('aria-pressed', 'false');
-            btn.innerHTML = btn.innerHTML.replace('❤️', '🤍');
-            if (meta) meta.textContent = `(${Math.max(0, count - 1)})`;
-          } else alert('❌ No se pudo quitar el like: ' + (error.message || 'Error'));
-        } else {
-          const { error } = await supabase.from('likes').upsert({ post_id: postId, user_id: CURRENT_USER.id }, { onConflict: 'post_id,user_id' });
-          if (!error) {
-            btn.setAttribute('aria-pressed', 'true');
-            btn.innerHTML = btn.innerHTML.replace('🤍', '❤️');
-            if (meta) meta.textContent = `(${count + 1})`;
-          } else alert('❌ No se pudo dar like: ' + (error.message || 'Error'));
-        }
-        btn.disabled = false;
+        wrap.appendChild(card);
       });
-    });
 
-    // Comentar
-    wrap.querySelectorAll('.comment-form').forEach(form => {
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault(); e.stopPropagation();
-        const postId = form.dataset.id;
-        const ta = form.querySelector('.comment-input');
-        const status = form.querySelector('.comment-status');
-        const text = (ta.value || '').trim();
-        if (!text) return;
-        status.textContent = 'Enviando…';
-        const { error } = await supabase.from('comments').insert({ post_id: postId, user_id: CURRENT_USER.id, content: text });
-        status.textContent = error ? '❌ No se pudo comentar: ' + (error.message || '') : '✅ Comentado';
-        if (!error) ta.value = '';
-        loadPostsDeb(); // refresco ligero
+      /* Like / Unlike */
+      wrap.querySelectorAll('.btn-like').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const postId = btn.dataset.id;
+          const isLiked = btn.getAttribute('aria-pressed') === 'true';
+          const meta = btn.querySelector('.meta');
+          const numMatch = (meta?.textContent.match(/\d+/) || [0])[0];
+          let count = parseInt(numMatch, 10) || 0;
+          btn.disabled = true;
+
+          if (isLiked) {
+            const { error } = await supabase.from('likes').delete().match({ post_id: postId, user_id: CURRENT_USER.id });
+            if (!error) {
+              btn.setAttribute('aria-pressed', 'false');
+              btn.innerHTML = btn.innerHTML.replace('❤️', '🤍');
+              if (meta) meta.textContent = `(${Math.max(0, count - 1)})`;
+            } else alert('❌ No se pudo quitar el like: ' + (error.message || 'Error'));
+          } else {
+            const { error } = await supabase.from('likes').upsert({ post_id: postId, user_id: CURRENT_USER.id }, { onConflict: 'post_id,user_id' });
+            if (!error) {
+              btn.setAttribute('aria-pressed', 'true');
+              btn.innerHTML = btn.innerHTML.replace('🤍', '❤️');
+              if (meta) meta.textContent = `(${count + 1})`;
+            } else alert('❌ No se pudo dar like: ' + (error.message || 'Error'));
+          }
+          btn.disabled = false;
+        });
       });
-    });
 
-    // Editar
-    wrap.querySelectorAll('.btn-edit').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault(); e.stopPropagation();
-        const postId = btn.dataset.id;
-        const card = btn.closest('.card');
-        const contentEl = card.querySelector('.post-content');
-        const original = contentEl.textContent;
+      // Comentar
+      wrap.querySelectorAll('.comment-form').forEach(form => {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const postId = form.dataset.id;
+          const ta = form.querySelector('.comment-input');
+          const status = form.querySelector('.comment-status');
+          const text = (ta.value || '').trim();
+          if (!text) return;
+          status.textContent = 'Enviando…';
+          const { error } = await supabase.from('comments').insert({ post_id: postId, user_id: CURRENT_USER.id, content: text });
+          status.textContent = error ? '❌ No se pudo comentar: ' + (error.message || '') : '✅ Comentado';
+          if (!error) ta.value = '';
+          loadPostsDeb(); // refresco ligero
+        });
+      });
 
-        contentEl.outerHTML = `
+      // Editar
+      wrap.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const postId = btn.dataset.id;
+          const card = btn.closest('.card');
+          const contentEl = card.querySelector('.post-content');
+          const original = contentEl.textContent;
+
+          contentEl.outerHTML = `
         <div class="edit-wrap" style="margin-top:8px;display:grid;gap:8px">
           <textarea class="edit-textarea" style="min-height:120px;background:#0a1329;border:1px solid rgba(91,215,242,.3);color:#e6fbff;padding:9px 11px;border-radius:10px">${escapeHtml(original)}</textarea>
           <div class="row">
@@ -587,208 +602,208 @@ Unidad en Acción — Miembros
         </div>
       `;
 
-        const ta = card.querySelector('.edit-textarea');
-        const saveBtn = card.querySelector('.btn-save-edit');
-        const cancelBtn = card.querySelector('.btn-cancel-edit');
-        const status = card.querySelector('.edit-status');
+          const ta = card.querySelector('.edit-textarea');
+          const saveBtn = card.querySelector('.btn-save-edit');
+          const cancelBtn = card.querySelector('.btn-cancel-edit');
+          const status = card.querySelector('.edit-status');
 
-        cancelBtn.addEventListener('click', (e) => {
-          e.preventDefault(); loadPostsDeb();
+          cancelBtn.addEventListener('click', (e) => {
+            e.preventDefault(); loadPostsDeb();
+          });
+
+          saveBtn.addEventListener('click', async () => {
+            const newText = (ta.value || '').trim();
+            if (!newText) { status.textContent = 'El contenido no puede estar vacío.'; return; }
+            status.textContent = 'Guardando…';
+            const { error } = await supabase.from('posts').update({ content: newText }).eq('id', postId);
+            status.textContent = error ? '❌ No se pudo guardar: ' + (error.message || '') : '✅ Guardado';
+            if (!error) loadPostsDeb();
+          });
         });
+      });
 
-        saveBtn.addEventListener('click', async () => {
-          const newText = (ta.value || '').trim();
-          if (!newText) { status.textContent = 'El contenido no puede estar vacío.'; return; }
-          status.textContent = 'Guardando…';
-          const { error } = await supabase.from('posts').update({ content: newText }).eq('id', postId);
-          status.textContent = error ? '❌ No se pudo guardar: ' + (error.message || '') : '✅ Guardado';
-          if (!error) loadPostsDeb();
+      // Borrar publicación
+      wrap.querySelectorAll('.btn-del-post').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const postId = btn.dataset.id;
+          if (!confirm('¿Seguro que deseas borrar esta publicación? Esta acción no se puede deshacer.')) return;
+          try { await supabase.from('comments').delete().eq('post_id', postId); } catch (_) { }
+          try { await supabase.from('likes').delete().eq('post_id', postId); } catch (_) { }
+          const { error } = await supabase.from('posts').delete().eq('id', postId);
+          if (error) { alert('❌ No se pudo borrar: ' + (error.message || '')); return; }
+          loadPostsDeb();
         });
       });
-    });
 
-    // Borrar publicación
-    wrap.querySelectorAll('.btn-del-post').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const postId = btn.dataset.id;
-        if (!confirm('¿Seguro que deseas borrar esta publicación? Esta acción no se puede deshacer.')) return;
-        try { await supabase.from('comments').delete().eq('post_id', postId); } catch (_) { }
-        try { await supabase.from('likes').delete().eq('post_id', postId); } catch (_) { }
-        const { error } = await supabase.from('posts').delete().eq('id', postId);
-        if (error) { alert('❌ No se pudo borrar: ' + (error.message || '')); return; }
-        loadPostsDeb();
+      // Borrar comentario
+      wrap.querySelectorAll('.btn-del-comment').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const commentId = btn.dataset.cid;
+          if (!confirm('¿Borrar este comentario?')) return;
+          const { error } = await supabase.from('comments').delete().eq('id', commentId);
+          if (error) { alert('❌ No se pudo borrar: ' + (error.message || '')); return; }
+          loadPostsDeb();
+        });
       });
-    });
-
-    // Borrar comentario
-    wrap.querySelectorAll('.btn-del-comment').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const commentId = btn.dataset.cid;
-        if (!confirm('¿Borrar este comentario?')) return;
-        const { error } = await supabase.from('comments').delete().eq('id', commentId);
-        if (error) { alert('❌ No se pudo borrar: ' + (error.message || '')); return; }
-        loadPostsDeb();
-      });
-    });
-  }
-
-  /* ====== Verificación (QR) ====== */
-  function formatDateFancy(d) { try { return new Intl.DateTimeFormat('es-MX', { dateStyle: 'full', timeStyle: 'short' }).format(new Date(d)); } catch { return d; } }
-  async function fetchNextEvent() {
-    if (!GOOGLE_API_KEY) return null;
-    const timeMin = new Date().toISOString();
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?singleEvents=true&orderBy=startTime&timeMin=${encodeURIComponent(timeMin)}&maxResults=1&key=${encodeURIComponent(GOOGLE_API_KEY)}`;
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const json = await res.json();
-      const evt = (json.items || [])[0]; if (!evt) return null;
-      return { uid: evt.id, title: evt.summary || 'Evento', start: evt.start?.dateTime || evt.start?.date, location: evt.location || '', description: (evt.description || '').replace(/<[^>]*>/g, '') };
-    } catch (e) { console.error(e); return null; }
-  }
-  async function initVerification() {
-    $("rsvpBox").style.display = CURRENT_USER ? 'block' : 'none';
-    $("rsvpStatus").textContent = '';
-    $("qrWrap").style.display = 'none';
-
-    const evt = await fetchNextEvent();
-    if (!evt) { $("eventBox").textContent = "No hay eventos próximos o no fue posible consultarlos."; $("rsvpBox").style.display = 'none'; return; }
-    $("eventBox").innerHTML = `<div><strong>${escapeHtml(evt.title)}</strong></div><div class="meta">🗓️ ${formatDateFancy(evt.start)} ${evt.location ? ' • 📍 ' + escapeHtml(evt.location) : ''}</div>${evt.description ? `<div class="muted" style="white-space:pre-wrap;margin-top:6px">${escapeHtml(evt.description)}</div>` : ''}`;
-    window.__NEXT_EVENT__ = evt;
-
-    const { data } = await supabase.from('rsvps').select('status, qr_payload').eq('user_id', CURRENT_USER.id).eq('event_uid', evt.uid).maybeSingle();
-    updateRSVPUI(data?.status || null, data?.qr_payload || null);
-
-    $("btnYes").onclick = () => setRSVP('yes');
-    $("btnNo").onclick = () => setRSVP('no');
-  }
-  function buildQRPayload(evtUid) { return JSON.stringify({ v: 1, event: evtUid, user: CURRENT_USER.id, ts: Date.now() }); }
-  async function setRSVP(status) {
-    const evt = window.__NEXT_EVENT__; if (!evt) return;
-    let qrPayload = null;
-    if (status === 'yes') { qrPayload = buildQRPayload(evt.uid); $("qrWrap").style.display = 'block'; try { await QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel: 'M' }); } catch { } }
-    else { $("qrWrap").style.display = 'none'; }
-    const { error } = await supabase.from('rsvps').upsert({ user_id: CURRENT_USER.id, event_uid: evt.uid, status, qr_payload: qrPayload, updated_at: new Date().toISOString() }, { onConflict: 'user_id,event_uid' });
-    $("rsvpStatus").textContent = error ? 'No se pudo guardar tu respuesta.' : (status === 'yes' ? 'Confirmado ✔️' : 'Registrado como no asistente.');
-    updateRSVPUI(status, qrPayload);
-  }
-  function updateRSVPUI(status, qrPayload) {
-    const yesBtn = $("btnYes"), noBtn = $("btnNo");
-    if (status === 'yes') { yesBtn.disabled = true; noBtn.disabled = false; $("qrWrap").style.display = 'block'; if (qrPayload) { QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel: 'M' }).catch(() => { }); } }
-    else if (status === 'no') { yesBtn.disabled = false; noBtn.disabled = true; $("qrWrap").style.display = 'none'; }
-    else { yesBtn.disabled = false; noBtn.disabled = false; $("qrWrap").style.display = 'none'; $("rsvpStatus").textContent = ''; }
-  }
-
-  /* ====== Utilidades de asistencia / ranking ====== */
-  function seasonOf(dateLike) {
-    const d = new Date(dateLike);
-    const year = d.toLocaleString('en-CA', { timeZone: 'America/Mexico_City', year: 'numeric' });
-    const m = +d.toLocaleString('en-CA', { timeZone: 'America/Mexico_City', month: 'numeric' });
-    const q = Math.ceil(m / 3);
-    return `${year}-Q${q}`;
-  }
-  function fmtMX(iso) {
-    try { return new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso)); }
-    catch { return iso; }
-  }
-
-  /* ====== Asistencia dentro del perfil ====== */
-  async function loadAsistenciaPerfil() {
-    if (!CURRENT_USER) return;
-    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
-
-    const { data: scans, error } = await supabase
-      .from('attendance_scans')
-      .select('event_uid, scanned_at')
-      .eq('attendee_id', CURRENT_USER.id)
-      .order('scanned_at', { ascending: false })
-      .limit(200);
-
-    const info = document.getElementById('asistData');
-
-    if (error) { info.textContent = "No se pudieron cargar tus datos."; return; }
-    if (!scans || scans.length === 0) { info.textContent = "Aún no has registrado asistencias."; return; }
-
-    info.textContent = `Último check-in: ${fmtMX(scans[0].scanned_at)}`;
-
-    const currentSeason = seasonOf(new Date());
-    const seasonScans = scans.filter(s => seasonOf(s.scanned_at) === currentSeason);
-
-    const seasonDays = [...new Set(seasonScans.map(s => s.scanned_at.slice(0, 10)))];
-    const totalTemporada = seasonDays.length;
-
-    const allDays = [...new Set(scans.map(s => s.scanned_at.slice(0, 10)))].sort();
-    let racha = 0;
-    if (allDays.length) {
-      let cur = new Date(); cur.setHours(0, 0, 0, 0);
-      if (!allDays.includes(cur.toISOString().slice(0, 10))) cur.setDate(cur.getDate() - 1);
-      while (allDays.includes(cur.toISOString().slice(0, 10))) { racha++; cur.setDate(cur.getDate() - 1); }
     }
 
-    let puntos = totalTemporada * 10;
-    try {
-      const { data: pts } = await supabase
-        .from('attendance_points')
-        .select('points')
-        .eq('user_id', CURRENT_USER.id)
-        .eq('season', currentSeason)
-        .maybeSingle();
-      if (pts?.points != null) puntos = pts.points;
-    } catch { }
+    /* ====== Verificación (QR) ====== */
+    function formatDateFancy(d) { try { return new Intl.DateTimeFormat('es-MX', { dateStyle: 'full', timeStyle: 'short' }).format(new Date(d)); } catch { return d; } }
+    async function fetchNextEvent() {
+      if (!GOOGLE_API_KEY) return null;
+      const timeMin = new Date().toISOString();
+      const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?singleEvents=true&orderBy=startTime&timeMin=${encodeURIComponent(timeMin)}&maxResults=1&key=${encodeURIComponent(GOOGLE_API_KEY)}`;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const json = await res.json();
+        const evt = (json.items || [])[0]; if (!evt) return null;
+        return { uid: evt.id, title: evt.summary || 'Evento', start: evt.start?.dateTime || evt.start?.date, location: evt.location || '', description: (evt.description || '').replace(/<[^>]*>/g, '') };
+      } catch (e) { console.error(e); return null; }
+    }
+    async function initVerification() {
+      $("rsvpBox").style.display = CURRENT_USER ? 'block' : 'none';
+      $("rsvpStatus").textContent = '';
+      $("qrWrap").style.display = 'none';
 
-    let puesto = '—';
-    try {
-      const { data: lb } = await supabase
-        .from('attendance_leaderboard')
-        .select('user_id, points')
-        .eq('season', currentSeason)
-        .order('points', { ascending: false })
-        .limit(100);
-      const pos = (lb || []).findIndex(row => row.user_id === CURRENT_USER.id);
-      if (pos >= 0) puesto = `#${pos + 1}`;
-    } catch { }
+      const evt = await fetchNextEvent();
+      if (!evt) { $("eventBox").textContent = "No hay eventos próximos o no fue posible consultarlos."; $("rsvpBox").style.display = 'none'; return; }
+      $("eventBox").innerHTML = `<div><strong>${escapeHtml(evt.title)}</strong></div><div class="meta">🗓️ ${formatDateFancy(evt.start)} ${evt.location ? ' • 📍 ' + escapeHtml(evt.location) : ''}</div>${evt.description ? `<div class="muted" style="white-space:pre-wrap;margin-top:6px">${escapeHtml(evt.description)}</div>` : ''}`;
+      window.__NEXT_EVENT__ = evt;
 
-    set('asistTotal', totalTemporada);
-    set('asistRacha', racha);
-    set('asistPuntos', puntos);
-    set('asistTop', puesto);
-  }
+      const { data } = await supabase.from('rsvps').select('status, qr_payload').eq('user_id', CURRENT_USER.id).eq('event_uid', evt.uid).maybeSingle();
+      updateRSVPUI(data?.status || null, data?.qr_payload || null);
 
-  /* ====== Mini TOP en el perfil ====== */
-  async function loadMiniTopPerfil() {
-    const meta = document.getElementById('miniTopMeta');
-    const box = document.getElementById('miniTopList');
-    meta.textContent = 'Cargando…'; box.innerHTML = '';
+      $("btnYes").onclick = () => setRSVP('yes');
+      $("btnNo").onclick = () => setRSVP('no');
+    }
+    function buildQRPayload(evtUid) { return JSON.stringify({ v: 1, event: evtUid, user: CURRENT_USER.id, ts: Date.now() }); }
+    async function setRSVP(status) {
+      const evt = window.__NEXT_EVENT__; if (!evt) return;
+      let qrPayload = null;
+      if (status === 'yes') { qrPayload = buildQRPayload(evt.uid); $("qrWrap").style.display = 'block'; try { await QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel: 'M' }); } catch { } }
+      else { $("qrWrap").style.display = 'none'; }
+      const { error } = await supabase.from('rsvps').upsert({ user_id: CURRENT_USER.id, event_uid: evt.uid, status, qr_payload: qrPayload, updated_at: new Date().toISOString() }, { onConflict: 'user_id,event_uid' });
+      $("rsvpStatus").textContent = error ? 'No se pudo guardar tu respuesta.' : (status === 'yes' ? 'Confirmado ✔️' : 'Registrado como no asistente.');
+      updateRSVPUI(status, qrPayload);
+    }
+    function updateRSVPUI(status, qrPayload) {
+      const yesBtn = $("btnYes"), noBtn = $("btnNo");
+      if (status === 'yes') { yesBtn.disabled = true; noBtn.disabled = false; $("qrWrap").style.display = 'block'; if (qrPayload) { QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel: 'M' }).catch(() => { }); } }
+      else if (status === 'no') { yesBtn.disabled = false; noBtn.disabled = true; $("qrWrap").style.display = 'none'; }
+      else { yesBtn.disabled = false; noBtn.disabled = false; $("qrWrap").style.display = 'none'; $("rsvpStatus").textContent = ''; }
+    }
 
-    const currentSeason = seasonOf(new Date());
-    try {
-      const { data } = await supabase
-        .from('attendance_leaderboard')
-        .select('user_id, display_name, avatar_url, points, total_scans, season')
-        .eq('season', currentSeason)
-        .order('points', { ascending: false })
-        .limit(5);
+    /* ====== Utilidades de asistencia / ranking ====== */
+    function seasonOf(dateLike) {
+      const d = new Date(dateLike);
+      const year = d.toLocaleString('en-CA', { timeZone: 'America/Mexico_City', year: 'numeric' });
+      const m = +d.toLocaleString('en-CA', { timeZone: 'America/Mexico_City', month: 'numeric' });
+      const q = Math.ceil(m / 3);
+      return `${year}-Q${q}`;
+    }
+    function fmtMX(iso) {
+      try { return new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso)); }
+      catch { return iso; }
+    }
 
-      if (!data || !data.length) { meta.textContent = 'Aún no hay datos en esta temporada.'; return; }
-      meta.textContent = `Temporada: ${currentSeason}`;
+    /* ====== Asistencia dentro del perfil ====== */
+    async function loadAsistenciaPerfil() {
+      if (!CURRENT_USER) return;
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
 
-      data.forEach((r, idx) => {
-        const el = document.createElement('div');
-        el.className = 'row';
-        el.innerHTML = `
+      const { data: scans, error } = await supabase
+        .from('attendance_scans')
+        .select('event_uid, scanned_at')
+        .eq('attendee_id', CURRENT_USER.id)
+        .order('scanned_at', { ascending: false })
+        .limit(200);
+
+      const info = document.getElementById('asistData');
+
+      if (error) { info.textContent = "No se pudieron cargar tus datos."; return; }
+      if (!scans || scans.length === 0) { info.textContent = "Aún no has registrado asistencias."; return; }
+
+      info.textContent = `Último check-in: ${fmtMX(scans[0].scanned_at)}`;
+
+      const currentSeason = seasonOf(new Date());
+      const seasonScans = scans.filter(s => seasonOf(s.scanned_at) === currentSeason);
+
+      const seasonDays = [...new Set(seasonScans.map(s => s.scanned_at.slice(0, 10)))];
+      const totalTemporada = seasonDays.length;
+
+      const allDays = [...new Set(scans.map(s => s.scanned_at.slice(0, 10)))].sort();
+      let racha = 0;
+      if (allDays.length) {
+        let cur = new Date(); cur.setHours(0, 0, 0, 0);
+        if (!allDays.includes(cur.toISOString().slice(0, 10))) cur.setDate(cur.getDate() - 1);
+        while (allDays.includes(cur.toISOString().slice(0, 10))) { racha++; cur.setDate(cur.getDate() - 1); }
+      }
+
+      let puntos = totalTemporada * 10;
+      try {
+        const { data: pts } = await supabase
+          .from('attendance_points')
+          .select('points')
+          .eq('user_id', CURRENT_USER.id)
+          .eq('season', currentSeason)
+          .maybeSingle();
+        if (pts?.points != null) puntos = pts.points;
+      } catch { }
+
+      let puesto = '—';
+      try {
+        const { data: lb } = await supabase
+          .from('attendance_leaderboard')
+          .select('user_id, points')
+          .eq('season', currentSeason)
+          .order('points', { ascending: false })
+          .limit(100);
+        const pos = (lb || []).findIndex(row => row.user_id === CURRENT_USER.id);
+        if (pos >= 0) puesto = `#${pos + 1}`;
+      } catch { }
+
+      set('asistTotal', totalTemporada);
+      set('asistRacha', racha);
+      set('asistPuntos', puntos);
+      set('asistTop', puesto);
+    }
+
+    /* ====== Mini TOP en el perfil ====== */
+    async function loadMiniTopPerfil() {
+      const meta = document.getElementById('miniTopMeta');
+      const box = document.getElementById('miniTopList');
+      meta.textContent = 'Cargando…'; box.innerHTML = '';
+
+      const currentSeason = seasonOf(new Date());
+      try {
+        const { data } = await supabase
+          .from('attendance_leaderboard')
+          .select('user_id, display_name, avatar_url, points, total_scans, season')
+          .eq('season', currentSeason)
+          .order('points', { ascending: false })
+          .limit(5);
+
+        if (!data || !data.length) { meta.textContent = 'Aún no hay datos en esta temporada.'; return; }
+        meta.textContent = `Temporada: ${currentSeason}`;
+
+        data.forEach((r, idx) => {
+          const el = document.createElement('div');
+          el.className = 'row';
+          el.innerHTML = `
         <div style="width:28px;text-align:right;font-weight:800">${idx + 1}</div>
         <div class="avatar" style="width:36px;height:36px;margin-left:8px">${r.avatar_url ? `<img src="${r.avatar_url}">` : (r.display_name || '?')[0]?.toUpperCase()}</div>
         <div style="flex:1;min-width:160px;margin-left:8px">
           <div style="font-weight:700">${escapeHtml(r.display_name || 'Miembro')}${r.user_id === CURRENT_USER.id ? ' <span class="pill">Tú</span>' : ''}</div>
           <div class="meta">Asistencias: ${r.total_scans} • Puntos: ${r.points}</div>
         </div>`;
-        box.appendChild(el);
-      });
-    } catch (e) {
-      meta.textContent = 'No fue posible cargar el ranking.';
+          box.appendChild(el);
+        });
+      } catch (e) {
+        meta.textContent = 'No fue posible cargar el ranking.';
+      }
     }
-  }
-</script>
+  </script>
 </body>
 
 </html>
