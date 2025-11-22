@@ -2,558 +2,556 @@
 <html lang="es">
 
 <head>
-  <!DOCTYPE html>
-  <html lang="es">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Denuncias y Reportes — SInOS</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="theme.css">
+</head>
 
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Denuncias y Reportes — SInOS</title>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="stylesheet" href="theme.css">
-    <div class="top-actions" style="gap:10px">
-      <button id="btnBack" class="subtle-btn" style="font-size:16px" title="Atrás">⬅</button>
-      <a class="subtle-btn" href="index.html" style="font-size:16px; text-decoration:none" title="Inicio">🏠</a>
-    </div>
+<body>
+  <div class="top-actions" style="gap:10px">
+    <button id="btnBack" class="subtle-btn" style="font-size:16px" title="Atrás">⬅</button>
+    <a class="subtle-btn" href="index.html" style="font-size:16px; text-decoration:none" title="Inicio">🏠</a>
+  </div>
 
-    <h1>Denuncias y Reportes</h1>
-    <p class="muted">Previsualiza el documento y luego imprime o descarga. Tus datos se guardan localmente en este
-      navegador.</p>
+  <h1>Denuncias y Reportes</h1>
+  <p class="muted">Previsualiza el documento y luego imprime o descarga. Tus datos se guardan localmente en este
+    navegador.</p>
 
-    <div class="card">
-      <form id="fDenuncia" autocomplete="on" novalidate>
-        <!-- ► Catálogo de puestos (carga titular + cargo oculto) -->
-        <div class="grid-1">
-          <label for="puestoCatalogo">Selecciona puesto (secretaría / presidencia / subcomisión)</label>
-          <select id="puestoCatalogo">
-            <option value="">— Elegir —</option>
+  <div class="card">
+    <form id="fDenuncia" autocomplete="on" novalidate>
+      <!-- ► Catálogo de puestos (carga titular + cargo oculto) -->
+      <div class="grid-1">
+        <label for="puestoCatalogo">Selecciona puesto (secretaría / presidencia / subcomisión)</label>
+        <select id="puestoCatalogo">
+          <option value="">— Elegir —</option>
 
-            <!-- Secretarías -->
-            <optgroup label="Secretarías">
-              <option value="Secretaría General|Dr. Juan Gerardo García González">Secretaría General</option>
-              <option value="Secretaría del Interior y Propaganda|M.N.F. Amin Uriel Morales Sánchez">Secretaría del
-                Interior y Propaganda</option>
-              <option value="Secretaría de Conflictos|C.E. Arturo Ochoa Huacuz">Secretaría de Conflictos</option>
-              <option value="Secretaría del Trabajo|M.N.F. Carlos Alberto Guerrero Rascón">Secretaría del Trabajo
-              </option>
-              <option value="Secretaría de Asuntos al Exterior|M.N.F. Ignacio Agustín Orozco Pérez">Secretaría de
-                Asuntos al Exterior</option>
-              <option value="Tesorería|EST. Azucena Herrera Martínez">Tesorería</option>
-              <option value="Secretaría de Previsión Social|O.T. Laura Ramírez Huitzacua">Secretaría de Previsión Social
-              </option>
-              <option value="Secretaría de Igualdad Sustantiva|M.F. Gabriela Durán Negrete">Secretaría de Igualdad
-                Sustantiva</option>
-              <option value="Secretaría de Asuntos Técnicos|M.N.F. Horacio Peña Alfaro">Secretaría de Asuntos Técnicos
-              </option>
-              <option value="Secretaría de Actas y Acuerdos|M.A. César Augusto Contreras Flores">Secretaría de Actas y
-                Acuerdos</option>
-              <option value="Secretaría de Prensa|A.M. Yolanda Morelos Palomares">Secretaría de Prensa</option>
-              <option value="Secretaría de Puestos Periféricos|M.G. Luz Nayelly Esquivel Martínez">Secretaría de Puestos
-                Periféricos</option>
-              <option value="Secretaría de Admisión y Cambios|J.G.E. Cecilio Vanegas Villalobos">Secretaría de Admisión
-                y Cambios</option>
-              <option value="Secretaría de Capacitación y Adiestramiento|O.P. América Hilda Reyes Reyes">Secretaría de
-                Capacitación y Adiestramiento</option>
-              <option value="Secretaría de Calidad y Modernización|M.N.F. Carlos Mojica Rodríguez">Secretaría de Calidad
-                y Modernización</option>
-            </optgroup>
+          <!-- Secretarías -->
+          <optgroup label="Secretarías">
+            <option value="Secretaría General|Dr. Juan Gerardo García González">Secretaría General</option>
+            <option value="Secretaría del Interior y Propaganda|M.N.F. Amin Uriel Morales Sánchez">Secretaría del
+              Interior y Propaganda</option>
+            <option value="Secretaría de Conflictos|C.E. Arturo Ochoa Huacuz">Secretaría de Conflictos</option>
+            <option value="Secretaría del Trabajo|M.N.F. Carlos Alberto Guerrero Rascón">Secretaría del Trabajo
+            </option>
+            <option value="Secretaría de Asuntos al Exterior|M.N.F. Ignacio Agustín Orozco Pérez">Secretaría de
+              Asuntos al Exterior</option>
+            <option value="Tesorería|EST. Azucena Herrera Martínez">Tesorería</option>
+            <option value="Secretaría de Previsión Social|O.T. Laura Ramírez Huitzacua">Secretaría de Previsión Social
+            </option>
+            <option value="Secretaría de Igualdad Sustantiva|M.F. Gabriela Durán Negrete">Secretaría de Igualdad
+              Sustantiva</option>
+            <option value="Secretaría de Asuntos Técnicos|M.N.F. Horacio Peña Alfaro">Secretaría de Asuntos Técnicos
+            </option>
+            <option value="Secretaría de Actas y Acuerdos|M.A. César Augusto Contreras Flores">Secretaría de Actas y
+              Acuerdos</option>
+            <option value="Secretaría de Prensa|A.M. Yolanda Morelos Palomares">Secretaría de Prensa</option>
+            <option value="Secretaría de Puestos Periféricos|M.G. Luz Nayelly Esquivel Martínez">Secretaría de Puestos
+              Periféricos</option>
+            <option value="Secretaría de Admisión y Cambios|J.G.E. Cecilio Vanegas Villalobos">Secretaría de Admisión
+              y Cambios</option>
+            <option value="Secretaría de Capacitación y Adiestramiento|O.P. América Hilda Reyes Reyes">Secretaría de
+              Capacitación y Adiestramiento</option>
+            <option value="Secretaría de Calidad y Modernización|M.N.F. Carlos Mojica Rodríguez">Secretaría de Calidad
+              y Modernización</option>
+          </optgroup>
 
-            <!-- Comisiones (sólo Presidencias) -->
-            <optgroup label="Comisiones — Presidencias">
-              <option value="Comisión de Honor y Justicia — Presidencia|C.S.T. José Francisco Ruiz Domínguez">Honor y
-                Justicia — Presidencia</option>
-              <option value="Comisión de Hacienda — Presidencia|A.M. Fabiola Farías Ambriz">Hacienda — Presidencia
-              </option>
-              <option value="Comisión de Vigilancia — Presidencia|A.M. Imelda Reyes López">Vigilancia — Presidencia
-              </option>
-              <option value="Comisión de Deportes — Presidencia|J.G.P. Roberto Carlos Reyes Ortiz">Deportes —
-                Presidencia</option>
-              <option value="Comisión de Fomento a la Seguridad Social — Presidencia|Q.C. Gerardo Ordaz Salazar">Fomento
-                a la Seguridad Social — Presidencia</option>
-              <option value="Comisión de Acción Política — Presidencia|Lab. Irving Cruz Guerrero Castro">Acción Política
-                — Presidencia</option>
-            </optgroup>
+          <!-- Comisiones (sólo Presidencias) -->
+          <optgroup label="Comisiones — Presidencias">
+            <option value="Comisión de Honor y Justicia — Presidencia|C.S.T. José Francisco Ruiz Domínguez">Honor y
+              Justicia — Presidencia</option>
+            <option value="Comisión de Hacienda — Presidencia|A.M. Fabiola Farías Ambriz">Hacienda — Presidencia
+            </option>
+            <option value="Comisión de Vigilancia — Presidencia|A.M. Imelda Reyes López">Vigilancia — Presidencia
+            </option>
+            <option value="Comisión de Deportes — Presidencia|J.G.P. Roberto Carlos Reyes Ortiz">Deportes —
+              Presidencia</option>
+            <option value="Comisión de Fomento a la Seguridad Social — Presidencia|Q.C. Gerardo Ordaz Salazar">Fomento
+              a la Seguridad Social — Presidencia</option>
+            <option value="Comisión de Acción Política — Presidencia|Lab. Irving Cruz Guerrero Castro">Acción Política
+              — Presidencia</option>
+          </optgroup>
 
-            <!-- Subcomisiones mixtas (representación sindical) -->
-            <optgroup label="Subcomisiones mixtas — Representación sindical">
-              <option value="Subcomisión Mixta de Becas — Representación Sindical|M.F. Jorge Héctor Zaragoza Palacios">
-                Becas</option>
-              <option
-                value="Subcomisión Mixta de Bolsa de Trabajo — Representación Sindical|COORD. CONT. Uriel Tapia Pérez">
-                Bolsa de Trabajo</option>
-              <option
-                value="Subcomisión Mixta de Puestos de Confianza “B” — Representación Sindical|E.G. Cándido Mora Alcauter">
-                Puestos de Confianza “B”</option>
-              <option
-                value="Subcomisión Mixta de Capacitación y Adiestramiento — Representación Sindical|A.E.G. Juan Onofre Baez">
-                Capacitación y Adiestramiento</option>
-              <option
-                value="Subcomisión Mixta Aux. de Capacitación y Adiestramiento — Representación Sindical|A.M. Araceli Barajas Flores">
-                Aux. Capacitación y Adiestramiento</option>
-              <option
-                value="Subcomisión Mixta de Seguridad e Higiene — Representación Sindical|A.U.O. Betsabe Hernández Flores">
-                Seguridad e Higiene</option>
-              <option
-                value="Subcomisión Mixta Aux. de Seguridad e Higiene — Representación Sindical|A.U.O. Carmen Lizeth Ruiz Aguilar">
-                Aux. Seguridad e Higiene (1)</option>
-              <option
-                value="Subcomisión Mixta Aux. de Seguridad e Higiene — Representación Sindical|A.S.G. Sergio Ortiz Martínez">
-                Aux. Seguridad e Higiene (2)</option>
-              <option value="Subcomisión Mixta Disciplinaria — Representación Sindical|Cont. Juan Carlos Servín Juárez">
-                Disciplinaria</option>
-              <option value="Subcomisión Mixta de Escalafón — Representación Sindical|E.G. Hilda Ontiveros Cuellar">
-                Escalafón</option>
-              <option
-                value="Subcomisión Mixta Paritaria de Protección al Salario — Representación Sindical|M.N.F. J. Guadalupe Hernández Alcalá">
-                Paritaria de Protección al Salario</option>
-              <option
-                value="Subcomisión Mixta de Pasajes — Representación Sindical|O.A. José Antonio Carrillo Bejarano">
-                Pasajes</option>
-              <option
-                value="Subcomisión Mixta de Ropa de Trabajo y Uniformes — Representación Sindical|A.A. Julio Cesar García Salgado">
-                Ropa de Trabajo y Uniformes</option>
-              <option
-                value="Subcomisión Mixta de Selección de Recursos Humanos para Cambios de Rama — Representación Sindical|J.G.E. Gilberto Herrejón González">
-                Selección RH (Cambios de Rama)</option>
-              <option value="Subcomisión Mixta de Tiendas — Representación Sindical|P.E.F.B. Humberto Guerrero Linares">
-                Tiendas</option>
-              <option
-                value="Subcomisión Mixta de Jubilaciones y Pensiones — Representación Sindical|E.G.C. Maricela Navarrete Mora">
-                Jubilaciones y Pensiones</option>
-              <option
-                value="Subcomisión Mixta de Revisión de Plantillas — Representación Sindical|E.G. Luis Fernando García Cervantes">
-                Revisión de Plantillas</option>
-            </optgroup>
-          </select>
+          <!-- Subcomisiones mixtas (representación sindical) -->
+          <optgroup label="Subcomisiones mixtas — Representación sindical">
+            <option value="Subcomisión Mixta de Becas — Representación Sindical|M.F. Jorge Héctor Zaragoza Palacios">
+              Becas</option>
+            <option
+              value="Subcomisión Mixta de Bolsa de Trabajo — Representación Sindical|COORD. CONT. Uriel Tapia Pérez">
+              Bolsa de Trabajo</option>
+            <option
+              value="Subcomisión Mixta de Puestos de Confianza “B” — Representación Sindical|E.G. Cándido Mora Alcauter">
+              Puestos de Confianza “B”</option>
+            <option
+              value="Subcomisión Mixta de Capacitación y Adiestramiento — Representación Sindical|A.E.G. Juan Onofre Baez">
+              Capacitación y Adiestramiento</option>
+            <option
+              value="Subcomisión Mixta Aux. de Capacitación y Adiestramiento — Representación Sindical|A.M. Araceli Barajas Flores">
+              Aux. Capacitación y Adiestramiento</option>
+            <option
+              value="Subcomisión Mixta de Seguridad e Higiene — Representación Sindical|A.U.O. Betsabe Hernández Flores">
+              Seguridad e Higiene</option>
+            <option
+              value="Subcomisión Mixta Aux. de Seguridad e Higiene — Representación Sindical|A.U.O. Carmen Lizeth Ruiz Aguilar">
+              Aux. Seguridad e Higiene (1)</option>
+            <option
+              value="Subcomisión Mixta Aux. de Seguridad e Higiene — Representación Sindical|A.S.G. Sergio Ortiz Martínez">
+              Aux. Seguridad e Higiene (2)</option>
+            <option value="Subcomisión Mixta Disciplinaria — Representación Sindical|Cont. Juan Carlos Servín Juárez">
+              Disciplinaria</option>
+            <option value="Subcomisión Mixta de Escalafón — Representación Sindical|E.G. Hilda Ontiveros Cuellar">
+              Escalafón</option>
+            <option
+              value="Subcomisión Mixta Paritaria de Protección al Salario — Representación Sindical|M.N.F. J. Guadalupe Hernández Alcalá">
+              Paritaria de Protección al Salario</option>
+            <option value="Subcomisión Mixta de Pasajes — Representación Sindical|O.A. José Antonio Carrillo Bejarano">
+              Pasajes</option>
+            <option
+              value="Subcomisión Mixta de Ropa de Trabajo y Uniformes — Representación Sindical|A.A. Julio Cesar García Salgado">
+              Ropa de Trabajo y Uniformes</option>
+            <option
+              value="Subcomisión Mixta de Selección de Recursos Humanos para Cambios de Rama — Representación Sindical|J.G.E. Gilberto Herrejón González">
+              Selección RH (Cambios de Rama)</option>
+            <option value="Subcomisión Mixta de Tiendas — Representación Sindical|P.E.F.B. Humberto Guerrero Linares">
+              Tiendas</option>
+            <option
+              value="Subcomisión Mixta de Jubilaciones y Pensiones — Representación Sindical|E.G.C. Maricela Navarrete Mora">
+              Jubilaciones y Pensiones</option>
+            <option
+              value="Subcomisión Mixta de Revisión de Plantillas — Representación Sindical|E.G. Luis Fernando García Cervantes">
+              Revisión de Plantillas</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div>
+        <label for="ciudad">Ciudad / Municipio</label>
+        <input id="ciudad" name="ciudad" placeholder="Ej. Lázaro Cárdenas, Michoacán" required>
+      </div>
+      <div>
+        <label for="fecha">Fecha (si la de hoy no aplica)</label>
+        <input id="fecha" name="fecha" type="date">
+      </div>
+
+      <div>
+        <label for="destinatario">Nombre del destinatario</label>
+        <input id="destinatario" name="destinatario" placeholder="Selecciona un puesto…" readonly aria-readonly="true"
+          required>
+      </div>
+      <!-- Cargo oculto (no visible, pero se usa en el documento) -->
+      <input id="cargo" name="cargo" type="hidden">
+
+      <div>
+        <label for="nombre">Nombre del trabajador</label>
+        <input id="nombre" name="nombre" required placeholder="Nombre(s) y apellidos">
+      </div>
+      <div>
+        <label for="matricula">Matrícula</label>
+        <input id="matricula" name="matricula" required placeholder="Ej. 123456" inputmode="numeric" pattern="\\d+">
+      </div>
+      <div>
+        <label for="categoria">Categoría</label>
+        <input id="categoria" name="categoria" required placeholder="Ej. Enfermera General A">
+      </div>
+      <div>
+        <label for="lugar">Centro/Área</label>
+        <input id="lugar" name="lugar" placeholder="Ej. HGZ No. XX, Urgencias">
+      </div>
+
+      <div class="grid-1">
+        <label for="problematica">Describe la problemática (hechos, fechas, lugares, involucrados, impacto)</label>
+        <textarea id="problematica" name="problematica" required></textarea>
+      </div>
+
+      <div class="row">
+        <button type="button" class="btn" id="btnPreview">👁️ Vista previa</button>
+        <button type="submit" class="btn primary" id="btnGenerar">🖨️ Generar PDF e imprimir</button>
+        <span class="small">Formato: Carta / márgenes normales.</span>
+      </div>
+    </form>
+  </div>
+  </div>
+
+  <div id="status" aria-live="polite"></div>
+
+  <!-- Modal de vista previa -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card" tabindex="-1">
+      <div class="modal-h">
+        <div class="modal-t" id="modal-title">Vista previa del escrito</div>
+        <div class="modal-a">
+          <button class="btn" id="btnCopy" type="button">📋 Copiar texto</button>
+          <button class="btn" id="btnDownload" type="button">⬇️ Descargar PDF</button>
+          <button class="btn primary" id="btnPrint" type="button">🖨️ Imprimir</button>
+          <button class="btn" id="btnClose" type="button">✖ Cerrar</button>
         </div>
-
-        <div>
-          <label for="ciudad">Ciudad / Municipio</label>
-          <input id="ciudad" name="ciudad" placeholder="Ej. Lázaro Cárdenas, Michoacán" required>
-        </div>
-        <div>
-          <label for="fecha">Fecha (si la de hoy no aplica)</label>
-          <input id="fecha" name="fecha" type="date">
-        </div>
-
-        <div>
-          <label for="destinatario">Nombre del destinatario</label>
-          <input id="destinatario" name="destinatario" placeholder="Selecciona un puesto…" readonly aria-readonly="true"
-            required>
-        </div>
-        <!-- Cargo oculto (no visible, pero se usa en el documento) -->
-        <input id="cargo" name="cargo" type="hidden">
-
-        <div>
-          <label for="nombre">Nombre del trabajador</label>
-          <input id="nombre" name="nombre" required placeholder="Nombre(s) y apellidos">
-        </div>
-        <div>
-          <label for="matricula">Matrícula</label>
-          <input id="matricula" name="matricula" required placeholder="Ej. 123456" inputmode="numeric" pattern="\\d+">
-        </div>
-        <div>
-          <label for="categoria">Categoría</label>
-          <input id="categoria" name="categoria" required placeholder="Ej. Enfermera General A">
-        </div>
-        <div>
-          <label for="lugar">Centro/Área</label>
-          <input id="lugar" name="lugar" placeholder="Ej. HGZ No. XX, Urgencias">
-        </div>
-
-        <div class="grid-1">
-          <label for="problematica">Describe la problemática (hechos, fechas, lugares, involucrados, impacto)</label>
-          <textarea id="problematica" name="problematica" required></textarea>
-        </div>
-
-        <div class="row">
-          <button type="button" class="btn" id="btnPreview">👁️ Vista previa</button>
-          <button type="submit" class="btn primary" id="btnGenerar">🖨️ Generar PDF e imprimir</button>
-          <span class="small">Formato: Carta / márgenes normales.</span>
-        </div>
-      </form>
-    </div>
-    </div>
-
-    <div id="status" aria-live="polite"></div>
-
-    <!-- Modal de vista previa -->
-    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-      <div class="modal-card" tabindex="-1">
-        <div class="modal-h">
-          <div class="modal-t" id="modal-title">Vista previa del escrito</div>
-          <div class="modal-a">
-            <button class="btn" id="btnCopy" type="button">📋 Copiar texto</button>
-            <button class="btn" id="btnDownload" type="button">⬇️ Descargar PDF</button>
-            <button class="btn primary" id="btnPrint" type="button">🖨️ Imprimir</button>
-            <button class="btn" id="btnClose" type="button">✖ Cerrar</button>
-          </div>
-        </div>
-        <div class="modal-b">
-          <div id="page" class="page carta">
-            <div id="sheet" class="sheet"></div>
-          </div>
+      </div>
+      <div class="modal-b">
+        <div id="page" class="page carta">
+          <div id="sheet" class="sheet"></div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- html2canvas (requerido por doc.html) -->
-    <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    <!-- jsPDF -->
-    <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <!-- html2canvas (requerido por doc.html) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <!-- jsPDF -->
+  <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        // === CONFIG ===
-        const API_BASE = "https://sinos-api.onrender.com"; // tu API pública en Render
-        const FORM_KEY = 'sinos_denuncias_v1';
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // === CONFIG ===
+      const API_BASE = "https://sinos-api.onrender.com"; // tu API pública en Render
+      const FORM_KEY = 'sinos_denuncias_v1';
 
-        const $ = s => document.querySelector(s);
-        const N = s => (s || '').toString().trim();
-        const setStatus = (t = '') => $('#status').textContent = t;
+      const $ = s => document.querySelector(s);
+      const N = s => (s || '').toString().trim();
+      const setStatus = (t = '') => $('#status').textContent = t;
 
-        // ✔ FIX jsPDF + html2canvas: espera a que ambos estén listos
-        const ensureJsPDF = () => new Promise((resolve, reject) => {
-          let tries = 0;
-          const t = setInterval(() => {
-            tries++;
-            if (window.jspdf && window.jspdf.jsPDF && window.html2canvas) {
-              clearInterval(t);
-              resolve(window.jspdf); // { jsPDF, ... }
-            }
-            if (tries > 200) { // ~10s
-              clearInterval(t);
-              reject(new Error('jsPDF/html2canvas no cargaron'));
-            }
-          }, 50);
-        });
-
-        const hoyISO = () => new Date().toISOString().slice(0, 10);
-        const fechaLarga = (iso) => {
-          const d = iso ? new Date(iso) : new Date();
-          return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
-        };
-
-        // ===== Utils de seguridad: escapar HTML =====
-        function escapeHTML(s) {
-          return (s || '').replace(/[&<>"']/g, m => (
-            { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[m]
-          ));
-        }
-
-        // ===== IA: redacta usando SOLO problematica con timeout =====
-        async function redactarIA(d) {
-          const ctrl = new AbortController();
-          const timeout = setTimeout(() => ctrl.abort(), 12000); // 12 s
-          try {
-            setStatus("Redactando texto con IA…");
-
-            const hechos = [];
-            if (N(d.problematica)) hechos.push(N(d.problematica));
-
-            const payload = {
-              tema: "Escrito de denuncia o reporte",
-              tono: "formal",
-              hechos,
-              extras: "Analiza la problemática y redacta un cuerpo claro y profesional en párrafos; sin encabezado ni firma. Añade una despedida breve.",
-              incluirDespedida: true,
-              longitud: "media"
-            };
-
-            const res = await fetch(`${API_BASE}/escritor`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
-              signal: ctrl.signal
-            });
-
-            if (!res.ok) {
-              const txt = await res.text().catch(() => '');
-              throw new Error(`API /escritor ${res.status}: ${txt || res.statusText}`);
-            }
-
-            const json = await res.json();
-            if (json.error) {
-              throw new Error(json.detail || json.error);
-            }
-
-            const cuerpo = json.cuerpo || "";
-            const despedida = json.despedida ? "\n\n" + json.despedida : "";
-            setStatus("Texto generado por IA.");
-            return `${cuerpo}${despedida}`;
-          } catch (e) {
-            console.error(e);
-            setStatus("Error al redactar.");
-            alert("No se pudo redactar con la IA.\n" + (e.name === 'AbortError' ? 'Tiempo de espera agotado.' : e.message));
-            return "";
-          } finally {
-            clearTimeout(timeout);
-            setTimeout(() => setStatus(""), 4000);
+      // ✔ FIX jsPDF + html2canvas: espera a que ambos estén listos
+      const ensureJsPDF = () => new Promise((resolve, reject) => {
+        let tries = 0;
+        const t = setInterval(() => {
+          tries++;
+          if (window.jspdf && window.jspdf.jsPDF && window.html2canvas) {
+            clearInterval(t);
+            resolve(window.jspdf); // { jsPDF, ... }
           }
-        }
+          if (tries > 200) { // ~10s
+            clearInterval(t);
+            reject(new Error('jsPDF/html2canvas no cargaron'));
+          }
+        }, 50);
+      });
 
-        async function armarOficio(d) {
-          const encabezadoTop = `${d.ciudad}, a ${fechaLarga(d.fecha || hoyISO())}`;
-          const dest = `${d.destinatario}${N(d.cargo) ? `\n${d.cargo}` : ''}`;
-          const cuerpo = await redactarIA(d);
-          const pie =
-            `\nATENTAMENTE
+      const hoyISO = () => new Date().toISOString().slice(0, 10);
+      const fechaLarga = (iso) => {
+        const d = iso ? new Date(iso) : new Date();
+        return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
+      };
+
+      // ===== Utils de seguridad: escapar HTML =====
+      function escapeHTML(s) {
+        return (s || '').replace(/[&<>"']/g, m => (
+          { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[m]
+        ));
+      }
+
+      // ===== IA: redacta usando SOLO problematica con timeout =====
+      async function redactarIA(d) {
+        const ctrl = new AbortController();
+        const timeout = setTimeout(() => ctrl.abort(), 12000); // 12 s
+        try {
+          setStatus("Redactando texto con IA…");
+
+          const hechos = [];
+          if (N(d.problematica)) hechos.push(N(d.problematica));
+
+          const payload = {
+            tema: "Escrito de denuncia o reporte",
+            tono: "formal",
+            hechos,
+            extras: "Analiza la problemática y redacta un cuerpo claro y profesional en párrafos; sin encabezado ni firma. Añade una despedida breve.",
+            incluirDespedida: true,
+            longitud: "media"
+          };
+
+          const res = await fetch(`${API_BASE}/escritor`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            signal: ctrl.signal
+          });
+
+          if (!res.ok) {
+            const txt = await res.text().catch(() => '');
+            throw new Error(`API /escritor ${res.status}: ${txt || res.statusText}`);
+          }
+
+          const json = await res.json();
+          if (json.error) {
+            throw new Error(json.detail || json.error);
+          }
+
+          const cuerpo = json.cuerpo || "";
+          const despedida = json.despedida ? "\n\n" + json.despedida : "";
+          setStatus("Texto generado por IA.");
+          return `${cuerpo}${despedida}`;
+        } catch (e) {
+          console.error(e);
+          setStatus("Error al redactar.");
+          alert("No se pudo redactar con la IA.\n" + (e.name === 'AbortError' ? 'Tiempo de espera agotado.' : e.message));
+          return "";
+        } finally {
+          clearTimeout(timeout);
+          setTimeout(() => setStatus(""), 4000);
+        }
+      }
+
+      async function armarOficio(d) {
+        const encabezadoTop = `${d.ciudad}, a ${fechaLarga(d.fecha || hoyISO())}`;
+        const dest = `${d.destinatario}${N(d.cargo) ? `\n${d.cargo}` : ''}`;
+        const cuerpo = await redactarIA(d);
+        const pie =
+          `\nATENTAMENTE
 
 ${d.nombre}
 Matrícula: ${d.matricula}
 Categoría: ${d.categoria}${N(d.lugar) ? `\n${d.lugar}` : ''}`;
-          return { encabezadoTop, dest, cuerpo, pie };
-        }
+        return { encabezadoTop, dest, cuerpo, pie };
+      }
 
-        function datos() {
-          return {
-            ciudad: N($('#ciudad').value),
-            fecha: N($('#fecha').value),
-            destinatario: N($('#destinatario').value),
-            cargo: N($('#cargo').value),
-            nombre: N($('#nombre').value),
-            matricula: N($('#matricula').value),
-            categoria: N($('#categoria').value),
-            lugar: N($('#lugar').value),
-            problematica: N($('#problematica').value)
-          };
-        }
+      function datos() {
+        return {
+          ciudad: N($('#ciudad').value),
+          fecha: N($('#fecha').value),
+          destinatario: N($('#destinatario').value),
+          cargo: N($('#cargo').value),
+          nombre: N($('#nombre').value),
+          matricula: N($('#matricula').value),
+          categoria: N($('#categoria').value),
+          lugar: N($('#lugar').value),
+          problematica: N($('#problematica').value)
+        };
+      }
 
-        function setDatos(d) {
-          if (!d) return;
-          const ids = ['ciudad', 'fecha', 'destinatario', 'cargo', 'nombre', 'matricula', 'categoria', 'lugar', 'problematica'];
-          ids.forEach(id => {
-            const el = document.getElementById(id);
-            if (el && d[id] !== undefined) el.value = d[id] || '';
-          });
-        }
+      function setDatos(d) {
+        if (!d) return;
+        const ids = ['ciudad', 'fecha', 'destinatario', 'cargo', 'nombre', 'matricula', 'categoria', 'lugar', 'problematica'];
+        ids.forEach(id => {
+          const el = document.getElementById(id);
+          if (el && d[id] !== undefined) el.value = d[id] || '';
+        });
+      }
 
-        function buildPreviewHTML(encabezadoTop, dest, cuerpo, pie) {
-          const toParas = (txt) => (txt || "").split(/\n{2,}/).map(p => p.trim()).filter(Boolean);
-          const esc = (s) => escapeHTML(s).replace(/\n/g, '<br>');
-          let html = `
+      function buildPreviewHTML(encabezadoTop, dest, cuerpo, pie) {
+        const toParas = (txt) => (txt || "").split(/\n{2,}/).map(p => p.trim()).filter(Boolean);
+        const esc = (s) => escapeHTML(s).replace(/\n/g, '<br>');
+        let html = `
         <header>${esc(encabezadoTop)}</header>
         <div class="dest">${esc(dest)}</div>
         <p class="pres">Presente.</p>
       `;
-          toParas(cuerpo).forEach(p => {
-            if (/^[A-ZÁÉÍÓÚÑ\s\/]+:$/.test(p)) { html += `<h6>${esc(p)}</h6>`; }
-            else { html += `<p>${esc(p)}</p>`; }
-          });
-          html += `<div class="pie">${esc(pie)}</div>`;
-          return html;
+        toParas(cuerpo).forEach(p => {
+          if (/^[A-ZÁÉÍÓÚÑ\s\/]+:$/.test(p)) { html += `<h6>${esc(p)}</h6>`; }
+          else { html += `<p>${esc(p)}</p>`; }
+        });
+        html += `<div class="pie">${esc(pie)}</div>`;
+        return html;
+      }
+
+      async function abrirPreview() {
+        try {
+          const d = datos();
+          const required = ['ciudad', 'destinatario', 'nombre', 'matricula', 'categoria', 'problematica'];
+          for (const k of required) { if (!d[k]) { alert('Faltan campos obligatorios.'); return; } }
+
+          const sheet = $('#sheet');
+          sheet.style.padding = `72px 64px`;
+
+          const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
+          if (!cuerpo) { return; }
+
+          sheet.innerHTML = buildPreviewHTML(encabezadoTop, dest, cuerpo, pie);
+          openModal();
+        } catch (e) {
+          console.error(e);
+          alert('Ocurrió un error generando la vista previa.');
         }
+      }
+      function cerrarPreview() { closeModal(); }
 
-        async function abrirPreview() {
-          try {
-            const d = datos();
-            const required = ['ciudad', 'destinatario', 'nombre', 'matricula', 'categoria', 'problematica'];
-            for (const k of required) { if (!d[k]) { alert('Faltan campos obligatorios.'); return; } }
+      // ===== Opción B: PDF calcado a la vista previa con doc.html (justificado real) =====
+      async function generarPDF(d, { action = 'print' } = {}) {
+        setStatus('Generando PDF…');
+        try {
+          const { jsPDF } = await ensureJsPDF();
+          const doc = new jsPDF({ unit: 'pt', format: 'letter' }); // Carta
 
-            const sheet = $('#sheet');
-            sheet.style.padding = `72px 64px`;
+          const dims = { W: 612, H: 792 };
+          const M = 64;        // márgenes laterales
+          const topBase = 72;  // margen superior
 
-            const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
-            if (!cuerpo) { return; }
+          const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
+          if (!cuerpo) { throw new Error('No se generó cuerpo del escrito.'); }
 
-            sheet.innerHTML = buildPreviewHTML(encabezadoTop, dest, cuerpo, pie);
-            openModal();
-          } catch (e) {
-            console.error(e);
-            alert('Ocurrió un error generando la vista previa.');
-          }
-        }
-        function cerrarPreview() { closeModal(); }
+          // 1) Construir el mismo HTML que la vista previa
+          const html = buildPreviewHTML(encabezadoTop, dest, cuerpo, pie);
 
-        // ===== Opción B: PDF calcado a la vista previa con doc.html (justificado real) =====
-        async function generarPDF(d, { action = 'print' } = {}) {
-          setStatus('Generando PDF…');
-          try {
-            const { jsPDF } = await ensureJsPDF();
-            const doc = new jsPDF({ unit: 'pt', format: 'letter' }); // Carta
-
-            const dims = { W: 612, H: 792 };
-            const M = 64;        // márgenes laterales
-            const topBase = 72;  // margen superior
-
-            const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
-            if (!cuerpo) { throw new Error('No se generó cuerpo del escrito.'); }
-
-            // 1) Construir el mismo HTML que la vista previa
-            const html = buildPreviewHTML(encabezadoTop, dest, cuerpo, pie);
-
-            // 2) Montar un nodo temporal con clases .page/.sheet para respetar estilos
-            const wrapper = document.createElement('div');
-            wrapper.style.position = 'fixed';
-            wrapper.style.left = '-10000px';
-            wrapper.innerHTML = `
+          // 2) Montar un nodo temporal con clases .page/.sheet para respetar estilos
+          const wrapper = document.createElement('div');
+          wrapper.style.position = 'fixed';
+          wrapper.style.left = '-10000px';
+          wrapper.innerHTML = `
           <div class="page carta">
             <div class="sheet" style="padding:0">
               ${html}
             </div>
           </div>
         `;
-            document.body.appendChild(wrapper);
+          document.body.appendChild(wrapper);
 
-            // 3) Ajustes inline por si acaso
-            wrapper.querySelector('.sheet header')?.style.setProperty('font-weight', '700');
-            wrapper.querySelectorAll('.sheet p')?.forEach(p => p.style.textAlign = 'justify');
+          // 3) Ajustes inline por si acaso
+          wrapper.querySelector('.sheet header')?.style.setProperty('font-weight', '700');
+          wrapper.querySelectorAll('.sheet p')?.forEach(p => p.style.textAlign = 'justify');
 
-            // 4) Render directo del HTML al PDF dentro de márgenes
-            await doc.html(wrapper.querySelector('.sheet'), {
-              x: M,
-              y: topBase - 24,          // pequeño ajuste visual
-              width: dims.W - M * 2,      // respeta márgenes
-              windowWidth: 816,         // coincide con tu carta en px (vista previa)
-              html2canvas: { scale: 1 } // nítido sin inflar tamaño
-            });
+          // 4) Render directo del HTML al PDF dentro de márgenes
+          await doc.html(wrapper.querySelector('.sheet'), {
+            x: M,
+            y: topBase - 24,          // pequeño ajuste visual
+            width: dims.W - M * 2,      // respeta márgenes
+            windowWidth: 816,         // coincide con tu carta en px (vista previa)
+            html2canvas: { scale: 1 } // nítido sin inflar tamaño
+          });
 
-            // 5) Limpieza y salida
-            document.body.removeChild(wrapper);
+          // 5) Limpieza y salida
+          document.body.removeChild(wrapper);
 
-            if (action === 'download') {
-              doc.save('Escrito.pdf');
-              setStatus('PDF descargado.');
-            } else {
-              const blob = doc.output('blob');
-              const url = URL.createObjectURL(blob);
-              let iframe = document.getElementById('print-iframe');
-              if (!iframe) {
-                iframe = document.createElement('iframe');
-                iframe.id = 'print-iframe';
-                iframe.style.position = 'fixed'; iframe.style.right = '0'; iframe.style.bottom = '0';
-                iframe.style.width = '0'; iframe.style.height = '0'; iframe.style.border = '0'; iframe.style.visibility = 'hidden';
-                document.body.appendChild(iframe);
-              }
-              await new Promise(res => {
-                iframe.onload = () => {
-                  try {
-                    iframe.contentWindow.focus();
-                    setTimeout(() => {
-                      iframe.contentWindow.print();
-                      setTimeout(() => URL.revokeObjectURL(url), 5000);
-                      res();
-                    }, 120);
-                  } catch (e) { res(); }
-                };
-                iframe.src = url;
-              });
-              setStatus('Listo para imprimir. Si no aparece, usa Ctrl/Cmd + P.');
+          if (action === 'download') {
+            doc.save('Escrito.pdf');
+            setStatus('PDF descargado.');
+          } else {
+            const blob = doc.output('blob');
+            const url = URL.createObjectURL(blob);
+            let iframe = document.getElementById('print-iframe');
+            if (!iframe) {
+              iframe = document.createElement('iframe');
+              iframe.id = 'print-iframe';
+              iframe.style.position = 'fixed'; iframe.style.right = '0'; iframe.style.bottom = '0';
+              iframe.style.width = '0'; iframe.style.height = '0'; iframe.style.border = '0'; iframe.style.visibility = 'hidden';
+              document.body.appendChild(iframe);
             }
-          } catch (e) {
-            console.error(e);
-            setStatus('Error al generar el PDF.');
-            alert('No se pudo generar el PDF.\n' + e.message);
-          } finally {
-            setTimeout(() => setStatus(""), 5000);
+            await new Promise(res => {
+              iframe.onload = () => {
+                try {
+                  iframe.contentWindow.focus();
+                  setTimeout(() => {
+                    iframe.contentWindow.print();
+                    setTimeout(() => URL.revokeObjectURL(url), 5000);
+                    res();
+                  }, 120);
+                } catch (e) { res(); }
+              };
+              iframe.src = url;
+            });
+            setStatus('Listo para imprimir. Si no aparece, usa Ctrl/Cmd + P.');
           }
+        } catch (e) {
+          console.error(e);
+          setStatus('Error al generar el PDF.');
+          alert('No se pudo generar el PDF.\n' + e.message);
+        } finally {
+          setTimeout(() => setStatus(""), 5000);
         }
+      }
 
-        // ===== Persistencia local =====
-        function saveLocal() { try { localStorage.setItem(FORM_KEY, JSON.stringify(datos())); } catch { } }
-        function loadLocal() { try { const s = localStorage.getItem(FORM_KEY); if (s) setDatos(JSON.parse(s)); } catch { } }
+      // ===== Persistencia local =====
+      function saveLocal() { try { localStorage.setItem(FORM_KEY, JSON.stringify(datos())); } catch { } }
+      function loadLocal() { try { const s = localStorage.getItem(FORM_KEY); if (s) setDatos(JSON.parse(s)); } catch { } }
 
-        // ===== Modal: focus trap + Esc =====
-        const modal = $('#modal');
-        const modalCard = modal.querySelector('.modal-card');
-        let lastFocused = null;
+      // ===== Modal: focus trap + Esc =====
+      const modal = $('#modal');
+      const modalCard = modal.querySelector('.modal-card');
+      let lastFocused = null;
 
-        function getFocusable() {
-          return modalCard.querySelectorAll('button,[href],[tabindex]:not([tabindex="-1"])');
-        }
-        function trapFocus(e) {
-          if (e.key !== 'Tab') return;
-          const f = getFocusable();
-          if (!f.length) return;
-          const first = f[0], last = f[f.length - 1];
-          if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
-          else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
-        }
+      function getFocusable() {
+        return modalCard.querySelectorAll('button,[href],[tabindex]:not([tabindex="-1"])');
+      }
+      function trapFocus(e) {
+        if (e.key !== 'Tab') return;
+        const f = getFocusable();
+        if (!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
+        else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
+      }
 
-        function openModal() {
-          lastFocused = document.activeElement;
-          modal.classList.add('show');
-          const f = getFocusable();
-          (f[0] || modalCard).focus();
-          document.addEventListener('keydown', onKeydown);
-        }
-        function closeModal() {
-          modal.classList.remove('show');
-          document.removeEventListener('keydown', onKeydown);
-          if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
-        }
-        function onKeydown(e) {
-          if (e.key === 'Escape') closeModal();
-          if (e.key === 'Tab') trapFocus(e);
-        }
+      function openModal() {
+        lastFocused = document.activeElement;
+        modal.classList.add('show');
+        const f = getFocusable();
+        (f[0] || modalCard).focus();
+        document.addEventListener('keydown', onKeydown);
+      }
+      function closeModal() {
+        modal.classList.remove('show');
+        document.removeEventListener('keydown', onKeydown);
+        if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+      }
+      function onKeydown(e) {
+        if (e.key === 'Escape') closeModal();
+        if (e.key === 'Tab') trapFocus(e);
+      }
 
-        // ===== Eventos =====
-        document.getElementById('btnPreview').addEventListener('click', abrirPreview);
-        document.getElementById('btnClose').addEventListener('click', cerrarPreview);
-        document.getElementById('btnDownload').addEventListener('click', async () => {
-          const d = datos();
-          const required = ['ciudad', 'destinatario', 'nombre', 'matricula', 'categoria', 'problematica'];
-          for (const k of required) { if (!d[k]) { alert('Faltan campos obligatorios.'); return; } }
-          await generarPDF(d, { action: 'download' });
-        });
-        document.getElementById('btnPrint').addEventListener('click', async () => {
-          const d = datos();
-          const required = ['ciudad', 'destinatario', 'nombre', 'matricula', 'categoria', 'problematica'];
-          for (const k of required) { if (!d[k]) { alert('Faltan campos obligatorios.'); return; } }
-          await generarPDF(d, { action: 'print' });
-        });
-        document.getElementById('btnCopy').addEventListener('click', async () => {
-          try {
-            const d = datos();
-            const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
-            if (!cuerpo) { return; }
-            const txt = `${encabezadoTop}\n\n${dest}\nPresente.\n\n${cuerpo}\n${pie}`;
-            await navigator.clipboard.writeText(txt);
-            setStatus('Texto copiado al portapapeles.');
-          } catch (e) {
-            console.error(e); setStatus('No se pudo copiar el texto.');
-          } finally {
-            setTimeout(() => setStatus(""), 3000);
-          }
-        });
-
-        document.getElementById('fDenuncia').addEventListener('submit', async (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const d = datos();
-          const required = ['ciudad', 'destinatario', 'nombre', 'matricula', 'categoria', 'problematica'];
-          for (const k of required) { if (!d[k]) { alert('Faltan campos obligatorios.'); return; } }
-          await generarPDF(d, { action: 'print' });
-        });
-
-        // ► Autocompletar: al elegir puesto, llena titular (destinatario readonly) y cargo (oculto)
-        document.getElementById('puestoCatalogo').addEventListener('change', (e) => {
-          const val = e.target.value || '';
-          const dest = document.getElementById('destinatario');
-          const cargo = document.getElementById('cargo');
-          dest.value = '';
-          cargo.value = '';
-          if (!val) return;
-          const [cargoTxt, titular] = val.split('|');
-          if (cargoTxt) cargo.value = cargoTxt;
-          if (titular) dest.value = titular;
-          saveLocal();
-        });
-
-        // ► Guardado local al cambiar campos
-        document.getElementById('fDenuncia').addEventListener('input', saveLocal);
-
-        // cerrar modal clic fuera
-        document.getElementById('modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
-
-        // ► Cargar local y defaults
-        loadLocal();
-        const f = $('#fecha'); if (f && !f.value) f.value = hoyISO();
-
-        // Navigation
-        document.getElementById("btnBack")?.addEventListener("click", () => history.back());
+      // ===== Eventos =====
+      document.getElementById('btnPreview').addEventListener('click', abrirPreview);
+      document.getElementById('btnClose').addEventListener('click', cerrarPreview);
+      document.getElementById('btnDownload').addEventListener('click', async () => {
+        const d = datos();
+        const required = ['ciudad', 'destinatario', 'nombre', 'matricula', 'categoria', 'problematica'];
+        for (const k of required) { if (!d[k]) { alert('Faltan campos obligatorios.'); return; } }
+        await generarPDF(d, { action: 'download' });
       });
-    </script>
-    </body>
+      document.getElementById('btnPrint').addEventListener('click', async () => {
+        const d = datos();
+        const required = ['ciudad', 'destinatario', 'nombre', 'matricula', 'categoria', 'problematica'];
+        for (const k of required) { if (!d[k]) { alert('Faltan campos obligatorios.'); return; } }
+        await generarPDF(d, { action: 'print' });
+      });
+      document.getElementById('btnCopy').addEventListener('click', async () => {
+        try {
+          const d = datos();
+          const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
+          if (!cuerpo) { return; }
+          const txt = `${encabezadoTop}\n\n${dest}\nPresente.\n\n${cuerpo}\n${pie}`;
+          await navigator.clipboard.writeText(txt);
+          setStatus('Texto copiado al portapapeles.');
+        } catch (e) {
+          console.error(e); setStatus('No se pudo copiar el texto.');
+        } finally {
+          setTimeout(() => setStatus(""), 3000);
+        }
+      });
 
-  </html>
+      document.getElementById('fDenuncia').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const d = datos();
+        const required = ['ciudad', 'destinatario', 'nombre', 'matricula', 'categoria', 'problematica'];
+        for (const k of required) { if (!d[k]) { alert('Faltan campos obligatorios.'); return; } }
+        await generarPDF(d, { action: 'print' });
+      });
+
+      // ► Autocompletar: al elegir puesto, llena titular (destinatario readonly) y cargo (oculto)
+      document.getElementById('puestoCatalogo').addEventListener('change', (e) => {
+        const val = e.target.value || '';
+        const dest = document.getElementById('destinatario');
+        const cargo = document.getElementById('cargo');
+        dest.value = '';
+        cargo.value = '';
+        if (!val) return;
+        const [cargoTxt, titular] = val.split('|');
+        if (cargoTxt) cargo.value = cargoTxt;
+        if (titular) dest.value = titular;
+        saveLocal();
+      });
+
+      // ► Guardado local al cambiar campos
+      document.getElementById('fDenuncia').addEventListener('input', saveLocal);
+
+      // cerrar modal clic fuera
+      document.getElementById('modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
+
+      // ► Cargar local y defaults
+      loadLocal();
+      const f = $('#fecha'); if (f && !f.value) f.value = hoyISO();
+
+      // Navigation
+      document.getElementById("btnBack")?.addEventListener("click", () => history.back());
+    });
+  </script>
+</body>
+
+</html>
