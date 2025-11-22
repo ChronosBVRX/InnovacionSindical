@@ -1,217 +1,198 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Unidad en Acción — Acceso</title>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<style>
-  :root{
-    --bg:#0b1022; --panel:#0e1730; --ring:rgba(91,215,242,.35);
-    --txt:#e6fbff; --muted:#aee9f7; --accent:#5bd7f2; --sky:#60a5fa; --err:#ff7b7b;
-  }
-  *{box-sizing:border-box}
-  html,body{
-    height:100%; margin:0; color:var(--txt);
-    font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
-    background:
-      radial-gradient(70vmax 70vmax at 50% 20%, rgba(96,165,250,.12), transparent 60%),
-      radial-gradient(60vmax 60vmax at 80% 80%, rgba(91,215,242,.10), transparent 60%),
-      linear-gradient(180deg,#0b1220,#0b1022);
-  }
-  .wrap{max-width:980px;margin:0 auto;padding:22px}
-  .card{
-    background:linear-gradient(180deg,var(--panel),#0b1328);
-    border:1px solid rgba(91,215,242,.25); border-radius:16px; padding:16px;
-    box-shadow:0 10px 40px rgba(0,0,0,.45);
-  }
-  .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
   .brand{display:flex;align-items:center;gap:10px}
-  .brand img{width:40px;height:40px;border-radius:10px;border:1px solid rgba(91,215,242,.25);background:#071022;object-fit:contain}
-  h1{margin:0;font-size:18px;color:#d8fbff}
-  .muted{color:#aee9f7}
+  .brand img{width:40px;height:40px;border-radius:10px;border:1px solid var(--glass-border);background:rgba(7, 16, 34,
+  0.5);object-fit:contain}
+  h1{margin:0;font-size:18px;color:#fff}
+  .muted{color:var(--text-muted)}
   .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
   .tabs{display:flex;gap:8px;margin:8px 0 12px}
-  .tab{appearance:none;border:1px solid rgba(91,215,242,.35);background:rgba(91,215,242,.14);color:#e6fbff;border-radius:12px;padding:8px 12px;cursor:pointer}
-  .tab.active{background:linear-gradient(90deg,var(--accent),var(--sky));border:none;color:#072133}
+  .tab{appearance:none;border:1px solid
+  var(--glass-border);background:rgba(91,215,242,.08);color:var(--text-main);border-radius:12px;padding:8px
+  12px;cursor:pointer; transition: all 0.2s}
+  .tab.active{background:linear-gradient(135deg, var(--primary), var(--secondary));border:none;color:#072133;
+  font-weight:600}
 
-  label{display:block;font-size:12px;color:#bdefff;margin:6px 0 4px}
-  input,select{
-    width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(91,215,242,.28);
-    background:#0a1329;color:#e6fbff;outline:none
-  }
+  label{display:block;font-size:12px;color:var(--primary);margin:6px 0 4px}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .grid-1{grid-column:1/-1}
   @media(max-width:760px){ .grid{grid-template-columns:1fr} }
-  .btn{appearance:none;border:1px solid rgba(91,215,242,.45);background:rgba(91,215,242,.14);
-       color:#e6fbff;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer}
-  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--sky));border:none;color:#072133}
   .error{color:var(--err);font-size:13px;margin-top:8px}
-  .hint{font-size:12px;color:#9fdff0}
-</style>
+  .hint{font-size:12px;color:var(--text-muted)}
+  </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="card">
       <div class="head">
         <div class="brand">
-          <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20Unidad%20en%20Accion.png" alt="Unidad en Acción">
+          <img
+            src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20Unidad%20en%20Accion.png"
+            alt="Unidad en Acción">
           <div>
             <h1>Unidad en Acción</h1>
             <div class="muted">Acceso a miembros</div>
           </div>
         </div>
-        <a class="btn" href="https://chronosbvrx.github.io/InnovacionSindical/">← Volver al inicio</a>
       </div>
-
-      <div class="tabs">
-        <button id="tabLogin" class="tab active" type="button">Entrar</button>
-        <button id="tabSignup" class="tab" type="button">Crear cuenta</button>
-      </div>
-
-      <!-- FORM LOGIN -->
-      <form id="fLogin" class="grid" autocomplete="on">
-        <div class="grid-1">
-          <label for="liEmail">Correo</label>
-          <input id="liEmail" type="email" placeholder="tu@correo.com" required>
-        </div>
-        <div class="grid-1">
-          <label for="liPass">Contraseña</label>
-          <input id="liPass" type="password" placeholder="••••••••" required>
-        </div>
-        <div class="grid-1 row">
-          <button class="btn primary" type="submit">Entrar</button>
-          <span class="hint">¿Nuevo? cambia a “Crear cuenta”.</span>
-        </div>
-        <div id="liErr" class="grid-1 error" role="alert"></div>
-      </form>
-
-      <!-- FORM SIGNUP -->
-      <form id="fSignup" class="grid" style="display:none" autocomplete="on">
-        <div>
-          <label for="suName">Nombre para mostrar</label>
-          <input id="suName" placeholder="Ej. Ana Gómez" required>
-        </div>
-        <div>
-          <label for="suPhone">Teléfono</label>
-          <input id="suPhone" type="tel" inputmode="tel" placeholder="10 dígitos" pattern="^[0-9+\-\s()]{7,20}$" required>
-        </div>
-
-        <div>
-          <label for="suBirth">Fecha de cumpleaños</label>
-          <input id="suBirth" type="date" required>
-        </div>
-        <div>
-          <label for="suCategoria">Categoría</label>
-          <input id="suCategoria" placeholder="Ej. Enfermera General A" required>
-        </div>
-
-        <div class="grid-1">
-          <label for="suAdscripcion">Adscripción</label>
-          <input id="suAdscripcion" placeholder="Ej. HGZ No. XX, Urgencias" required>
-        </div>
-
-        <div class="grid-1"><hr style="border:none;border-top:1px solid rgba(91,215,242,.25)"></div>
-
-        <div>
-          <label for="suEmail">Correo</label>
-          <input id="suEmail" type="email" placeholder="tu@correo.com" required>
-        </div>
-        <div>
-          <label for="suPass">Contraseña</label>
-          <input id="suPass" type="password" minlength="6" placeholder="Mínimo 6 caracteres" required>
-        </div>
-
-        <div class="grid-1 row">
-          <button class="btn primary" type="submit">Crear cuenta</button>
-          <span class="hint">Te enviaremos un correo para confirmar.</span>
-        </div>
-        <div id="suErr" class="grid-1 error" role="alert"></div>
-      </form>
+      <a class="subtle-btn" href="index.html">← Volver al inicio</a>
     </div>
+
+    <div class="tabs">
+      <button id="tabLogin" class="tab active" type="button">Entrar</button>
+      <button id="tabSignup" class="tab" type="button">Crear cuenta</button>
+    </div>
+
+    <!-- FORM LOGIN -->
+    <form id="fLogin" class="grid" autocomplete="on">
+      <div class="grid-1">
+        <label for="liEmail">Correo</label>
+        <input id="liEmail" class="input" type="email" placeholder="tu@correo.com" required>
+      </div>
+      <div class="grid-1">
+        <label for="liPass">Contraseña</label>
+        <input id="liPass" class="input" type="password" placeholder="••••••••" required>
+      </div>
+      <div class="grid-1 row">
+        <button class="btn primary" type="submit">Entrar</button>
+        <span class="hint">¿Nuevo? cambia a “Crear cuenta”.</span>
+      </div>
+      <div id="liErr" class="grid-1 error" role="alert"></div>
+    </form>
+
+    <!-- FORM SIGNUP -->
+    <form id="fSignup" class="grid" style="display:none" autocomplete="on">
+      <div>
+        <label for="suName">Nombre para mostrar</label>
+        <input id="suName" class="input" placeholder="Ej. Ana Gómez" required>
+      </div>
+      <div>
+        <label for="suPhone">Teléfono</label>
+        <input id="suPhone" class="input" type="tel" inputmode="tel" placeholder="10 dígitos"
+          pattern="^[0-9+\-\s()]{7,20}$" required>
+      </div>
+
+      <div>
+        <label for="suBirth">Fecha de cumpleaños</label>
+        <input id="suBirth" class="input" type="date" required>
+      </div>
+      <div>
+        <label for="suCategoria">Categoría</label>
+        <input id="suCategoria" class="input" placeholder="Ej. Enfermera General A" required>
+      </div>
+
+      <div class="grid-1">
+        <label for="suAdscripcion">Adscripción</label>
+        <input id="suAdscripcion" class="input" placeholder="Ej. HGZ No. XX, Urgencias" required>
+      </div>
+
+      <div class="grid-1">
+        <hr style="border:none;border-top:1px solid var(--glass-border)">
+      </div>
+
+      <div>
+        <label for="suEmail">Correo</label>
+        <input id="suEmail" class="input" type="email" placeholder="tu@correo.com" required>
+      </div>
+      <div>
+        <label for="suPass">Contraseña</label>
+        <input id="suPass" class="input" type="password" minlength="6" placeholder="Mínimo 6 caracteres" required>
+      </div>
+
+      <div class="grid-1 row">
+        <button class="btn primary" type="submit">Crear cuenta</button>
+        <span class="hint">Te enviaremos un correo para confirmar.</span>
+      </div>
+      <div id="suErr" class="grid-1 error" role="alert"></div>
+    </form>
+  </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-  (()=>{
-    /* ====== CONFIG ====== */
-    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    const REDIRECT_AFTER_LOGIN = "miembros.html";
+    (() => {
+      /* ====== CONFIG ====== */
+      const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+      const REDIRECT_AFTER_LOGIN = "miembros.html";
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-    });
-
-    /* ====== UI ====== */
-    const $ = s => document.querySelector(s);
-    const fLogin = $('#fLogin'), fSignup = $('#fSignup');
-    const tabLogin = $('#tabLogin'), tabSignup = $('#tabSignup');
-    const liErr = $('#liErr'), suErr = $('#suErr');
-
-    function showLogin(){ fLogin.style.display='grid'; fSignup.style.display='none'; tabLogin.classList.add('active'); tabSignup.classList.remove('active'); liErr.textContent=''; suErr.textContent=''; }
-    function showSignup(){ fLogin.style.display='none'; fSignup.style.display='grid'; tabSignup.classList.add('active'); tabLogin.classList.remove('active'); liErr.textContent=''; suErr.textContent=''; }
-    tabLogin.addEventListener('click', showLogin);
-    tabSignup.addEventListener('click', showSignup);
-
-    // Si ya hay sesión → redirigir
-    supabase.auth.getSession().then(({data})=>{
-      if (data?.session) location.href = REDIRECT_AFTER_LOGIN;
-    });
-
-    /* ====== LOGIN ====== */
-    fLogin.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      liErr.textContent = '';
-      const email = $('#liEmail').value.trim();
-      const password = $('#liPass').value;
-
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error){ liErr.textContent = 'Error: ' + (error.message || 'No se pudo iniciar sesión'); return; }
-
-      // ok
-      location.href = REDIRECT_AFTER_LOGIN;
-    });
-
-    /* ====== SIGNUP (con metadatos extra) ====== */
-    fSignup.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      suErr.textContent = '';
-
-      const display_name = $('#suName').value.trim();
-      const phone        = $('#suPhone').value.trim();
-      const birthdate    = $('#suBirth').value;       // YYYY-MM-DD
-      const categoria    = $('#suCategoria').value.trim();
-      const adscripcion  = $('#suAdscripcion').value.trim();
-
-      const email        = $('#suEmail').value.trim();
-      const password     = $('#suPass').value;
-
-      // Validación básica
-      if (!display_name || !phone || !birthdate || !categoria || !adscripcion){
-        suErr.textContent = 'Completa todos los campos del perfil.'; return;
-      }
-
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { display_name, phone, birthdate, categoria, adscripcion }
-          // Si quieres correos con una URL de redirección personalizada:
-          // emailRedirectTo: "https://tu-dominio/miembros.html"
-        }
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
       });
 
-      if (error){ suErr.textContent = 'Error: ' + (error.message || 'No se pudo crear la cuenta'); return; }
+      /* ====== UI ====== */
+      const $ = s => document.querySelector(s);
+      const fLogin = $('#fLogin'), fSignup = $('#fSignup');
+      const tabLogin = $('#tabLogin'), tabSignup = $('#tabSignup');
+      const liErr = $('#liErr'), suErr = $('#suErr');
 
-      alert('¡Cuenta creada! Revisa tu correo para confirmar la dirección. Después, inicia sesión.');
-      showLogin();
-      // Cargamos email en login para comodidad
-      $('#liEmail').value = email;
-    });
+      function showLogin() { fLogin.style.display = 'grid'; fSignup.style.display = 'none'; tabLogin.classList.add('active'); tabSignup.classList.remove('active'); liErr.textContent = ''; suErr.textContent = ''; }
+      function showSignup() { fLogin.style.display = 'none'; fSignup.style.display = 'grid'; tabSignup.classList.add('active'); tabLogin.classList.remove('active'); liErr.textContent = ''; suErr.textContent = ''; }
+      tabLogin.addEventListener('click', showLogin);
+      tabSignup.addEventListener('click', showSignup);
 
-  })();
+      // Si ya hay sesión → redirigir
+      supabase.auth.getSession().then(({ data }) => {
+        if (data?.session) location.href = REDIRECT_AFTER_LOGIN;
+      });
+
+      /* ====== LOGIN ====== */
+      fLogin.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        liErr.textContent = '';
+        const email = $('#liEmail').value.trim();
+        const password = $('#liPass').value;
+
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) { liErr.textContent = 'Error: ' + (error.message || 'No se pudo iniciar sesión'); return; }
+
+        // ok
+        location.href = REDIRECT_AFTER_LOGIN;
+      });
+
+      /* ====== SIGNUP (con metadatos extra) ====== */
+      fSignup.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        suErr.textContent = '';
+
+        const display_name = $('#suName').value.trim();
+        const phone = $('#suPhone').value.trim();
+        const birthdate = $('#suBirth').value;       // YYYY-MM-DD
+        const categoria = $('#suCategoria').value.trim();
+        const adscripcion = $('#suAdscripcion').value.trim();
+
+        const email = $('#suEmail').value.trim();
+        const password = $('#suPass').value;
+
+        // Validación básica
+        if (!display_name || !phone || !birthdate || !categoria || !adscripcion) {
+          suErr.textContent = 'Completa todos los campos del perfil.'; return;
+        }
+
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { display_name, phone, birthdate, categoria, adscripcion }
+            // Si quieres correos con una URL de redirección personalizada:
+            // emailRedirectTo: "https://tu-dominio/miembros.html"
+          }
+        });
+
+        if (error) { suErr.textContent = 'Error: ' + (error.message || 'No se pudo crear la cuenta'); return; }
+
+        alert('¡Cuenta creada! Revisa tu correo para confirmar la dirección. Después, inicia sesión.');
+        showLogin();
+        // Cargamos email en login para comodidad
+        $('#liEmail').value = email;
+      });
+
+    })();
   </script>
 </body>
+
 </html>
