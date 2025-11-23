@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Denuncias y Reportes — SInOS</title>
+  <title>Asistente Generador de Escritos — SInOS</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="theme.css">
 </head>
@@ -15,9 +15,9 @@
     <a class="subtle-btn" href="index.html" style="font-size:16px; text-decoration:none" title="Inicio">🏠</a>
   </div>
 
-  <h1>Denuncias y Reportes</h1>
-  <p class="muted">Previsualiza el documento y luego imprime o descarga. Tus datos se guardan localmente en este
-    navegador.</p>
+  <h1>Asistente Generador de Escritos</h1>
+  <p class="muted">Genera escritos formales con IA. Previsualiza el documento y luego imprime o descarga. Tus datos se
+    guardan localmente en este navegador.</p>
 
   <div class="card">
     <form id="fDenuncia" autocomplete="on" novalidate>
@@ -210,6 +210,9 @@
       const N = s => (s || '').toString().trim();
       const setStatus = (t = '') => $('#status').textContent = t;
 
+      // Cache para datos de vista previa (evita regenerar al imprimir/descargar)
+      let cachedPreviewData = null;
+
       // ✔ FIX jsPDF + html2canvas: espera a que ambos estén listos
       const ensureJsPDF = () => new Promise((resolve, reject) => {
         let tries = 0;
@@ -354,6 +357,9 @@ Categoría: ${d.categoria}${N(d.lugar) ? `\n${d.lugar}` : ''}`;
           const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
           if (!cuerpo) { return; }
 
+          // Guardar en cache para reutilizar en imprimir/descargar
+          cachedPreviewData = { encabezadoTop, dest, cuerpo, pie };
+
           sheet.innerHTML = buildPreviewHTML(encabezadoTop, dest, cuerpo, pie);
           openModal();
         } catch (e) {
@@ -364,7 +370,7 @@ Categoría: ${d.categoria}${N(d.lugar) ? `\n${d.lugar}` : ''}`;
       function cerrarPreview() { closeModal(); }
 
       // ===== Opción B: PDF calcado a la vista previa con doc.html (justificado real) =====
-      async function generarPDF(d, { action = 'print' } = {}) {
+      async function generarPDF(d, { action = 'print', useCache = false } = {}) {
         setStatus('Generando PDF…');
         try {
           const { jsPDF } = await ensureJsPDF();
@@ -374,7 +380,13 @@ Categoría: ${d.categoria}${N(d.lugar) ? `\n${d.lugar}` : ''}`;
           const M = 64;        // márgenes laterales
           const topBase = 72;  // margen superior
 
-          const { encabezadoTop, dest, cuerpo, pie } = await armarOficio(d);
+          // Usar cache si está disponible y se solicita, sino generar nuevo
+          let encabezadoTop, dest, cuerpo, pie;
+          if (useCache && cachedPreviewData) {
+            ({ encabezadoTop, dest, cuerpo, pie } = cachedPreviewData);
+          } else {
+            ({ encabezadoTop, dest, cuerpo, pie } = await armarOficio(d));
+          }
           if (!cuerpo) { throw new Error('No se generó cuerpo del escrito.'); }
 
           // 1) Construir el mismo HTML que la vista previa
@@ -492,13 +504,15 @@ Categoría: ${d.categoria}${N(d.lugar) ? `\n${d.lugar}` : ''}`;
         const d = datos();
         const required = ['ciudad', 'destinatario', 'nombre', 'matricula', 'categoria', 'problematica'];
         for (const k of required) { if (!d[k]) { alert('Faltan campos obligatorios.'); return; } }
-        await generarPDF(d, { action: 'download' });
+        // Usar cache si existe (desde vista previa)
+        await generarPDF(d, { action: 'download', useCache: !!cachedPreviewData });
       });
       document.getElementById('btnPrint').addEventListener('click', async () => {
         const d = datos();
         const required = ['ciudad', 'destinatario', 'nombre', 'matricula', 'categoria', 'problematica'];
         for (const k of required) { if (!d[k]) { alert('Faltan campos obligatorios.'); return; } }
-        await generarPDF(d, { action: 'print' });
+        // Usar cache si existe (desde vista previa)
+        await generarPDF(d, { action: 'print', useCache: !!cachedPreviewData });
       });
       document.getElementById('btnCopy').addEventListener('click', async () => {
         try {
