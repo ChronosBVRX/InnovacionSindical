@@ -502,7 +502,7 @@
       <section class="brand">
         <div>
           <h1>Bienvenido a <span class="text-gradient">SInOS</span></h1>
-          <p>Sistema Operativo de Innovación Sindical. Toca un panel para abrir una app.</p>
+          <p>Sistema Operativo de Innovación Sindical. Actualmente solo está disponible la Red Unidad en Acción.</p>
         </div>
         <div style="display:flex;gap:8px">
           <div class="badge">Equipo de Innovación Sindical</div>
@@ -537,7 +537,7 @@
     </div>
   </section>
 
-  <!-- Facebook SDK helper (para Noticias) -->
+  <!-- Facebook SDK helper (para Noticias, en stand by) -->
   <script>
     function loadFacebookSDKOnce(locale = 'es_LA') {
       return new Promise((resolve) => {
@@ -558,43 +558,83 @@
 
   <!-- APPS -->
   <script>
-    /* Reemplaza "Prestaciones" por "Calculadora de prestaciones" */
+    /* Solo Red Unidad en Acción visible; demás en stand by (hidden: true) */
     const APPS = [
       {
-        id: 'trascendencia', title: 'TrascendencIA Sindical', desc: 'Asistente IA.', icon: '🤖',
-        href: 'https://trascendencia-sindical-7t85.onrender.com/', quick: true
-      },
-
-      { id: 'noticias', title: 'Noticias', desc: 'Circulares y comunicados en tiempo real.', icon: '📰', type: 'internal' },
-
-      {
-        id: 'agenda', title: 'Red Unidad en Acción', desc: 'Accede con tu usuario para ver la agenda.', icon: '📅',
-        href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', quick: true
-      },
-
-      {
-        id: 'denuncias', title: 'Asistente Generador de Escritos', desc: 'Genera escritos formales con IA, listos para imprimir.', icon: '📝',
-        href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', quick: true
+        id: 'trascendencia',
+        title: 'TrascendencIA Sindical',
+        desc: 'Asistente IA.',
+        icon: '🤖',
+        href: 'https://trascendencia-sindical-7t85.onrender.com/',
+        quick: true,
+        hidden: true
       },
 
       {
-        id: 'directorio', title: 'Directorio', desc: 'Delegados, jurídicos y atención a trabajadores.', icon: '📞',
-        iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio', quick: true
+        id: 'noticias',
+        title: 'Noticias',
+        desc: 'Circulares y comunicados en tiempo real.',
+        icon: '📰',
+        type: 'internal',
+        hidden: true
       },
 
-      /* Ocultas temporalmente */
       {
-        id: 'miniapp', title: 'MiniApp WhatsApp', desc: 'Automatizaciones por palabras clave y avisos.', icon: '💬',
-        href: 'https://wa.me/XXXXXXXXXXX', hidden: true
+        id: 'agenda',
+        title: 'Red Unidad en Acción',
+        desc: 'Accede con tu usuario para ver la agenda.',
+        icon: '📅',
+        href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html',
+        quick: true
+        // visible (sin hidden)
       },
 
-      /* Renombrado */
       {
-        id: 'calculadora', title: 'Calculadora de prestaciones', desc: 'Vacaciones, licencias, estímulos y antigüedad.', icon: '📄',
-        iframe: 'about:blank'
+        id: 'denuncias',
+        title: 'Asistente Generador de Escritos',
+        desc: 'Genera escritos formales con IA, listos para imprimir.',
+        icon: '📝',
+        href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias',
+        quick: true,
+        hidden: true
       },
 
-      { id: 'ajustes', title: 'Ajustes', desc: 'Tema, accesibilidad y personalización.', icon: '⚙️', iframe: 'about:blank', hidden: true }
+      {
+        id: 'directorio',
+        title: 'Directorio',
+        desc: 'Delegados, jurídicos y atención a trabajadores.',
+        icon: '📞',
+        iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio',
+        quick: true,
+        hidden: true
+      },
+
+      {
+        id: 'miniapp',
+        title: 'MiniApp WhatsApp',
+        desc: 'Automatizaciones por palabras clave y avisos.',
+        icon: '💬',
+        href: 'https://wa.me/XXXXXXXXXXX',
+        hidden: true
+      },
+
+      {
+        id: 'calculadora',
+        title: 'Calculadora de prestaciones',
+        desc: 'Vacaciones, licencias, estímulos y antigüedad.',
+        icon: '📄',
+        iframe: 'about:blank',
+        hidden: true
+      },
+
+      {
+        id: 'ajustes',
+        title: 'Ajustes',
+        desc: 'Tema, accesibilidad y personalización.',
+        icon: '⚙️',
+        iframe: 'about:blank',
+        hidden: true
+      }
     ];
   </script>
 
