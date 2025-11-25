@@ -363,6 +363,7 @@
       <button class="tab" data-tab="miembros">👥 Miembros</button>
       <button class="tab" data-tab="calendario">📅 Calendario</button>
       <button class="tab" data-tab="foro">🗣️ Foro</button>
+      <button class="tab" data-tab="biblioteca">📚 Biblioteca</button>
       <button class="tab" data-tab="verificacion">✅ Verificación</button>
       <button class="tab" data-tab="scanner" id="tabScanner" style="display:none">🔎 Scanner</button>
       <button class="tab" data-tab="personaliza">⚙️ Personaliza tu perfil</button>
@@ -467,6 +468,19 @@
       </div>
     </section>
 
+    <!-- BIBLIOTECA (iframe a biblioteca.html) -->
+    <section id="biblioteca" class="content">
+      <div class="card">
+        <h2>📚 Biblioteca de Recursos</h2>
+        <p class="muted">Consulta y explora materiales digitales de la Red Unidad en Acción.</p>
+        <iframe
+          src="biblioteca.html"
+          style="width:100%;min-height:650px;border:0;border-radius:12px;margin-top:12px"
+          loading="lazy"
+        ></iframe>
+      </div>
+    </section>
+
     <!-- VERIFICACIÓN -->
     <section id="verificacion" class="content">
       <div class="card">
@@ -550,7 +564,7 @@
           }
           document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
           document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-          btn.classList.add('active'); $(id).classList.add('active'); location.hash = id;
+          btn.classList.add('active'); $(id).addClass = 'active'; $(id).classList.add('active'); location.hash = id;
           if (id === 'miembros') renderMembers();
           if (id === 'verificacion') initVerification();
           if (id === 'foro') loadPostsDeb();
