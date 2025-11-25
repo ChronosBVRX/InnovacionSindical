@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Biblioteca — Unidad en Acción</title>
+  <style>
+    :root {
+      --bg: #0b1022;
+      --panel: #101a33;
+      --ring: rgba(91, 215, 242, .35);
+      --txt: #e6fbff;
+      --muted: #aee9f7;
+      --primary: #5bd7f2;
+      --sky: #60a5fa;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto;
+    }
+    body {
+      min-height: 100vh;
+      background: transparent;
+      color: var(--txt);
+    }
+    .wrap {
+      padding: 4px 0 16px 0;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid rgba(91, 215, 242, .25);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, .25);
+      margin-bottom: 12px;
+    }
+    h2 {
+      margin-bottom: 8px;
+      color: #bff4ff;
+      font-size: 18px;
+    }
+    p.muted {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .meta {
+      font-size: 12px;
+      color: #9fdcf0;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(96, 165, 250, .12);
+      border: 1px solid rgba(96, 165, 250, .35);
+      font-size: 11px;
+      color: #cfefff;
+    }
+    input, textarea, select {
+      background: #0a1329;
+      border: 1px solid rgba(91, 215, 242, .3);
+      color: #e6fbff;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .btn {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(90deg, var(--primary), var(--sky));
+      color: #072133;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      transition: .2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn:hover {
+      filter: brightness(1.1);
+    }
+    .subtle-btn {
+      appearance: none;
+      border: 1px solid rgba(91, 215, 242, .28);
+      background: rgba(91, 215, 242, .08);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .subtle-btn:hover {
+      background: rgba(91, 215, 242, .18);
+    }
+    #libraryList {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .resource-card {
+      background: #0c1630;
+      border-radius: 14px;
+      border: 1px solid rgba(91, 215, 242, .18);
+      padding: 12px;
+    }
+    .resource-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    @media (max-width:600px) {
+      .wrap {
+        padding: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Filtro de Biblioteca -->
+    <div class="card">
+      <h2>📚 Biblioteca de Recursos</h2>
+      <p class="muted">Consulta materiales, documentos, guías y recursos digitales de la Red Unidad en Acción.</p>
+
+      <div class="row" style="margin-top:10px">
+        <input id="qLibrary" placeholder="Buscar por título, tema o palabra clave" style="min-width:220px;flex:1">
+        <select id="libCategory">
+          <option value="">Todas las categorías</option>
+        </select>
+        <button class="subtle-btn" id="btnRefreshLibrary">Actualizar</button>
+      </div>
+
+      <div id="libStats" class="meta" style="margin-top:8px">Cargando recursos…</div>
+    </div>
+
+    <!-- Lista de recursos -->
+    <div class="card">
+      <h2>📂 Recursos disponibles</h2>
+      <div id="libraryList"></div>
+    </div>
+
+    <!-- Bloque de administración (solo visible para admins) -->
+    <div class="card" id="adminBlock" style="display:none">
+      <h2>🛠️ Administrar Biblioteca</h2>
+      <p class="muted">Solo administradores pueden crear nuevos recursos. Lo que registres aquí se verá de inmediato en la biblioteca.</p>
+
+      <form id="adminForm" style="display:grid;gap:8px;margin-top:10px;max-width:640px">
+        <label class="meta">Título</label>
+        <input id="aTitle" placeholder="Ej. Guía básica de derechos laborales">
+
+        <label class="meta">Descripción</label>
+        <textarea id="aDesc" placeholder="Breve descripción del recurso"></textarea>
+
+        <label class="meta">URL del recurso (PDF, video, enlace, etc.)</label>
+        <input id="aUrl" placeholder="https://...">
+
+        <label class="meta">Categoría</label>
+        <input id="aCat" placeholder="Ej. Derechos laborales, Formación sindical">
+
+        <label class="meta">Etiquetas (separadas por coma)</label>
+        <input id="aTags" placeholder="ej. guia, pdf, derechos">
+
+        <label class="meta">Tipo de archivo</label>
+        <select id="aType">
+          <option value="pdf">📕 PDF</option>
+          <option value="video">🎬 Video</option>
+          <option value="audio">🎧 Audio</option>
+          <option value="link">🔗 Enlace</option>
+          <option value="otro">📄 Otro</option>
+        </select>
+
+        <div class="row" style="margin-top:8px">
+          <button class="btn" type="submit">💾 Guardar recurso</button>
+          <span class="meta" id="adminStatus"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    /* ====== Config Supabase (MISMA QUE EN MIEMBROS) ====== */
+    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    const LOGIN_URL = "login.html";
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
+
+    const $ = (id) => document.getElementById(id);
+    let CURRENT_USER = null;
+    let IS_ADMIN = false;
+    let LIBRARY_CACHE = [];
+
+    const debounce = (fn, ms = 200) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initApp();
+    });
+
+    async function initApp() {
+      await supabase.auth.refreshSession();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        try { window.top.location.href = LOGIN_URL; } catch { window.location.href = LOGIN_URL; }
+        return;
+      }
+
+      CURRENT_USER = session.user;
+      IS_ADMIN = (CURRENT_USER.app_metadata?.role === 'admin');
+
+      if (IS_ADMIN) {
+        $("adminBlock").style.display = 'block';
+      }
+
+      $("btnRefreshLibrary")?.addEventListener('click', () => loadLibrary(true));
+      $("qLibrary")?.addEventListener('input', debounce(() => renderLibrary(), 150));
+      $("libCategory")?.addEventListener('change', () => renderLibrary());
+      $("adminForm")?.addEventListener('submit', onAdminSave);
+
+      loadLibrary(true);
+    }
+
+    /* ====== Biblioteca: lectura ====== */
+    async function loadLibrary(force = false) {
+      if (!force && LIBRARY_CACHE.length) {
+        renderLibrary();
+        return;
+      }
+      const stats = $("libStats");
+      if (stats) stats.textContent = "Cargando recursos…";
+
+      const { data, error } = await supabase
+        .from('library_items')
+        .select('id, title, description, url, category, tags, file_type, created_at')
+        .order('created_at', { ascending: false })
+        .limit(200);
+
+      if (error) {
+        console.error(error);
+        if (stats) stats.textContent = "❌ No se pudieron cargar los recursos.";
+        return;
+      }
+
+      LIBRARY_CACHE = data || [];
+      if (stats) stats.textContent = `${LIBRARY_CACHE.length} recurso(s) disponible(s).`;
+
+      populateLibCategories();
+      renderLibrary();
+    }
+
+    function populateLibCategories() {
+      const sel = $("libCategory");
+      if (!sel) return;
+      const current = sel.value;
+      const cats = [...new Set(LIBRARY_CACHE.map(i => i.category).filter(Boolean))].sort();
+      sel.innerHTML = `<option value="">Todas las categorías</option>` +
+        cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+      if (current && cats.includes(current)) sel.value = current;
+    }
+
+    function renderLibrary() {
+      const listEl = $("libraryList");
+      if (!listEl) return;
+      const q = ($("qLibrary")?.value || '').toLowerCase().trim();
+      const cat = $("libCategory")?.value || '';
+
+      let items = LIBRARY_CACHE.slice();
+      if (cat) items = items.filter(i => (i.category || '') === cat);
+      if (q) {
+        items = items.filter(i => {
+          const t = (i.title || '').toLowerCase();
+          const d = (i.description || '').toLowerCase();
+          const tags = Array.isArray(i.tags)
+            ? i.tags.join(' ').toLowerCase()
+            : String(i.tags || '').toLowerCase();
+          return t.includes(q) || d.includes(q) || tags.includes(q);
+        });
+      }
+
+      listEl.innerHTML = '';
+
+      if (!items.length) {
+        listEl.innerHTML = `<div class="meta">No se encontraron recursos con esos criterios.</div>`;
+        return;
+      }
+
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'resource-card';
+
+        const tagsArr = Array.isArray(item.tags)
+          ? item.tags
+          : (item.tags ? String(item.tags).split(',') : []);
+        const tagHtml = tagsArr
+          .map(t => String(t).trim())
+          .filter(Boolean)
+          .map(t => `<span class="pill">${escapeHtml(t)}</span>`)
+          .join(' ');
+
+        let icon = '📄';
+        if (item.file_type === 'video') icon = '🎬';
+        else if (item.file_type === 'audio') icon = '🎧';
+        else if (item.file_type === 'link') icon = '🔗';
+        else if (item.file_type === 'pdf') icon = '📕';
+
+        const created = item.created_at ? fmtDate(item.created_at) : '';
+
+        card.innerHTML = `
+          <div class="resource-header">
+            <div style="font-size:26px">${icon}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:15px">${escapeHtml(item.title || 'Recurso')}</div>
+              ${item.category ? `<div class="meta" style="margin-top:2px">🏷️ ${escapeHtml(item.category)}</div>` : ''}
+              ${created ? `<div class="meta" style="margin-top:2px">📅 ${created}</div>` : ''}
+              ${item.description ? `<p class="muted" style="margin-top:6px;white-space:pre-wrap">${escapeHtml(item.description)}</p>` : ''}
+              ${tagHtml ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px">${tagHtml}</div>` : ''}
+              ${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener" class="btn" style="margin-top:10px;">Abrir recurso</a>` : ''}
+            </div>
+          </div>
+        `;
+
+        listEl.appendChild(card);
+      });
+    }
+
+    /* ====== Admin: insertar recurso (solo admin, reforzado por RLS) ====== */
+    async function onAdminSave(e) {
+      e.preventDefault();
+      if (!IS_ADMIN) {
+        $("adminStatus").textContent = "No tienes permisos para crear recursos.";
+        return;
+      }
+
+      const title = $("aTitle").value.trim();
+      const description = $("aDesc").value.trim();
+      const url = $("aUrl").value.trim();
+      const category = $("aCat").value.trim();
+      const tagsRaw = $("aTags").value.trim();
+      const type = $("aType").value || 'otro';
+
+      if (!title || !url) {
+        $("adminStatus").textContent = "Título y URL son obligatorios.";
+        return;
+      }
+
+      const tags = tagsRaw
+        ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean)
+        : [];
+
+      $("adminStatus").textContent = "Guardando…";
+
+      const { error } = await supabase
+        .from('library_items')
+        .insert([{
+          title,
+          description: description || null,
+          url,
+          category: category || null,
+          tags: tags.length ? tags : null,
+          file_type: type || null,
+          created_by: CURRENT_USER.id
+        }]);
+
+      if (error) {
+        console.error(error);
+        $("adminStatus").textContent = "❌ No se pudo guardar: " + (error.message || "");
+        return;
+      }
+
+      $("adminStatus").textContent = "✅ Recurso guardado.";
+      $("aTitle").value = "";
+      $("aDesc").value = "";
+      $("aUrl").value = "";
+      $("aCat").value = "";
+      $("aTags").value = "";
+
+      loadLibrary(true);
+    }
+
+    /* ====== Utilidades ====== */
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>\"']/g, s => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      }[s]));
+    }
+
+    function fmtDate(iso) {
+      try {
+        return new Intl.DateTimeFormat('es-MX', {
+          dateStyle: 'medium',
+          timeStyle: 'short'
+        }).format(new Date(iso));
+      } catch {
+        return iso;
+      }
+    }
+  </script>
+</body>
+</html>
