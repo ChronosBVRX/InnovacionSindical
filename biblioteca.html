@@ -108,22 +108,88 @@
     .subtle-btn:hover {
       background: rgba(91, 215, 242, .18);
     }
+
+    /* GRID DE LA LISTA DE RECURSOS */
     #libraryList {
       display: grid;
-      gap: 10px;
+      gap: 12px;
       margin-top: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     }
+
+    /* Encabezados de sección por categoría */
+    .lib-section-header {
+      grid-column: 1 / -1;
+      margin-top: 6px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(91, 215, 242, .28);
+      font-size: 12px;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+      color: #86d5f3;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Tarjetas de recurso mejoradas */
     .resource-card {
-      background: #0c1630;
+      background: radial-gradient(circle at top left, rgba(96, 165, 250, .12), transparent 55%),
+                  #0c1630;
       border-radius: 14px;
-      border: 1px solid rgba(91, 215, 242, .18);
+      border: 1px solid rgba(91, 215, 242, .25);
       padding: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, .35);
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
     }
+
+    .resource-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, .45);
+      border-color: rgba(91, 215, 242, .55);
+    }
+
     .resource-header {
       display: flex;
       align-items: flex-start;
       gap: 10px;
     }
+
+    .resource-header > div:first-child {
+      flex-shrink: 0;
+    }
+
+    .resource-title {
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 2px;
+    }
+
+    .resource-meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .resource-description {
+      margin-top: 6px;
+      white-space: pre-wrap;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .resource-description.long {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .resource-actions {
+      margin-top: 8px;
+    }
+
     @media (max-width:600px) {
       .wrap {
         padding: 0;
@@ -278,14 +344,20 @@
       if (current && cats.includes(current)) sel.value = current;
     }
 
+    /* ====== RENDER DE LA BIBLIOTECA, AGRUPANDO POR CATEGORÍA ====== */
     function renderLibrary() {
       const listEl = $("libraryList");
       if (!listEl) return;
+
       const q = ($("qLibrary")?.value || '').toLowerCase().trim();
       const cat = $("libCategory")?.value || '';
 
       let items = LIBRARY_CACHE.slice();
+
+      // Filtro por categoría seleccionada
       if (cat) items = items.filter(i => (i.category || '') === cat);
+
+      // Filtro por texto
       if (q) {
         items = items.filter(i => {
           const t = (i.title || '').toLowerCase();
@@ -297,6 +369,15 @@
         });
       }
 
+      // Orden: primero por categoría, luego por fecha (más nuevo primero)
+      items.sort((a, b) => {
+        const ca = (a.category || 'Sin categoría').toLowerCase();
+        const cb = (b.category || 'Sin categoría').toLowerCase();
+        if (ca < cb) return -1;
+        if (ca > cb) return 1;
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+      });
+
       listEl.innerHTML = '';
 
       if (!items.length) {
@@ -304,7 +385,20 @@
         return;
       }
 
+      let currentCategory = null;
+
       items.forEach(item => {
+        const catLabel = item.category || 'Sin categoría';
+
+        // Si no hay filtro de categoría, agregamos encabezados por categoría
+        if (!cat && catLabel !== currentCategory) {
+          currentCategory = catLabel;
+          const header = document.createElement('div');
+          header.className = 'lib-section-header';
+          header.innerHTML = `🏷️ ${escapeHtml(catLabel)}`;
+          listEl.appendChild(header);
+        }
+
         const card = document.createElement('div');
         card.className = 'resource-card';
 
@@ -325,16 +419,32 @@
 
         const created = item.created_at ? fmtDate(item.created_at) : '';
 
+        const desc = item.description || '';
+        const isLong = desc.length > 280;
+        const descClass = isLong ? 'resource-description long' : 'resource-description';
+
         card.innerHTML = `
           <div class="resource-header">
             <div style="font-size:26px">${icon}</div>
             <div style="flex:1;min-width:0">
-              <div style="font-weight:700;font-size:15px">${escapeHtml(item.title || 'Recurso')}</div>
-              ${item.category ? `<div class="meta" style="margin-top:2px">🏷️ ${escapeHtml(item.category)}</div>` : ''}
-              ${created ? `<div class="meta" style="margin-top:2px">📅 ${created}</div>` : ''}
-              ${item.description ? `<p class="muted" style="margin-top:6px;white-space:pre-wrap">${escapeHtml(item.description)}</p>` : ''}
-              ${tagHtml ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px">${tagHtml}</div>` : ''}
-              ${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener" class="btn" style="margin-top:10px;">Abrir recurso</a>` : ''}
+              <div class="resource-title">${escapeHtml(item.title || 'Recurso')}</div>
+
+              <div class="resource-meta-line meta">
+                ${catLabel ? `<span>🏷️ ${escapeHtml(catLabel)}</span>` : ''}
+                ${created ? `<span>📅 ${created}</span>` : ''}
+              </div>
+
+              ${desc ? `<p class="muted ${descClass}">${escapeHtml(desc)}</p>` : ''}
+
+              ${tagHtml
+                ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px">${tagHtml}</div>`
+                : ''}
+
+              ${item.url
+                ? `<div class="resource-actions">
+                     <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener" class="btn">Abrir recurso</a>
+                   </div>`
+                : ''}
             </div>
           </div>
         `;
