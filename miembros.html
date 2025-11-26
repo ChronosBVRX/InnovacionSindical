@@ -390,7 +390,7 @@
 
   <main>
     <section class="layout">
-      <!-- Columna principal de perfil -->
+      <!-- COLUMNA PRINCIPAL: PERFIL -->
       <section class="perfil-main card">
         <div class="perfil-header">
           <div class="avatar" id="avatar-iniciales">👤</div>
@@ -422,7 +422,7 @@
           </div>
         </div>
 
-        <!-- Formulario de edición -->
+        <!-- Formulario -->
         <form id="perfil-form" class="perfil-form">
           <div class="perfil-form-row">
             <div>
@@ -435,13 +435,15 @@
             </div>
             <div>
               <label for="input-servicios">Servicios / habilidades</label>
-              <input id="input-servicios" name="servicios" type="text" placeholder="Ej. Programación, asesoría, etc.">
+              <input id="input-servicios" name="servicios" type="text"
+                placeholder="Ej. Programación, asesoría, etc.">
             </div>
           </div>
 
           <div>
-            <label for="input-notas">Notas internas (opcional)</label>
-            <textarea id="input-notas" name="notas" placeholder="Breve descripción de tu rol o zona de influencia."></textarea>
+            <label for="input-notas">Notas internas (solo en este dispositivo)</label>
+            <textarea id="input-notas" name="notas"
+              placeholder="Breve descripción de tu rol o zona de influencia."></textarea>
           </div>
 
           <button type="submit" class="btn-primary">
@@ -451,9 +453,8 @@
         </form>
       </section>
 
-      <!-- Columna extra: frases, valor y próximas acciones -->
+      <!-- COLUMNA DERECHA: FRASES, VALOR Y ACCIONES -->
       <section class="perfil-extra">
-        <!-- Frases motivadoras -->
         <article class="card perfil-quote">
           <h3>💬 Frase para el equipo</h3>
           <p id="perfil-quote-text">Cargando frase…</p>
@@ -463,13 +464,11 @@
           </button>
         </article>
 
-        <!-- Valor extra sindical -->
         <article class="card perfil-valor">
           <h3>⭐ Valor para tu labor sindical</h3>
           <ul id="perfil-valor-list"></ul>
         </article>
 
-        <!-- Próximas acciones personalizadas -->
         <article class="card perfil-acciones">
           <div class="tag-pendiente">Próximas acciones</div>
           <h3>Lo que puedes completar de tu perfil</h3>
@@ -486,17 +485,16 @@
   </main>
 
   <script>
-    // ---------- Reloj simple ----------
+    // --- Reloj ---
     function tickClock() {
       const el = document.getElementById('clock');
       if (!el) return;
-      const now = new Date();
-      el.textContent = now.toLocaleTimeString('es-MX', { hour12: false });
+      el.textContent = new Date().toLocaleTimeString('es-MX', { hour12: false });
     }
     tickClock();
     setInterval(tickClock, 1000);
 
-    // ---------- Supabase ----------
+    // --- Supabase ---
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
@@ -505,19 +503,18 @@
 
     let currentUser = null;
     let currentProfile = null;
+    let currentPhone = "";
 
     async function loadUserAndProfile() {
       const msgEl = document.getElementById('perfil-msg');
       try {
         const { data: { user }, error } = await supabaseClient.auth.getUser();
         if (error || !user) {
-          // si no hay usuario, mándalo al login
           window.location.href = "login.html";
           return;
         }
         currentUser = user;
 
-        // Nombre / iniciales
         const email = user.email || "";
         const nombre = user.user_metadata?.nombre || user.user_metadata?.full_name || email.split("@")[0];
         document.getElementById('perfil-nombre').textContent = nombre || "Miembro";
@@ -530,10 +527,13 @@
           avatarEl.textContent = iniciales.toUpperCase();
         }
 
-        // Traer perfil
+        // Teléfono desde metadata
+        currentPhone = user.user_metadata?.telefono || user.user_metadata?.phone || "";
+
+        // Perfil desde tabla public.profiles (SOLO columnas existentes)
         const { data: profile, error: pError } = await supabaseClient
           .from('profiles')
-          .select('telefono, servicios, cumple, notas')
+          .select('servicios, cumple')
           .eq('user_id', user.id)
           .maybeSingle();
 
@@ -544,9 +544,15 @@
         }
 
         currentProfile = profile || {};
+        // Guardamos también el teléfono en el objeto en memoria
+        currentProfile.telefonoMeta = currentPhone;
 
-        // Pintar datos en pantalla
         renderProfile(currentProfile);
+
+        // Notas locales
+        const notasLocal = localStorage.getItem('perfil:notas:' + user.id) || "";
+        document.getElementById('input-notas').value = notasLocal;
+
         buildNextActions(currentProfile);
       } catch (err) {
         console.error(err);
@@ -563,12 +569,10 @@
       const cumpleSpan = document.getElementById('perfil-cumple');
       const estadoSpan = document.getElementById('perfil-estado');
 
-      const tel = profile?.telefono || "";
+      const tel = profile.telefonoMeta || "";
       const servicios = profile?.servicios || "";
-      const cumple = profile?.cumple || "";
-      const notas = profile?.notas || "";
+      const cumple = profile?.cumple || null;
 
-      // Mostrar texto
       if (tel) {
         telSpan.textContent = tel;
         telSpan.classList.remove('empty');
@@ -600,7 +604,6 @@
         cumpleSpan.classList.add('empty');
       }
 
-      // Estado del perfil
       const faltantes = [];
       if (!tel) faltantes.push("teléfono");
       if (!servicios) faltantes.push("servicios/habilidades");
@@ -612,14 +615,12 @@
         estadoSpan.textContent = "Falta completar: " + faltantes.join(", ");
       }
 
-      // Prellenar formulario
       document.getElementById('input-telefono').value = tel || "";
       document.getElementById('input-servicios').value = servicios || "";
       document.getElementById('input-cumple').value = cumple || "";
-      document.getElementById('input-notas').value = notas || "";
     }
 
-    // Guardar perfil
+    // Guardar
     document.getElementById('perfil-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const msgEl = document.getElementById('perfil-msg');
@@ -637,15 +638,15 @@
       const cumple = document.getElementById('input-cumple').value || null;
       const notas = document.getElementById('input-notas').value.trim();
 
+      // payload SOLO con columnas reales de profiles
       const payload = {
         user_id: currentUser.id,
-        telefono: telefono || null,
         servicios: servicios || null,
-        cumple: cumple,
-        notas: notas || null
+        cumple: cumple
       };
 
       try {
+        // upsert en profiles
         const { data, error } = await supabaseClient
           .from('profiles')
           .upsert(payload, { onConflict: 'user_id' })
@@ -659,7 +660,21 @@
           return;
         }
 
+        // actualizar teléfono en metadata del usuario
+        const { error: uError } = await supabaseClient.auth.updateUser({
+          data: { telefono: telefono || null }
+        });
+        if (uError) console.error("Error actualizando teléfono:", uError);
+
+        // notas solo en localStorage
+        try {
+          localStorage.setItem('perfil:notas:' + currentUser.id, notas);
+        } catch { }
+
+        currentPhone = telefono;
         currentProfile = data || payload;
+        currentProfile.telefonoMeta = currentPhone;
+
         renderProfile(currentProfile);
         buildNextActions(currentProfile);
 
@@ -672,7 +687,7 @@
       }
     });
 
-    // --------- Frases motivadoras + valor extra ---------
+    // --- Frases & valor extra ---
     const FRASES_PERFIL = [
       {
         texto: "Un solo delegado puede marcar la diferencia, pero un equipo unido transforma la historia.",
@@ -709,9 +724,9 @@
     ];
 
     const VALOR_PERFIL = [
+      "Comparte tu perfil con compañeros que puedan apoyarte en tu zona o servicio.",
       "Registra tus participaciones en asambleas o actividades para que tu liderazgo quede documentado.",
       "Revisa periódicamente la biblioteca sindical para conocer nuevos materiales de formación.",
-      "Comparte tu perfil con compañeros que puedan apoyarte en tu zona o servicio.",
       "Mantén actualizado tu teléfono y habilidades para que puedan contactarte cuando más se necesita.",
       "Agenda recordatorios para fechas clave: asambleas, informes, cursos de formación y vencimiento de comisiones.",
       "Consulta los lineamientos y el estatuto antes de cada negociación importante."
@@ -721,15 +736,10 @@
       return FRASES_PERFIL[Math.floor(Math.random() * FRASES_PERFIL.length)];
     }
 
-    function tipAleatorio() {
-      return VALOR_PERFIL[Math.floor(Math.random() * VALOR_PERFIL.length)];
-    }
-
     function aplicarFrasePerfil() {
       const elTexto = document.getElementById('perfil-quote-text');
       const elTag = document.getElementById('perfil-quote-tag');
       if (!elTexto || !elTag) return;
-
       const f = fraseAleatoria();
       elTexto.textContent = `"${f.texto}"`;
       elTag.textContent = f.tag;
@@ -738,7 +748,6 @@
     function aplicarValorPerfil() {
       const ul = document.getElementById('perfil-valor-list');
       if (!ul) return;
-
       ul.innerHTML = "";
       const usados = new Set();
       for (let i = 0; i < 3 && i < VALOR_PERFIL.length; i++) {
@@ -757,7 +766,7 @@
       aplicarFrasePerfil();
     }
 
-    // -------- Próximas acciones según lo que falta en el perfil --------
+    // --- Próximas acciones ---
     function buildNextActions(profile) {
       const ul = document.getElementById('perfil-acciones-list');
       const emptyMsg = document.getElementById('perfil-acciones-empty');
@@ -767,14 +776,17 @@
       emptyMsg.style.display = "none";
 
       const acciones = [];
+      const tel = profile.telefonoMeta || "";
+      const servicios = profile?.servicios || "";
+      const cumple = profile?.cumple || null;
 
-      if (!profile?.telefono) {
+      if (!tel) {
         acciones.push("Agrega tu teléfono de contacto para que otros compañeros puedan localizarte cuando se necesite apoyo.");
       }
-      if (!profile?.servicios) {
+      if (!servicios) {
         acciones.push("Describe tus servicios o habilidades (por ejemplo: programación, asesoría de contrato colectivo, formación, difusión, etc.).");
       }
-      if (!profile?.cumple) {
+      if (!cumple) {
         acciones.push("Captura tu fecha de cumpleaños para poder considerar reconocimientos y detalles en tu día.");
       }
 
