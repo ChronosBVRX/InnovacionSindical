@@ -280,7 +280,7 @@
     <!-- ADMIN -->
     <div id="adminBlock" class="card" style="display:none">
       <h2>🛠️ Administrar Biblioteca</h2>
-      <p class="muted">Solo administradores pueden crear nuevos recursos.</p>
+      <p class="muted">Solo administradores pueden crear y eliminar recursos.</p>
 
       <form id="adminForm" style="display:grid;gap:8px;max-width:640px;margin-top:10px">
         <label class="meta">Título</label>
@@ -329,11 +329,14 @@
       <div id="modalDesc" class="modal-body"></div>
       <div id="modalTags" class="modal-tags"></div>
 
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px;flex-wrap:wrap">
         <span class="meta">Haz clic fuera del recuadro o en ✕ para cerrar.</span>
-        <a id="modalOpenLink" href="#" class="btn" target="_blank" rel="noopener" style="display:none">
-          Abrir recurso
-        </a>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="modalDeleteBtn" class="subtle-btn" style="display:none;">🗑️ Eliminar</button>
+          <a id="modalOpenLink" href="#" class="btn" target="_blank" rel="noopener" style="display:none">
+            Abrir recurso
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -355,6 +358,7 @@
     let CURRENT_USER = null;
     let IS_ADMIN = false;
     let LIBRARY_CACHE = [];
+    let CURRENT_MODAL_ITEM = null;
 
     const $ = (id) => document.getElementById(id);
     const debounce = (fn, ms = 200) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
@@ -514,11 +518,29 @@
                 ${tagsArr.map(t => String(t).trim()).filter(Boolean)
                   .map(t => `<span class="pill">${escapeHtml(t)}</span>`).join("")}
               </div>
+              ${IS_ADMIN ? `
+                <div style="margin-top:8px;display:flex;justify-content:flex-end">
+                  <button type="button" class="subtle-btn btn-delete">🗑️ Eliminar</button>
+                </div>
+              ` : ""}
             </div>
           </div>
         `;
 
+        // Click tarjeta → abrir modal
         card.addEventListener("click", () => openResourceModal(item));
+
+        // Botón eliminar (solo admin)
+        if (IS_ADMIN) {
+          const delBtn = card.querySelector(".btn-delete");
+          if (delBtn) {
+            delBtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              onDeleteResource(item);
+            });
+          }
+        }
+
         listEl.appendChild(card);
       });
     }
@@ -577,10 +599,40 @@
       loadLibrary(true);
     }
 
+    /* ========== ELIMINAR RECURSO (ADMIN) ========== */
+    async function onDeleteResource(item, fromModal = false) {
+      if (!IS_ADMIN) return;
+
+      const nombre = item.title || "este recurso";
+      const ok = window.confirm(`¿Seguro que quieres eliminar "${nombre}"? Esta acción no se puede deshacer.`);
+      if (!ok) return;
+
+      const stats = $("libStats");
+      if (stats) stats.textContent = "Eliminando recurso…";
+
+      const { error } = await supabaseClient
+        .from("library_items")
+        .delete()
+        .eq("id", item.id);
+
+      if (error) {
+        console.error(error);
+        if (stats) stats.textContent = "❌ Error al eliminar el recurso.";
+        return;
+      }
+
+      if (stats) stats.textContent = "✅ Recurso eliminado.";
+      if (fromModal) closeResourceModal();
+      // Actualiza cache local y re-renderiza
+      LIBRARY_CACHE = LIBRARY_CACHE.filter(r => r.id !== item.id);
+      renderLibrary();
+    }
+
     /* ========== MODAL ========== */
     function setupModalHandlers() {
       const modal = $("resourceModal");
       const closeBtn = $("modalCloseBtn");
+      const delBtn = $("modalDeleteBtn");
       if (!modal) return;
 
       modal.addEventListener("click", (e) => {
@@ -598,17 +650,28 @@
           closeResourceModal();
         }
       });
+
+      if (delBtn) {
+        delBtn.addEventListener("click", () => {
+          if (CURRENT_MODAL_ITEM) {
+            onDeleteResource(CURRENT_MODAL_ITEM, true);
+          }
+        });
+      }
     }
 
     function openResourceModal(item) {
       const modal = $("resourceModal");
       if (!modal) return;
 
+      CURRENT_MODAL_ITEM = item;
+
       const titleEl = $("modalTitle");
       const metaEl = $("modalMeta");
       const descEl = $("modalDesc");
       const tagsEl = $("modalTags");
       const linkEl = $("modalOpenLink");
+      const delBtn = $("modalDeleteBtn");
 
       const catLabel = item.category || "Sin categoría";
       const created = item.created_at ? fmtDate(item.created_at) : "";
@@ -636,6 +699,12 @@
         linkEl.style.display = "none";
       }
 
+      if (IS_ADMIN && delBtn) {
+        delBtn.style.display = "inline-flex";
+      } else if (delBtn) {
+        delBtn.style.display = "none";
+      }
+
       modal.classList.add("visible");
     }
 
@@ -643,6 +712,7 @@
       const modal = $("resourceModal");
       if (!modal) return;
       modal.classList.remove("visible");
+      CURRENT_MODAL_ITEM = null;
     }
 
     /* ========== UTILIDADES ========== */
