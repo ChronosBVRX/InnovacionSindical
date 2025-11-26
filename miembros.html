@@ -380,9 +380,12 @@
             <p><strong>Nombre:</strong> <span id="pfName">Cargando…</span></p>
             <p><strong>Email:</strong> <span id="pfEmail">—</span></p>
             <p><strong>Teléfono:</strong> <span id="pfTelefono">—</span></p>
+            <p class="meta" id="pfTelefonoVis" style="margin-top:4px"></p>
             <p><strong>Cumpleaños:</strong> <span id="pfCumple">—</span></p>
             <p><strong>Categoría:</strong> <span id="pfCategoria">—</span></p>
             <p><strong>Adscripción:</strong> <span id="pfAdscripcion">—</span></p>
+            <p style="margin-top:8px"><strong>Servicios / habilidades:</strong></p>
+            <p id="pfServicios" class="muted">—</p>
           </div>
         </div>
 
@@ -424,7 +427,7 @@
       <div class="card">
         <h2>👥 Directorio de Miembros</h2>
         <div class="row" style="margin-top:6px">
-          <input id="qMembers" placeholder="Buscar por nombre o adscripción" style="min-width:260px">
+          <input id="qMembers" placeholder="Buscar por nombre, adscripción o servicios" style="min-width:260px">
           <button class="subtle-btn" id="btnRefreshMembers">Actualizar</button>
           <label class="row" style="gap:8px;align-items:center;margin-left:auto">
             <input type="checkbox" id="chkOnlineOnly"><span>👁️ Solo online</span>
@@ -517,10 +520,17 @@
         <form id="editForm">
           <label>Nombre completo</label><input id="fNombre" placeholder="Tu nombre completo">
           <label>Teléfono</label><input id="fTelefono" placeholder="Ej. 5532120000">
+          <label style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" id="fTelefonoPublico">
+            <span>Mostrar mi número de teléfono a otros miembros</span>
+          </label>
           <label>Fecha de cumpleaños</label><input id="fCumple" type="date">
           <label>Categoría</label><input id="fCategoria" placeholder="Ej. Enfermera General A">
           <label>Adscripción</label><input id="fAdscripcion" placeholder="Ej. HGR 1, Urgencias">
           <label>Biografía corta</label><textarea id="fBio" placeholder="Cuéntanos algo breve"></textarea>
+          <label>Servicios / habilidades que ofreces</label>
+          <textarea id="fServicios"
+            placeholder="Ej. Asesoría jurídica, apoyo en organización de eventos, diseño gráfico, etc."></textarea>
           <button class="btn" type="submit">💾 Guardar cambios</button>
           <div class="status meta" id="status"></div>
         </form>
@@ -564,7 +574,9 @@
           }
           document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
           document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-          btn.classList.add('active'); $(id).addClass = 'active'; $(id).classList.add('active'); location.hash = id;
+          btn.classList.add('active');
+          $(id).classList.add('active');
+          location.hash = id;
           if (id === 'miembros') renderMembers();
           if (id === 'verificacion') initVerification();
           if (id === 'foro') loadPostsDeb();
@@ -600,40 +612,10 @@
       else { (document.querySelector(`.tab[data-tab="${wanted}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click(); }
     }
 
-    /* ====== Perfil ====== */
-    async function loadProfile() {
-      const { data: prof } = await supabase
-        .from('profiles')
-        .select('display_name, avatar_url, categoria, adscripcion, bio, cumple, telefono')
-        .eq('user_id', CURRENT_USER.id)
-        .maybeSingle();
-
-      $("pfName").textContent = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "Sin nombre";
-      $("pfEmail").textContent = CURRENT_USER.email || "—";
-      $("pfTelefono").textContent = maskPhone(prof?.telefono || CURRENT_USER.user_metadata?.telefono);
-      $("pfCumple").textContent = formatDateISOtoMX(prof?.cumple || CURRENT_USER.user_metadata?.cumple);
-
-      $("pfCategoria").textContent = (prof?.categoria ?? CURRENT_USER.user_metadata?.categoria) || "—";
-      $("pfAdscripcion").textContent = (prof?.adscripcion ?? CURRENT_USER.user_metadata?.adscripcion) || "—";
-
-      const avatar = prof?.avatar_url || CURRENT_USER.user_metadata?.avatar_url;
-      if (avatar) { $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`; $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`; }
-      else { const ini = (prof?.display_name || CURRENT_USER.email || "?")[0].toUpperCase(); $("userAvatar").textContent = ini; $("avatarPreview").textContent = ini; }
-
-      // Prefill form
-      $("fNombre").value = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "";
-      $("fTelefono").value = prof?.telefono || CURRENT_USER.user_metadata?.telefono || "";
-      try { const c = (prof?.cumple || CURRENT_USER.user_metadata?.cumple); if (c) { const d = new Date(c.length <= 10 ? c + "T00:00:00" : c); $("fCumple").value = d.toISOString().slice(0, 10); } } catch { }
-      $("fCategoria").value = prof?.categoria || CURRENT_USER.user_metadata?.categoria || "";
-      $("fAdscripcion").value = prof?.adscripcion || CURRENT_USER.user_metadata?.adscripcion || "";
-      $("fBio").value = prof?.bio || CURRENT_USER.user_metadata?.bio || "";
-
-      await loadAsistenciaPerfil();
-      await loadMiniTopPerfil();
-    }
-
+    /* ====== Helpers ====== */
     function maskPhone(t) { const s = (t || "").replace(/\D+/g, ""); if (s.length < 8) return t || "—"; return `••• ••${s.slice(-4)}`; }
     function formatDateISOtoMX(iso) { if (!iso) return "—"; try { const d = new Date(iso.length <= 10 ? iso + "T00:00:00" : iso); return new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: 'long', year: 'numeric' }).format(d); } catch { return iso; } }
+    const nz = (v) => { if (v == null) return null; const t = String(v).trim(); return t === "" ? null : t; };
 
     /* ====== Upload avatar ====== */
     async function uploadAvatar(file) {
@@ -649,8 +631,63 @@
       return data?.publicUrl || null;
     }
 
-    /* ====== Normalizador ====== */
-    const nz = (v) => { if (v == null) return null; const t = String(v).trim(); return t === "" ? null : t; };
+    /* ====== Perfil ====== */
+    async function loadProfile() {
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('display_name, avatar_url, categoria, adscripcion, bio, cumple, telefono, telefono_publico, servicios')
+        .eq('user_id', CURRENT_USER.id)
+        .maybeSingle();
+
+      const telRaw = prof?.telefono || CURRENT_USER.user_metadata?.telefono;
+      const telPublicFlag = (prof?.telefono_publico ?? CURRENT_USER.user_metadata?.telefono_publico) === true;
+      const serviciosRaw = (prof?.servicios ?? CURRENT_USER.user_metadata?.servicios) || "";
+
+      $("pfName").textContent = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "Sin nombre";
+      $("pfEmail").textContent = CURRENT_USER.email || "—";
+      $("pfTelefono").textContent = telRaw || "—";
+      if (!telRaw) {
+        $("pfTelefonoVis").textContent = "No has capturado un número de teléfono.";
+      } else {
+        $("pfTelefonoVis").textContent = telPublicFlag
+          ? "Tu teléfono es visible para otros miembros."
+          : "Tu teléfono NO es visible para otros miembros.";
+      }
+
+      $("pfCumple").textContent = formatDateISOtoMX(prof?.cumple || CURRENT_USER.user_metadata?.cumple);
+      $("pfCategoria").textContent = (prof?.categoria ?? CURRENT_USER.user_metadata?.categoria) || "—";
+      $("pfAdscripcion").textContent = (prof?.adscripcion ?? CURRENT_USER.user_metadata?.adscripcion) || "—";
+      $("pfServicios").textContent = serviciosRaw.trim() || "—";
+
+      const avatar = prof?.avatar_url || CURRENT_USER.user_metadata?.avatar_url;
+      if (avatar) {
+        $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`;
+        $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`;
+      } else {
+        const ini = (prof?.display_name || CURRENT_USER.email || "?")[0].toUpperCase();
+        $("userAvatar").textContent = ini;
+        $("avatarPreview").textContent = ini;
+      }
+
+      // Prefill form
+      $("fNombre").value = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "";
+      $("fTelefono").value = telRaw || "";
+      $("fTelefonoPublico").checked = !!telPublicFlag;
+      try {
+        const c = (prof?.cumple || CURRENT_USER.user_metadata?.cumple);
+        if (c) {
+          const d = new Date(c.length <= 10 ? c + "T00:00:00" : c);
+          $("fCumple").value = d.toISOString().slice(0, 10);
+        }
+      } catch { }
+      $("fCategoria").value = prof?.categoria || CURRENT_USER.user_metadata?.categoria || "";
+      $("fAdscripcion").value = prof?.adscripcion || CURRENT_USER.user_metadata?.adscripcion || "";
+      $("fBio").value = prof?.bio || CURRENT_USER.user_metadata?.bio || "";
+      $("fServicios").value = serviciosRaw || "";
+
+      await loadAsistenciaPerfil();
+      await loadMiniTopPerfil();
+    }
 
     /* ====== Guardar perfil ====== */
     async function onSaveProfile(e) {
@@ -663,14 +700,18 @@
 
         const rawCumple = $("fCumple").value;
         const cumple = nz(rawCumple) ? new Date(rawCumple).toISOString().slice(0, 10) : null;
+        const telefono_publico = $("fTelefonoPublico").checked;
+        const servicios = nz($("fServicios").value);
 
         const updates = {
           display_name: nz($("fNombre").value),
           telefono: nz($("fTelefono").value),
+          telefono_publico,
           cumple,
           categoria: nz($("fCategoria").value),
           adscripcion: nz($("fAdscripcion").value),
-          bio: nz($("fBio").value)
+          bio: nz($("fBio").value),
+          servicios
         };
         if (avatar_url) updates.avatar_url = avatar_url;
 
@@ -682,10 +723,12 @@
           display_name: updates.display_name,
           avatar_url: updates.avatar_url || CURRENT_USER.user_metadata?.avatar_url || null,
           telefono: updates.telefono,
+          telefono_publico: updates.telefono_publico,
           cumple: updates.cumple,
           categoria: updates.categoria,
           adscripcion: updates.adscripcion,
           bio: updates.bio,
+          servicios: updates.servicios,
           last_seen: new Date().toISOString()
         }, { onConflict: 'user_id' });
 
@@ -704,21 +747,24 @@
       if (!force && MEMBERS_CACHE.length) return;
       const { data, error } = await supabase
         .from('profiles')
-        .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen')
+        .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, telefono, telefono_publico, servicios')
         .order('last_seen', { ascending: false })
         .limit(1000);
       if (error) { console.error(error); return; }
       MEMBERS_CACHE = data || [];
       renderMembers();
     }
+
     function renderMembers() {
       const q = ($("qMembers").value || "").trim().toLowerCase();
       const onlyOnline = $("chkOnlineOnly").checked;
       let list = MEMBERS_CACHE.slice();
+
       if (q) list = list.filter(p =>
         (p.display_name || '').toLowerCase().includes(q) ||
         (p.adscripcion || '').toLowerCase().includes(q) ||
-        (p.categoria || '').toLowerCase().includes(q)
+        (p.categoria || '').toLowerCase().includes(q) ||
+        (p.servicios || '').toLowerCase().includes(q)
       );
       if (onlyOnline) list = list.filter(p => ONLINE_SET.has(p.user_id));
 
@@ -730,18 +776,31 @@
       list.forEach(p => {
         const card = document.createElement('div'); card.className = 'card';
         const dot = ONLINE_SET.has(p.user_id) ? '🟢 Online' : '⚪ Offline';
+
+        const tel = p.telefono || '';
+        const telPublic = !!p.telefono_publico;
+        const telDisplay = tel && telPublic ? tel : 'No visible';
+
+        const serviciosText = (p.servicios || '').trim();
+        const serviciosShort = serviciosText
+          ? (serviciosText.length > 100 ? serviciosText.slice(0, 97) + '…' : serviciosText)
+          : '';
+
         card.innerHTML = `
-      <div class="row" style="align-items:center">
+      <div class="row" style="align-items:flex-start">
         <div class="avatar" style="width:64px;height:64px">${p.avatar_url ? `<img src="${p.avatar_url}">` : (p.display_name || '?')[0]?.toUpperCase()}</div>
         <div style="flex:1;min-width:200px">
           <div style="font-weight:700">${escapeHtml(p.display_name || '—')}</div>
           <div class="meta">${escapeHtml(p.categoria || '—')} • ${escapeHtml(p.adscripcion || '—')}</div>
+          <div class="meta" style="margin-top:4px">📱 ${escapeHtml(telDisplay)}</div>
+          ${serviciosShort ? `<div class="meta" style="margin-top:4px">🤝 ${escapeHtml(serviciosShort)}</div>` : ''}
         </div>
         <span class="pill">${dot}</span>
       </div>`;
         wrap.appendChild(card);
       });
     }
+
     function escapeHtml(str) {
       return (str || '').replace(/[&<>\"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[s]));
     }
