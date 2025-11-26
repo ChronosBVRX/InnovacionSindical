@@ -690,57 +690,62 @@
     }
 
     /* ====== Guardar perfil ====== */
-    async function onSaveProfile(e) {
-      e.preventDefault();
-      $("status").textContent = "Guardando…";
-      try {
-        const file = $("fAvatar").files?.[0];
-        let avatar_url = null;
-        if (file) { avatar_url = await uploadAvatar(file); }
+   async function onSaveProfile(e) {
+  e.preventDefault();
+  $("status").textContent = "Guardando…";
+  try {
+    const file = $("fAvatar").files?.[0];
+    let avatar_url = null;
+    if (file) { avatar_url = await uploadAvatar(file); }
 
-        const rawCumple = $("fCumple").value;
-        const cumple = nz(rawCumple) ? new Date(rawCumple).toISOString().slice(0, 10) : null;
-        const telefono_publico = $("fTelefonoPublico").checked;
-        const servicios = nz($("fServicios").value);
+    const rawCumple = $("fCumple").value;
+    const cumple = nz(rawCumple) ? new Date(rawCumple).toISOString().slice(0, 10) : null;
+    const telefono_publico = $("fTelefonoPublico").checked;
+    const servicios = nz($("fServicios").value);
 
-        const updates = {
-          display_name: nz($("fNombre").value),
-          telefono: nz($("fTelefono").value),
-          telefono_publico,
-          cumple,
-          categoria: nz($("fCategoria").value),
-          adscripcion: nz($("fAdscripcion").value),
-          bio: nz($("fBio").value),
-          servicios
-        };
-        if (avatar_url) updates.avatar_url = avatar_url;
+    const updates = {
+      display_name: nz($("fNombre").value),
+      telefono: nz($("fTelefono").value),
+      telefono_publico,
+      cumple,
+      categoria: nz($("fCategoria").value),
+      adscripcion: nz($("fAdscripcion").value),
+      bio: nz($("fBio").value),
+      servicios
+    };
+    if (avatar_url) updates.avatar_url = avatar_url;
 
-        const { error: authErr } = await supabase.auth.updateUser({ data: updates });
-        if (authErr) throw authErr;
+    const { error: authErr } = await supabase.auth.updateUser({ data: updates });
+    if (authErr) throw authErr;
 
-        const { error: upErr } = await supabase.from('profiles').upsert({
-          user_id: CURRENT_USER.id,
-          display_name: updates.display_name,
-          avatar_url: updates.avatar_url || CURRENT_USER.user_metadata?.avatar_url || null,
-          telefono: updates.telefono,
-          telefono_publico: updates.telefono_publico,
-          cumple: updates.cumple,
-          categoria: updates.categoria,
-          adscripcion: updates.adscripcion,
-          bio: updates.bio,
-          servicios: updates.servicios,
-          last_seen: new Date().toISOString()
-        }, { onConflict: 'user_id' });
+    const { error: upErr } = await supabase.from('profiles').upsert({
+      user_id: CURRENT_USER.id,
+      display_name: updates.display_name,
+      avatar_url: updates.avatar_url || CURRENT_USER.user_metadata?.avatar_url || null,
+      telefono: updates.telefono,
+      telefono_publico: updates.telefono_publico,
+      cumple: updates.cumple,
+      categoria: updates.categoria,
+      adscripcion: updates.adscripcion,
+      bio: updates.bio,
+      servicios: updates.servicios,
+      last_seen: new Date().toISOString()
+    }, { onConflict: 'user_id' });
 
-        if (upErr) { console.error(upErr); $("status").textContent = "❌ Error al guardar en profiles. Revisa consola."; return; }
-
-        $("status").textContent = "✅ Cambios guardados.";
-        await loadProfile();
-      } catch (e) {
-        console.error(e);
-        $("status").textContent = "❌ Ocurrió un error guardando tu perfil.";
-      }
+    if (upErr) {
+      console.error(upErr);
+      $("status").textContent = "❌ Error al guardar en profiles. Revisa consola.";
+      return;
     }
+
+    $("status").textContent = "✅ Cambios guardados.";
+    await loadProfile();
+  } catch (e) {
+    console.error(e);
+    $("status").textContent = "❌ Ocurrió un error guardando tu perfil.";
+  }
+}
+
 
     /* ====== Miembros ====== */
     async function loadMembers(force = false) {
