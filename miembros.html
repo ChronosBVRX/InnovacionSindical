@@ -509,32 +509,32 @@
     <section id="personaliza" class="content">
       <div class="card">
         <h2>⚙️ Edita tu información</h2>
-        <div class="row" style="margin-top:10px">
-          <div class="avatar" id="avatarPreview">🧑</div>
-          <div>
-            <label>Foto de perfil (PNG/JPG/WebP, máx 2MB)</label>
-            <input type="file" id="fAvatar" accept="image/png,image/jpeg,image/webp">
-            <div class="meta">Se previsualiza al seleccionar; se sube al guardar.</div>
-          </div>
+      <div class="row" style="margin-top:10px">
+        <div class="avatar" id="avatarPreview">🧑</div>
+        <div>
+          <label>Foto de perfil (PNG/JPG/WebP, máx 2MB)</label>
+          <input type="file" id="fAvatar" accept="image/png,image/jpeg,image/webp">
+          <div class="meta">Se previsualiza al seleccionar; se sube al guardar.</div>
         </div>
-        <form id="editForm">
-          <label>Nombre completo</label><input id="fNombre" placeholder="Tu nombre completo">
-          <label>Teléfono</label><input id="fTelefono" placeholder="Ej. 5532120000">
-          <label style="display:flex;align-items:center;gap:8px;">
-            <input type="checkbox" id="fTelefonoPublico">
-            <span>Mostrar mi número de teléfono a otros miembros</span>
-          </label>
-          <label>Fecha de cumpleaños</label><input id="fCumple" type="date">
-          <label>Categoría</label><input id="fCategoria" placeholder="Ej. Enfermera General A">
-          <label>Adscripción</label><input id="fAdscripcion" placeholder="Ej. HGR 1, Urgencias">
-          <label>Biografía corta</label><textarea id="fBio" placeholder="Cuéntanos algo breve"></textarea>
-          <label>Servicios / habilidades que ofreces</label>
-          <textarea id="fServicios"
-            placeholder="Ej. Asesoría jurídica, apoyo en organización de eventos, diseño gráfico, etc."></textarea>
-          <button class="btn" type="submit">💾 Guardar cambios</button>
-          <div class="status meta" id="status"></div>
-        </form>
       </div>
+      <form id="editForm">
+        <label>Nombre completo</label><input id="fNombre" placeholder="Tu nombre completo">
+        <label>Teléfono</label><input id="fTelefono" placeholder="Ej. 5532120000">
+        <label style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="fTelefonoPublico">
+          <span>Mostrar mi número de teléfono a otros miembros</span>
+        </label>
+        <label>Fecha de cumpleaños</label><input id="fCumple" type="date">
+        <label>Categoría</label><input id="fCategoria" placeholder="Ej. Enfermera General A">
+        <label>Adscripción</label><input id="fAdscripcion" placeholder="Ej. HGR 1, Urgencias">
+        <label>Biografía corta</label><textarea id="fBio" placeholder="Cuéntanos algo breve"></textarea>
+        <label>Servicios / habilidades que ofreces</label>
+        <textarea id="fServicios"
+          placeholder="Ej. Asesoría jurídica, apoyo en organización de eventos, diseño gráfico, etc."></textarea>
+        <button class="btn" type="submit">💾 Guardar cambios</button>
+        <div class="status meta" id="status"></div>
+      </form>
+    </div>
     </section>
   </main>
 
@@ -690,79 +690,96 @@
     }
 
     /* ====== Guardar perfil ====== */
-   async function onSaveProfile(e) {
-  e.preventDefault();
-  $("status").textContent = "Guardando…";
-  try {
-    const file = $("fAvatar").files?.[0];
-    let avatar_url = null;
-    if (file) { avatar_url = await uploadAvatar(file); }
+    async function onSaveProfile(e) {
+      e.preventDefault();
+      $("status").textContent = "Guardando…";
+      try {
+        const file = $("fAvatar").files?.[0];
+        let avatar_url = null;
+        if (file) { avatar_url = await uploadAvatar(file); }
 
-    const rawCumple = $("fCumple").value;
-    const cumple = nz(rawCumple) ? new Date(rawCumple).toISOString().slice(0, 10) : null;
-    const telefono_publico = $("fTelefonoPublico").checked;
-    const servicios = nz($("fServicios").value);
+        const rawCumple = $("fCumple").value;
+        const cumple = nz(rawCumple) ? new Date(rawCumple).toISOString().slice(0, 10) : null;
+        const telefono_publico = $("fTelefonoPublico").checked;
+        const servicios = nz($("fServicios").value);
 
-    const updates = {
-      display_name: nz($("fNombre").value),
-      telefono: nz($("fTelefono").value),
-      telefono_publico,
-      cumple,
-      categoria: nz($("fCategoria").value),
-      adscripcion: nz($("fAdscripcion").value),
-      bio: nz($("fBio").value),
-      servicios
-    };
-    if (avatar_url) updates.avatar_url = avatar_url;
+        const updates = {
+          display_name: nz($("fNombre").value),
+          telefono: nz($("fTelefono").value),
+          telefono_publico,
+          cumple,
+          categoria: nz($("fCategoria").value),
+          adscripcion: nz($("fAdscripcion").value),
+          bio: nz($("fBio").value),
+          servicios
+        };
+        if (avatar_url) updates.avatar_url = avatar_url;
 
-    const { error: authErr } = await supabase.auth.updateUser({ data: updates });
-    if (authErr) throw authErr;
+        const { error: authErr } = await supabase.auth.updateUser({ data: updates });
+        if (authErr) throw authErr;
 
-    const { error: upErr } = await supabase.from('profiles').upsert({
-      user_id: CURRENT_USER.id,
-      display_name: updates.display_name,
-      avatar_url: updates.avatar_url || CURRENT_USER.user_metadata?.avatar_url || null,
-      telefono: updates.telefono,
-      telefono_publico: updates.telefono_publico,
-      cumple: updates.cumple,
-      categoria: updates.categoria,
-      adscripcion: updates.adscripcion,
-      bio: updates.bio,
-      servicios: updates.servicios,
-      last_seen: new Date().toISOString()
-    }, { onConflict: 'user_id' });
+        const { error: upErr } = await supabase.from('profiles').upsert({
+          user_id: CURRENT_USER.id,
+          display_name: updates.display_name,
+          avatar_url: updates.avatar_url || CURRENT_USER.user_metadata?.avatar_url || null,
+          telefono: updates.telefono,
+          telefono_publico: updates.telefono_publico,
+          cumple: updates.cumple,
+          categoria: updates.categoria,
+          adscripcion: updates.adscripcion,
+          bio: updates.bio,
+          servicios: updates.servicios,
+          last_seen: new Date().toISOString()
+        }, { onConflict: 'user_id' });
 
-    if (upErr) {
-      console.error(upErr);
-      $("status").textContent = "❌ Error al guardar en profiles. Revisa consola.";
-      return;
+        if (upErr) {
+          console.error(upErr);
+          $("status").textContent = "❌ Error al guardar en profiles. Revisa consola.";
+          return;
+        }
+
+        $("status").textContent = "✅ Cambios guardados.";
+        await loadProfile();
+      } catch (e) {
+        console.error(e);
+        $("status").textContent = "❌ Ocurrió un error guardando tu perfil.";
+      }
     }
-
-    $("status").textContent = "✅ Cambios guardados.";
-    await loadProfile();
-  } catch (e) {
-    console.error(e);
-    $("status").textContent = "❌ Ocurrió un error guardando tu perfil.";
-  }
-}
-
 
     /* ====== Miembros ====== */
     async function loadMembers(force = false) {
       if (!force && MEMBERS_CACHE.length) return;
+
+      const wrap = $("membersList");
+      if (wrap) {
+        wrap.innerHTML = '<div class="meta">Cargando miembros…</div>';
+      }
+
       const { data, error } = await supabase
         .from('profiles')
         .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, telefono, telefono_publico, servicios')
         .order('last_seen', { ascending: false })
         .limit(1000);
-      if (error) { console.error(error); return; }
+
+      if (error) {
+        console.error("Error cargando members:", error);
+        if (wrap) {
+          wrap.innerHTML = '<div class="meta">❌ No se pudieron cargar los miembros. Revisa consola.</div>';
+        }
+        return;
+      }
+
       MEMBERS_CACHE = data || [];
+      console.log("MEMBERS_CACHE:", MEMBERS_CACHE);
       renderMembers();
     }
 
     function renderMembers() {
-      const q = ($("qMembers").value || "").trim().toLowerCase();
-      const onlyOnline = $("chkOnlineOnly").checked;
+      const wrap = $("membersList");
+      if (!wrap) return;
+
+      const q = ($("qMembers")?.value || "").trim().toLowerCase();
+      const onlyOnline = $("chkOnlineOnly")?.checked;
       let list = MEMBERS_CACHE.slice();
 
       if (q) list = list.filter(p =>
@@ -777,14 +794,27 @@
       list.forEach(p => (ONLINE_SET.has(p.user_id) ? online : offline).push(p));
       list = [...online, ...offline];
 
-      const wrap = $("membersList"); wrap.innerHTML = '';
+      wrap.innerHTML = '';
+      if (!list.length) {
+        wrap.innerHTML = '<div class="meta">No se encontraron miembros.</div>';
+        return;
+      }
+
       list.forEach(p => {
-        const card = document.createElement('div'); card.className = 'card';
+        const card = document.createElement('div');
+        card.className = 'card';
         const dot = ONLINE_SET.has(p.user_id) ? '🟢 Online' : '⚪ Offline';
 
-        const tel = p.telefono || '';
+        const tel = (p.telefono || '').toString().trim();
         const telPublic = !!p.telefono_publico;
-        const telDisplay = tel && telPublic ? tel : 'No visible';
+        let telDisplay;
+        if (!tel) {
+          telDisplay = 'Sin teléfono';
+        } else if (telPublic) {
+          telDisplay = tel;
+        } else {
+          telDisplay = 'No visible';
+        }
 
         const serviciosText = (p.servicios || '').trim();
         const serviciosShort = serviciosText
@@ -793,7 +823,9 @@
 
         card.innerHTML = `
       <div class="row" style="align-items:flex-start">
-        <div class="avatar" style="width:64px;height:64px">${p.avatar_url ? `<img src="${p.avatar_url}">` : (p.display_name || '?')[0]?.toUpperCase()}</div>
+        <div class="avatar" style="width:64px;height:64px">
+          ${p.avatar_url ? `<img src="${p.avatar_url}">` : (p.display_name || '?')[0]?.toUpperCase()}
+        </div>
         <div style="flex:1;min-width:200px">
           <div style="font-weight:700">${escapeHtml(p.display_name || '—')}</div>
           <div class="meta">${escapeHtml(p.categoria || '—')} • ${escapeHtml(p.adscripcion || '—')}</div>
@@ -831,7 +863,6 @@
     function initForum() {
       loadPostsDeb();
 
-      // Realtime (debounced)
       supabase
         .channel('realtime-foro')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPostsDeb)
@@ -859,10 +890,9 @@
     function canDeleteComment(commentUserId) { return IS_ADMIN || (commentUserId === CURRENT_USER.id); }
 
     async function loadPosts() {
-      const myToken = ++POSTS_TOKEN; // invalida render viejo
+      const myToken = ++POSTS_TOKEN;
 
       const wrap = $("postsList");
-      // estado de carga sin borrar lo ya pintado para evitar parpadeos
       let loading = document.getElementById('postsLoadingMsg');
       if (!loading) {
         loading = document.createElement('div');
@@ -878,9 +908,9 @@
         .order('created_at', { ascending: false })
         .limit(50);
 
-      if (myToken !== POSTS_TOKEN) return; // otra llamada más nueva ganó
+      if (myToken !== POSTS_TOKEN) return;
 
-      wrap.innerHTML = ""; // ahora sí limpiamos una vez
+      wrap.innerHTML = "";
 
       if (error) { wrap.innerHTML = `<div class="meta">❌ Error cargando posts.</div>`; return; }
       if (!posts?.length) { wrap.innerHTML = `<div class="meta">Aún no hay publicaciones.</div>`; return; }
@@ -902,7 +932,7 @@
       posts.forEach(p => {
         const card = document.createElement('div');
         card.className = 'card';
-        card.dataset.postId = p.id; // útil para depurar
+        card.dataset.postId = p.id;
         const liked = myLiked.has(p.id);
         const count = likeCount.get(p.id) || 0;
         const postComments = commentsByPost.get(p.id) || [];
@@ -945,7 +975,6 @@
         wrap.appendChild(card);
       });
 
-      /* Like / Unlike */
       wrap.querySelectorAll('.btn-like').forEach(btn => {
         btn.addEventListener('click', async (e) => {
           e.preventDefault(); e.stopPropagation();
@@ -975,7 +1004,6 @@
         });
       });
 
-      // Comentar
       wrap.querySelectorAll('.comment-form').forEach(form => {
         form.addEventListener('submit', async (e) => {
           e.preventDefault(); e.stopPropagation();
@@ -988,11 +1016,10 @@
           const { error } = await supabase.from('comments').insert({ post_id: postId, user_id: CURRENT_USER.id, content: text });
           status.textContent = error ? '❌ No se pudo comentar: ' + (error.message || '') : '✅ Comentado';
           if (!error) ta.value = '';
-          loadPostsDeb(); // refresco ligero
+          loadPostsDeb();
         });
       });
 
-      // Editar
       wrap.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault(); e.stopPropagation();
@@ -1032,7 +1059,6 @@
         });
       });
 
-      // Borrar publicación
       wrap.querySelectorAll('.btn-del-post').forEach(btn => {
         btn.addEventListener('click', async () => {
           const postId = btn.dataset.id;
@@ -1045,7 +1071,6 @@
         });
       });
 
-      // Borrar comentario
       wrap.querySelectorAll('.btn-del-comment').forEach(btn => {
         btn.addEventListener('click', async () => {
           const commentId = btn.dataset.cid;
