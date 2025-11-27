@@ -477,7 +477,7 @@
     <section id="perfil" class="content active">
       <div class="card">
         <div class="perfil-layout">
-          <!-- Columna izquierda: igual que antes -->
+          <!-- Columna izquierda -->
           <div class="perfil-main">
             <div>
               <h2>👋 Bienvenido</h2>
@@ -635,6 +635,19 @@
           <div id="qrWrap" style="margin-top:12px; display:none">
             <div class="qr-card"><canvas id="qrCanvas" aria-label="Código QR"></canvas></div>
             <div class="meta" style="margin-top:6px">Muestra este QR al llegar.</div>
+          </div>
+        </div>
+
+        <!-- Panel solo para admins: resumen de confirmaciones -->
+        <div id="adminRSVPPanel" class="perfil-extra-card" style="margin-top:16px; display:none;">
+          <h3>📊 Confirmaciones de asistencia (solo admins)</h3>
+          <p class="meta" id="adminRSVPText">Cargando…</p>
+
+          <div id="adminRSVPListWrap" style="margin-top:8px; display:none;">
+            <p class="meta" style="margin-bottom:4px;">Personas que confirmaron:</p>
+            <ul id="adminRSVPList"
+              style="margin:0 0 4px 18px; padding:0; font-size:13px; color:var(--muted); list-style:disc;"></ul>
+            <p class="meta" id="adminRSVPMore" style="display:none;"></p>
           </div>
         </div>
       </div>
@@ -821,7 +834,7 @@
       $("fBio").value = prof?.bio || CURRENT_USER.user_metadata?.bio || "";
       $("fServicios").value = serviciosRaw || "";
 
-      // Próximas acciones según lo que falte
+      // Próximas acciones
       buildNextActionsFromProfile(telRaw, serviciosRaw.trim(), prof?.cumple || CURRENT_USER.user_metadata?.cumple);
 
       await loadAsistenciaPerfil();
@@ -1222,6 +1235,7 @@
 
     /* ====== Verificación (QR) ====== */
     function formatDateFancy(d) { try { return new Intl.DateTimeFormat('es-MX', { dateStyle: 'full', timeStyle: 'short' }).format(new Date(d)); } catch { return d; } }
+
     async function fetchNextEvent() {
       if (!GOOGLE_API_KEY) return null;
       const timeMin = new Date().toISOString();
@@ -1234,37 +1248,180 @@
         return { uid: evt.id, title: evt.summary || 'Evento', start: evt.start?.dateTime || evt.start?.date, location: evt.location || '', description: (evt.description || '').replace(/<[^>]*>/g, '') };
       } catch (e) { console.error(e); return null; }
     }
+
     async function initVerification() {
       $("rsvpBox").style.display = CURRENT_USER ? 'block' : 'none';
       $("rsvpStatus").textContent = '';
       $("qrWrap").style.display = 'none';
 
+      const adminPanel = $("adminRSVPPanel");
+      if (adminPanel && !IS_ADMIN) {
+        adminPanel.style.display = "none";
+      }
+
       const evt = await fetchNextEvent();
-      if (!evt) { $("eventBox").textContent = "No hay eventos próximos o no fue posible consultarlos."; $("rsvpBox").style.display = 'none'; return; }
+      if (!evt) {
+        $("eventBox").textContent = "No hay eventos próximos o no fue posible consultarlos.";
+        $("rsvpBox").style.display = 'none';
+        if (adminPanel) adminPanel.style.display = "none";
+        return;
+      }
+
       $("eventBox").innerHTML = `<div><strong>${escapeHtml(evt.title)}</strong></div><div class="meta">🗓️ ${formatDateFancy(evt.start)} ${evt.location ? ' • 📍 ' + escapeHtml(evt.location) : ''}</div>${evt.description ? `<div class="muted" style="white-space:pre-wrap;margin-top:6px">${escapeHtml(evt.description)}</div>` : ''}`;
       window.__NEXT_EVENT__ = evt;
 
-      const { data } = await supabase.from('rsvps').select('status, qr_payload').eq('user_id', CURRENT_USER.id).eq('event_uid', evt.uid).maybeSingle();
+      if (IS_ADMIN) {
+        loadAdminRSVPStats(evt.uid);
+      }
+
+      const { data } = await supabase.from('rsvps')
+        .select('status, qr_payload')
+        .eq('user_id', CURRENT_USER.id)
+        .eq('event_uid', evt.uid)
+        .maybeSingle();
+
       updateRSVPUI(data?.status || null, data?.qr_payload || null);
 
       $("btnYes").onclick = () => setRSVP('yes');
       $("btnNo").onclick = () => setRSVP('no');
     }
+
     function buildQRPayload(evtUid) { return JSON.stringify({ v: 1, event: evtUid, user: CURRENT_USER.id, ts: Date.now() }); }
+
     async function setRSVP(status) {
       const evt = window.__NEXT_EVENT__; if (!evt) return;
       let qrPayload = null;
-      if (status === 'yes') { qrPayload = buildQRPayload(evt.uid); $("qrWrap").style.display = 'block'; try { await QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel: 'M' }); } catch { } }
-      else { $("qrWrap").style.display = 'none'; }
-      const { error } = await supabase.from('rsvps').upsert({ user_id: CURRENT_USER.id, event_uid: evt.uid, status, qr_payload: qrPayload, updated_at: new Date().toISOString() }, { onConflict: 'user_id,event_uid' });
+      if (status === 'yes') {
+        qrPayload = buildQRPayload(evt.uid);
+        $("qrWrap").style.display = 'block';
+        try { await QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel: 'M' }); } catch { }
+      } else {
+        $("qrWrap").style.display = 'none';
+      }
+      const { error } = await supabase.from('rsvps').upsert({
+        user_id: CURRENT_USER.id,
+        event_uid: evt.uid,
+        status,
+        qr_payload: qrPayload,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,event_uid' });
       $("rsvpStatus").textContent = error ? 'No se pudo guardar tu respuesta.' : (status === 'yes' ? 'Confirmado ✔️' : 'Registrado como no asistente.');
       updateRSVPUI(status, qrPayload);
+
+      if (IS_ADMIN && window.__NEXT_EVENT__) {
+        loadAdminRSVPStats(window.__NEXT_EVENT__.uid);
+      }
     }
+
     function updateRSVPUI(status, qrPayload) {
       const yesBtn = $("btnYes"), noBtn = $("btnNo");
-      if (status === 'yes') { yesBtn.disabled = true; noBtn.disabled = false; $("qrWrap").style.display = 'block'; if (qrPayload) { QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel: 'M' }).catch(() => { }); } }
-      else if (status === 'no') { yesBtn.disabled = false; noBtn.disabled = true; $("qrWrap").style.display = 'none'; }
-      else { yesBtn.disabled = false; noBtn.disabled = false; $("qrWrap").style.display = 'none'; $("rsvpStatus").textContent = ''; }
+      if (status === 'yes') {
+        yesBtn.disabled = true; noBtn.disabled = false;
+        $("qrWrap").style.display = 'block';
+        if (qrPayload) {
+          QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel: 'M' }).catch(() => { });
+        }
+      } else if (status === 'no') {
+        yesBtn.disabled = false; noBtn.disabled = true; $("qrWrap").style.display = 'none';
+      } else {
+        yesBtn.disabled = false; noBtn.disabled = false; $("qrWrap").style.display = 'none'; $("rsvpStatus").textContent = '';
+      }
+    }
+
+    /* ====== Resumen de RSVPs solo para admins (con lista de nombres) ====== */
+    async function loadAdminRSVPStats(evtUid) {
+      if (!IS_ADMIN || !evtUid) return;
+
+      const panel = $("adminRSVPPanel");
+      const txt = $("adminRSVPText");
+      const listWrap = $("adminRSVPListWrap");
+      const listEl = $("adminRSVPList");
+      const moreEl = $("adminRSVPMore");
+
+      if (!panel || !txt || !listWrap || !listEl || !moreEl) return;
+
+      panel.style.display = "block";
+      listWrap.style.display = "none";
+      listEl.innerHTML = "";
+      moreEl.style.display = "none";
+      txt.textContent = "Cargando…";
+
+      const { data, error } = await supabase
+        .from('rsvps')
+        .select('status, user_id')
+        .eq('event_uid', evtUid);
+
+      if (error) {
+        console.error(error);
+        txt.textContent = "❌ No se pudieron cargar las confirmaciones.";
+        return;
+      }
+
+      const total = data.length;
+      const siReg = data.filter(r => r.status === 'yes');
+      const noReg = data.filter(r => r.status === 'no');
+      const si = siReg.length;
+      const no = noReg.length;
+      const otros = total - si - no;
+
+      txt.textContent =
+        `Confirmados: ${si} ✔️ • No asistirán: ${no} ✖️ • Registros totales: ${total}` +
+        (otros > 0 ? ` • Otros estados: ${otros}` : '');
+
+      if (!si) {
+        listWrap.style.display = "none";
+        return;
+      }
+
+      const yesIds = siReg.map(r => r.user_id).filter(Boolean);
+      if (!yesIds.length) {
+        listWrap.style.display = "none";
+        return;
+      }
+
+      const { data: perfiles, error: perfErr } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, categoria, adscripcion')
+        .in('user_id', yesIds);
+
+      if (perfErr) {
+        console.error(perfErr);
+        listWrap.style.display = "none";
+        return;
+      }
+
+      const MAX_SHOW = 15;
+      const ordenados = [...(perfiles || [])].sort((a, b) => {
+        const an = (a.display_name || '').toLowerCase();
+        const bn = (b.display_name || '').toLowerCase();
+        if (an < bn) return -1;
+        if (an > bn) return 1;
+        return 0;
+      });
+
+      listEl.innerHTML = "";
+      ordenados.slice(0, MAX_SHOW).forEach(p => {
+        const li = document.createElement('li');
+        const nombre = p.display_name || 'Miembro sin nombre';
+        const cat = p.categoria || '';
+        const ads = p.adscripcion || '';
+        let extra = '';
+        if (cat && ads) extra = ` — ${cat} • ${ads}`;
+        else if (cat) extra = ` — ${cat}`;
+        else if (ads) extra = ` — ${ads}`;
+        li.textContent = `${nombre}${extra}`;
+        listEl.appendChild(li);
+      });
+
+      if (ordenados.length > MAX_SHOW) {
+        const restantes = ordenados.length - MAX_SHOW;
+        moreEl.textContent = `…y ${restantes} más confirmados.`;
+        moreEl.style.display = "block";
+      } else {
+        moreEl.style.display = "none";
+      }
+
+      listWrap.style.display = "block";
     }
 
     /* ====== Utilidades de asistencia / ranking ====== */
