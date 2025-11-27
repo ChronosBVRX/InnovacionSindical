@@ -49,6 +49,13 @@
   .btn.primary{background:linear-gradient(90deg,var(--accent),var(--sky));border:none;color:#072133}
   .error{color:var(--err);font-size:13px;margin-top:8px}
   .hint{font-size:12px;color:#9fdff0}
+  .link-sm{
+    font-size:12px;
+    color:var(--muted);
+    text-decoration:underline;
+    cursor:pointer;
+  }
+  .link-sm:hover{color:#fff}
 </style>
 </head>
 <body>
@@ -84,6 +91,11 @@
           <button class="btn primary" type="submit">Entrar</button>
           <span class="hint">¿Nuevo? cambia a “Crear cuenta”.</span>
         </div>
+        <!-- NUEVO: enlace olvidar contraseña -->
+        <div class="grid-1">
+          <span id="forgotPass" class="link-sm">¿Olvidaste tu contraseña?</span>
+        </div>
+
         <div id="liErr" class="grid-1 error" role="alert"></div>
       </form>
 
@@ -140,6 +152,9 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
     const REDIRECT_AFTER_LOGIN = "miembros.html";
 
+    // URL a donde quieres mandar al usuario cuando haga clic en el link del correo de reset
+    const RESET_PASSWORD_REDIRECT = "https://chronosbvrx.github.io/InnovacionSindical/reset-password.html";
+
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
@@ -149,9 +164,24 @@
     const fLogin = $('#fLogin'), fSignup = $('#fSignup');
     const tabLogin = $('#tabLogin'), tabSignup = $('#tabSignup');
     const liErr = $('#liErr'), suErr = $('#suErr');
+    const forgotPass = $('#forgotPass');
 
-    function showLogin(){ fLogin.style.display='grid'; fSignup.style.display='none'; tabLogin.classList.add('active'); tabSignup.classList.remove('active'); liErr.textContent=''; suErr.textContent=''; }
-    function showSignup(){ fLogin.style.display='none'; fSignup.style.display='grid'; tabSignup.classList.add('active'); tabLogin.classList.remove('active'); liErr.textContent=''; suErr.textContent=''; }
+    function showLogin(){ 
+      fLogin.style.display='grid'; 
+      fSignup.style.display='none'; 
+      tabLogin.classList.add('active'); 
+      tabSignup.classList.remove('active'); 
+      liErr.textContent=''; 
+      suErr.textContent=''; 
+    }
+    function showSignup(){ 
+      fLogin.style.display='none'; 
+      fSignup.style.display='grid'; 
+      tabSignup.classList.add('active'); 
+      tabLogin.classList.remove('active'); 
+      liErr.textContent=''; 
+      suErr.textContent=''; 
+    }
     tabLogin.addEventListener('click', showLogin);
     tabSignup.addEventListener('click', showSignup);
 
@@ -168,10 +198,40 @@
       const password = $('#liPass').value;
 
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error){ liErr.textContent = 'Error: ' + (error.message || 'No se pudo iniciar sesión'); return; }
+      if (error){ 
+        liErr.textContent = 'Error: ' + (error.message || 'No se pudo iniciar sesión'); 
+        return; 
+      }
 
       // ok
       location.href = REDIRECT_AFTER_LOGIN;
+    });
+
+    /* ====== OLVIDÉ CONTRASEÑA ====== */
+    forgotPass.addEventListener('click', async ()=>{
+      liErr.textContent = '';
+      // Intentamos usar el correo ya escrito en el input
+      let email = $('#liEmail').value.trim();
+      if (!email){
+        email = prompt("Escribe el correo con el que te registraste:");
+        if (!email) return;
+        email = email.trim();
+      }
+      if (!email){
+        liErr.textContent = "Debes escribir un correo válido.";
+        return;
+      }
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: RESET_PASSWORD_REDIRECT
+      });
+
+      if (error){
+        liErr.textContent = "No se pudo enviar el correo: " + (error.message || "");
+        return;
+      }
+
+      alert("Te enviamos un correo con instrucciones para restablecer tu contraseña.");
     });
 
     /* ====== SIGNUP (con metadatos extra) ====== */
@@ -190,7 +250,8 @@
 
       // Validación básica
       if (!display_name || !phone || !birthdate || !categoria || !adscripcion){
-        suErr.textContent = 'Completa todos los campos del perfil.'; return;
+        suErr.textContent = 'Completa todos los campos del perfil.'; 
+        return;
       }
 
       const { data, error } = await supabase.auth.signUp({
@@ -203,7 +264,10 @@
         }
       });
 
-      if (error){ suErr.textContent = 'Error: ' + (error.message || 'No se pudo crear la cuenta'); return; }
+      if (error){ 
+        suErr.textContent = 'Error: ' + (error.message || 'No se pudo crear la cuenta'); 
+        return; 
+      }
 
       alert('¡Cuenta creada! Revisa tu correo para confirmar la dirección. Después, inicia sesión.');
       showLogin();
