@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Unidad en Acción — Videollamadas</title>
+  <style>
+    :root {
+      --bg: #0b1022;
+      --panel: #101a33;
+      --ring: rgba(91, 215, 242, .35);
+      --txt: #e6fbff;
+      --muted: #aee9f7;
+      --primary: #5bd7f2;
+      --sky: #60a5fa;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(180deg, #0b1220, #0b1022);
+      color: var(--txt);
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid rgba(91, 215, 242, .25);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, .25);
+    }
+
+    h1 {
+      font-size: 20px;
+      color: #bff4ff;
+      margin-bottom: 4px;
+    }
+
+    p.muted {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+    }
+
+    .layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .controls {
+      flex: 1;
+      min-width: 220px;
+      max-width: 260px;
+      background: #0a1329;
+      border-radius: 12px;
+      border: 1px solid rgba(91, 215, 242, .35);
+      padding: 12px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #aee9f7;
+      font-size: 0.85rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.4rem 0.6rem;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(148, 163, 184, .4);
+      background: #0b1022;
+      color: #e6fbff;
+      font-size: 0.85rem;
+    }
+
+    button {
+      appearance: none;
+      cursor: pointer;
+    }
+
+    #create-room-btn {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      margin-top: 0.6rem;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--primary), var(--sky));
+      color: #020617;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    #join-room-btn {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      margin-top: 0.4rem;
+      border-radius: 999px;
+      border: 1px solid #5bd7f2;
+      background: transparent;
+      color: #5bd7f2;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    #hangup-btn {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      margin-top: 0.6rem;
+      border-radius: 999px;
+      border: none;
+      background: #ef4444;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+      opacity: 0.6;
+    }
+
+    #call-status {
+      margin-top: 0.75rem;
+      color: #aee9f7;
+      font-size: 0.8rem;
+      min-height: 1.4em;
+    }
+
+    .videos {
+      flex: 2;
+      min-width: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .videos-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .video-col {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .video-col p {
+      color: #aee9f7;
+      font-size: 0.8rem;
+      margin-bottom: 0.25rem;
+    }
+
+    video {
+      width: 100%;
+      border-radius: 0.75rem;
+      background: black;
+      max-height: 260px;
+      object-fit: cover;
+    }
+
+    .note {
+      color: #64748b;
+      font-size: 0.75rem;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>📞 Videollamadas 1 a 1</h1>
+    <p class="muted">
+      Crea una sala y comparte el código con la otra persona. Ambos deben usar el mismo ID para conectarse.
+    </p>
+
+    <div class="layout">
+      <!-- Controles -->
+      <div class="controls">
+        <label for="room-id">ID de sala</label>
+        <input id="room-id" type="text" placeholder="Ej. 8F4A2C">
+
+        <button id="create-room-btn">
+          Crear sala (soy quien inicia)
+        </button>
+
+        <button id="join-room-btn">
+          Unirme a sala (me invitaron)
+        </button>
+
+        <button id="hangup-btn" disabled>
+          Colgar
+        </button>
+
+        <p id="call-status">Estado: esperando acción</p>
+      </div>
+
+      <!-- Videos -->
+      <div class="videos">
+        <div class="videos-row">
+          <div class="video-col">
+            <p>Tu cámara</p>
+            <video id="local-video" autoplay playsinline muted></video>
+          </div>
+          <div class="video-col">
+            <p>Persona remota</p>
+            <video id="remote-video" autoplay playsinline></video>
+          </div>
+        </div>
+        <p class="note">
+          Para que funcione, ambos deben usar un navegador moderno (Chrome, Edge, Firefox) y estar en HTTPS o localhost.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    // 👇 Tus datos de Supabase
+    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+
+    const supabaseRtc = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const roomInput = document.getElementById("room-id");
+    const createBtn = document.getElementById("create-room-btn");
+    const joinBtn = document.getElementById("join-room-btn");
+    const hangupBtn = document.getElementById("hangup-btn");
+    const statusEl = document.getElementById("call-status");
+    const localVideo = document.getElementById("local-video");
+    const remoteVideo = document.getElementById("remote-video");
+
+    let pc = null;
+    let localStream = null;
+    let roomId = null;
+    let isCaller = false;
+    let channel = null;
+
+    function setStatus(text) {
+      statusEl.textContent = "Estado: " + text;
+    }
+
+    function setInCall(inCall) {
+      hangupBtn.disabled = !inCall;
+      hangupBtn.style.opacity = inCall ? "1" : "0.6";
+    }
+
+    async function initLocalMedia() {
+      if (localStream) return;
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localVideo.srcObject = localStream;
+        setStatus("Cámara y micrófono listos");
+      } catch (err) {
+        console.error(err);
+        setStatus("No se pudo acceder a la cámara/micrófono");
+        throw err;
+      }
+    }
+
+    function createPeerConnection() {
+      if (pc) return;
+
+      pc = new RTCPeerConnection({
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" } // STUN gratuito
+        ]
+      });
+
+      // Enviar nuestra media
+      if (localStream) {
+        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+      }
+
+      // Recibir media remota
+      pc.ontrack = (event) => {
+        const [stream] = event.streams;
+        remoteVideo.srcObject = stream;
+        setStatus("Conectado, recibiendo video");
+      };
+
+      // Enviar candidatos ICE
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          sendSignal({
+            type: "ice-candidate",
+            candidate: event.candidate
+          });
+        }
+      };
+
+      pc.onconnectionstatechange = () => {
+        console.log("Connection state:", pc.connectionState);
+        if (pc.connectionState === "connected") {
+          setStatus("Llamada conectada");
+        } else if (pc.connectionState === "disconnected" || pc.connectionState === "failed") {
+          setStatus("Conexión perdida");
+        }
+      };
+    }
+
+    function sendSignal(payload) {
+      if (!channel) return;
+      channel.send({
+        type: "broadcast",
+        event: "signal",
+        payload
+      });
+    }
+
+    async function setupSignaling() {
+      if (!roomId) throw new Error("roomId no definido");
+
+      channel = supabaseRtc.channel("call-" + roomId, {
+        config: {
+          broadcast: { ack: true }
+        }
+      });
+
+      channel.on("broadcast", { event: "signal" }, async ({ payload }) => {
+        const data = payload;
+
+        if (!pc && data.type !== "bye") {
+          createPeerConnection();
+        }
+
+        if (data.type === "offer" && !isCaller) {
+          // Recibo oferta, respondo
+          setStatus("Oferta recibida, creando respuesta...");
+          await pc.setRemoteDescription({ type: "offer", sdp: data.sdp });
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+          sendSignal({
+            type: "answer",
+            sdp: answer.sdp
+          });
+          setStatus("Respuesta enviada, esperando conexión...");
+        } else if (data.type === "answer" && isCaller) {
+          // Recibo respuesta del otro usuario
+          setStatus("Respuesta recibida, conectando...");
+          await pc.setRemoteDescription({ type: "answer", sdp: data.sdp });
+        } else if (data.type === "ice-candidate") {
+          try {
+            await pc.addIceCandidate(data.candidate);
+          } catch (err) {
+            console.error("Error al agregar ICE candidate", err);
+          }
+        } else if (data.type === "bye") {
+          setStatus("La otra persona colgó");
+          endCall(false);
+        }
+      });
+
+      await channel.subscribe((status) => {
+        console.log("Channel status:", status);
+      });
+
+      setStatus("Conectado al canal de señalización");
+    }
+
+    async function startAsCaller() {
+      isCaller = true;
+      roomId = crypto.randomUUID().slice(0, 6).toUpperCase();
+      roomInput.value = roomId;
+
+      setStatus("Creando sala " + roomId + "...");
+      await initLocalMedia();
+      createPeerConnection();
+      await setupSignaling();
+
+      // Crear oferta
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      sendSignal({
+        type: "offer",
+        sdp: offer.sdp
+      });
+
+      setInCall(true);
+      setStatus("Oferta enviada, comparte el ID " + roomId);
+    }
+
+    async function startAsCallee() {
+      const input = roomInput.value.trim();
+      if (!input) {
+        setStatus("Escribe el ID de la sala");
+        return;
+      }
+      roomId = input;
+      isCaller = false;
+
+      setStatus("Uniéndote a la sala " + roomId + "...");
+      await initLocalMedia();
+      createPeerConnection();
+      await setupSignaling();
+
+      setInCall(true);
+      setStatus("Esperando oferta del otro usuario...");
+    }
+
+    function endCall(sendBye = true) {
+      if (sendBye && channel) {
+        sendSignal({ type: "bye" });
+      }
+
+      if (pc) {
+        pc.ontrack = null;
+        pc.onicecandidate = null;
+        pc.close();
+        pc = null;
+      }
+
+      if (localStream) {
+        localStream.getTracks().forEach(t => t.stop());
+        localStream = null;
+        localVideo.srcObject = null;
+      }
+
+      remoteVideo.srcObject = null;
+
+      if (channel) {
+        channel.unsubscribe();
+        channel = null;
+      }
+
+      setInCall(false);
+      setStatus("Llamada finalizada");
+    }
+
+    createBtn.addEventListener("click", () => {
+      if (pc || localStream) {
+        endCall(false);
+      }
+      startAsCaller().catch(err => {
+        console.error(err);
+        setStatus("Error al iniciar la llamada");
+      });
+    });
+
+    joinBtn.addEventListener("click", () => {
+      if (pc || localStream) {
+        endCall(false);
+      }
+      startAsCallee().catch(err => {
+        console.error(err);
+        setStatus("Error al unirse a la sala");
+      });
+    });
+
+    hangupBtn.addEventListener("click", () => {
+      endCall(true);
+    });
+  </script>
+</body>
+
+</html>
