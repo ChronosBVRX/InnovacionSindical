@@ -945,80 +945,13 @@
       return (str || '').replace(/[&<>\"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[s]));
     }
 
-    // ====== Mapa oficial de adscripciones para normalizar nombres ======
-    const ADS_OFICIALES = {
-      HGR: {
-        1: "HGR No. 1 Charo (Morelia)"
-      },
-      HGZ: {
-        83: "HGZ No. 83 Morelia (Camelinas)",
-        8: "HGZ No. 8 Uruapan",
-        4: "HGZ No. 4 Zamora",
-        12: "HGZ No. 12 Lázaro Cárdenas",
-        2: "HGZ No. 2 Zacapu"
-      },
-      HGSZ: {
-        7: "HGSZ No. 7 La Piedad",
-        9: "HGSZ No. 9 Apatzingán",
-        17: "HGSZ No. 17 Los Reyes",
-        24: "HGSZ No. 24 Pedernales"
-      },
-      UMF: {
-        3: "UMF No. 3 Quiroga",
-        6: "UMF No. 6 Jiquilpan",
-        10: "UMF No. 10 Jungapeo",
-        11: "UMF No. 11 Nueva Italia",
-        13: "UMF No. 13 Cotija",
-        18: "UMF No. 18 Zitácuaro",
-        19: "UMF No. 19 Ciudad Hidalgo",
-        20: "UMF No. 20 Pátzcuaro",
-        21: "UMF No. 21 Jacona",
-        23: "UMF No. 23 Infiernillo",
-        25: "UMF No. 25 Puruarán",
-        26: "UMF No. 26 Taretan",
-        28: "UMF No. 28 Santa Clara",
-        37: "UMF No. 37 Mineral de Angangueo",
-        40: "UMF No. 40 Coalcomán",
-        42: "UMF No. 42 Cuitzeo",
-        43: "UMF No. 43 Churumuco",
-        46: "UMF No. 46 La Huacana",
-        48: "UMF No. 48 Huetamo",
-        52: "UMF No. 52 Nuevo Urecho",
-        54: "UMF No. 54 Purépero",
-        64: "UMF No. 64 Puruándiro",
-        65: "UMF No. 65 Villa Madero",
-        66: "UMF No. 66 Villamar",
-        70: "UMF No. 70 Zinapécuaro",
-        71: "UMF No. 71 Morelia",
-        74: "UMF No. 74 Tacámbaro",
-        75: "UMF No. 75 Morelia (Camelinas)",
-        76: "UMF No. 76 Uruapan",
-        77: "UMF No. 77 La Piedad",
-        78: "UMF No. 78 Lázaro Cárdenas",
-        80: "UMF No. 80 Morelia (Centro)",
-        81: "UMF No. 81 Uruapan",
-        82: "UMF No. 82 Zamora",
-        84: "UMF No. 84 Morelia (Tacícuaro)",
-        85: "UMF No. 85 Tarímbaro"
-      },
-      HR: {
-        30: "HR No. 30 Ario de Rosales",
-        31: "HR No. 31 Huetamo",
-        33: "HR No. 33 Paracho",
-        35: "HR No. 35 Buenavista Tomatlán",
-        50: "HR No. 50 Tuxpan",
-        51: "HR No. 51 Villamar",
-        59: "HR No. 59 Coalcomán"
-      }
-    };
-
     // ==== HELPERS PARA AGRUPAR ADSCRIPCIONES SIMILARES ====
     function normalizeText(str) {
       return (str || '')
         .toLowerCase()
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, " ")
+        .replace(/[\u0300-\u036f]/g, "")   // quita acentos
+        .replace(/[^a-z0-9]+/g, " ")       // todo lo que no sea letra o número → espacio
         .trim();
     }
 
@@ -1030,7 +963,8 @@
         .join(' ');
     }
 
-    // Canonicaliza nombres de adscripciones sin número
+    // Canonicaliza nombres de adscripciones SIN número
+    // Solo dejamos como grupos propios: Almacén, Delegación, Subdelegación, Jefatura, Coordinación
     function canonicalAdscripcion(norm) {
       if (!norm) return '';
 
@@ -1040,11 +974,80 @@
       if (norm.startsWith('jefatura')) return 'jefatura';
       if (norm.startsWith('coordinacion')) return 'coordinacion';
 
-      return norm;
+      // Lo demás NO es un grupo propio
+      return '';
     }
 
+    // Mapa oficial de adscripciones por prefijo y número
+    const ADS_OFICIALES = {
+      HGR: {
+        1: 'HGR No. 1 Charo (Morelia)'
+      },
+      HGZ: {
+        83: 'HGZ No. 83 Morelia (Camelinas)',
+        8: 'HGZ No. 8 Uruapan',
+        4: 'HGZ No. 4 Zamora',
+        12: 'HGZ No. 12 Lázaro Cárdenas',
+        2: 'HGZ No. 2 Zacapu'
+      },
+      HGSZ: {
+        7: 'HGSZ No. 7 La Piedad',
+        9: 'HGSZ No. 9 Apatzingán',
+        17: 'HGSZ No. 17 Los Reyes',
+        24: 'HGSZ No. 24 Pedernales'
+      },
+      UMF: {
+        3: 'UMF No. 3 Quiroga',
+        6: 'UMF No. 6 Jiquilpan',
+        10: 'UMF No. 10 Jungapeo',
+        11: 'UMF No. 11 Nueva Italia',
+        13: 'UMF No. 13 Cotija',
+        18: 'UMF No. 18 Zitácuaro',
+        19: 'UMF No. 19 Ciudad Hidalgo',
+        20: 'UMF No. 20 Pátzcuaro',
+        21: 'UMF No. 21 Jacona',
+        23: 'UMF No. 23 Infiernillo',
+        25: 'UMF No. 25 Puruarán',
+        26: 'UMF No. 26 Taretan',
+        28: 'UMF No. 28 Santa Clara',
+        37: 'UMF No. 37 Mineral de Angangueo',
+        40: 'UMF No. 40 Coalcomán',
+        42: 'UMF No. 42 Cuitzeo',
+        43: 'UMF No. 43 Churumuco',
+        46: 'UMF No. 46 La Huacana',
+        48: 'UMF No. 48 Huetamo',
+        52: 'UMF No. 52 Nuevo Urecho',
+        54: 'UMF No. 54 Purépero',
+        64: 'UMF No. 64 Puruándiro',
+        65: 'UMF No. 65 Villa Madero',
+        66: 'UMF No. 66 Villamar',
+        70: 'UMF No. 70 Zinapécuaro',
+        71: 'UMF No. 71 Morelia',
+        74: 'UMF No. 74 Tacámbaro',
+        75: 'UMF No. 75 Morelia (Camelinas)',
+        76: 'UMF No. 76 Uruapan',
+        77: 'UMF No. 77 La Piedad',
+        78: 'UMF No. 78 Lázaro Cárdenas',
+        80: 'UMF No. 80 Morelia (Centro)',
+        81: 'UMF No. 81 Uruapan',
+        82: 'UMF No. 82 Zamora',
+        84: 'UMF No. 84 Morelia (Tacícuaro)',
+        85: 'UMF No. 85 Tarímbaro'
+      },
+      HR: {
+        30: 'HR No. 30 Ario de Rosales',
+        31: 'HR No. 31 Huetamo',
+        33: 'HR No. 33 Paracho',
+        35: 'HR No. 35 Buenavista Tomatlán',
+        50: 'HR No. 50 Tuxpan',
+        51: 'HR No. 51 Villamar',
+        59: 'HR No. 59 Coalcomán'
+      }
+    };
+
     function canonicalPrefixFromToken(token) {
-      const t = (token || '').toLowerCase();
+      if (!token) return '';
+      const t = token.toLowerCase();
       if (t === 'hgr') return 'HGR';
       if (t === 'hgz') return 'HGZ';
       if (t === 'hgsz') return 'HGSZ';
@@ -1055,26 +1058,28 @@
 
     /**
      * Devuelve { key, label } para agrupar miembros:
-     * - Si hay número y prefijo (HGR 1, HGZ 83, UMF 80...) → usa el nombre oficial de ADS_OFICIALES
-     * - Si NO hay número → key "TXT:..." y label en TitleCase
+     * - Si hay número y prefijo (HGR 1, HGZ #86, UMF 12) → key "NUM:HGR-001", label desde ADS_OFICIALES o "HGR 1"
+     * - Si NO hay número:
+     *      - si es almacén/delegación/subdelegación/jefatura/coordinación → grupo propio
+     *      - si no, va a "Otras adscripciones"
      */
     function getUnidadGroup(profile) {
-      const raw = `${profile.adscripcion || ''} ${profile.categoria || ''}`.trim();
-      const norm = normalizeText(raw);
+      const rawAds = profile.adscripcion || '';
+      const normAds = normalizeText(rawAds);
 
-      if (!norm) {
+      if (!normAds) {
         return {
           key: 'TXT:SIN_ADSCRIPCION',
           label: 'Sin adscripción registrada'
         };
       }
 
-      // Buscar un número (1-3 dígitos)
-      const numMatch = norm.match(/\b(\d{1,3})\b/);
+      // Buscar un número (1-3 dígitos) dentro de la adscripción
+      const numMatch = normAds.match(/(\d{1,3})/);
       if (numMatch) {
         const num = parseInt(numMatch[1], 10);
         if (Number.isFinite(num)) {
-          const before = norm.slice(0, numMatch.index).trim();
+          const before = normAds.slice(0, numMatch.index).trim();
           const parts = before.split(' ').filter(Boolean);
 
           // Buscar prefijo hacia atrás (hgr, hgz, hgsz, umf, hr)
@@ -1087,7 +1092,7 @@
             }
           }
           if (!prefixToken && parts.length) {
-            // si no encontramos prefijo claro, usamos la última palabra por compatibilidad
+            // Si no encontramos prefijo claro, usamos la última palabra por compatibilidad
             prefixToken = parts[parts.length - 1];
           }
 
@@ -1096,7 +1101,7 @@
 
           const numKey = num.toString().padStart(3, '0');
 
-          // Buscar en el mapa oficial
+          // Buscar nombre oficial en el mapa
           let label = `${prefix} ${num}`;
           if (ADS_OFICIALES[prefix] && ADS_OFICIALES[prefix][num]) {
             label = ADS_OFICIALES[prefix][num];
@@ -1109,11 +1114,19 @@
         }
       }
 
-      // Sin número → agrupar por texto normalizado / canonizado
-      const canon = canonicalAdscripcion(norm);
+      // SIN número → solo damos grupo propio a ciertos textos (almacén, delegación, subdelegación, etc.)
+      const canon = canonicalAdscripcion(normAds);
+      if (canon) {
+        return {
+          key: 'TXT:' + canon,
+          label: titleCase(canon)
+        };
+      }
+
+      // Todo lo demás va a un grupo genérico
       return {
-        key: 'TXT:' + canon,
-        label: titleCase(canon)
+        key: 'TXT:OTRAS',
+        label: 'Otras adscripciones'
       };
     }
 
@@ -1163,9 +1176,9 @@
         grupos.get(grp.key).miembros.push(p);
       });
 
-      // Ordenar:
-      // 1) Grupos numéricos por tipo y número
-      // 2) Luego grupos de texto por orden alfabético
+      // Ordenar grupos:
+      // 1) Numéricos por prefijo y número
+      // 2) Luego los de texto por orden alfabético
       const keys = Array.from(grupos.keys());
       keys.sort((a, b) => {
         const isNumA = a.startsWith('NUM:');
@@ -1175,7 +1188,6 @@
         if (!isNumA && isNumB) return 1;
 
         if (isNumA && isNumB) {
-          // a = "NUM:UMF-080"
           const [pa, na] = a.slice(4).split('-');
           const [pb, nb] = b.slice(4).split('-');
           if (pa < pb) return -1;
@@ -1223,25 +1235,25 @@
             : '';
 
           card.innerHTML = `
-            <div class="row" style="align-items:flex-start">
-              <div class="avatar" style="width:64px;height:64px">
-                ${p.avatar_url ? `<img src="${p.avatar_url}">` : (p.display_name || '?')[0]?.toUpperCase()}
-              </div>
-              <div style="flex:1;min-width:200px">
-                <div style="font-weight:700">${escapeHtml(p.display_name || '—')}</div>
-                <div class="meta">
-                  ${escapeHtml(p.categoria || '—')} • ${escapeHtml(p.adscripcion || '—')}
-                </div>
-                <div class="meta" style="margin-top:4px">
-                  📱 ${escapeHtml(telDisplay)}
-                </div>
-                ${serviciosShort
+        <div class="row" style="align-items:flex-start">
+          <div class="avatar" style="width:64px;height:64px">
+            ${p.avatar_url ? `<img src="${p.avatar_url}">` : (p.display_name || '?')[0]?.toUpperCase()}
+          </div>
+          <div style="flex:1;min-width:200px">
+            <div style="font-weight:700">${escapeHtml(p.display_name || '—')}</div>
+            <div class="meta">
+              ${escapeHtml(p.categoria || '—')} • ${escapeHtml(p.adscripcion || '—')}
+            </div>
+            <div class="meta" style="margin-top:4px">
+              📱 ${escapeHtml(telDisplay)}
+            </div>
+            ${serviciosShort
               ? `<div class="meta" style="margin-top:4px">🤝 ${escapeHtml(serviciosShort)}</div>`
               : ''}
-              </div>
-              <span class="pill">${dot}</span>
-            </div>
-          `;
+          </div>
+          <span class="pill">${dot}</span>
+        </div>
+      `;
           wrap.appendChild(card);
         });
       });
