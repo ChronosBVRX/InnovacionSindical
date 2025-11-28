@@ -77,7 +77,7 @@
         <button id="tabSignup" class="tab" type="button">Crear cuenta</button>
       </div>
 
-      <!-- FORM LOGIN -->
+      <!-- LOGIN -->
       <form id="fLogin" class="grid" autocomplete="on">
         <div class="grid-1">
           <label for="liEmail">Correo</label>
@@ -91,7 +91,7 @@
           <button class="btn primary" type="submit">Entrar</button>
           <span class="hint">¿Nuevo? cambia a “Crear cuenta”.</span>
         </div>
-        <!-- NUEVO: enlace olvidar contraseña -->
+
         <div class="grid-1">
           <span id="forgotPass" class="link-sm">¿Olvidaste tu contraseña?</span>
         </div>
@@ -99,12 +99,13 @@
         <div id="liErr" class="grid-1 error" role="alert"></div>
       </form>
 
-      <!-- FORM SIGNUP -->
+      <!-- SIGNUP -->
       <form id="fSignup" class="grid" style="display:none" autocomplete="on">
         <div>
           <label for="suName">Nombre para mostrar</label>
           <input id="suName" placeholder="Ej. Ana Gómez" required>
         </div>
+
         <div>
           <label for="suPhone">Teléfono</label>
           <input id="suPhone" type="tel" inputmode="tel" placeholder="10 dígitos" pattern="^[0-9+\-\s()]{7,20}$" required>
@@ -114,14 +115,84 @@
           <label for="suBirth">Fecha de cumpleaños</label>
           <input id="suBirth" type="date" required>
         </div>
+
         <div>
           <label for="suCategoria">Categoría</label>
           <input id="suCategoria" placeholder="Ej. Enfermera General A" required>
         </div>
 
+        <!-- 🔵 ADSCRIPCIÓN SELECT -->
         <div class="grid-1">
           <label for="suAdscripcion">Adscripción</label>
-          <input id="suAdscripcion" placeholder="Ej. HGZ No. XX, Urgencias" required>
+          <select id="suAdscripcion" required>
+            <option value="">Selecciona tu adscripción</option>
+
+            <optgroup label="Régimen Ordinario">
+              <option>HGR No. 1 Charo (Morelia)</option>
+            </optgroup>
+
+            <optgroup label="Hospitales Generales de Zona (HGZ) y Subzona (HGSZ)">
+              <option>HGZ No. 83 Morelia (Camelinas)</option>
+              <option>HGZ No. 8 Uruapan</option>
+              <option>HGZ No. 4 Zamora</option>
+              <option>HGZ No. 12 Lázaro Cárdenas</option>
+              <option>HGZ No. 2 Zacapu</option>
+              <option>HGSZ No. 7 La Piedad</option>
+              <option>HGSZ No. 9 Apatzingán</option>
+              <option>HGSZ No. 17 Los Reyes</option>
+              <option>HGSZ No. 24 Pedernales</option>
+            </optgroup>
+
+            <optgroup label="Unidades de Medicina Familiar (UMF)">
+              <option>UMF No. 3 Quiroga</option>
+              <option>UMF No. 6 Jiquilpan</option>
+              <option>UMF No. 10 Jungapeo</option>
+              <option>UMF No. 11 Nueva Italia</option>
+              <option>UMF No. 13 Cotija</option>
+              <option>UMF No. 18 Zitácuaro</option>
+              <option>UMF No. 19 Ciudad Hidalgo</option>
+              <option>UMF No. 20 Pátzcuaro</option>
+              <option>UMF No. 21 Jacona</option>
+              <option>UMF No. 23 Infiernillo</option>
+              <option>UMF No. 25 Puruarán</option>
+              <option>UMF No. 26 Taretan</option>
+              <option>UMF No. 28 Santa Clara</option>
+              <option>UMF No. 37 Mineral de Angangueo</option>
+              <option>UMF No. 40 Coalcomán</option>
+              <option>UMF No. 42 Cuitzeo</option>
+              <option>UMF No. 43 Churumuco</option>
+              <option>UMF No. 46 La Huacana</option>
+              <option>UMF No. 48 Huetamo</option>
+              <option>UMF No. 52 Nuevo Urecho</option>
+              <option>UMF No. 54 Purépero</option>
+              <option>UMF No. 64 Puruándiro</option>
+              <option>UMF No. 65 Villa Madero</option>
+              <option>UMF No. 66 Villamar</option>
+              <option>UMF No. 70 Zinapécuaro</option>
+              <option>UMF No. 71 Morelia</option>
+              <option>UMF No. 74 Tacámbaro</option>
+              <option>UMF No. 75 Morelia (Camelinas)</option>
+              <option>UMF No. 76 Uruapan</option>
+              <option>UMF No. 77 La Piedad</option>
+              <option>UMF No. 78 Lázaro Cárdenas</option>
+              <option>UMF No. 80 Morelia (Centro)</option>
+              <option>UMF No. 81 Uruapan</option>
+              <option>UMF No. 82 Zamora</option>
+              <option>UMF No. 84 Morelia (Tacícuaro)</option>
+              <option>UMF No. 85 Tarímbaro</option>
+            </optgroup>
+
+            <optgroup label="IMSS-Bienestar — Hospitales Rurales (HR)">
+              <option>HR No. 30 Ario de Rosales</option>
+              <option>HR No. 31 Huetamo</option>
+              <option>HR No. 33 Paracho</option>
+              <option>HR No. 35 Buenavista Tomatlán</option>
+              <option>HR No. 50 Tuxpan</option>
+              <option>HR No. 51 Villamar</option>
+              <option>HR No. 59 Coalcomán</option>
+            </optgroup>
+
+          </select>
         </div>
 
         <div class="grid-1"><hr style="border:none;border-top:1px solid rgba(91,215,242,.25)"></div>
@@ -130,6 +201,7 @@
           <label for="suEmail">Correo</label>
           <input id="suEmail" type="email" placeholder="tu@correo.com" required>
         </div>
+
         <div>
           <label for="suPass">Contraseña</label>
           <input id="suPass" type="password" minlength="6" placeholder="Mínimo 6 caracteres" required>
@@ -141,25 +213,24 @@
         </div>
         <div id="suErr" class="grid-1 error" role="alert"></div>
       </form>
+
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
   (()=>{
-    /* ====== CONFIG ====== */
+
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    const REDIRECT_AFTER_LOGIN = "miembros.html";
 
-    // URL a donde quieres mandar al usuario cuando haga clic en el link del correo de reset
+    const REDIRECT_AFTER_LOGIN = "miembros.html";
     const RESET_PASSWORD_REDIRECT = "https://chronosbvrx.github.io/InnovacionSindical/reset-password.html";
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
 
-    /* ====== UI ====== */
     const $ = s => document.querySelector(s);
     const fLogin = $('#fLogin'), fSignup = $('#fSignup');
     const tabLogin = $('#tabLogin'), tabSignup = $('#tabSignup');
@@ -174,6 +245,7 @@
       liErr.textContent=''; 
       suErr.textContent=''; 
     }
+
     function showSignup(){ 
       fLogin.style.display='none'; 
       fSignup.style.display='grid'; 
@@ -182,15 +254,15 @@
       liErr.textContent=''; 
       suErr.textContent=''; 
     }
+
     tabLogin.addEventListener('click', showLogin);
     tabSignup.addEventListener('click', showSignup);
 
-    // Si ya hay sesión → redirigir
     supabase.auth.getSession().then(({data})=>{
       if (data?.session) location.href = REDIRECT_AFTER_LOGIN;
     });
 
-    /* ====== LOGIN ====== */
+    /* LOGIN */
     fLogin.addEventListener('submit', async (e)=>{
       e.preventDefault();
       liErr.textContent = '';
@@ -198,28 +270,22 @@
       const password = $('#liPass').value;
 
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error){ 
+      if (error){
         liErr.textContent = 'Error: ' + (error.message || 'No se pudo iniciar sesión'); 
         return; 
       }
-
-      // ok
       location.href = REDIRECT_AFTER_LOGIN;
     });
 
-    /* ====== OLVIDÉ CONTRASEÑA ====== */
+    /* OLVIDÉ CONTRASEÑA */
     forgotPass.addEventListener('click', async ()=>{
       liErr.textContent = '';
-      // Intentamos usar el correo ya escrito en el input
       let email = $('#liEmail').value.trim();
+
       if (!email){
         email = prompt("Escribe el correo con el que te registraste:");
         if (!email) return;
         email = email.trim();
-      }
-      if (!email){
-        liErr.textContent = "Debes escribir un correo válido.";
-        return;
       }
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -234,44 +300,40 @@
       alert("Te enviamos un correo con instrucciones para restablecer tu contraseña.");
     });
 
-    /* ====== SIGNUP (con metadatos extra) ====== */
+    /* SIGNUP */
     fSignup.addEventListener('submit', async (e)=>{
       e.preventDefault();
       suErr.textContent = '';
 
       const display_name = $('#suName').value.trim();
       const phone        = $('#suPhone').value.trim();
-      const birthdate    = $('#suBirth').value;       // YYYY-MM-DD
+      const birthdate    = $('#suBirth').value;
       const categoria    = $('#suCategoria').value.trim();
-      const adscripcion  = $('#suAdscripcion').value.trim();
+      const adscripcion  = $('#suAdscripcion').value;
 
       const email        = $('#suEmail').value.trim();
       const password     = $('#suPass').value;
 
-      // Validación básica
       if (!display_name || !phone || !birthdate || !categoria || !adscripcion){
         suErr.textContent = 'Completa todos los campos del perfil.'; 
         return;
       }
 
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: { display_name, phone, birthdate, categoria, adscripcion }
-          // Si quieres correos con una URL de redirección personalizada:
-          // emailRedirectTo: "https://tu-dominio/miembros.html"
         }
       });
 
-      if (error){ 
-        suErr.textContent = 'Error: ' + (error.message || 'No se pudo crear la cuenta'); 
-        return; 
+      if (error){
+        suErr.textContent = 'Error: ' + (error.message || 'No se pudo crear la cuenta');
+        return;
       }
 
-      alert('¡Cuenta creada! Revisa tu correo para confirmar la dirección. Después, inicia sesión.');
+      alert('¡Cuenta creada! Revisa tu correo para confirmar la dirección. Luego inicia sesión.');
       showLogin();
-      // Cargamos email en login para comodidad
       $('#liEmail').value = email;
     });
 
