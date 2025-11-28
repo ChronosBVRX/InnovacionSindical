@@ -690,7 +690,28 @@
           </label>
           <label>Fecha de cumpleaños</label><input id="fCumple" type="date">
           <label>Categoría</label><input id="fCategoria" placeholder="Ej. Enfermera General A">
-          <label>Adscripción</label><input id="fAdscripcion" placeholder="Ej. HGR 1, Urgencias">
+
+          <!-- 🔽 CAMPO NUEVO: ADSCRIPCIÓN SOLO DE LA LISTA DE MICHOACÁN -->
+          <label>Adscripción (Michoacán)</label>
+          <select id="fAdscripcion" required>
+            <option value="">Seleccione una adscripción</option>
+
+            <optgroup label="UMF">
+              <option value="UMF No. 85 Tarímbaro">UMF No. 85 Tarímbaro</option>
+            </optgroup>
+
+            <optgroup label="IMSS-BIENESTAR — Hospitales Rurales (HR)">
+              <option value="HR No. 30 Ario de Rosales">HR No. 30 Ario de Rosales</option>
+              <option value="HR No. 31 Huetamo">HR No. 31 Huetamo</option>
+              <option value="HR No. 33 Paracho">HR No. 33 Paracho</option>
+              <option value="HR No. 35 Buenavista Tomatlán">HR No. 35 Buenavista Tomatlán</option>
+              <option value="HR No. 50 Tuxpan">HR No. 50 Tuxpan</option>
+              <option value="HR No. 51 Villamar">HR No. 51 Villamar</option>
+              <option value="HR No. 59 Coalcomán">HR No. 59 Coalcomán</option>
+            </optgroup>
+          </select>
+          <!-- 🔼 FIN CAMPO NUEVO -->
+
           <label>Biografía corta</label><textarea id="fBio" placeholder="Cuéntanos algo breve"></textarea>
           <label>Servicios / habilidades que ofreces</label>
           <textarea id="fServicios"
