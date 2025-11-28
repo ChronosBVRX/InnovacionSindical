@@ -691,16 +691,67 @@
           <label>Fecha de cumpleaños</label><input id="fCumple" type="date">
           <label>Categoría</label><input id="fCategoria" placeholder="Ej. Enfermera General A">
 
-          <!-- 🔽 CAMPO NUEVO: ADSCRIPCIÓN SOLO DE LA LISTA DE MICHOACÁN -->
+          <!-- 🔽 CAMPO NUEVO: ADSCRIPCIÓN SOLO DE LA LISTA QUE ME DISTE -->
           <label>Adscripción (Michoacán)</label>
           <select id="fAdscripcion" required>
             <option value="">Seleccione una adscripción</option>
 
-            <optgroup label="UMF">
+            <optgroup label="Régimen Ordinario — Hospitales Generales Regionales (HGR)">
+              <option value="HGR No. 1 Charo (Morelia)">HGR No. 1 Charo (Morelia)</option>
+            </optgroup>
+
+            <optgroup label="Régimen Ordinario — Hospitales Generales de Zona (HGZ) y Subzona (HGSZ)">
+              <option value="HGZ No. 83 Morelia (Camelinas)">HGZ No. 83 Morelia (Camelinas)</option>
+              <option value="HGZ No. 8 Uruapan">HGZ No. 8 Uruapan</option>
+              <option value="HGZ No. 4 Zamora">HGZ No. 4 Zamora</option>
+              <option value="HGZ No. 12 Lázaro Cárdenas">HGZ No. 12 Lázaro Cárdenas</option>
+              <option value="HGZ No. 2 Zacapu">HGZ No. 2 Zacapu</option>
+              <option value="HGSZ No. 7 La Piedad">HGSZ No. 7 La Piedad</option>
+              <option value="HGSZ No. 9 Apatzingán">HGSZ No. 9 Apatzingán</option>
+              <option value="HGSZ No. 17 Los Reyes">HGSZ No. 17 Los Reyes</option>
+              <option value="HGSZ No. 24 Pedernales">HGSZ No. 24 Pedernales</option>
+            </optgroup>
+
+            <optgroup label="Régimen Ordinario — Unidades de Medicina Familiar (UMF)">
+              <option value="UMF No. 3 Quiroga">UMF No. 3 Quiroga</option>
+              <option value="UMF No. 6 Jiquilpan">UMF No. 6 Jiquilpan</option>
+              <option value="UMF No. 10 Jungapeo">UMF No. 10 Jungapeo</option>
+              <option value="UMF No. 11 Nueva Italia">UMF No. 11 Nueva Italia</option>
+              <option value="UMF No. 13 Cotija">UMF No. 13 Cotija</option>
+              <option value="UMF No. 18 Zitácuaro">UMF No. 18 Zitácuaro</option>
+              <option value="UMF No. 19 Ciudad Hidalgo">UMF No. 19 Ciudad Hidalgo</option>
+              <option value="UMF No. 20 Pátzcuaro">UMF No. 20 Pátzcuaro</option>
+              <option value="UMF No. 21 Jacona">UMF No. 21 Jacona</option>
+              <option value="UMF No. 23 Infiernillo">UMF No. 23 Infiernillo</option>
+              <option value="UMF No. 25 Puruarán">UMF No. 25 Puruarán</option>
+              <option value="UMF No. 26 Taretan">UMF No. 26 Taretan</option>
+              <option value="UMF No. 28 Santa Clara">UMF No. 28 Santa Clara</option>
+              <option value="UMF No. 37 Mineral de Angangueo">UMF No. 37 Mineral de Angangueo</option>
+              <option value="UMF No. 40 Coalcomán">UMF No. 40 Coalcomán</option>
+              <option value="UMF No. 42 Cuitzeo">UMF No. 42 Cuitzeo</option>
+              <option value="UMF No. 43 Churumuco">UMF No. 43 Churumuco</option>
+              <option value="UMF No. 46 La Huacana">UMF No. 46 La Huacana</option>
+              <option value="UMF No. 48 Huetamo">UMF No. 48 Huetamo</option>
+              <option value="UMF No. 52 Nuevo Urecho">UMF No. 52 Nuevo Urecho</option>
+              <option value="UMF No. 54 Purépero">UMF No. 54 Purépero</option>
+              <option value="UMF No. 64 Puruándiro">UMF No. 64 Puruándiro</option>
+              <option value="UMF No. 65 Villa Madero">UMF No. 65 Villa Madero</option>
+              <option value="UMF No. 66 Villamar">UMF No. 66 Villamar</option>
+              <option value="UMF No. 70 Zinapécuaro">UMF No. 70 Zinapécuaro</option>
+              <option value="UMF No. 71 Morelia">UMF No. 71 Morelia</option>
+              <option value="UMF No. 74 Tacámbaro">UMF No. 74 Tacámbaro</option>
+              <option value="UMF No. 75 Morelia (Camelinas)">UMF No. 75 Morelia (Camelinas)</option>
+              <option value="UMF No. 76 Uruapan">UMF No. 76 Uruapan</option>
+              <option value="UMF No. 77 La Piedad">UMF No. 77 La Piedad</option>
+              <option value="UMF No. 78 Lázaro Cárdenas">UMF No. 78 Lázaro Cárdenas</option>
+              <option value="UMF No. 80 Morelia (Centro)">UMF No. 80 Morelia (Centro)</option>
+              <option value="UMF No. 81 Uruapan">UMF No. 81 Uruapan</option>
+              <option value="UMF No. 82 Zamora">UMF No. 82 Zamora</option>
+              <option value="UMF No. 84 Morelia (Tacícuaro)">UMF No. 84 Morelia (Tacícuaro)</option>
               <option value="UMF No. 85 Tarímbaro">UMF No. 85 Tarímbaro</option>
             </optgroup>
 
-            <optgroup label="IMSS-BIENESTAR — Hospitales Rurales (HR)">
+            <optgroup label="IMSS-Bienestar — Hospitales Rurales (HR)">
               <option value="HR No. 30 Ario de Rosales">HR No. 30 Ario de Rosales</option>
               <option value="HR No. 31 Huetamo">HR No. 31 Huetamo</option>
               <option value="HR No. 33 Paracho">HR No. 33 Paracho</option>
