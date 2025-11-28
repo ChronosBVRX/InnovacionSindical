@@ -925,6 +925,64 @@
       renderMembers();
     }
 
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>\"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[s]));
+    }
+
+    // ==== NUEVOS HELPERS PARA AGRUPAR POR UNIDAD O ADSCRIPCIÓN ====
+    function normalizeText(str) {
+      return (str || '')
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
+    }
+
+    function titleCase(str) {
+      return (str || '')
+        .split(' ')
+        .filter(Boolean)
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+    }
+
+    /**
+     * Devuelve { key, label } para agrupar miembros
+     * - Si encuentra número (HGR 1, HGZ #86, etc.) → key "NUM:001", label "Unidad 1"
+     * - Si NO hay número → key "TXT:almacen delegacional", label "Almacen Delegacional"
+     */
+    function getUnidadGroup(profile) {
+      const raw = `${profile.adscripcion || ''} ${profile.categoria || ''}`.trim();
+      const norm = normalizeText(raw);
+
+      // 1) Si hay número, grupo numérico
+      const match = norm.match(/\b\d{1,3}\b/);
+      if (match) {
+        const num = parseInt(match[0], 10);
+        if (Number.isFinite(num)) {
+          const numKey = num.toString().padStart(3, '0'); // "001", "086"
+          return {
+            key: 'NUM:' + numKey,
+            label: `Unidad ${num}`
+          };
+        }
+      }
+
+      // 2) Sin número → agrupar por texto
+      if (!norm) {
+        return {
+          key: 'TXT:SIN_ADSCRIPCION',
+          label: 'Sin adscripción registrada'
+        };
+      }
+
+      return {
+        key: 'TXT:' + norm,
+        label: titleCase(norm)
+      };
+    }
+
     function renderMembers() {
       const wrap = $("membersList");
       if (!wrap) return;
@@ -933,15 +991,24 @@
       const onlyOnline = $("chkOnlineOnly")?.checked;
       let list = MEMBERS_CACHE.slice();
 
-      if (q) list = list.filter(p =>
-        (p.display_name || '').toLowerCase().includes(q) ||
-        (p.adscripcion || '').toLowerCase().includes(q) ||
-        (p.categoria || '').toLowerCase().includes(q) ||
-        (p.servicios || '').toLowerCase().includes(q)
-      );
-      if (onlyOnline) list = list.filter(p => ONLINE_SET.has(p.user_id));
+      // Filtro de búsqueda
+      if (q) {
+        list = list.filter(p =>
+          (p.display_name || '').toLowerCase().includes(q) ||
+          (p.adscripcion || '').toLowerCase().includes(q) ||
+          (p.categoria || '').toLowerCase().includes(q) ||
+          (p.servicios || '').toLowerCase().includes(q)
+        );
+      }
 
-      const online = [], offline = [];
+      // Solo online
+      if (onlyOnline) {
+        list = list.filter(p => ONLINE_SET.has(p.user_id));
+      }
+
+      // Online primero
+      const online = [];
+      const offline = [];
       list.forEach(p => (ONLINE_SET.has(p.user_id) ? online : offline).push(p));
       list = [...online, ...offline];
 
@@ -951,46 +1018,98 @@
         return;
       }
 
-      list.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        const dot = ONLINE_SET.has(p.user_id) ? '🟢 Online' : '⚪ Offline';
+      // AGRUPAR POR UNIDAD / ADSCRIPCIÓN
+      const grupos = new Map(); // key -> { label, miembros: [] }
 
-        const tel = (p.telefono || '').toString().trim();
-        const telPublic = !!p.telefono_publico;
-        let telDisplay;
-        if (!tel) {
-          telDisplay = 'Sin teléfono';
-        } else if (telPublic) {
-          telDisplay = tel;
-        } else {
-          telDisplay = 'No visible';
+      list.forEach(p => {
+        const grp = getUnidadGroup(p);
+        if (!grupos.has(grp.key)) {
+          grupos.set(grp.key, { label: grp.label, miembros: [] });
+        }
+        grupos.get(grp.key).miembros.push(p);
+      });
+
+      // Ordenar claves:
+      // 1) NUM:* por número ascendente
+      // 2) TXT:* por nombre
+      const keys = Array.from(grupos.keys());
+      keys.sort((a, b) => {
+        const isNumA = a.startsWith('NUM:');
+        const isNumB = b.startsWith('NUM:');
+
+        if (isNumA && !isNumB) return -1;
+        if (!isNumA && isNumB) return 1;
+
+        if (isNumA && isNumB) {
+          const na = parseInt(a.slice(4), 10);
+          const nb = parseInt(b.slice(4), 10);
+          return na - nb;
         }
 
-        const serviciosText = (p.servicios || '').trim();
-        const serviciosShort = serviciosText
-          ? (serviciosText.length > 100 ? serviciosText.slice(0, 97) + '…' : serviciosText)
-          : '';
-
-        card.innerHTML = `
-      <div class="row" style="align-items:flex-start">
-        <div class="avatar" style="width:64px;height:64px">
-          ${p.avatar_url ? `<img src="${p.avatar_url}">` : (p.display_name || '?')[0]?.toUpperCase()}
-        </div>
-        <div style="flex:1;min-width:200px">
-          <div style="font-weight:700">${escapeHtml(p.display_name || '—')}</div>
-          <div class="meta">${escapeHtml(p.categoria || '—')} • ${escapeHtml(p.adscripcion || '—')}</div>
-          <div class="meta" style="margin-top:4px">📱 ${escapeHtml(telDisplay)}</div>
-          ${serviciosShort ? `<div class="meta" style="margin-top:4px">🤝 ${escapeHtml(serviciosShort)}</div>` : ''}
-        </div>
-        <span class="pill">${dot}</span>
-      </div>`;
-        wrap.appendChild(card);
+        const la = grupos.get(a).label.toLowerCase();
+        const lb = grupos.get(b).label.toLowerCase();
+        return la.localeCompare(lb, 'es');
       });
-    }
 
-    function escapeHtml(str) {
-      return (str || '').replace(/[&<>\"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[s]));
+      // Pintar grupos
+      keys.forEach(key => {
+        const grp = grupos.get(key);
+        const miembros = grp.miembros;
+        if (!miembros || !miembros.length) return;
+
+        // Título del grupo
+        const header = document.createElement('h3');
+        header.className = 'meta';
+        header.style.margin = '18px 0 6px';
+        header.textContent = grp.label;
+        wrap.appendChild(header);
+
+        // Tarjetas
+        miembros.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'card';
+
+          const dot = ONLINE_SET.has(p.user_id) ? '🟢 Online' : '⚪ Offline';
+
+          const tel = (p.telefono || '').toString().trim();
+          const telPublic = !!p.telefono_publico;
+          let telDisplay;
+          if (!tel) {
+            telDisplay = 'Sin teléfono';
+          } else if (telPublic) {
+            telDisplay = tel;
+          } else {
+            telDisplay = 'No visible';
+          }
+
+          const serviciosText = (p.servicios || '').trim();
+          const serviciosShort = serviciosText
+            ? (serviciosText.length > 100 ? serviciosText.slice(0, 97) + '…' : serviciosText)
+            : '';
+
+          card.innerHTML = `
+        <div class="row" style="align-items:flex-start">
+          <div class="avatar" style="width:64px;height:64px">
+            ${p.avatar_url ? `<img src="${p.avatar_url}">` : (p.display_name || '?')[0]?.toUpperCase()}
+          </div>
+          <div style="flex:1;min-width:200px">
+            <div style="font-weight:700">${escapeHtml(p.display_name || '—')}</div>
+            <div class="meta">
+              ${escapeHtml(p.categoria || '—')} • ${escapeHtml(p.adscripcion || '—')}
+            </div>
+            <div class="meta" style="margin-top:4px">
+              📱 ${escapeHtml(telDisplay)}
+            </div>
+            ${serviciosShort
+              ? `<div class="meta" style="margin-top:4px">🤝 ${escapeHtml(serviciosShort)}</div>`
+              : ''}
+          </div>
+          <span class="pill">${dot}</span>
+        </div>
+      `;
+          wrap.appendChild(card);
+        });
+      });
     }
 
     /* ====== Presencia ====== */
