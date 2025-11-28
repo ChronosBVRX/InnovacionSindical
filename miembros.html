@@ -929,13 +929,13 @@
       return (str || '').replace(/[&<>\"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[s]));
     }
 
-    // ==== NUEVOS HELPERS PARA AGRUPAR POR UNIDAD O ADSCRIPCIÓN ====
+    // ==== NUEVOS HELPERS PARA AGRUPAR ADSCRIPCIONES SIMILARES ====
     function normalizeText(str) {
       return (str || '')
         .toLowerCase()
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, " ")
+        .replace(/[\u0300-\u036f]/g, "")   // quita acentos
+        .replace(/[^a-z0-9]+/g, " ")       // todo lo que no sea letra o número → espacio
         .trim();
     }
 
@@ -947,29 +947,41 @@
         .join(' ');
     }
 
+    // Canonicaliza nombres de adscripciones sin número (para que "almacen delg", "almacen delegacional" se junten)
+    function canonicalAdscripcion(norm) {
+      if (!norm) return '';
+
+      if (norm.startsWith('almacen')) return 'almacen delegacional';
+      if (norm.startsWith('delegacion')) return 'delegacion';
+      if (norm.startsWith('subdelegacion')) return 'subdelegacion';
+      if (norm.startsWith('jefatura')) return 'jefatura';
+      if (norm.startsWith('coordinacion')) return 'coordinacion';
+
+      return norm;
+    }
+
+    const KNOWN_PREFIXES = ['hgr', 'hgz', 'umr', 'umf', 'umae', 'umaa'];
+
+    function canonicalPrefix(token) {
+      if (!token) return '';
+      const t = token.toLowerCase();
+      if (KNOWN_PREFIXES.includes(t)) return t.toUpperCase();
+
+      // Pequeñas correcciones comunes
+      if (t === 'hg') return 'HG';
+      if (t === 'hgzmr' || t === 'hgzumr') return 'HGZ UMR';
+      return t.toUpperCase();
+    }
+
     /**
-     * Devuelve { key, label } para agrupar miembros
-     * - Si encuentra número (HGR 1, HGZ #86, etc.) → key "NUM:001", label "Unidad 1"
+     * Devuelve { key, label } para agrupar miembros:
+     * - Si hay número y prefijo (HGR 1, HGZ #86, UMR 12) → key "NUM:HGR-001", label "HGR 1"
      * - Si NO hay número → key "TXT:almacen delegacional", label "Almacen Delegacional"
      */
     function getUnidadGroup(profile) {
       const raw = `${profile.adscripcion || ''} ${profile.categoria || ''}`.trim();
       const norm = normalizeText(raw);
 
-      // 1) Si hay número, grupo numérico
-      const match = norm.match(/\b\d{1,3}\b/);
-      if (match) {
-        const num = parseInt(match[0], 10);
-        if (Number.isFinite(num)) {
-          const numKey = num.toString().padStart(3, '0'); // "001", "086"
-          return {
-            key: 'NUM:' + numKey,
-            label: `Unidad ${num}`
-          };
-        }
-      }
-
-      // 2) Sin número → agrupar por texto
       if (!norm) {
         return {
           key: 'TXT:SIN_ADSCRIPCION',
@@ -977,9 +989,31 @@
         };
       }
 
+      // Buscar número (1 a 3 dígitos)
+      const numMatch = norm.match(/\b(\d{1,3})\b/);
+      if (numMatch) {
+        const num = parseInt(numMatch[1], 10);
+        if (Number.isFinite(num)) {
+          const before = norm.slice(0, numMatch.index).trim();
+          const parts = before.split(' ').filter(Boolean);
+          let prefix = parts.length ? parts[parts.length - 1] : '';
+
+          prefix = canonicalPrefix(prefix);
+          if (!prefix) prefix = 'Unidad';
+
+          const numKey = num.toString().padStart(3, '0'); // para agrupar 1, 01, 001
+          return {
+            key: `NUM:${prefix}-${numKey}`,
+            label: `${prefix} ${num}`
+          };
+        }
+      }
+
+      // Sin número → agrupar por texto normalizado / canonizado
+      const canon = canonicalAdscripcion(norm);
       return {
-        key: 'TXT:' + norm,
-        label: titleCase(norm)
+        key: 'TXT:' + canon,
+        label: titleCase(canon)
       };
     }
 
@@ -1018,7 +1052,7 @@
         return;
       }
 
-      // AGRUPAR POR UNIDAD / ADSCRIPCIÓN
+      // AGRUPAR POR TIPO + NÚMERO o TEXTO
       const grupos = new Map(); // key -> { label, miembros: [] }
 
       list.forEach(p => {
@@ -1029,9 +1063,9 @@
         grupos.get(grp.key).miembros.push(p);
       });
 
-      // Ordenar claves:
-      // 1) NUM:* por número ascendente
-      // 2) TXT:* por nombre
+      // Ordenar:
+      // 1) Grupos numéricos (HGR 1, HGZ 5, UMR 12...) por tipo y número
+      // 2) Luego grupos de texto (Almacén Delegacional, Delegación...) por orden alfabético
       const keys = Array.from(grupos.keys());
       keys.sort((a, b) => {
         const isNumA = a.startsWith('NUM:');
@@ -1041,9 +1075,12 @@
         if (!isNumA && isNumB) return 1;
 
         if (isNumA && isNumB) {
-          const na = parseInt(a.slice(4), 10);
-          const nb = parseInt(b.slice(4), 10);
-          return na - nb;
+          // a = "NUM:HGR-001"
+          const [pa, na] = a.slice(4).split('-');
+          const [pb, nb] = b.slice(4).split('-');
+          if (pa < pb) return -1;
+          if (pa > pb) return 1;
+          return parseInt(na, 10) - parseInt(nb, 10);
         }
 
         const la = grupos.get(a).label.toLowerCase();
@@ -1057,14 +1094,12 @@
         const miembros = grp.miembros;
         if (!miembros || !miembros.length) return;
 
-        // Título del grupo
         const header = document.createElement('h3');
         header.className = 'meta';
         header.style.margin = '18px 0 6px';
         header.textContent = grp.label;
         wrap.appendChild(header);
 
-        // Tarjetas
         miembros.forEach(p => {
           const card = document.createElement('div');
           card.className = 'card';
