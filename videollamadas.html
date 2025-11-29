@@ -8,6 +8,7 @@
   <style>
     :root {
       --bg: #020617;
+      --panel: #020617;
       --txt: #e6fbff;
       --muted: #a5b4fc;
       --primary: #5bd7f2;
@@ -26,67 +27,50 @@
     body {
       width: 100%;
       height: 100%;
-      overflow: hidden;
-      background: #020617;
+      background: transparent; /* se integra con el card de Miembros */
       color: var(--txt);
+      overflow: hidden;
     }
 
     .app {
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(80vmax 80vmax at 0 0, rgba(96, 165, 250, .25), transparent 55%),
-        radial-gradient(90vmax 90vmax at 100% 100%, rgba(45, 212, 191, .22), transparent 55%),
-        #020617;
-    }
-
-    /* IFRAME DE LA LLAMADA: LLENA TODO */
-    #call-frame {
-      position: absolute;
-      inset: 0;
       width: 100%;
       height: 100%;
-      border: 0;
-      background: #000;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 8px;
+      background: transparent;
     }
 
-    /* CONTROLES FLOTANTES (NO ROBAN ESPACIO) */
-    .controls {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      right: 8px;
+    /* CABECERA + CONTROLES */
+    .header-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px;
       align-items: center;
       justify-content: space-between;
-      pointer-events: none;
-      /* deja pasar clics al iframe, sólo los botones capturan */
+      gap: 6px;
     }
 
-    .controls-left {
+    .header-left {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px;
       align-items: center;
-      pointer-events: auto;
+      gap: 6px;
     }
 
-    .controls-right {
+    .header-right {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px;
       align-items: center;
-      pointer-events: auto;
+      gap: 6px;
     }
 
     .badge {
       font-size: .7rem;
-      padding: 3px 8px;
+      padding: 3px 9px;
       border-radius: 999px;
       border: 1px solid rgba(15, 23, 42, .9);
-      background: rgba(15, 23, 42, .85);
+      background: rgba(15, 23, 42, .9);
       color: var(--muted);
       display: inline-flex;
       align-items: center;
@@ -98,19 +82,26 @@
       font-weight: 600;
     }
 
+    .field {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: .7rem;
+    }
+
     label {
-      font-size: .65rem;
+      font-size: .7rem;
       color: #cbd5f5;
       white-space: nowrap;
     }
 
     input {
       min-width: 0;
-      max-width: 140px;
+      max-width: 160px;
       padding: 4px 8px;
       border-radius: 999px;
       border: 1px solid var(--border);
-      background: rgba(15, 23, 42, .9);
+      background: rgba(15, 23, 42, .95);
       color: var(--txt);
       font-size: .75rem;
       outline: none;
@@ -118,12 +109,6 @@
 
     input::placeholder {
       color: #64748b;
-    }
-
-    .field {
-      display: flex;
-      align-items: center;
-      gap: 4px;
     }
 
     button {
@@ -150,13 +135,13 @@
     #join-btn {
       background: linear-gradient(120deg, var(--primary), var(--sky));
       color: #020617;
-      box-shadow: 0 8px 18px rgba(37, 99, 235, .4);
+      box-shadow: 0 6px 14px rgba(37, 99, 235, .45);
     }
 
     #leave-btn {
       background: rgba(248, 113, 113, 1);
       color: white;
-      box-shadow: 0 8px 18px rgba(239, 68, 68, .6);
+      box-shadow: 0 6px 14px rgba(239, 68, 68, .6);
       opacity: .4;
       cursor: default;
     }
@@ -167,10 +152,10 @@
     }
 
     #fullscreen-btn {
-      background: rgba(15, 23, 42, .92);
+      background: rgba(15, 23, 42, .95);
       color: #e5e7eb;
       border: 1px solid var(--border);
-      box-shadow: 0 6px 14px rgba(15, 23, 42, .9);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, .9);
       font-size: .8rem;
       padding-inline: 8px;
     }
@@ -201,21 +186,42 @@
       box-shadow: 0 0 0 3px rgba(239, 68, 68, .5);
     }
 
+    /* CONTENEDOR DEL VIDEO */
+    .frame-wrapper {
+      flex: 1;
+      min-height: 180px;
+      margin-top: 2px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(15, 23, 42, .95);
+      background: #000;
+    }
+
+    #call-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #000;
+    }
+
     @media (max-width: 640px) {
-      .controls {
-        top: 6px;
-        left: 6px;
-        right: 6px;
+      .app {
+        padding: 6px;
+      }
+
+      .header-row {
         flex-direction: column;
         align-items: flex-start;
       }
 
-      .controls-right {
-        align-self: flex-end;
+      .header-right {
+        align-self: stretch;
+        justify-content: flex-start;
       }
 
       input {
-        max-width: 120px;
+        max-width: 130px;
       }
     }
   </style>
@@ -223,28 +229,19 @@
 
 <body>
   <div class="app">
-    <!-- IFRAME JITSI A PANTALLA COMPLETA -->
-    <iframe
-      id="call-frame"
-      allow="camera; microphone; fullscreen; display-capture"
-      allowfullscreen
-      referrerpolicy="no-referrer-when-downgrade">
-    </iframe>
-
-    <!-- CONTROLES FLOTANDO ENCIMA (no quitan espacio) -->
-    <div class="controls">
-      <div class="controls-left">
+    <!-- CABECERA + CONTROLES -->
+    <div class="header-row">
+      <div class="header-left">
         <div class="badge">
           📡 <strong>Unidad en Acción</strong> · Llamadas
         </div>
-
         <div class="field">
           <label for="room-input">Sala:</label>
-          <input id="room-input" type="text" placeholder="Ej. Equipo_Juvenil">
+          <input id="room-input" type="text" placeholder="Ej. Reunión_equipo">
         </div>
       </div>
 
-      <div class="controls-right">
+      <div class="header-right">
         <button id="join-btn">Entrar</button>
         <button id="leave-btn" disabled>Salir</button>
         <button id="fullscreen-btn" title="Pantalla completa">⛶</button>
@@ -254,6 +251,15 @@
           <span id="status-text">esperando…</span>
         </div>
       </div>
+    </div>
+
+    <!-- VIDEO -->
+    <div class="frame-wrapper">
+      <iframe id="call-frame"
+        allow="camera; microphone; fullscreen; display-capture"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
     </div>
   </div>
 
@@ -297,10 +303,10 @@
     }
 
     function buildJitsiUrl(roomName) {
-      // Sala en meet.jit.si. Puedes cambiar por tu propio servidor Jitsi si luego montas uno.
       const base = "https://meet.jit.si/";
-      // Se podría añadir config extra vía hash si quieres.
-      return base + encodeURIComponent(roomName);
+      // MUY IMPORTANTE: esto evita el mensaje de “abrir en la app”
+      const params = "#config.disableDeepLinking=true";
+      return base + encodeURIComponent(roomName) + params;
     }
 
     function joinRoom() {
@@ -321,7 +327,7 @@
 
     async function toggleFullscreen() {
       try {
-        const elem = frame; // aprovechamos el iframe de la llamada
+        const elem = frame;
         if (!document.fullscreenElement) {
           if (elem.requestFullscreen) {
             await elem.requestFullscreen();
@@ -361,7 +367,7 @@
     });
 
     // Estado inicial
-    roomInput.value = randomRoom();
+    roomInput.value = "Reunión";
     setStatus("esperando…", "idle");
   </script>
 </body>
