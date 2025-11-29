@@ -25,15 +25,16 @@
 
     body {
       min-height: 100vh;
-      background: radial-gradient(90vmax 90vmax at 10% 0%, rgba(96, 165, 250, .20), transparent 55%),
+      background:
+        radial-gradient(90vmax 90vmax at 10% 0%, rgba(96, 165, 250, .20), transparent 55%),
         radial-gradient(100vmax 100vmax at 100% 100%, rgba(45, 212, 191, .16), transparent 60%),
-        linear-gradient(180deg, #020617, #020617 10%, #020617 40%, #020617 100%);
+        linear-gradient(180deg, #020617, #020617 40%, #020617 100%);
       color: var(--txt);
       padding: 16px;
     }
 
     .card {
-      max-width: 1120px;
+      max-width: 1200px;
       margin: 0 auto;
       background: linear-gradient(135deg, rgba(15, 23, 42, .96), rgba(15, 23, 42, .98));
       border-radius: 24px;
@@ -41,7 +42,7 @@
       box-shadow:
         0 20px 45px rgba(15, 23, 42, .85),
         0 0 0 1px rgba(15, 23, 42, 1);
-      padding: 18px 18px 20px;
+      padding: 18px;
       position: relative;
       overflow: hidden;
     }
@@ -54,7 +55,7 @@
         radial-gradient(600px 600px at 0% 0%, rgba(59, 130, 246, .18), transparent 60%),
         radial-gradient(700px 700px at 100% 100%, rgba(45, 212, 191, .18), transparent 55%);
       mix-blend-mode: screen;
-      opacity: 0.9;
+      opacity: 0.8;
       pointer-events: none;
     }
 
@@ -96,7 +97,7 @@
       color: var(--muted);
       font-size: 0.85rem;
       margin-top: 0.25rem;
-      max-width: 32rem;
+      max-width: 34rem;
     }
 
     .tag {
@@ -122,9 +123,9 @@
 
     .layout {
       display: grid;
-      grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+      grid-template-columns: minmax(260px, 310px) minmax(0, 1fr);
       gap: 1rem;
-      align-items: flex-start;
+      align-items: stretch;
     }
 
     @media (max-width: 880px) {
@@ -134,9 +135,8 @@
     }
 
     .controls {
-      background: radial-gradient(220px 220px at 0 0, rgba(37, 99, 235, .25), transparent 60%),
-        #020617;
-      border-radius: 16px;
+      background: radial-gradient(220px 220px at 0 0, rgba(37, 99, 235, .25), transparent 60%), #020617;
+      border-radius: 18px;
       border: 1px solid rgba(148, 163, 184, .7);
       padding: 12px 12px 14px;
       box-shadow:
@@ -189,16 +189,13 @@
       font-size: 0.75rem;
     }
 
-    .input-row {
-      display: flex;
-      gap: .4rem;
-      align-items: center;
+    .input-group {
+      margin-bottom: .55rem;
     }
 
     input {
-      flex: 1;
-      min-width: 0;
-      padding: 0.45rem 0.6rem;
+      width: 100%;
+      padding: 0.45rem 0.7rem;
       border-radius: 999px;
       border: 1px solid rgba(148, 163, 184, .55);
       background: rgba(15, 23, 42, .95);
@@ -219,7 +216,8 @@
       border: none;
       font-weight: 600;
       font-size: .8rem;
-      padding: .45rem .7rem;
+      padding: .55rem .8rem;
+      width: 100%;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -233,48 +231,33 @@
       box-shadow: none;
     }
 
-    #create-room-btn {
-      width: 100%;
-      margin-top: 0.55rem;
+    #join-btn {
       background: linear-gradient(120deg, var(--primary), var(--sky));
       color: #020617;
       box-shadow:
         0 0 0 1px rgba(15, 23, 42, 1),
         0 14px 28px rgba(37, 99, 235, .35);
+      margin-top: .25rem;
     }
 
-    #join-room-btn {
-      width: 100%;
-      margin-top: 0.4rem;
-      border: 1px solid rgba(94, 234, 212, .9);
-      background: radial-gradient(260px 260px at 0 0, rgba(34, 197, 94, .22), transparent 55%);
-      color: #a7f3d0;
-      box-shadow:
-        0 0 0 1px rgba(15, 23, 42, 1),
-        0 10px 25px rgba(16, 185, 129, .25);
-    }
-
-    #hangup-btn {
-      width: 100%;
-      margin-top: .5rem;
+    #leave-btn {
+      margin-top: .45rem;
       background: radial-gradient(circle at 0 0, rgba(248, 113, 113, .25), transparent 55%), #ef4444;
       color: white;
-      border-radius: 999px;
-      font-weight: 600;
       box-shadow:
         0 0 0 1px rgba(15, 23, 42, 1),
         0 10px 30px rgba(239, 68, 68, .7);
-      opacity: .55;
+      opacity: .5;
       cursor: default;
     }
 
-    #hangup-btn.enabled {
+    #leave-btn.enabled {
       opacity: 1;
       cursor: pointer;
     }
 
     .room-hint {
-      margin-top: .45rem;
+      margin-top: .5rem;
       font-size: .75rem;
       color: #e5e7eb;
       padding: .35rem .5rem;
@@ -293,7 +276,7 @@
       border: 1px solid rgba(148, 163, 184, .9);
     }
 
-    #call-status {
+    #status {
       margin-top: 0.65rem;
       color: #aee9f7;
       font-size: 0.75rem;
@@ -320,7 +303,7 @@
       box-shadow: 0 0 0 3px rgba(239, 68, 68, .3);
     }
 
-    .videos {
+    .video-panel {
       background: radial-gradient(260px 260px at 0 0, rgba(59, 130, 246, .3), transparent 55%),
         radial-gradient(260px 260px at 100% 100%, rgba(45, 212, 191, .3), transparent 55%),
         #020617;
@@ -330,24 +313,20 @@
       box-shadow:
         0 0 0 1px rgba(15, 23, 42, 1),
         0 18px 48px rgba(15, 23, 42, .9);
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
     }
 
-    .videos-header {
+    .video-header {
       display: flex;
       flex-wrap: wrap;
       gap: .35rem .75rem;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: .4rem;
       padding: 0 .2rem;
-    }
-
-    .videos-title {
       font-size: .8rem;
       color: #e5e7eb;
-      display: flex;
-      align-items: center;
-      gap: .35rem;
     }
 
     .badge {
@@ -362,103 +341,25 @@
       background: radial-gradient(circle at 0 0, rgba(56, 189, 248, .22), transparent 55%);
     }
 
-    #participants-count {
-      font-variant-numeric: tabular-nums;
-      font-weight: 600;
-      color: #e0f2fe;
-    }
-
-    .videos-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
-      gap: .6rem;
-    }
-
-    @media (max-width: 720px) {
-      .videos-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .video-card {
-      background: radial-gradient(260px 260px at 0 0, rgba(15, 23, 42, .8), transparent 65%), #020617;
+    #jitsi-container {
       border-radius: 14px;
-      padding: .45rem;
-      border: 1px solid rgba(30, 64, 175, .75);
-      box-shadow:
-        0 0 0 1px rgba(15, 23, 42, 1),
-        0 12px 30px rgba(15, 23, 42, .9);
-      display: flex;
-      flex-direction: column;
-      gap: .25rem;
-      min-height: 180px;
+      overflow: hidden;
+      background: #000;
+      min-height: 360px;
+      max-height: 80vh;
     }
 
-    .video-card.remote {
-      border-color: rgba(55, 65, 81, .85);
-      background: radial-gradient(260px 260px at 100% 100%, rgba(15, 23, 42, .9), transparent 65%), #020617;
-    }
-
-    .video-label {
-      font-size: .75rem;
-      color: #cbd5f5;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: .35rem;
-    }
-
-    .video-label span.sub {
-      font-size: .7rem;
-      color: #94a3b8;
-    }
-
-    video {
+    #jitsi-iframe {
       width: 100%;
-      border-radius: 10px;
-      background: black;
-      max-height: 260px;
-      object-fit: cover;
-    }
-
-    .remote-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: .4rem;
-      margin-top: .2rem;
-      min-height: 120px;
-    }
-
-    .remote-item {
-      background: radial-gradient(220px 220px at 0 0, rgba(15, 23, 42, .92), transparent 65%), #020617;
-      border-radius: 12px;
-      border: 1px solid rgba(55, 65, 81, .95);
-      padding: .28rem;
-      display: flex;
-      flex-direction: column;
-      gap: .2rem;
-      min-height: 120px;
-    }
-
-    .remote-meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: .3rem;
-      font-size: .7rem;
-      color: #9ca3af;
-    }
-
-    .remote-id {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: .65rem;
-      color: #e5e7eb;
+      height: 100%;
+      border: 0;
+      display: block;
     }
 
     .note {
       color: #9ca3af;
       font-size: 0.7rem;
-      margin-top: 0.4rem;
+      margin-top: 0.25rem;
       padding: .35rem .5rem;
       border-radius: .75rem;
       border: 1px dashed rgba(148, 163, 184, .8);
@@ -472,133 +373,94 @@
     <div class="card-inner">
       <header>
         <div class="title-block">
-          <h1><span class="icon">🧑‍💻</span> Reuniones por videollamada</h1>
+          <h1><span class="icon">📡</span> Reuniones grupales</h1>
           <p class="muted">
-            Crea una sala, comparte el ID con tu equipo y todos podrán verse y escucharse.
-            Ideal para grupos pequeños (3–6 personas).
+            Reúnete con tu equipo usando Jitsi. Sólo necesitan compartir el ID de la sala
+            y entrar desde esta misma página.
           </p>
           <div class="tag">
             <span class="tag-dot"></span>
-            Encriptado de punto a punto entre participantes
+            Videollamadas grupales con Jitsi Meet
           </div>
         </div>
       </header>
 
       <div class="layout">
-        <!-- Panel de controles -->
+        <!-- Controles -->
         <section class="controls">
-          <h2>Configura tu sala</h2>
+          <h2>Configura tu reunión</h2>
           <ul class="steps">
             <li>
               <span class="steps-bullet">1</span>
-              <span>Haz clic en <strong>“Iniciar sala nueva”</strong> para generar un ID.</span>
+              <span>Escribe un <strong>Nombre de sala</strong> (o usa el que se genera).</span>
             </li>
             <li>
               <span class="steps-bullet">2</span>
-              <span>Envía el ID a quienes se van a conectar.</span>
+              <span>Escribe tu <strong>Nombre para mostrar</strong>.</span>
             </li>
             <li>
               <span class="steps-bullet">3</span>
-              <span>Cada persona pega el ID y entra con <strong>“Entrar con este ID”</strong>.</span>
+              <span>Haz clic en <strong>“Entrar a la reunión”</strong> y comparte el ID con tu equipo.</span>
             </li>
           </ul>
 
-          <label for="room-id">ID de sala</label>
-          <div class="input-row">
-            <input id="room-id" type="text" placeholder="Ej. 8F4A2C" autocomplete="off">
+          <div class="input-group">
+            <label for="room-name">Nombre de sala</label>
+            <input id="room-name" type="text" placeholder="Ej. Equipo_Juvenil" autocomplete="off">
           </div>
 
-          <button id="create-room-btn">
-            🆕 Iniciar sala nueva
-          </button>
+          <div class="input-group">
+            <label for="display-name">Tu nombre para mostrar</label>
+            <input id="display-name" type="text" placeholder="Ej. Ana López" autocomplete="off">
+          </div>
 
-          <button id="join-room-btn">
-            ➜ Entrar con este ID
-          </button>
+          <button id="join-btn">▶️ Entrar a la reunión</button>
+          <button id="leave-btn" disabled>🔴 Salir de la reunión</button>
 
-          <button id="hangup-btn" disabled>
-            🔴 Salir de la reunión
-          </button>
-
-          <p class="room-hint" id="room-hint">
-            Comparte este ID con tu equipo: <strong id="room-id-label">—</strong>
+          <p class="room-hint">
+            Comparte este ID con tu equipo:
+            <strong id="room-id-label">—</strong>
           </p>
 
-          <p id="call-status">
+          <p id="status">
             <span class="status-dot idle"></span> Estado: esperando acción
           </p>
         </section>
 
-        <!-- Panel de video -->
-        <section class="videos">
-          <div class="videos-header">
-            <div class="videos-title">
-              🎥 Vista de la reunión
-            </div>
-            <div class="badge">
-              👥 Participantes <span id="participants-count">1</span>
-            </div>
+        <!-- Videollamada -->
+        <section class="video-panel">
+          <div class="video-header">
+            <span>🎥 Sala de videollamada</span>
+            <span class="badge">Jitsi Meet integrado</span>
           </div>
-
-          <div class="videos-grid">
-            <div class="video-card">
-              <div class="video-label">
-                <span>Tú</span>
-                <span class="sub">Se usa tu cámara y micrófono</span>
-              </div>
-              <video id="local-video" autoplay playsinline muted></video>
-            </div>
-
-            <div class="video-card remote">
-              <div class="video-label">
-                <span>Equipo</span>
-                <span class="sub">Aparecerán aquí las demás personas</span>
-              </div>
-              <div id="remote-videos" class="remote-grid"></div>
-            </div>
-          </div>
-
+          <div id="jitsi-container"></div>
           <p class="note">
-            Usa un navegador moderno (Chrome, Edge, Firefox). La página debe estar en HTTPS
-            o en <code>localhost</code>. Más de 6 personas puede afectar la estabilidad de la llamada.
+            La videollamada usa el servidor público <code>meet.jit.si</code>. Para mejor
+            privacidad, en el futuro puedes montar tu propio servidor Jitsi y cambiar el dominio.
           </p>
         </section>
       </div>
     </div>
   </div>
 
-  <!-- Supabase JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Jitsi Meet External API -->
+  <script src="https://meet.jit.si/external_api.js"></script>
 
   <script>
-    // ⚠️ IMPORTANTE:
-    // Esto usa una topología "mesh" P2P (cada par de personas se conecta entre sí).
-    // Funciona bien para grupos pequeños (3–6). Para grupos muy grandes se recomienda un servidor SFU.
+    const roomInput = document.getElementById("room-name");
+    const displayNameInput = document.getElementById("display-name");
+    const joinBtn = document.getElementById("join-btn");
+    const leaveBtn = document.getElementById("leave-btn");
+    const statusEl = document.getElementById("status");
+    const roomLabel = document.getElementById("room-id-label");
+    const jitsiContainer = document.getElementById("jitsi-container");
 
-    // 👇 Tus datos de Supabase
-    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    let api = null;
+    let currentRoom = null;
 
-    const supabaseRtc = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    const roomInput = document.getElementById("room-id");
-    const createBtn = document.getElementById("create-room-btn");
-    const joinBtn = document.getElementById("join-room-btn");
-    const hangupBtn = document.getElementById("hangup-btn");
-    const statusEl = document.getElementById("call-status");
-    const statusDot = statusEl.querySelector(".status-dot");
-    const roomHintLabel = document.getElementById("room-id-label");
-    const localVideo = document.getElementById("local-video");
-    const remoteVideosContainer = document.getElementById("remote-videos");
-    const participantsCountEl = document.getElementById("participants-count");
-
-    let localStream = null;
-    let roomId = null;
-    let channel = null;
-
-    const myId = crypto.randomUUID().slice(0, 8).toUpperCase();
-    const peers = {};       // peerId -> RTCPeerConnection
-    const remoteVideos = {}; // peerId -> HTMLVideoElement
+    function randomRoom() {
+      return "UA_" + Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
 
     function setStatus(text, mode = "normal") {
       statusEl.innerHTML = "";
@@ -614,321 +476,103 @@
 
     function setInCall(inCall) {
       if (inCall) {
-        hangupBtn.disabled = false;
-        hangupBtn.classList.add("enabled");
+        leaveBtn.disabled = false;
+        leaveBtn.classList.add("enabled");
+        joinBtn.disabled = true;
+        joinBtn.style.opacity = ".6";
       } else {
-        hangupBtn.disabled = true;
-        hangupBtn.classList.remove("enabled");
-      }
-      updateParticipantsBadge();
-    }
-
-    function updateParticipantsBadge() {
-      const count = 1 + Object.keys(peers).length; // tú + otros
-      participantsCountEl.textContent = count;
-    }
-
-    async function initLocalMedia() {
-      if (localStream) return;
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        localVideo.srcObject = localStream;
-        setStatus("Cámara y micrófono listos");
-      } catch (err) {
-        console.error(err);
-        setStatus("No se pudo acceder a la cámara/micrófono", "error");
-        throw err;
+        leaveBtn.disabled = true;
+        leaveBtn.classList.remove("enabled");
+        joinBtn.disabled = false;
+        joinBtn.style.opacity = "1";
       }
     }
 
-    function createRemoteVideoElement(peerId) {
-      if (remoteVideos[peerId]) return remoteVideos[peerId];
-
-      const wrapper = document.createElement("div");
-      wrapper.className = "remote-item";
-      wrapper.id = "remote-wrapper-" + peerId;
-
-      const meta = document.createElement("div");
-      meta.className = "remote-meta";
-
-      const label = document.createElement("span");
-      label.textContent = "Participante";
-      meta.appendChild(label);
-
-      const idSpan = document.createElement("span");
-      idSpan.className = "remote-id";
-      idSpan.textContent = peerId;
-      meta.appendChild(idSpan);
-
-      const vid = document.createElement("video");
-      vid.autoplay = true;
-      vid.playsInline = true;
-      vid.id = "video-" + peerId;
-
-      wrapper.appendChild(meta);
-      wrapper.appendChild(vid);
-      remoteVideosContainer.appendChild(wrapper);
-
-      remoteVideos[peerId] = vid;
-      updateParticipantsBadge();
-      return vid;
+    function ensureRoomName() {
+      let name = roomInput.value.trim();
+      if (!name) {
+        name = randomRoom();
+        roomInput.value = name;
+      }
+      return name;
     }
 
-    function removeRemoteVideoElement(peerId) {
-      const vid = remoteVideos[peerId];
-      if (vid && vid.srcObject) {
-        vid.srcObject.getTracks().forEach(t => t.stop());
-        vid.srcObject = null;
-      }
-      const wrapper = document.getElementById("remote-wrapper-" + peerId);
-      if (wrapper && wrapper.parentNode) {
-        wrapper.parentNode.removeChild(wrapper);
-      }
-      delete remoteVideos[peerId];
-      updateParticipantsBadge();
-    }
-
-    async function createPeerIfNeeded(peerId, isInitiator = false) {
-      if (peers[peerId]) return peers[peerId];
-
-      const pc = new RTCPeerConnection({
-        iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
-      });
-
-      peers[peerId] = pc;
-
-      if (localStream) {
-        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+    function joinMeeting() {
+      if (api) {
+        setStatus("Ya estás en una reunión. Sal primero para cambiar de sala.");
+        return;
       }
 
-      pc.ontrack = (event) => {
-        const [stream] = event.streams;
-        const videoEl = createRemoteVideoElement(peerId);
-        videoEl.srcObject = stream;
-      };
+      const roomName = ensureRoomName();
+      const displayName = displayNameInput.value.trim() || "Invitado";
 
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          sendSignal({
-            type: "ice-candidate",
-            from: myId,
-            to: peerId,
-            candidate: event.candidate
-          });
+      currentRoom = roomName;
+      roomLabel.textContent = roomName;
+
+      const domain = "meet.jit.si";
+      const options = {
+        roomName,
+        parentNode: jitsiContainer,
+        width: "100%",
+        height: 500,
+        userInfo: {
+          displayName
+        },
+        configOverwrite: {
+          prejoinPageEnabled: false
+        },
+        interfaceConfigOverwrite: {
+          HIDE_INVITE_MORE_HEADER: true
         }
       };
 
-      pc.onconnectionstatechange = () => {
-        console.log("connection state with", peerId, pc.connectionState);
-        if (["failed", "disconnected", "closed"].includes(pc.connectionState)) {
-          cleanupPeer(peerId);
-        }
-      };
+      setStatus("Creando/uniéndote a la sala " + roomName + "…");
+      api = new JitsiMeetExternalAPI(domain, options);
 
-      if (isInitiator) {
-        await createAndSendOffer(peerId);
-      }
-
-      updateParticipantsBadge();
-      return pc;
-    }
-
-    async function createAndSendOffer(peerId) {
-      const pc = peers[peerId];
-      if (!pc) return;
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-      sendSignal({
-        type: "offer",
-        from: myId,
-        to: peerId,
-        sdp: offer.sdp
+      // Ajustar a la altura del contenedor
+      api.addEventListener("videoConferenceJoined", () => {
+        setInCall(true);
+        setStatus("Conectado a la reunión " + roomName);
       });
-      setStatus("Enviando oferta a " + peerId);
-    }
 
-    function sendSignal(message) {
-      if (!channel) return;
-      channel.send({
-        type: "broadcast",
-        event: "signal",
-        payload: {
-          roomId,
-          ...message
-        }
+      api.addEventListener("videoConferenceLeft", () => {
+        leaveMeeting(false);
+      });
+
+      api.addEventListener("readyToClose", () => {
+        leaveMeeting(false);
       });
     }
 
-    async function handleSignalEvent({ payload }) {
-      const msg = payload || {};
-      const { type, from, to } = msg;
-      if (!type || !from) return;
-      if (from === myId) return;
-      if (to && to !== myId) return; // mensaje dirigido a otra persona
-
-      switch (type) {
-        case "join":
-          // alguien nuevo entró a la sala, iniciamos conexión con esa persona
-          setStatus("Se unió " + from + ", conectando...");
-          await createPeerIfNeeded(from, true);
-          break;
-        case "offer":
-          await handleOffer(msg);
-          break;
-        case "answer":
-          await handleAnswer(msg);
-          break;
-        case "ice-candidate":
-          await handleIceCandidate(msg);
-          break;
-        case "leave":
-          setStatus("Alguien salió de la reunión");
-          cleanupPeer(from);
-          break;
-        default:
-          break;
+    function leaveMeeting(fromButton = true) {
+      if (api) {
+        api.dispose();
+        api = null;
       }
-    }
-
-    async function handleOffer({ from, sdp }) {
-      const pc = await createPeerIfNeeded(from, false);
-      await pc.setRemoteDescription({ type: "offer", sdp });
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      sendSignal({
-        type: "answer",
-        from: myId,
-        to: from,
-        sdp: answer.sdp
-      });
-      setStatus("Respuesta enviada a " + from);
-    }
-
-    async function handleAnswer({ from, sdp }) {
-      const pc = peers[from];
-      if (!pc) return;
-      await pc.setRemoteDescription({ type: "answer", sdp });
-      setStatus("Conectado con " + from);
-    }
-
-    async function handleIceCandidate({ from, candidate }) {
-      const pc = peers[from];
-      if (!pc || !candidate) return;
-      try {
-        await pc.addIceCandidate(candidate);
-      } catch (err) {
-        console.error("Error al agregar ICE candidate de", from, err);
-      }
-    }
-
-    function cleanupPeer(peerId) {
-      const pc = peers[peerId];
-      if (pc) {
-        pc.ontrack = null;
-        pc.onicecandidate = null;
-        pc.close();
-      }
-      delete peers[peerId];
-      removeRemoteVideoElement(peerId);
-    }
-
-    async function joinRoom(asCreator) {
-      // Si ya hay algo, salimos limpio
-      await leaveRoom(false);
-
-      if (asCreator) {
-        roomId = crypto.randomUUID().slice(0, 6).toUpperCase();
-        roomInput.value = roomId;
-      } else {
-        const input = roomInput.value.trim();
-        if (!input) {
-          setStatus("Escribe el ID de la sala o pulsa 'Iniciar sala nueva'", "idle");
-          return;
-        }
-        roomId = input.toUpperCase();
-        roomInput.value = roomId;
-      }
-
-      roomHintLabel.textContent = roomId;
-
-      setStatus("Preparando tu cámara...");
-      await initLocalMedia();
-
-      setStatus("Conectando con la sala " + roomId + "...");
-      channel = supabaseRtc.channel("room-" + roomId, {
-        config: {
-          broadcast: { ack: true }
-        }
-      });
-
-      channel.on("broadcast", { event: "signal" }, handleSignalEvent);
-
-      await channel.subscribe((status) => {
-        console.log("Channel status:", status);
-        if (status === "SUBSCRIBED") {
-          setStatus("Conectado a la sala. Avisando a los demás...");
-          sendSignal({
-            type: "join",
-            from: myId
-          });
-          setInCall(true);
-        }
-      });
-    }
-
-    async function leaveRoom(sendLeave = true) {
-      if (sendLeave && channel && roomId) {
-        sendSignal({ type: "leave", from: myId });
-      }
-
-      // Cerrar conexiones con cada peer
-      Object.keys(peers).forEach(peerId => cleanupPeer(peerId));
-
-      // Limpiar canal
-      if (channel) {
-        channel.unsubscribe();
-        channel = null;
-      }
-
-      // Detener media local
-      if (localStream) {
-        localStream.getTracks().forEach(t => t.stop());
-        localStream = null;
-        localVideo.srcObject = null;
-      }
-
-      // Limpiar UI remota
-      Object.keys(remoteVideos).forEach(peerId => removeRemoteVideoElement(peerId));
-
+      jitsiContainer.innerHTML = "";
+      currentRoom = null;
       setInCall(false);
-      setStatus("Reunión finalizada", "idle");
+      roomLabel.textContent = "—";
+      setStatus(fromButton ? "Reunión finalizada" : "Saliste de la reunión", "idle");
     }
-
-    createBtn.addEventListener("click", () => {
-      joinRoom(true).catch(err => {
-        console.error(err);
-        setStatus("Error al crear la sala", "error");
-      });
-    });
 
     joinBtn.addEventListener("click", () => {
-      joinRoom(false).catch(err => {
+      try {
+        joinMeeting();
+      } catch (err) {
         console.error(err);
-        setStatus("Error al entrar a la sala", "error");
-      });
+        setStatus("Error al iniciar la reunión", "error");
+      }
     });
 
-    hangupBtn.addEventListener("click", () => {
-      if (hangupBtn.disabled) return;
-      leaveRoom(true).catch(err => {
-        console.error(err);
-        setStatus("Error al salir de la reunión", "error");
-      });
+    leaveBtn.addEventListener("click", () => {
+      if (leaveBtn.disabled) return;
+      leaveMeeting(true);
     });
 
     // Estado inicial
     setStatus("Esperando acción", "idle");
-    updateParticipantsBadge();
+    roomInput.value = randomRoom();
   </script>
 </body>
 
