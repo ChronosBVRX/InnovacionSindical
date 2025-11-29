@@ -4,209 +4,126 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Unidad en Acción — Reuniones</title>
+  <title>Unidad en Acción — Llamadas</title>
   <style>
     :root {
-      --bg: #0b1022;
-      --panel: #101a33;
-      --ring: rgba(91, 215, 242, .35);
+      --bg: #020617;
       --txt: #e6fbff;
-      --muted: #aee9f7;
+      --muted: #a5b4fc;
       --primary: #5bd7f2;
       --sky: #60a5fa;
+      --border: rgba(148, 163, 184, .6);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
 
+    html,
     body {
-      min-height: 100vh;
-      background:
-        radial-gradient(90vmax 90vmax at 10% 0%, rgba(96, 165, 250, .20), transparent 55%),
-        radial-gradient(100vmax 100vmax at 100% 100%, rgba(45, 212, 191, .16), transparent 60%),
-        linear-gradient(180deg, #020617, #020617 40%, #020617 100%);
-      color: var(--txt);
-      padding: 16px;
-    }
-
-    .card {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: linear-gradient(135deg, rgba(15, 23, 42, .96), rgba(15, 23, 42, .98));
-      border-radius: 24px;
-      border: 1px solid rgba(148, 163, 184, .35);
-      box-shadow:
-        0 20px 45px rgba(15, 23, 42, .85),
-        0 0 0 1px rgba(15, 23, 42, 1);
-      padding: 18px;
-      position: relative;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
+      background: #020617;
+      color: var(--txt);
     }
 
-    .card::before {
-      content: "";
-      position: absolute;
+    .app {
+      position: fixed;
       inset: 0;
       background:
-        radial-gradient(600px 600px at 0% 0%, rgba(59, 130, 246, .18), transparent 60%),
-        radial-gradient(700px 700px at 100% 100%, rgba(45, 212, 191, .18), transparent 55%);
-      mix-blend-mode: screen;
-      opacity: 0.8;
-      pointer-events: none;
+        radial-gradient(80vmax 80vmax at 0 0, rgba(96, 165, 250, .25), transparent 55%),
+        radial-gradient(90vmax 90vmax at 100% 100%, rgba(45, 212, 191, .22), transparent 55%),
+        #020617;
     }
 
-    .card-inner {
-      position: relative;
-      z-index: 1;
+    /* IFRAME DE LA LLAMADA: LLENA TODO */
+    #call-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
     }
 
-    header {
+    /* CONTROLES FLOTANTES (NO ROBAN ESPACIO) */
+    .controls {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 8px;
       display: flex;
       flex-wrap: wrap;
-      gap: 0.75rem;
-      align-items: flex-start;
-      margin-bottom: 1rem;
+      gap: 4px;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+      /* deja pasar clics al iframe, sólo los botones capturan */
     }
 
-    .title-block {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    h1 {
-      font-size: 1.35rem;
-      letter-spacing: 0.02em;
-      color: #e0f7ff;
+    .controls-left {
       display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
       align-items: center;
-      gap: .5rem;
+      pointer-events: auto;
     }
 
-    h1 span.icon {
-      font-size: 1.4rem;
-      display: inline-flex;
+    .controls-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
       align-items: center;
-      justify-content: center;
+      pointer-events: auto;
     }
 
-    p.muted {
-      color: var(--muted);
-      font-size: 0.85rem;
-      margin-top: 0.25rem;
-      max-width: 34rem;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: .35rem;
-      padding: .15rem .6rem;
-      border-radius: 999px;
+    .badge {
       font-size: .7rem;
-      border: 1px solid rgba(148, 163, 184, .7);
-      color: #cbd5f5;
-      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, .15), transparent 55%);
-      margin-top: .4rem;
-    }
-
-    .tag-dot {
-      width: 7px;
-      height: 7px;
+      padding: 3px 8px;
       border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, .35);
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(260px, 310px) minmax(0, 1fr);
-      gap: 1rem;
-      align-items: stretch;
-    }
-
-    @media (max-width: 880px) {
-      .layout {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .controls {
-      background: radial-gradient(220px 220px at 0 0, rgba(37, 99, 235, .25), transparent 60%), #020617;
-      border-radius: 18px;
-      border: 1px solid rgba(148, 163, 184, .7);
-      padding: 12px 12px 14px;
-      box-shadow:
-        0 0 0 1px rgba(15, 23, 42, 1),
-        0 18px 40px rgba(15, 23, 42, .9);
-    }
-
-    .controls h2 {
-      font-size: .9rem;
-      font-weight: 600;
-      color: #e2f3ff;
-      margin-bottom: .6rem;
-      display: flex;
-      align-items: center;
-      gap: .35rem;
-    }
-
-    .steps {
-      list-style: none;
-      margin: 0 0 .7rem;
-      padding: 0;
-      font-size: .75rem;
-      color: #a5b4fc;
-    }
-
-    .steps li {
-      display: flex;
-      gap: .4rem;
-      align-items: flex-start;
-      margin-bottom: .25rem;
-    }
-
-    .steps-bullet {
-      width: 16px;
-      height: 16px;
-      border-radius: 999px;
-      border: 1px solid rgba(129, 140, 248, .9);
+      border: 1px solid rgba(15, 23, 42, .9);
+      background: rgba(15, 23, 42, .85);
+      color: var(--muted);
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      font-size: .65rem;
-      color: #c7d2fe;
-      flex-shrink: 0;
+      gap: 4px;
+    }
+
+    .badge strong {
+      color: #e5f2ff;
+      font-weight: 600;
     }
 
     label {
-      display: block;
-      margin-bottom: 0.35rem;
-      color: #aee9f7;
-      font-size: 0.75rem;
-    }
-
-    .input-group {
-      margin-bottom: .55rem;
+      font-size: .65rem;
+      color: #cbd5f5;
+      white-space: nowrap;
     }
 
     input {
-      width: 100%;
-      padding: 0.45rem 0.7rem;
+      min-width: 0;
+      max-width: 140px;
+      padding: 4px 8px;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, .55);
-      background: rgba(15, 23, 42, .95);
-      color: #e6fbff;
-      font-size: 0.8rem;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, .9);
+      color: var(--txt);
+      font-size: .75rem;
       outline: none;
-      box-shadow: 0 0 0 1px rgba(15, 23, 42, 1);
     }
 
     input::placeholder {
       color: #64748b;
+    }
+
+    .field {
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     button {
@@ -215,15 +132,14 @@
       border-radius: 999px;
       border: none;
       font-weight: 600;
-      font-size: .8rem;
-      padding: .55rem .8rem;
-      width: 100%;
+      font-size: .75rem;
+      padding: 4px 10px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: .3rem;
+      gap: 4px;
       white-space: nowrap;
-      transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, border-color 120ms ease, opacity 120ms ease;
+      transition: transform 100ms ease, box-shadow 100ms ease, opacity 100ms ease, background 100ms ease;
     }
 
     button:active {
@@ -234,20 +150,14 @@
     #join-btn {
       background: linear-gradient(120deg, var(--primary), var(--sky));
       color: #020617;
-      box-shadow:
-        0 0 0 1px rgba(15, 23, 42, 1),
-        0 14px 28px rgba(37, 99, 235, .35);
-      margin-top: .25rem;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, .4);
     }
 
     #leave-btn {
-      margin-top: .45rem;
-      background: radial-gradient(circle at 0 0, rgba(248, 113, 113, .25), transparent 55%), #ef4444;
+      background: rgba(248, 113, 113, 1);
       color: white;
-      box-shadow:
-        0 0 0 1px rgba(15, 23, 42, 1),
-        0 10px 30px rgba(239, 68, 68, .7);
-      opacity: .5;
+      box-shadow: 0 8px 18px rgba(239, 68, 68, .6);
+      opacity: .4;
       cursor: default;
     }
 
@@ -256,323 +166,203 @@
       cursor: pointer;
     }
 
-    .room-hint {
-      margin-top: .5rem;
-      font-size: .75rem;
+    #fullscreen-btn {
+      background: rgba(15, 23, 42, .92);
       color: #e5e7eb;
-      padding: .35rem .5rem;
-      border-radius: .75rem;
-      border: 1px dashed rgba(148, 163, 184, .7);
-      background: radial-gradient(260px 260px at 100% 0, rgba(59, 130, 246, .24), transparent 55%);
-    }
-
-    .room-hint strong {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      letter-spacing: .08em;
+      border: 1px solid var(--border);
+      box-shadow: 0 6px 14px rgba(15, 23, 42, .9);
       font-size: .8rem;
-      padding: .12rem .4rem;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, .9);
-      border: 1px solid rgba(148, 163, 184, .9);
+      padding-inline: 8px;
     }
 
-    #status {
-      margin-top: 0.65rem;
-      color: #aee9f7;
-      font-size: 0.75rem;
-      min-height: 1.4em;
+    .status {
+      font-size: .7rem;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .status-dot {
-      display: inline-flex;
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      margin-right: 4px;
-      box-shadow: 0 0 0 3px rgba(34, 197, 94, .3);
-      background: #22c55e;
+      background: #6b7280;
+      box-shadow: 0 0 0 3px rgba(107, 114, 128, .4);
     }
 
-    .status-dot.idle {
-      background: #6b7280;
-      box-shadow: 0 0 0 3px rgba(107, 114, 128, .3);
+    .status-dot.active {
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, .5);
     }
 
     .status-dot.error {
       background: #ef4444;
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, .3);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, .5);
     }
 
-    .video-panel {
-      background: radial-gradient(260px 260px at 0 0, rgba(59, 130, 246, .3), transparent 55%),
-        radial-gradient(260px 260px at 100% 100%, rgba(45, 212, 191, .3), transparent 55%),
-        #020617;
-      border-radius: 18px;
-      border: 1px solid rgba(148, 163, 184, .8);
-      padding: 10px;
-      box-shadow:
-        0 0 0 1px rgba(15, 23, 42, 1),
-        0 18px 48px rgba(15, 23, 42, .9);
-      display: flex;
-      flex-direction: column;
-      gap: .4rem;
-    }
+    @media (max-width: 640px) {
+      .controls {
+        top: 6px;
+        left: 6px;
+        right: 6px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
 
-    .video-header {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .35rem .75rem;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 .2rem;
-      font-size: .8rem;
-      color: #e5e7eb;
-    }
+      .controls-right {
+        align-self: flex-end;
+      }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: .2rem;
-      padding: .1rem .45rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, .75);
-      font-size: .7rem;
-      color: #cbd5f5;
-      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, .22), transparent 55%);
-    }
-
-    #jitsi-container {
-      border-radius: 14px;
-      overflow: hidden;
-      background: #000;
-      min-height: 360px;
-      max-height: 80vh;
-    }
-
-    #jitsi-iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: block;
-    }
-
-    .note {
-      color: #9ca3af;
-      font-size: 0.7rem;
-      margin-top: 0.25rem;
-      padding: .35rem .5rem;
-      border-radius: .75rem;
-      border: 1px dashed rgba(148, 163, 184, .8);
-      background: rgba(15, 23, 42, .85);
+      input {
+        max-width: 120px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="card">
-    <div class="card-inner">
-      <header>
-        <div class="title-block">
-          <h1><span class="icon">📡</span> Reuniones grupales</h1>
-          <p class="muted">
-            Reúnete con tu equipo usando Jitsi. Sólo necesitan compartir el ID de la sala
-            y entrar desde esta misma página.
-          </p>
-          <div class="tag">
-            <span class="tag-dot"></span>
-            Videollamadas grupales con Jitsi Meet
-          </div>
+  <div class="app">
+    <!-- IFRAME JITSI A PANTALLA COMPLETA -->
+    <iframe
+      id="call-frame"
+      allow="camera; microphone; fullscreen; display-capture"
+      allowfullscreen
+      referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+
+    <!-- CONTROLES FLOTANDO ENCIMA (no quitan espacio) -->
+    <div class="controls">
+      <div class="controls-left">
+        <div class="badge">
+          📡 <strong>Unidad en Acción</strong> · Llamadas
         </div>
-      </header>
 
-      <div class="layout">
-        <!-- Controles -->
-        <section class="controls">
-          <h2>Configura tu reunión</h2>
-          <ul class="steps">
-            <li>
-              <span class="steps-bullet">1</span>
-              <span>Escribe un <strong>Nombre de sala</strong> (o usa el que se genera).</span>
-            </li>
-            <li>
-              <span class="steps-bullet">2</span>
-              <span>Escribe tu <strong>Nombre para mostrar</strong>.</span>
-            </li>
-            <li>
-              <span class="steps-bullet">3</span>
-              <span>Haz clic en <strong>“Entrar a la reunión”</strong> y comparte el ID con tu equipo.</span>
-            </li>
-          </ul>
+        <div class="field">
+          <label for="room-input">Sala:</label>
+          <input id="room-input" type="text" placeholder="Ej. Equipo_Juvenil">
+        </div>
+      </div>
 
-          <div class="input-group">
-            <label for="room-name">Nombre de sala</label>
-            <input id="room-name" type="text" placeholder="Ej. Equipo_Juvenil" autocomplete="off">
-          </div>
+      <div class="controls-right">
+        <button id="join-btn">Entrar</button>
+        <button id="leave-btn" disabled>Salir</button>
+        <button id="fullscreen-btn" title="Pantalla completa">⛶</button>
 
-          <div class="input-group">
-            <label for="display-name">Tu nombre para mostrar</label>
-            <input id="display-name" type="text" placeholder="Ej. Ana López" autocomplete="off">
-          </div>
-
-          <button id="join-btn">▶️ Entrar a la reunión</button>
-          <button id="leave-btn" disabled>🔴 Salir de la reunión</button>
-
-          <p class="room-hint">
-            Comparte este ID con tu equipo:
-            <strong id="room-id-label">—</strong>
-          </p>
-
-          <p id="status">
-            <span class="status-dot idle"></span> Estado: esperando acción
-          </p>
-        </section>
-
-        <!-- Videollamada -->
-        <section class="video-panel">
-          <div class="video-header">
-            <span>🎥 Sala de videollamada</span>
-            <span class="badge">Jitsi Meet integrado</span>
-          </div>
-          <div id="jitsi-container"></div>
-          <p class="note">
-            La videollamada usa el servidor público <code>meet.jit.si</code>. Para mejor
-            privacidad, en el futuro puedes montar tu propio servidor Jitsi y cambiar el dominio.
-          </p>
-        </section>
+        <div class="status" id="status">
+          <span class="status-dot"></span>
+          <span id="status-text">esperando…</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Jitsi Meet External API -->
-  <script src="https://meet.jit.si/external_api.js"></script>
-
   <script>
-    const roomInput = document.getElementById("room-name");
-    const displayNameInput = document.getElementById("display-name");
+    const frame = document.getElementById("call-frame");
+    const roomInput = document.getElementById("room-input");
     const joinBtn = document.getElementById("join-btn");
     const leaveBtn = document.getElementById("leave-btn");
-    const statusEl = document.getElementById("status");
-    const roomLabel = document.getElementById("room-id-label");
-    const jitsiContainer = document.getElementById("jitsi-container");
+    const fullscreenBtn = document.getElementById("fullscreen-btn");
+    const statusDot = document.querySelector(".status-dot");
+    const statusText = document.getElementById("status-text");
 
-    let api = null;
-    let currentRoom = null;
+    let inCall = false;
 
     function randomRoom() {
       return "UA_" + Math.random().toString(36).substring(2, 8).toUpperCase();
     }
 
-    function setStatus(text, mode = "normal") {
-      statusEl.innerHTML = "";
-      const dot = document.createElement("span");
-      dot.className = "status-dot";
-      if (mode === "idle") dot.classList.add("idle");
-      if (mode === "error") dot.classList.add("error");
-      statusEl.appendChild(dot);
-      const span = document.createElement("span");
-      span.textContent = " Estado: " + text;
-      statusEl.appendChild(span);
+    function setStatus(text, mode = "idle") {
+      statusText.textContent = text;
+      statusDot.classList.remove("active", "error");
+      if (mode === "active") statusDot.classList.add("active");
+      if (mode === "error") statusDot.classList.add("error");
     }
 
-    function setInCall(inCall) {
-      if (inCall) {
+    function setInCall(value) {
+      inCall = value;
+      if (value) {
         leaveBtn.disabled = false;
         leaveBtn.classList.add("enabled");
         joinBtn.disabled = true;
         joinBtn.style.opacity = ".6";
+        setStatus("conectado", "active");
       } else {
         leaveBtn.disabled = true;
         leaveBtn.classList.remove("enabled");
         joinBtn.disabled = false;
         joinBtn.style.opacity = "1";
+        setStatus("esperando…", "idle");
       }
     }
 
-    function ensureRoomName() {
-      let name = roomInput.value.trim();
-      if (!name) {
-        name = randomRoom();
-        roomInput.value = name;
-      }
-      return name;
+    function buildJitsiUrl(roomName) {
+      // Sala en meet.jit.si. Puedes cambiar por tu propio servidor Jitsi si luego montas uno.
+      const base = "https://meet.jit.si/";
+      // Se podría añadir config extra vía hash si quieres.
+      return base + encodeURIComponent(roomName);
     }
 
-    function joinMeeting() {
-      if (api) {
-        setStatus("Ya estás en una reunión. Sal primero para cambiar de sala.");
-        return;
+    function joinRoom() {
+      let roomName = roomInput.value.trim();
+      if (!roomName) {
+        roomName = randomRoom();
+        roomInput.value = roomName;
       }
 
-      const roomName = ensureRoomName();
-      const displayName = displayNameInput.value.trim() || "Invitado";
-
-      currentRoom = roomName;
-      roomLabel.textContent = roomName;
-
-      const domain = "meet.jit.si";
-      const options = {
-        roomName,
-        parentNode: jitsiContainer,
-        width: "100%",
-        height: 500,
-        userInfo: {
-          displayName
-        },
-        configOverwrite: {
-          prejoinPageEnabled: false
-        },
-        interfaceConfigOverwrite: {
-          HIDE_INVITE_MORE_HEADER: true
-        }
-      };
-
-      setStatus("Creando/uniéndote a la sala " + roomName + "…");
-      api = new JitsiMeetExternalAPI(domain, options);
-
-      // Ajustar a la altura del contenedor
-      api.addEventListener("videoConferenceJoined", () => {
-        setInCall(true);
-        setStatus("Conectado a la reunión " + roomName);
-      });
-
-      api.addEventListener("videoConferenceLeft", () => {
-        leaveMeeting(false);
-      });
-
-      api.addEventListener("readyToClose", () => {
-        leaveMeeting(false);
-      });
+      frame.src = buildJitsiUrl(roomName);
+      setInCall(true);
     }
 
-    function leaveMeeting(fromButton = true) {
-      if (api) {
-        api.dispose();
-        api = null;
-      }
-      jitsiContainer.innerHTML = "";
-      currentRoom = null;
+    function leaveRoom() {
+      frame.src = "about:blank";
       setInCall(false);
-      roomLabel.textContent = "—";
-      setStatus(fromButton ? "Reunión finalizada" : "Saliste de la reunión", "idle");
     }
 
-    joinBtn.addEventListener("click", () => {
+    async function toggleFullscreen() {
       try {
-        joinMeeting();
+        const elem = frame; // aprovechamos el iframe de la llamada
+        if (!document.fullscreenElement) {
+          if (elem.requestFullscreen) {
+            await elem.requestFullscreen();
+          } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+          }
+          fullscreenBtn.textContent = "🡼";
+          fullscreenBtn.title = "Salir de pantalla completa";
+        } else {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+          fullscreenBtn.textContent = "⛶";
+          fullscreenBtn.title = "Pantalla completa";
+        }
       } catch (err) {
         console.error(err);
-        setStatus("Error al iniciar la reunión", "error");
+        setStatus("no se pudo usar pantalla completa", "error");
       }
-    });
+    }
 
+    // Eventos
+    joinBtn.addEventListener("click", joinRoom);
     leaveBtn.addEventListener("click", () => {
-      if (leaveBtn.disabled) return;
-      leaveMeeting(true);
+      if (!inCall) return;
+      leaveRoom();
+    });
+    fullscreenBtn.addEventListener("click", toggleFullscreen);
+
+    document.addEventListener("fullscreenchange", () => {
+      if (!document.fullscreenElement) {
+        fullscreenBtn.textContent = "⛶";
+        fullscreenBtn.title = "Pantalla completa";
+      }
     });
 
     // Estado inicial
-    setStatus("Esperando acción", "idle");
     roomInput.value = randomRoom();
+    setStatus("esperando…", "idle");
   </script>
 </body>
 
