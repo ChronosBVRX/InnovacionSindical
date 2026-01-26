@@ -3,15 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Biblioteca — Unidad en Acción</title>
+  <title>Biblioteca — Plataforma Sindical CG</title>
   <style>
     :root {
-      --bg: #0b1022;
-      --panel: #101a33;
-      --txt: #e6fbff;
-      --muted: #aee9f7;
-      --primary: #5bd7f2;
-      --sky: #60a5fa;
+      /* Paleta actualizada */
+      --bg: #1b2e45;
+      --panel: #2e4f77;  /* Color solicitado */
+      --txt: #f0fdfa;
+      --muted: #bce9eb;
+      --primary: #4da1a8; /* Color solicitado */
+      --sky: #7ad1d6;
     }
     * {
       box-sizing: border-box;
@@ -20,7 +21,9 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
     body {
-      background: transparent;
+      /* Transparente para que se funda si se usa en iframe, 
+         pero definimos el color por si se abre sola */
+      background: transparent; 
       color: var(--txt);
       min-height: 100vh;
     }
@@ -30,7 +33,7 @@
 
     .card {
       background: var(--panel);
-      border: 1px solid rgba(91, 215, 242, .25);
+      border: 1px solid rgba(77, 161, 168, .35);
       border-radius: 16px;
       padding: 16px;
       margin-bottom: 12px;
@@ -39,7 +42,7 @@
     h2 {
       font-size: 18px;
       margin-bottom: 8px;
-      color: #bff4ff;
+      color: #d1f5f7;
     }
     p.muted {
       color: var(--muted);
@@ -53,15 +56,15 @@
     }
     .meta {
       font-size: 12px;
-      color: #9fdcf0;
+      color: #8ccacdb6;
     }
 
     input, textarea, select {
-      background: #0a1329;
-      color: #e6fbff;
+      background: #1b2e45;
+      color: #f0fdfa;
       padding: 8px 10px;
       border-radius: 10px;
-      border: 1px solid rgba(91, 215, 242, .3);
+      border: 1px solid rgba(77, 161, 168, .4);
       font-size: 14px;
     }
     textarea {
@@ -71,7 +74,7 @@
 
     .btn {
       background: linear-gradient(90deg, var(--primary), var(--sky));
-      color: #072133;
+      color: #0f2638;
       padding: 8px 14px;
       border-radius: 12px;
       font-weight: 600;
@@ -90,8 +93,8 @@
     }
 
     .subtle-btn {
-      background: rgba(91, 215, 242, .08);
-      border: 1px solid rgba(91, 215, 242, .28);
+      background: rgba(77, 161, 168, .1);
+      border: 1px solid rgba(77, 161, 168, .28);
       padding: 6px 10px;
       border-radius: 10px;
       cursor: pointer;
@@ -99,7 +102,7 @@
       font-size: 13px;
     }
     .subtle-btn:hover {
-      background: rgba(91, 215, 242, .18);
+      background: rgba(77, 161, 168, .25);
     }
 
     /* GRID DE LA LISTA */
@@ -112,12 +115,12 @@
 
     .lib-section-header {
       grid-column: 1 / -1;
-      border-top: 1px solid rgba(91, 215, 242, .28);
+      border-top: 1px solid rgba(77, 161, 168, .28);
       margin-top: 6px;
       padding-top: 8px;
       text-transform: uppercase;
       font-size: 12px;
-      color: #86d5f3;
+      color: #7ad1d6;
       display: flex;
       gap: 6px;
       align-items: center;
@@ -126,18 +129,19 @@
 
     /* TARJETAS DE RECURSO */
     .resource-card {
-      background: radial-gradient(circle at top left, rgba(96, 165, 250, .12), transparent 55%), #0c1630;
+      /* Fondo ligeramente más oscuro que el panel principal para contraste */
+      background: radial-gradient(circle at top left, rgba(77, 161, 168, .15), transparent 55%), #233b5c;
       padding: 12px;
       border-radius: 14px;
-      border: 1px solid rgba(91, 215, 242, .25);
+      border: 1px solid rgba(77, 161, 168, .3);
       cursor: pointer;
       transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, .35);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, .2);
     }
     .resource-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 14px 30px rgba(0, 0, 0, .45);
-      border-color: rgba(91, 215, 242, .55);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, .35);
+      border-color: rgba(77, 161, 168, .65);
     }
 
     .resource-header {
@@ -152,6 +156,7 @@
     .resource-title {
       font-size: 15px;
       font-weight: 700;
+      color: #f0fdfa;
     }
 
     .resource-description {
@@ -170,18 +175,18 @@
 
     .pill {
       padding: 4px 8px;
-      background: rgba(96, 165, 250, .12);
-      border: 1px solid rgba(96, 165, 250, .35);
+      background: rgba(77, 161, 168, .15);
+      border: 1px solid rgba(77, 161, 168, .35);
       border-radius: 999px;
       font-size: 11px;
-      color: #cfefff;
+      color: #d1f5f7;
     }
 
     /* MODAL / FLOTANTE */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, .85);
+      background: rgba(21, 35, 54, .85);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -197,11 +202,11 @@
     }
 
     .modal-panel {
-      background: #020617;
+      background: #1b2e45;
       border-radius: 18px;
       width: 100%;
       max-width: 640px;
-      border: 1px solid rgba(56, 189, 248, .45);
+      border: 1px solid rgba(77, 161, 168, .5);
       padding: 18px;
       max-height: 90vh;
       display: flex;
@@ -212,7 +217,7 @@
     .modal-title {
       font-size: 17px;
       font-weight: 700;
-      color: #e0faff;
+      color: #d1f5f7;
     }
 
     .modal-body {
@@ -234,15 +239,15 @@
       background: none;
       border: none;
       font-size: 22px;
-      color: #9fdcf0;
+      color: #bce9eb;
       cursor: pointer;
       line-height: 1;
       border-radius: 999px;
       padding: 2px 4px;
     }
     .modal-close-btn:hover {
-      background: rgba(148, 163, 184, .18);
-      color: #e5f9ff;
+      background: rgba(77, 161, 168, .2);
+      color: #fff;
     }
 
     @media (max-width: 600px) {
@@ -255,10 +260,9 @@
 <body>
 
   <div class="wrap">
-    <!-- FILTRO -->
     <div class="card">
       <h2>📚 Biblioteca de Recursos</h2>
-      <p class="muted">Consulta materiales, documentos, guías y recursos digitales de la Red Unidad en Acción.</p>
+      <p class="muted">Consulta materiales, documentos, guías y recursos digitales de la Plataforma Sindical CG.</p>
 
       <div class="row" style="margin-top:10px">
         <input id="qLibrary" placeholder="Buscar por título, tema o palabra clave" style="flex:1;min-width:220px">
@@ -271,13 +275,11 @@
       <div id="libStats" class="meta" style="margin-top:8px">Cargando recursos…</div>
     </div>
 
-    <!-- LISTA -->
     <div class="card">
       <h2>📂 Recursos disponibles</h2>
       <div id="libraryList"></div>
     </div>
 
-    <!-- ADMIN -->
     <div id="adminBlock" class="card" style="display:none">
       <h2>🛠️ Administrar Biblioteca</h2>
       <p class="muted">Solo administradores pueden crear y eliminar recursos.</p>
@@ -315,7 +317,6 @@
     </div>
   </div>
 
-  <!-- MODAL -->
   <div id="resourceModal" class="modal-backdrop">
     <div class="modal-panel">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
@@ -341,7 +342,6 @@
     </div>
   </div>
 
-  <!-- SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     /* ========== CONFIG SUPABASE ========== */
