@@ -345,7 +345,6 @@
       }
     }
 
-    /* === Layout y extras del PERFIL === */
     .perfil-layout {
       display: flex;
       flex-direction: column;
@@ -448,6 +447,18 @@
         align-items: flex-start;
       }
     }
+
+    /* ====== DIAGNOSTICO ====== */
+    .diag {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 200, 120, .35);
+      background: rgba(255, 200, 120, .08);
+      color: #ffe8c7;
+      font-size: 12px;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 
@@ -467,9 +478,7 @@
       <button class="tab" data-tab="miembros">👥 Miembros</button>
       <button class="tab" data-tab="calendario">📅 Calendario</button>
       <button class="tab" data-tab="foro">🗣️ Foro</button>
-      <!-- NUEVA PESTAÑA -->
       <button class="tab" data-tab="videollamadas">📞 Videollamadas</button>
-      <!-- ------------- -->
       <button class="tab" data-tab="biblioteca">📚 Biblioteca</button>
       <button class="tab" data-tab="verificacion">✅ Verificación</button>
       <button class="tab" data-tab="scanner" id="tabScanner" style="display:none">🔎 Scanner</button>
@@ -480,11 +489,13 @@
     <section id="perfil" class="content active">
       <div class="card">
         <div class="perfil-layout">
-          <!-- Columna izquierda -->
           <div class="perfil-main">
             <div>
               <h2>👋 Bienvenido</h2>
               <p class="muted">Esta es tu página de miembro dentro de Unidad en Acción</p>
+
+              <div id="diagBox" class="diag" style="display:none;"></div>
+
               <div class="profile-info">
                 <div class="avatar" id="userAvatar">🧑</div>
                 <div class="profile-data">
@@ -501,7 +512,6 @@
               </div>
             </div>
 
-            <!-- ASISTENCIA -->
             <div class="card" id="asistenciaResumen" style="margin-top:20px; animation:fadeInSmall .2s ease">
               <h3>📊 Asistencia y recompensas</h3>
               <div id="asistData" class="meta" style="margin-bottom:8px">Cargando tus datos...</div>
@@ -525,7 +535,6 @@
               </div>
             </div>
 
-            <!-- MINI TOP -->
             <div class="card" id="miniTop" style="margin-top:12px; animation:fadeInSmall .2s ease">
               <h3>🏆 Top de asistencia </h3>
               <div id="miniTopMeta" class="meta" style="margin-top:6px">Cargando…</div>
@@ -533,7 +542,6 @@
             </div>
           </div>
 
-          <!-- Columna derecha: frases, valor y próximas acciones -->
           <aside class="perfil-extra">
             <div class="perfil-extra-card">
               <h3>💬 Frase para el equipo</h3>
@@ -612,20 +620,17 @@
       </div>
     </section>
 
-    <!-- 🔔 NUEVA SECCIÓN: VIDEOLLAMADAS -->
+    <!-- VIDEOLLAMADAS -->
     <section id="videollamadas" class="content">
       <div class="card">
         <h2>📞 Videollamadas</h2>
-        <p class="muted">
-          Realiza videollamadas 1 a 1 con otros miembros desde esta misma plataforma.
-        </p>
+        <p class="muted">Realiza videollamadas 1 a 1 con otros miembros desde esta misma plataforma.</p>
         <iframe src="videollamadas.html"
           style="width:100%;min-height:650px;border:0;border-radius:12px;margin-top:12px" loading="lazy"></iframe>
       </div>
     </section>
-    <!-- FIN VIDEOLLAMADAS -->
 
-    <!-- BIBLIOTECA (iframe a biblioteca.html) -->
+    <!-- BIBLIOTECA -->
     <section id="biblioteca" class="content">
       <div class="card">
         <h2>📚 Biblioteca de Recursos</h2>
@@ -654,7 +659,6 @@
           </div>
         </div>
 
-        <!-- Panel solo para admins: resumen de confirmaciones -->
         <div id="adminRSVPPanel" class="perfil-extra-card" style="margin-top:16px; display:none;">
           <h3>📊 Confirmaciones de asistencia (solo admins)</h3>
           <p class="meta" id="adminRSVPText">Cargando…</p>
@@ -691,15 +695,12 @@
           <label>Fecha de cumpleaños</label><input id="fCumple" type="date">
           <label>Categoría</label><input id="fCategoria" placeholder="Ej. Enfermera General A">
 
-          <!-- 🔽 CAMPO NUEVO: ADSCRIPCIÓN SOLO DE LA LISTA QUE ME DISTE -->
           <label>Adscripción (Michoacán)</label>
           <select id="fAdscripcion" required>
             <option value="">Seleccione una adscripción</option>
-
             <optgroup label="Régimen Ordinario — Hospitales Generales Regionales (HGR)">
               <option value="HGR No. 1 Charo (Morelia)">HGR No. 1 Charo (Morelia)</option>
             </optgroup>
-
             <optgroup label="Régimen Ordinario — Hospitales Generales de Zona (HGZ) y Subzona (HGSZ)">
               <option value="HGZ No. 83 Morelia (Camelinas)">HGZ No. 83 Morelia (Camelinas)</option>
               <option value="HGZ No. 8 Uruapan">HGZ No. 8 Uruapan</option>
@@ -711,7 +712,6 @@
               <option value="HGSZ No. 17 Los Reyes">HGSZ No. 17 Los Reyes</option>
               <option value="HGSZ No. 24 Pedernales">HGSZ No. 24 Pedernales</option>
             </optgroup>
-
             <optgroup label="Régimen Ordinario — Unidades de Medicina Familiar (UMF)">
               <option value="UMF No. 3 Quiroga">UMF No. 3 Quiroga</option>
               <option value="UMF No. 6 Jiquilpan">UMF No. 6 Jiquilpan</option>
@@ -750,7 +750,6 @@
               <option value="UMF No. 84 Morelia (Tacícuaro)">UMF No. 84 Morelia (Tacícuaro)</option>
               <option value="UMF No. 85 Tarímbaro">UMF No. 85 Tarímbaro</option>
             </optgroup>
-
             <optgroup label="IMSS-Bienestar — Hospitales Rurales (HR)">
               <option value="HR No. 30 Ario de Rosales">HR No. 30 Ario de Rosales</option>
               <option value="HR No. 31 Huetamo">HR No. 31 Huetamo</option>
@@ -761,7 +760,6 @@
               <option value="HR No. 59 Coalcomán">HR No. 59 Coalcomán</option>
             </optgroup>
           </select>
-          <!-- 🔼 FIN CAMPO NUEVO -->
 
           <label>Biografía corta</label><textarea id="fBio" placeholder="Cuéntanos algo breve"></textarea>
           <label>Servicios / habilidades que ofreces</label>
@@ -787,8 +785,15 @@
     const GOOGLE_API_KEY = "AIzaSyDdtYPPE-jTvw_Gypxrq2c5UePpbK9ZxZ0";
     const CALENDAR_ID = "redunidadenaccion@gmail.com";
 
-    /* ====== Cliente ====== */
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+    /* ====== Cliente (IMPORTANTE) ======
+       En CDN v2 el global es "supabase", y trae createClient
+    */
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY,
+      { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
+    );
+
     const $ = (id) => document.getElementById(id);
 
     let CURRENT_USER = null, IS_ADMIN = false, MEMBERS_CACHE = [], ONLINE_SET = new Set();
@@ -797,168 +802,256 @@
     const debounce = (fn, ms = 200) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
     let POSTS_TOKEN = 0;
 
+    /* ====== DIAGNOSTICO ====== */
+    function diag(msg, extra) {
+      console.log("[DIAG]", msg, extra || "");
+      const box = $("diagBox");
+      if (!box) return;
+      box.style.display = "block";
+      box.textContent = String(msg) + (extra ? "\n\n" + (typeof extra === "string" ? extra : JSON.stringify(extra, null, 2)) : "");
+    }
+
+    function clearDiag() {
+      const box = $("diagBox");
+      if (!box) return;
+      box.style.display = "none";
+      box.textContent = "";
+    }
+
     /* ====== Tabs ====== */
     document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll(".tab").forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
           const id = btn.dataset.tab;
+
           if (id === 'scanner') {
             if (!IS_ADMIN) { alert('Necesitas rol admin para acceder al Scanner.'); return; }
             window.location.assign(SCANNER_REDIRECT_URL);
             return;
           }
+
           document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
           document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+
           btn.classList.add('active');
           $(id).classList.add('active');
+
           location.hash = id;
+
           if (id === 'miembros') renderMembers();
           if (id === 'verificacion') initVerification();
           if (id === 'foro') loadPostsDeb();
         });
       });
 
-      $("btnLogout").addEventListener('click', async () => { await supabase.auth.signOut(); location.href = LOGIN_URL; });
+      $("btnLogout").addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        location.href = LOGIN_URL;
+      });
+
       $("btnRefreshMembers")?.addEventListener('click', () => loadMembers(true));
       $("qMembers")?.addEventListener('input', () => renderMembers());
       $("chkOnlineOnly")?.addEventListener('change', () => renderMembers());
       $("editForm")?.addEventListener('submit', onSaveProfile);
-      $("fAvatar")?.addEventListener('change', (e) => { const f = e.target.files?.[0]; if (f) { const u = URL.createObjectURL(f); $("avatarPreview").innerHTML = `<img src="${u}">`; } });
+      $("fAvatar")?.addEventListener('change', (e) => {
+        const f = e.target.files?.[0];
+        if (f) {
+          const u = URL.createObjectURL(f);
+          $("avatarPreview").innerHTML = `<img src="${u}">`;
+        }
+      });
 
       initApp();
     });
 
     /* ====== App init ====== */
     async function initApp() {
-      await supabase.auth.refreshSession();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { location.href = LOGIN_URL; return; }
+      clearDiag();
+
+      // 1) sesión
+      const { data: { session }, error: sessErr } = await supabaseClient.auth.getSession();
+      if (sessErr) {
+        diag("Error obteniendo sesión (auth.getSession).", sessErr);
+      }
+
+      if (!session) {
+        diag("No hay sesión activa. Se redirige a login.html");
+        location.href = LOGIN_URL;
+        return;
+      }
+
       CURRENT_USER = session.user;
       IS_ADMIN = (CURRENT_USER.app_metadata?.role === 'admin');
+
       if (IS_ADMIN) $("tabScanner").style.removeProperty('display');
 
+      // 2) cargar datos (con diagnóstico)
       await loadProfile();
       initPerfilExtras();
+
       await loadMembers(true);
       initPresence();
       initForum();
 
+      // 3) tabs hash
       const wanted = (location.hash || '#perfil').slice(1);
-      if (wanted === 'scanner') { if (IS_ADMIN) window.location.replace(SCANNER_REDIRECT_URL); else (document.querySelector('.tab[data-tab="perfil"]'))?.click(); }
-      else { (document.querySelector(`.tab[data-tab="${wanted}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click(); }
+      if (wanted === 'scanner') {
+        if (IS_ADMIN) window.location.replace(SCANNER_REDIRECT_URL);
+        else (document.querySelector('.tab[data-tab="perfil"]'))?.click();
+      } else {
+        (document.querySelector(`.tab[data-tab="${wanted}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click();
+      }
     }
 
     /* ====== Helpers ====== */
-    function maskPhone(t) { const s = (t || "").replace(/\D+/g, ""); if (s.length < 8) return t || "—"; return `••• ••${s.slice(-4)}`; }
-    function formatDateISOtoMX(iso) { if (!iso) return "—"; try { const d = new Date(iso.length <= 10 ? iso + "T00:00:00" : iso); return new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: 'long', year: 'numeric' }).format(d); } catch { return iso; } }
+    function formatDateISOtoMX(iso) {
+      if (!iso) return "—";
+      try {
+        const d = new Date(iso.length <= 10 ? iso + "T00:00:00" : iso);
+        return new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: 'long', year: 'numeric' }).format(d);
+      } catch {
+        return iso;
+      }
+    }
     const nz = (v) => { if (v == null) return null; const t = String(v).trim(); return t === "" ? null : t; };
+
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>\"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[s]));
+    }
 
     /* ====== Upload avatar ====== */
     async function uploadAvatar(file) {
       if (!file) return null;
       if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) { alert("Formato no soportado"); return null; }
       if (file.size > 2 * 1024 * 1024) { alert("Máx 2MB"); return null; }
+
       const uid = CURRENT_USER.id;
       const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
       const path = `${uid}/${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from("avatars").upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
-      if (error) { alert("No se pudo subir la imagen"); return null; }
-      const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+
+      const { error } = await supabaseClient.storage.from("avatars").upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type
+      });
+
+      if (error) {
+        diag("No se pudo subir la imagen al bucket 'avatars'.", error);
+        alert("No se pudo subir la imagen (revisa que exista el bucket y su policy).");
+        return null;
+      }
+
+      const { data } = supabaseClient.storage.from("avatars").getPublicUrl(path);
       return data?.publicUrl || null;
     }
 
     /* ====== Perfil ====== */
     async function loadProfile() {
-      const { data: prof } = await supabase
-        .from('profiles')
-        .select('display_name, avatar_url, categoria, adscripcion, bio, cumple, telefono, telefono_publico, servicios')
-        .eq('user_id', CURRENT_USER.id)
-        .maybeSingle();
-
-      const telRaw = prof?.telefono || CURRENT_USER.user_metadata?.telefono;
-      const telPublicFlag = (prof?.telefono_publico ?? CURRENT_USER.user_metadata?.telefono_publico) === true;
-      const serviciosRaw = (prof?.servicios ?? CURRENT_USER.user_metadata?.servicios) || "";
-
-      $("pfName").textContent = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "Sin nombre";
-      $("pfEmail").textContent = CURRENT_USER.email || "—";
-      $("pfTelefono").textContent = telRaw || "—";
-      if (!telRaw) {
-        $("pfTelefonoVis").textContent = "No has capturado un número de teléfono.";
-      } else {
-        $("pfTelefonoVis").textContent = telPublicFlag
-          ? "Tu teléfono es visible para otros miembros."
-          : "Tu teléfono NO es visible para otros miembros.";
-      }
-
-      $("pfCumple").textContent = formatDateISOtoMX(prof?.cumple || CURRENT_USER.user_metadata?.cumple);
-      $("pfCategoria").textContent = (prof?.categoria ?? CURRENT_USER.user_metadata?.categoria) || "—";
-      $("pfAdscripcion").textContent = (prof?.adscripcion ?? CURRENT_USER.user_metadata?.adscripcion) || "—";
-      $("pfServicios").textContent = serviciosRaw.trim() || "—";
-
-      const avatar = prof?.avatar_url || CURRENT_USER.user_metadata?.avatar_url;
-      if (avatar) {
-        $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`;
-        $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`;
-      } else {
-        const ini = (prof?.display_name || CURRENT_USER.email || "?")[0].toUpperCase();
-        $("userAvatar").textContent = ini;
-        $("avatarPreview").textContent = ini;
-      }
-
-      // Prefill form
-      $("fNombre").value = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "";
-      $("fTelefono").value = telRaw || "";
-      $("fTelefonoPublico").checked = !!telPublicFlag;
       try {
-        const c = (prof?.cumple || CURRENT_USER.user_metadata?.cumple);
-        if (c) {
-          const d = new Date(c.length <= 10 ? c + "T00:00:00" : c);
-          $("fCumple").value = d.toISOString().slice(0, 10);
+        $("pfEmail").textContent = CURRENT_USER.email || "—";
+
+        const { data: prof, error } = await supabaseClient
+          .from('profiles')
+          .select('display_name, avatar_url, categoria, adscripcion, bio, cumple, telefono, telefono_publico, servicios')
+          .eq('user_id', CURRENT_USER.id)
+          .maybeSingle();
+
+        if (error) {
+          // ESTE ES EL ERROR CLAVE CUANDO NO CARGA: normalmente "permission denied" por RLS
+          diag("Error leyendo tabla 'profiles'. (Probable RLS / policy)", error);
         }
-      } catch { }
-      $("fCategoria").value = prof?.categoria || CURRENT_USER.user_metadata?.categoria || "";
-      $("fAdscripcion").value = prof?.adscripcion || CURRENT_USER.user_metadata?.adscripcion || "";
-      $("fBio").value = prof?.bio || CURRENT_USER.user_metadata?.bio || "";
-      $("fServicios").value = serviciosRaw || "";
 
-      // Próximas acciones
-      buildNextActionsFromProfile(telRaw, serviciosRaw.trim(), prof?.cumple || CURRENT_USER.user_metadata?.cumple);
+        const telRaw = prof?.telefono || CURRENT_USER.user_metadata?.telefono;
+        const telPublicFlag = (prof?.telefono_publico ?? CURRENT_USER.user_metadata?.telefono_publico) === true;
+        const serviciosRaw = (prof?.servicios ?? CURRENT_USER.user_metadata?.servicios) || "";
 
-      await loadAsistenciaPerfil();
-      await loadMiniTopPerfil();
+        $("pfName").textContent = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "Sin nombre";
+        $("pfTelefono").textContent = telRaw || "—";
+        if (!telRaw) {
+          $("pfTelefonoVis").textContent = "No has capturado un número de teléfono.";
+        } else {
+          $("pfTelefonoVis").textContent = telPublicFlag
+            ? "Tu teléfono es visible para otros miembros."
+            : "Tu teléfono NO es visible para otros miembros.";
+        }
+
+        $("pfCumple").textContent = formatDateISOtoMX(prof?.cumple || CURRENT_USER.user_metadata?.cumple);
+        $("pfCategoria").textContent = (prof?.categoria ?? CURRENT_USER.user_metadata?.categoria) || "—";
+        $("pfAdscripcion").textContent = (prof?.adscripcion ?? CURRENT_USER.user_metadata?.adscripcion) || "—";
+        $("pfServicios").textContent = serviciosRaw.trim() || "—";
+
+        const avatar = prof?.avatar_url || CURRENT_USER.user_metadata?.avatar_url;
+        if (avatar) {
+          $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`;
+          $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`;
+        } else {
+          const ini = (prof?.display_name || CURRENT_USER.email || "?")[0].toUpperCase();
+          $("userAvatar").textContent = ini;
+          $("avatarPreview").textContent = ini;
+        }
+
+        // Prefill form
+        $("fNombre").value = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "";
+        $("fTelefono").value = telRaw || "";
+        $("fTelefonoPublico").checked = !!telPublicFlag;
+
+        try {
+          const c = (prof?.cumple || CURRENT_USER.user_metadata?.cumple);
+          if (c) {
+            const d = new Date(c.length <= 10 ? c + "T00:00:00" : c);
+            $("fCumple").value = d.toISOString().slice(0, 10);
+          }
+        } catch { }
+
+        $("fCategoria").value = prof?.categoria || CURRENT_USER.user_metadata?.categoria || "";
+        $("fAdscripcion").value = prof?.adscripcion || CURRENT_USER.user_metadata?.adscripcion || "";
+        $("fBio").value = prof?.bio || CURRENT_USER.user_metadata?.bio || "";
+        $("fServicios").value = serviciosRaw || "";
+
+        buildNextActionsFromProfile(telRaw, serviciosRaw.trim(), prof?.cumple || CURRENT_USER.user_metadata?.cumple);
+
+        await loadAsistenciaPerfil();
+        await loadMiniTopPerfil();
+      } catch (e) {
+        diag("Error inesperado en loadProfile()", e);
+      }
     }
 
     /* ====== Guardar perfil ====== */
     async function onSaveProfile(e) {
       e.preventDefault();
       $("status").textContent = "Guardando…";
+
       try {
         const file = $("fAvatar").files?.[0];
         let avatar_url = null;
-        if (file) { avatar_url = await uploadAvatar(file); }
+        if (file) avatar_url = await uploadAvatar(file);
 
         const rawCumple = $("fCumple").value;
         const cumple = nz(rawCumple) ? new Date(rawCumple).toISOString().slice(0, 10) : null;
-        const telefono_publico = $("fTelefonoPublico").checked;
-        const servicios = nz($("fServicios").value);
 
         const updates = {
           display_name: nz($("fNombre").value),
           telefono: nz($("fTelefono").value),
-          telefono_publico,
+          telefono_publico: $("fTelefonoPublico").checked,
           cumple,
           categoria: nz($("fCategoria").value),
           adscripcion: nz($("fAdscripcion").value),
           bio: nz($("fBio").value),
-          servicios
+          servicios: nz($("fServicios").value)
         };
         if (avatar_url) updates.avatar_url = avatar_url;
 
-        const { error: authErr } = await supabase.auth.updateUser({ data: updates });
-        if (authErr) throw authErr;
+        // 1) auth metadata
+        const { error: authErr } = await supabaseClient.auth.updateUser({ data: updates });
+        if (authErr) {
+          diag("Error en auth.updateUser (metadata).", authErr);
+          throw authErr;
+        }
 
-        const { error: upErr } = await supabase.from('profiles').upsert({
+        // 2) profiles table
+        const { error: upErr } = await supabaseClient.from('profiles').upsert({
           user_id: CURRENT_USER.id,
           display_name: updates.display_name,
           avatar_url: updates.avatar_url || CURRENT_USER.user_metadata?.avatar_url || null,
@@ -973,8 +1066,8 @@
         }, { onConflict: 'user_id' });
 
         if (upErr) {
-          console.error(upErr);
-          $("status").textContent = "❌ Error al guardar en profiles. Revisa consola.";
+          diag("Error haciendo upsert en 'profiles'. (Probable RLS/policy)", upErr);
+          $("status").textContent = "❌ Error al guardar en profiles (revisa políticas RLS).";
           return;
         }
 
@@ -991,215 +1084,22 @@
       if (!force && MEMBERS_CACHE.length) return;
 
       const wrap = $("membersList");
-      if (wrap) {
-        wrap.innerHTML = '<div class="meta">Cargando miembros…</div>';
-      }
+      if (wrap) wrap.innerHTML = '<div class="meta">Cargando miembros…</div>';
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('profiles')
         .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, telefono, telefono_publico, servicios')
         .order('last_seen', { ascending: false })
         .limit(1000);
 
       if (error) {
-        console.error("Error cargando members:", error);
-        if (wrap) {
-          wrap.innerHTML = '<div class="meta">❌ No se pudieron cargar los miembros. Revisa consola.</div>';
-        }
+        diag("Error cargando lista de miembros desde 'profiles'. (Probable RLS/policy)", error);
+        if (wrap) wrap.innerHTML = '<div class="meta">❌ No se pudieron cargar los miembros. Revisa el recuadro de diagnóstico y consola.</div>';
         return;
       }
 
       MEMBERS_CACHE = data || [];
       renderMembers();
-    }
-
-    function escapeHtml(str) {
-      return (str || '').replace(/[&<>\"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[s]));
-    }
-
-    // ==== HELPERS PARA AGRUPAR ADSCRIPCIONES SIMILARES ====
-    function normalizeText(str) {
-      return (str || '')
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")   // quita acentos
-        .replace(/[^a-z0-9]+/g, " ")       // todo lo que no sea letra o número → espacio
-        .trim();
-    }
-
-    function titleCase(str) {
-      return (str || '')
-        .split(' ')
-        .filter(Boolean)
-        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ');
-    }
-
-    // Canonicaliza nombres de adscripciones SIN número
-    // Solo dejamos como grupos propios: Almacén, Delegación, Subdelegación, Jefatura, Coordinación
-    function canonicalAdscripcion(norm) {
-      if (!norm) return '';
-
-      if (norm.startsWith('almacen')) return 'almacen delegacional';
-      if (norm.startsWith('delegacion')) return 'delegacion';
-      if (norm.startsWith('subdelegacion')) return 'subdelegacion';
-      if (norm.startsWith('jefatura')) return 'jefatura';
-      if (norm.startsWith('coordinacion')) return 'coordinacion';
-
-      // Lo demás NO es un grupo propio
-      return '';
-    }
-
-    // Mapa oficial de adscripciones por prefijo y número
-    const ADS_OFICIALES = {
-      HGR: {
-        1: 'HGR No. 1 Charo (Morelia)'
-      },
-      HGZ: {
-        83: 'HGZ No. 83 Morelia (Camelinas)',
-        8: 'HGZ No. 8 Uruapan',
-        4: 'HGZ No. 4 Zamora',
-        12: 'HGZ No. 12 Lázaro Cárdenas',
-        2: 'HGZ No. 2 Zacapu'
-      },
-      HGSZ: {
-        7: 'HGSZ No. 7 La Piedad',
-        9: 'HGSZ No. 9 Apatzingán',
-        17: 'HGSZ No. 17 Los Reyes',
-        24: 'HGSZ No. 24 Pedernales'
-      },
-      UMF: {
-        3: 'UMF No. 3 Quiroga',
-        6: 'UMF No. 6 Jiquilpan',
-        10: 'UMF No. 10 Jungapeo',
-        11: 'UMF No. 11 Nueva Italia',
-        13: 'UMF No. 13 Cotija',
-        18: 'UMF No. 18 Zitácuaro',
-        19: 'UMF No. 19 Ciudad Hidalgo',
-        20: 'UMF No. 20 Pátzcuaro',
-        21: 'UMF No. 21 Jacona',
-        23: 'UMF No. 23 Infiernillo',
-        25: 'UMF No. 25 Puruarán',
-        26: 'UMF No. 26 Taretan',
-        28: 'UMF No. 28 Santa Clara',
-        37: 'UMF No. 37 Mineral de Angangueo',
-        40: 'UMF No. 40 Coalcomán',
-        42: 'UMF No. 42 Cuitzeo',
-        43: 'UMF No. 43 Churumuco',
-        46: 'UMF No. 46 La Huacana',
-        48: 'UMF No. 48 Huetamo',
-        52: 'UMF No. 52 Nuevo Urecho',
-        54: 'UMF No. 54 Purépero',
-        64: 'UMF No. 64 Puruándiro',
-        65: 'UMF No. 65 Villa Madero',
-        66: 'UMF No. 66 Villamar',
-        70: 'UMF No. 70 Zinapécuaro',
-        71: 'UMF No. 71 Morelia',
-        74: 'UMF No. 74 Tacámbaro',
-        75: 'UMF No. 75 Morelia (Camelinas)',
-        76: 'UMF No. 76 Uruapan',
-        77: 'UMF No. 77 La Piedad',
-        78: 'UMF No. 78 Lázaro Cárdenas',
-        80: 'UMF No. 80 Morelia (Centro)',
-        81: 'UMF No. 81 Uruapan',
-        82: 'UMF No. 82 Zamora',
-        84: 'UMF No. 84 Morelia (Tacícuaro)',
-        85: 'UMF No. 85 Tarímbaro'
-      },
-      HR: {
-        30: 'HR No. 30 Ario de Rosales',
-        31: 'HR No. 31 Huetamo',
-        33: 'HR No. 33 Paracho',
-        35: 'HR No. 35 Buenavista Tomatlán',
-        50: 'HR No. 50 Tuxpan',
-        51: 'HR No. 51 Villamar',
-        59: 'HR No. 59 Coalcomán'
-      }
-    };
-
-    function canonicalPrefixFromToken(token) {
-      if (!token) return '';
-      const t = token.toLowerCase();
-      if (t === 'hgr') return 'HGR';
-      if (t === 'hgz') return 'HGZ';
-      if (t === 'hgsz') return 'HGSZ';
-      if (t === 'umf') return 'UMF';
-      if (t === 'hr') return 'HR';
-      return t.toUpperCase();
-    }
-
-    /**
-     * Devuelve { key, label } para agrupar miembros:
-     * - Si hay número y prefijo (HGR 1, HGZ #86, UMF 12) → key "NUM:HGR-001", label desde ADS_OFICIALES o "HGR 1"
-     * - Si NO hay número:
-     *      - si es almacén/delegación/subdelegación/jefatura/coordinación → grupo propio
-     *      - si no, va a "Otras adscripciones"
-     */
-    function getUnidadGroup(profile) {
-      const rawAds = profile.adscripcion || '';
-      const normAds = normalizeText(rawAds);
-
-      if (!normAds) {
-        return {
-          key: 'TXT:SIN_ADSCRIPCION',
-          label: 'Sin adscripción registrada'
-        };
-      }
-
-      // Buscar un número (1-3 dígitos) dentro de la adscripción
-      const numMatch = normAds.match(/(\d{1,3})/);
-      if (numMatch) {
-        const num = parseInt(numMatch[1], 10);
-        if (Number.isFinite(num)) {
-          const before = normAds.slice(0, numMatch.index).trim();
-          const parts = before.split(' ').filter(Boolean);
-
-          // Buscar prefijo hacia atrás (hgr, hgz, hgsz, umf, hr)
-          let prefixToken = null;
-          for (let i = parts.length - 1; i >= 0; i--) {
-            const p = parts[i];
-            if (['hgr', 'hgz', 'hgsz', 'umf', 'hr'].includes(p)) {
-              prefixToken = p;
-              break;
-            }
-          }
-          if (!prefixToken && parts.length) {
-            // Si no encontramos prefijo claro, usamos la última palabra por compatibilidad
-            prefixToken = parts[parts.length - 1];
-          }
-
-          let prefix = canonicalPrefixFromToken(prefixToken);
-          if (!prefix) prefix = 'Unidad';
-
-          const numKey = num.toString().padStart(3, '0');
-
-          // Buscar nombre oficial en el mapa
-          let label = `${prefix} ${num}`;
-          if (ADS_OFICIALES[prefix] && ADS_OFICIALES[prefix][num]) {
-            label = ADS_OFICIALES[prefix][num];
-          }
-
-          return {
-            key: `NUM:${prefix}-${numKey}`,
-            label
-          };
-        }
-      }
-
-      // SIN número → solo damos grupo propio a ciertos textos (almacén, delegación, subdelegación, etc.)
-      const canon = canonicalAdscripcion(normAds);
-      if (canon) {
-        return {
-          key: 'TXT:' + canon,
-          label: titleCase(canon)
-        };
-      }
-
-      // Todo lo demás va a un grupo genérico
-      return {
-        key: 'TXT:OTRAS',
-        label: 'Otras adscripciones'
-      };
     }
 
     function renderMembers() {
@@ -1210,7 +1110,6 @@
       const onlyOnline = $("chkOnlineOnly")?.checked;
       let list = MEMBERS_CACHE.slice();
 
-      // Filtro de búsqueda
       if (q) {
         list = list.filter(p =>
           (p.display_name || '').toLowerCase().includes(q) ||
@@ -1220,12 +1119,8 @@
         );
       }
 
-      // Solo online
-      if (onlyOnline) {
-        list = list.filter(p => ONLINE_SET.has(p.user_id));
-      }
+      if (onlyOnline) list = list.filter(p => ONLINE_SET.has(p.user_id));
 
-      // Online primero
       const online = [];
       const offline = [];
       list.forEach(p => (ONLINE_SET.has(p.user_id) ? online : offline).push(p));
@@ -1237,122 +1132,71 @@
         return;
       }
 
-      // AGRUPAR POR UNIDAD
-      const grupos = new Map(); // key -> { label, miembros: [] }
-
       list.forEach(p => {
-        const grp = getUnidadGroup(p);
-        if (!grupos.has(grp.key)) {
-          grupos.set(grp.key, { label: grp.label, miembros: [] });
-        }
-        grupos.get(grp.key).miembros.push(p);
-      });
+        const card = document.createElement('div');
+        card.className = 'card';
 
-      // Ordenar grupos:
-      // 1) Numéricos por prefijo y número
-      // 2) Luego los de texto por orden alfabético
-      const keys = Array.from(grupos.keys());
-      keys.sort((a, b) => {
-        const isNumA = a.startsWith('NUM:');
-        const isNumB = b.startsWith('NUM:');
+        const dot = ONLINE_SET.has(p.user_id) ? '🟢 Online' : '⚪ Offline';
 
-        if (isNumA && !isNumB) return -1;
-        if (!isNumA && isNumB) return 1;
+        const tel = (p.telefono || '').toString().trim();
+        const telPublic = !!p.telefono_publico;
+        const telDisplay = !tel ? 'Sin teléfono' : (telPublic ? tel : 'No visible');
 
-        if (isNumA && isNumB) {
-          const [pa, na] = a.slice(4).split('-');
-          const [pb, nb] = b.slice(4).split('-');
-          if (pa < pb) return -1;
-          if (pa > pb) return 1;
-          return parseInt(na, 10) - parseInt(nb, 10);
-        }
+        const serviciosText = (p.servicios || '').trim();
+        const serviciosShort = serviciosText
+          ? (serviciosText.length > 100 ? serviciosText.slice(0, 97) + '…' : serviciosText)
+          : '';
 
-        const la = grupos.get(a).label.toLowerCase();
-        const lb = grupos.get(b).label.toLowerCase();
-        return la.localeCompare(lb, 'es');
-      });
-
-      // Pintar grupos
-      keys.forEach(key => {
-        const grp = grupos.get(key);
-        const miembros = grp.miembros;
-        if (!miembros || !miembros.length) return;
-
-        const header = document.createElement('h3');
-        header.className = 'meta';
-        header.style.margin = '18px 0 6px';
-        header.textContent = grp.label;
-        wrap.appendChild(header);
-
-        miembros.forEach(p => {
-          const card = document.createElement('div');
-          card.className = 'card';
-
-          const dot = ONLINE_SET.has(p.user_id) ? '🟢 Online' : '⚪ Offline';
-
-          const tel = (p.telefono || '').toString().trim();
-          const telPublic = !!p.telefono_publico;
-          let telDisplay;
-          if (!tel) {
-            telDisplay = 'Sin teléfono';
-          } else if (telPublic) {
-            telDisplay = tel;
-          } else {
-            telDisplay = 'No visible';
-          }
-
-          const serviciosText = (p.servicios || '').trim();
-          const serviciosShort = serviciosText
-            ? (serviciosText.length > 100 ? serviciosText.slice(0, 97) + '…' : serviciosText)
-            : '';
-
-          card.innerHTML = `
-        <div class="row" style="align-items:flex-start">
-          <div class="avatar" style="width:64px;height:64px">
-            ${p.avatar_url ? `<img src="${p.avatar_url}">` : (p.display_name || '?')[0]?.toUpperCase()}
-          </div>
-          <div style="flex:1;min-width:200px">
-            <div style="font-weight:700">${escapeHtml(p.display_name || '—')}</div>
-            <div class="meta">
-              ${escapeHtml(p.categoria || '—')} • ${escapeHtml(p.adscripcion || '—')}
+        card.innerHTML = `
+          <div class="row" style="align-items:flex-start">
+            <div class="avatar" style="width:64px;height:64px">
+              ${p.avatar_url ? `<img src="${p.avatar_url}">` : (p.display_name || '?')[0]?.toUpperCase()}
             </div>
-            <div class="meta" style="margin-top:4px">
-              📱 ${escapeHtml(telDisplay)}
+            <div style="flex:1;min-width:200px">
+              <div style="font-weight:700">${escapeHtml(p.display_name || '—')}</div>
+              <div class="meta">${escapeHtml(p.categoria || '—')} • ${escapeHtml(p.adscripcion || '—')}</div>
+              <div class="meta" style="margin-top:4px">📱 ${escapeHtml(telDisplay)}</div>
+              ${serviciosShort ? `<div class="meta" style="margin-top:4px">🤝 ${escapeHtml(serviciosShort)}</div>` : ''}
             </div>
-            ${serviciosShort
-              ? `<div class="meta" style="margin-top:4px">🤝 ${escapeHtml(serviciosShort)}</div>`
-              : ''}
+            <span class="pill">${dot}</span>
           </div>
-          <span class="pill">${dot}</span>
-        </div>
-      `;
-          wrap.appendChild(card);
-        });
+        `;
+        wrap.appendChild(card);
       });
     }
 
     /* ====== Presencia ====== */
     function initPresence() {
-      const ch = supabase.channel('presence:members', { config: { presence: { key: CURRENT_USER.id } } });
-      ch.on('presence', { event: 'sync' }, () => {
-        ONLINE_SET = new Set(Object.keys(ch.presenceState()));
-        try { renderMembers(); } catch { }
-      });
-      ch.subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          ch.track({ last_active: Date.now() });
-          await supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('user_id', CURRENT_USER.id);
-        }
-      });
+      try {
+        const ch = supabaseClient.channel('presence:members', { config: { presence: { key: CURRENT_USER.id } } });
+
+        ch.on('presence', { event: 'sync' }, () => {
+          ONLINE_SET = new Set(Object.keys(ch.presenceState()));
+          try { renderMembers(); } catch { }
+        });
+
+        ch.subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            ch.track({ last_active: Date.now() });
+            // si falla por RLS, no rompe la app; solo diagnostica
+            const { error } = await supabaseClient.from('profiles')
+              .update({ last_seen: new Date().toISOString() })
+              .eq('user_id', CURRENT_USER.id);
+            if (error) diag("Error actualizando last_seen en profiles (RLS/policy).", error);
+          }
+        });
+      } catch (e) {
+        diag("Error iniciando Presence (Realtime).", e);
+      }
     }
 
-    /* ====== Foro (likes + comentarios + edición + eliminación) ====== */
+    /* ====== Foro ====== */
     const loadPostsDeb = debounce(loadPosts, 200);
 
     function initForum() {
       loadPostsDeb();
 
-      supabase
+      supabaseClient
         .channel('realtime-foro')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPostsDeb)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, loadPostsDeb)
@@ -1361,10 +1205,15 @@
 
       $("forumForm")?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const text = ($("forumInput").value || '').trim(); if (!text) return;
+        const text = ($("forumInput").value || '').trim();
+        if (!text) return;
+
         $("forumStatus").textContent = "Publicando…";
         const cat = $("forumCategory").value || "Asuntos Generales";
-        const { error } = await supabase.from('posts').insert({ content: text, user_id: CURRENT_USER.id, category: cat });
+
+        const { error } = await supabaseClient.from('posts').insert({ content: text, user_id: CURRENT_USER.id, category: cat });
+        if (error) diag("Error insertando en posts (RLS/policy).", error);
+
         $("forumStatus").textContent = error ? "❌ No se pudo publicar: " + (error.message || '') : "✅ Publicado";
         if (!error) { $("forumInput").value = ""; loadPostsDeb(); }
       });
@@ -1380,8 +1229,8 @@
 
     async function loadPosts() {
       const myToken = ++POSTS_TOKEN;
-
       const wrap = $("postsList");
+
       let loading = document.getElementById('postsLoadingMsg');
       if (!loading) {
         loading = document.createElement('div');
@@ -1391,7 +1240,7 @@
         wrap.prepend(loading);
       }
 
-      const { data: posts, error } = await supabase
+      const { data: posts, error } = await supabaseClient
         .from('posts')
         .select('id, content, category, created_at, user_id')
         .order('created_at', { ascending: false })
@@ -1400,16 +1249,23 @@
       if (myToken !== POSTS_TOKEN) return;
 
       wrap.innerHTML = "";
-
-      if (error) { wrap.innerHTML = `<div class="meta">❌ Error cargando posts.</div>`; return; }
+      if (error) {
+        diag("Error leyendo posts (RLS/policy o tabla no existe).", error);
+        wrap.innerHTML = `<div class="meta">❌ Error cargando posts. Revisa diagnóstico.</div>`;
+        return;
+      }
       if (!posts?.length) { wrap.innerHTML = `<div class="meta">Aún no hay publicaciones.</div>`; return; }
 
       const ids = posts.map(p => p.id);
-      const [{ data: allLikes }, { data: myLikes }, { data: comments }] = await Promise.all([
-        supabase.from('likes').select('post_id, user_id').in('post_id', ids),
-        supabase.from('likes').select('post_id').in('post_id', ids).eq('user_id', CURRENT_USER.id),
-        supabase.from('comments').select('id, post_id, user_id, content, created_at').in('post_id', ids).order('created_at', { ascending: true })
+      const [{ data: allLikes, error: e1 }, { data: myLikes, error: e2 }, { data: comments, error: e3 }] = await Promise.all([
+        supabaseClient.from('likes').select('post_id, user_id').in('post_id', ids),
+        supabaseClient.from('likes').select('post_id').in('post_id', ids).eq('user_id', CURRENT_USER.id),
+        supabaseClient.from('comments').select('id, post_id, user_id, content, created_at').in('post_id', ids).order('created_at', { ascending: true })
       ]);
+
+      if (e1) diag("Error leyendo likes (RLS/policy).", e1);
+      if (e2) diag("Error leyendo likes del usuario (RLS/policy).", e2);
+      if (e3) diag("Error leyendo comments (RLS/policy).", e3);
 
       if (myToken !== POSTS_TOKEN) return;
 
@@ -1422,44 +1278,48 @@
         const card = document.createElement('div');
         card.className = 'card';
         card.dataset.postId = p.id;
+
         const liked = myLiked.has(p.id);
         const count = likeCount.get(p.id) || 0;
         const postComments = commentsByPost.get(p.id) || [];
 
         card.innerHTML = `
-      <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
-        <div class="meta">${p.user_id === CURRENT_USER.id ? 'Tú' : 'Miembro'} • ${fmtDate(p.created_at)}</div>
-        <div class="pill">🏷️ ${escapeHtml(p.category || 'Asuntos Generales')}</div>
-      </div>
-
-      <div class="post-content" style="margin-top:8px;white-space:pre-wrap;line-height:1.45">${escapeHtml(p.content)}</div>
-
-      <div class="row" style="margin-top:10px;gap:10px">
-        <button class="subtle-btn btn-like" data-id="${p.id}" aria-pressed="${liked}">
-          ${liked ? '❤️' : '🤍'} Me gusta <span class="meta">(${count})</span>
-        </button>
-        <details class="forum-toggle" style="margin:0">
-          <summary><span class="rotate">▸</span><span>Comentarios (${postComments.length})</span></summary>
-          <div class="comments" style="margin-top:10px; display:grid; gap:10px">
-            ${postComments.map(c => `
-              <div class="card" style="padding:12px">
-                <div class="meta">${c.user_id === CURRENT_USER.id ? 'Tú' : 'Miembro'} • ${fmtDate(c.created_at)}</div>
-                <div style="margin-top:6px;white-space:pre-wrap">${escapeHtml(c.content)}</div>
-                ${canDeleteComment(c.user_id) ? `<button class="subtle-btn btn-del-comment" data-cid="${c.id}" data-pid="${p.id}">🗑️ Borrar comentario</button>` : ``}
-              </div>
-            `).join('')}
-            <form class="comment-form" data-id="${p.id}">
-              <label class="meta">Añadir comentario</label>
-              <textarea rows="2" class="comment-input" placeholder="Escribe algo..."></textarea>
-              <button class="btn" type="submit">Comentar</button>
-              <div class="meta comment-status"></div>
-            </form>
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
+            <div class="meta">${p.user_id === CURRENT_USER.id ? 'Tú' : 'Miembro'} • ${fmtDate(p.created_at)}</div>
+            <div class="pill">🏷️ ${escapeHtml(p.category || 'Asuntos Generales')}</div>
           </div>
-        </details>
-        ${canEditPost(p.user_id) ? `<button class="subtle-btn btn-edit" data-id="${p.id}">✏️ Editar</button>` : ``}
-        ${canDeletePost(p.user_id) ? `<button class="subtle-btn btn-del-post" data-id="${p.id}">🗑️ Borrar</button>` : ``}
-      </div>
-    `;
+
+          <div class="post-content" style="margin-top:8px;white-space:pre-wrap;line-height:1.45">${escapeHtml(p.content)}</div>
+
+          <div class="row" style="margin-top:10px;gap:10px">
+            <button class="subtle-btn btn-like" data-id="${p.id}" aria-pressed="${liked}">
+              ${liked ? '❤️' : '🤍'} Me gusta <span class="meta">(${count})</span>
+            </button>
+
+            <details class="forum-toggle" style="margin:0">
+              <summary><span class="rotate">▸</span><span>Comentarios (${postComments.length})</span></summary>
+              <div class="comments" style="margin-top:10px; display:grid; gap:10px">
+                ${postComments.map(c => `
+                  <div class="card" style="padding:12px">
+                    <div class="meta">${c.user_id === CURRENT_USER.id ? 'Tú' : 'Miembro'} • ${fmtDate(c.created_at)}</div>
+                    <div style="margin-top:6px;white-space:pre-wrap">${escapeHtml(c.content)}</div>
+                    ${canDeleteComment(c.user_id) ? `<button class="subtle-btn btn-del-comment" data-cid="${c.id}" data-pid="${p.id}">🗑️ Borrar comentario</button>` : ``}
+                  </div>
+                `).join('')}
+
+                <form class="comment-form" data-id="${p.id}">
+                  <label class="meta">Añadir comentario</label>
+                  <textarea rows="2" class="comment-input" placeholder="Escribe algo..."></textarea>
+                  <button class="btn" type="submit">Comentar</button>
+                  <div class="meta comment-status"></div>
+                </form>
+              </div>
+            </details>
+
+            ${canEditPost(p.user_id) ? `<button class="subtle-btn btn-edit" data-id="${p.id}">✏️ Editar</button>` : ``}
+            ${canDeletePost(p.user_id) ? `<button class="subtle-btn btn-del-post" data-id="${p.id}">🗑️ Borrar</button>` : ``}
+          </div>
+        `;
 
         wrap.appendChild(card);
       });
@@ -1469,26 +1329,37 @@
           e.preventDefault(); e.stopPropagation();
           const postId = btn.dataset.id;
           const isLiked = btn.getAttribute('aria-pressed') === 'true';
+
           const meta = btn.querySelector('.meta');
           const numMatch = (meta?.textContent.match(/\d+/) || [0])[0];
           let count = parseInt(numMatch, 10) || 0;
+
           btn.disabled = true;
 
           if (isLiked) {
-            const { error } = await supabase.from('likes').delete().match({ post_id: postId, user_id: CURRENT_USER.id });
+            const { error } = await supabaseClient.from('likes').delete().match({ post_id: postId, user_id: CURRENT_USER.id });
             if (!error) {
               btn.setAttribute('aria-pressed', 'false');
               btn.innerHTML = btn.innerHTML.replace('❤️', '🤍');
               if (meta) meta.textContent = `(${Math.max(0, count - 1)})`;
-            } else alert('❌ No se pudo quitar el like: ' + (error.message || ''));
+            } else {
+              diag("Error borrando like (RLS/policy).", error);
+              alert('❌ No se pudo quitar el like: ' + (error.message || ''));
+            }
           } else {
-            const { error } = await supabase.from('likes').upsert({ post_id: postId, user_id: CURRENT_USER.id }, { onConflict: 'post_id,user_id' });
+            const { error } = await supabaseClient.from('likes')
+              .upsert({ post_id: postId, user_id: CURRENT_USER.id }, { onConflict: 'post_id,user_id' });
+
             if (!error) {
               btn.setAttribute('aria-pressed', 'true');
               btn.innerHTML = btn.innerHTML.replace('🤍', '❤️');
               if (meta) meta.textContent = `(${count + 1})`;
-            } else alert('❌ No se pudo dar like: ' + (error.message || ''));
+            } else {
+              diag("Error dando like (RLS/policy).", error);
+              alert('❌ No se pudo dar like: ' + (error.message || ''));
+            }
           }
+
           btn.disabled = false;
         });
       });
@@ -1501,8 +1372,12 @@
           const status = form.querySelector('.comment-status');
           const text = (ta.value || '').trim();
           if (!text) return;
+
           status.textContent = 'Enviando…';
-          const { error } = await supabase.from('comments').insert({ post_id: postId, user_id: CURRENT_USER.id, content: text });
+          const { error } = await supabaseClient.from('comments').insert({ post_id: postId, user_id: CURRENT_USER.id, content: text });
+
+          if (error) diag("Error insertando comentario (RLS/policy).", error);
+
           status.textContent = error ? '❌ No se pudo comentar: ' + (error.message || '') : '✅ Comentado';
           if (!error) ta.value = '';
           loadPostsDeb();
@@ -1512,36 +1387,41 @@
       wrap.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault(); e.stopPropagation();
+
           const postId = btn.dataset.id;
           const card = btn.closest('.card');
           const contentEl = card.querySelector('.post-content');
           const original = contentEl.textContent;
 
           contentEl.outerHTML = `
-        <div class="edit-wrap" style="margin-top:8px;display:grid;gap:8px">
-          <textarea class="edit-textarea" style="min-height:120px;background:#0a1329;border:1px solid rgba(91,215,242,.3);color:#e6fbff;padding:9px 11px;border-radius:10px">${escapeHtml(original)}</textarea>
-          <div class="row">
-            <button class="btn btn-save-edit" data-id="${postId}">💾 Guardar</button>
-            <button class="subtle-btn btn-cancel-edit">Cancelar</button>
-            <span class="meta edit-status"></span>
-          </div>
-        </div>
-      `;
+            <div class="edit-wrap" style="margin-top:8px;display:grid;gap:8px">
+              <textarea class="edit-textarea" style="min-height:120px;background:#0a1329;border:1px solid rgba(91,215,242,.3);color:#e6fbff;padding:9px 11px;border-radius:10px"></textarea>
+              <div class="row">
+                <button class="btn btn-save-edit" data-id="${postId}">💾 Guardar</button>
+                <button class="subtle-btn btn-cancel-edit">Cancelar</button>
+                <span class="meta edit-status"></span>
+              </div>
+            </div>
+          `;
 
           const ta = card.querySelector('.edit-textarea');
+          ta.value = original;
+
           const saveBtn = card.querySelector('.btn-save-edit');
           const cancelBtn = card.querySelector('.btn-cancel-edit');
           const status = card.querySelector('.edit-status');
 
-          cancelBtn.addEventListener('click', (e) => {
-            e.preventDefault(); loadPostsDeb();
-          });
+          cancelBtn.addEventListener('click', (e) => { e.preventDefault(); loadPostsDeb(); });
 
           saveBtn.addEventListener('click', async () => {
             const newText = (ta.value || '').trim();
             if (!newText) { status.textContent = 'El contenido no puede estar vacío.'; return; }
+
             status.textContent = 'Guardando…';
-            const { error } = await supabase.from('posts').update({ content: newText }).eq('id', postId);
+            const { error } = await supabaseClient.from('posts').update({ content: newText }).eq('id', postId);
+
+            if (error) diag("Error editando post (RLS/policy).", error);
+
             status.textContent = error ? '❌ No se pudo guardar: ' + (error.message || '') : '✅ Guardado';
             if (!error) loadPostsDeb();
           });
@@ -1552,10 +1432,16 @@
         btn.addEventListener('click', async () => {
           const postId = btn.dataset.id;
           if (!confirm('¿Seguro que deseas borrar esta publicación? Esta acción no se puede deshacer.')) return;
-          try { await supabase.from('comments').delete().eq('post_id', postId); } catch (_) { }
-          try { await supabase.from('likes').delete().eq('post_id', postId); } catch (_) { }
-          const { error } = await supabase.from('posts').delete().eq('id', postId);
-          if (error) { alert('❌ No se pudo borrar: ' + (error.message || '')); return; }
+
+          try { await supabaseClient.from('comments').delete().eq('post_id', postId); } catch (_) { }
+          try { await supabaseClient.from('likes').delete().eq('post_id', postId); } catch (_) { }
+
+          const { error } = await supabaseClient.from('posts').delete().eq('id', postId);
+          if (error) {
+            diag("Error borrando post (RLS/policy).", error);
+            alert('❌ No se pudo borrar: ' + (error.message || ''));
+            return;
+          }
           loadPostsDeb();
         });
       });
@@ -1564,15 +1450,23 @@
         btn.addEventListener('click', async () => {
           const commentId = btn.dataset.cid;
           if (!confirm('¿Borrar este comentario?')) return;
-          const { error } = await supabase.from('comments').delete().eq('id', commentId);
-          if (error) { alert('❌ No se pudo borrar: ' + (error.message || '')); return; }
+
+          const { error } = await supabaseClient.from('comments').delete().eq('id', commentId);
+          if (error) {
+            diag("Error borrando comentario (RLS/policy).", error);
+            alert('❌ No se pudo borrar: ' + (error.message || ''));
+            return;
+          }
           loadPostsDeb();
         });
       });
     }
 
     /* ====== Verificación (QR) ====== */
-    function formatDateFancy(d) { try { return new Intl.DateTimeFormat('es-MX', { dateStyle: 'full', timeStyle: 'short' }).format(new Date(d)); } catch { return d; } }
+    function formatDateFancy(d) {
+      try { return new Intl.DateTimeFormat('es-MX', { dateStyle: 'full', timeStyle: 'short' }).format(new Date(d)); }
+      catch { return d; }
+    }
 
     async function fetchNextEvent() {
       if (!GOOGLE_API_KEY) return null;
@@ -1582,9 +1476,19 @@
         const res = await fetch(url);
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const json = await res.json();
-        const evt = (json.items || [])[0]; if (!evt) return null;
-        return { uid: evt.id, title: evt.summary || 'Evento', start: evt.start?.dateTime || evt.start?.date, location: evt.location || '', description: (evt.description || '').replace(/<[^>]*>/g, '') };
-      } catch (e) { console.error(e); return null; }
+        const evt = (json.items || [])[0];
+        if (!evt) return null;
+        return {
+          uid: evt.id,
+          title: evt.summary || 'Evento',
+          start: evt.start?.dateTime || evt.start?.date,
+          location: evt.location || '',
+          description: (evt.description || '').replace(/<[^>]*>/g, '')
+        };
+      } catch (e) {
+        diag("Error consultando Google Calendar API.", String(e));
+        return null;
+      }
     }
 
     async function initVerification() {
@@ -1593,9 +1497,7 @@
       $("qrWrap").style.display = 'none';
 
       const adminPanel = $("adminRSVPPanel");
-      if (adminPanel && !IS_ADMIN) {
-        adminPanel.style.display = "none";
-      }
+      if (adminPanel && !IS_ADMIN) adminPanel.style.display = "none";
 
       const evt = await fetchNextEvent();
       if (!evt) {
@@ -1605,18 +1507,21 @@
         return;
       }
 
-      $("eventBox").innerHTML = `<div><strong>${escapeHtml(evt.title)}</strong></div><div class="meta">🗓️ ${formatDateFancy(evt.start)} ${evt.location ? ' • 📍 ' + escapeHtml(evt.location) : ''}</div>${evt.description ? `<div class="muted" style="white-space:pre-wrap;margin-top:6px">${escapeHtml(evt.description)}</div>` : ''}`;
+      $("eventBox").innerHTML = `<div><strong>${escapeHtml(evt.title)}</strong></div>
+        <div class="meta">🗓️ ${formatDateFancy(evt.start)} ${evt.location ? ' • 📍 ' + escapeHtml(evt.location) : ''}</div>
+        ${evt.description ? `<div class="muted" style="white-space:pre-wrap;margin-top:6px">${escapeHtml(evt.description)}</div>` : ''}`;
+
       window.__NEXT_EVENT__ = evt;
 
-      if (IS_ADMIN) {
-        loadAdminRSVPStats(evt.uid);
-      }
+      if (IS_ADMIN) loadAdminRSVPStats(evt.uid);
 
-      const { data } = await supabase.from('rsvps')
+      const { data, error } = await supabaseClient.from('rsvps')
         .select('status, qr_payload')
         .eq('user_id', CURRENT_USER.id)
         .eq('event_uid', evt.uid)
         .maybeSingle();
+
+      if (error) diag("Error leyendo rsvps (RLS/policy).", error);
 
       updateRSVPUI(data?.status || null, data?.qr_payload || null);
 
@@ -1627,7 +1532,9 @@
     function buildQRPayload(evtUid) { return JSON.stringify({ v: 1, event: evtUid, user: CURRENT_USER.id, ts: Date.now() }); }
 
     async function setRSVP(status) {
-      const evt = window.__NEXT_EVENT__; if (!evt) return;
+      const evt = window.__NEXT_EVENT__;
+      if (!evt) return;
+
       let qrPayload = null;
       if (status === 'yes') {
         qrPayload = buildQRPayload(evt.uid);
@@ -1636,19 +1543,21 @@
       } else {
         $("qrWrap").style.display = 'none';
       }
-      const { error } = await supabase.from('rsvps').upsert({
+
+      const { error } = await supabaseClient.from('rsvps').upsert({
         user_id: CURRENT_USER.id,
         event_uid: evt.uid,
         status,
         qr_payload: qrPayload,
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,event_uid' });
+
+      if (error) diag("Error guardando rsvp (RLS/policy).", error);
+
       $("rsvpStatus").textContent = error ? 'No se pudo guardar tu respuesta.' : (status === 'yes' ? 'Confirmado ✔️' : 'Registrado como no asistente.');
       updateRSVPUI(status, qrPayload);
 
-      if (IS_ADMIN && window.__NEXT_EVENT__) {
-        loadAdminRSVPStats(window.__NEXT_EVENT__.uid);
-      }
+      if (IS_ADMIN && window.__NEXT_EVENT__) loadAdminRSVPStats(window.__NEXT_EVENT__.uid);
     }
 
     function updateRSVPUI(status, qrPayload) {
@@ -1656,17 +1565,17 @@
       if (status === 'yes') {
         yesBtn.disabled = true; noBtn.disabled = false;
         $("qrWrap").style.display = 'block';
-        if (qrPayload) {
-          QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel: 'M' }).catch(() => { });
-        }
+        if (qrPayload) QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel: 'M' }).catch(() => { });
       } else if (status === 'no') {
-        yesBtn.disabled = false; noBtn.disabled = true; $("qrWrap").style.display = 'none';
+        yesBtn.disabled = false; noBtn.disabled = true;
+        $("qrWrap").style.display = 'none';
       } else {
-        yesBtn.disabled = false; noBtn.disabled = false; $("qrWrap").style.display = 'none'; $("rsvpStatus").textContent = '';
+        yesBtn.disabled = false; noBtn.disabled = false;
+        $("qrWrap").style.display = 'none';
+        $("rsvpStatus").textContent = '';
       }
     }
 
-    /* ====== Resumen de RSVPs solo para admins (con lista de nombres) ====== */
     async function loadAdminRSVPStats(evtUid) {
       if (!IS_ADMIN || !evtUid) return;
 
@@ -1684,13 +1593,13 @@
       moreEl.style.display = "none";
       txt.textContent = "Cargando…";
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('rsvps')
         .select('status, user_id')
         .eq('event_uid', evtUid);
 
       if (error) {
-        console.error(error);
+        diag("Error leyendo rsvps admin (RLS/policy).", error);
         txt.textContent = "❌ No se pudieron cargar las confirmaciones.";
         return;
       }
@@ -1706,36 +1615,22 @@
         `Confirmados: ${si} ✔️ • No asistirán: ${no} ✖️ • Registros totales: ${total}` +
         (otros > 0 ? ` • Otros estados: ${otros}` : '');
 
-      if (!si) {
-        listWrap.style.display = "none";
-        return;
-      }
+      if (!si) { listWrap.style.display = "none"; return; }
 
       const yesIds = siReg.map(r => r.user_id).filter(Boolean);
-      if (!yesIds.length) {
-        listWrap.style.display = "none";
-        return;
-      }
-
-      const { data: perfiles, error: perfErr } = await supabase
+      const { data: perfiles, error: perfErr } = await supabaseClient
         .from('profiles')
         .select('user_id, display_name, categoria, adscripcion')
         .in('user_id', yesIds);
 
       if (perfErr) {
-        console.error(perfErr);
+        diag("Error leyendo profiles para admin RSVP (RLS/policy).", perfErr);
         listWrap.style.display = "none";
         return;
       }
 
       const MAX_SHOW = 15;
-      const ordenados = [...(perfiles || [])].sort((a, b) => {
-        const an = (a.display_name || '').toLowerCase();
-        const bn = (b.display_name || '').toLowerCase();
-        if (an < bn) return -1;
-        if (an > bn) return 1;
-        return 0;
-      });
+      const ordenados = [...(perfiles || [])].sort((a, b) => (a.display_name || '').localeCompare(b.display_name || '', 'es', { sensitivity: 'base' }));
 
       listEl.innerHTML = "";
       ordenados.slice(0, MAX_SHOW).forEach(p => {
@@ -1743,17 +1638,13 @@
         const nombre = p.display_name || 'Miembro sin nombre';
         const cat = p.categoria || '';
         const ads = p.adscripcion || '';
-        let extra = '';
-        if (cat && ads) extra = ` — ${cat} • ${ads}`;
-        else if (cat) extra = ` — ${cat}`;
-        else if (ads) extra = ` — ${ads}`;
+        const extra = (cat && ads) ? ` — ${cat} • ${ads}` : (cat ? ` — ${cat}` : (ads ? ` — ${ads}` : ''));
         li.textContent = `${nombre}${extra}`;
         listEl.appendChild(li);
       });
 
       if (ordenados.length > MAX_SHOW) {
-        const restantes = ordenados.length - MAX_SHOW;
-        moreEl.textContent = `…y ${restantes} más confirmados.`;
+        moreEl.textContent = `…y ${ordenados.length - MAX_SHOW} más confirmados.`;
         moreEl.style.display = "block";
       } else {
         moreEl.style.display = "none";
@@ -1762,7 +1653,7 @@
       listWrap.style.display = "block";
     }
 
-    /* ====== Utilidades de asistencia / ranking ====== */
+    /* ====== Asistencia / ranking ====== */
     function seasonOf(dateLike) {
       const d = new Date(dateLike);
       const year = d.toLocaleString('en-CA', { timeZone: 'America/Mexico_City', year: 'numeric' });
@@ -1770,17 +1661,18 @@
       const q = Math.ceil(m / 3);
       return `${year}-Q${q}`;
     }
+
     function fmtMX(iso) {
       try { return new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso)); }
       catch { return iso; }
     }
 
-    /* ====== Asistencia dentro del perfil ====== */
     async function loadAsistenciaPerfil() {
       if (!CURRENT_USER) return;
+
       const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
 
-      const { data: scans, error } = await supabase
+      const { data: scans, error } = await supabaseClient
         .from('attendance_scans')
         .select('event_uid, scanned_at')
         .eq('attendee_id', CURRENT_USER.id)
@@ -1789,7 +1681,13 @@
 
       const info = document.getElementById('asistData');
 
-      if (error) { info.textContent = "No se pudieron cargar tus datos."; return; }
+      if (error) {
+        // Si tu tabla no existe o está bloqueada por RLS lo verás aquí
+        diag("Error leyendo attendance_scans (tabla/policy).", error);
+        info.textContent = "No se pudieron cargar tus datos.";
+        return;
+      }
+
       if (!scans || scans.length === 0) { info.textContent = "Aún no has registrado asistencias."; return; }
 
       info.textContent = `Último check-in: ${fmtMX(scans[0].scanned_at)}`;
@@ -1810,23 +1708,25 @@
 
       let puntos = totalTemporada * 10;
       try {
-        const { data: pts } = await supabase
+        const { data: pts, error: epts } = await supabaseClient
           .from('attendance_points')
           .select('points')
           .eq('user_id', CURRENT_USER.id)
           .eq('season', currentSeason)
           .maybeSingle();
+        if (epts) diag("Error leyendo attendance_points (policy).", epts);
         if (pts?.points != null) puntos = pts.points;
       } catch { }
 
       let puesto = '—';
       try {
-        const { data: lb } = await supabase
+        const { data: lb, error: elb } = await supabaseClient
           .from('attendance_leaderboard')
           .select('user_id, display_name, avatar_url, points, total_scans, season')
           .eq('season', currentSeason)
           .order('points', { ascending: false })
           .limit(100);
+        if (elb) diag("Error leyendo leaderboard (policy).", elb);
         const pos = (lb || []).findIndex(row => row.user_id === CURRENT_USER.id);
         if (pos >= 0) puesto = `#${pos + 1}`;
       } catch { }
@@ -1837,7 +1737,6 @@
       set('asistTop', puesto);
     }
 
-    /* ====== Mini TOP en el perfil ====== */
     async function loadMiniTopPerfil() {
       const meta = document.getElementById('miniTopMeta');
       const box = document.getElementById('miniTopList');
@@ -1845,12 +1744,14 @@
 
       const currentSeason = seasonOf(new Date());
       try {
-        const { data } = await supabase
+        const { data, error } = await supabaseClient
           .from('attendance_leaderboard')
           .select('user_id, display_name, avatar_url, points, total_scans, season')
           .eq('season', currentSeason)
           .order('points', { ascending: false })
           .limit(5);
+
+        if (error) diag("Error leyendo miniTop leaderboard (policy).", error);
 
         if (!data || !data.length) { meta.textContent = 'Aún no hay datos en esta temporada.'; return; }
         meta.textContent = `Temporada: ${currentSeason}`;
@@ -1859,12 +1760,12 @@
           const el = document.createElement('div');
           el.className = 'row';
           el.innerHTML = `
-        <div style="width:28px;text-align:right;font-weight:800">${idx + 1}</div>
-        <div class="avatar" style="width:36px;height:36px;margin-left:8px">${r.avatar_url ? `<img src="${r.avatar_url}">` : (r.display_name || '?')[0]?.toUpperCase()}</div>
-        <div style="flex:1;min-width:160px;margin-left:8px">
-          <div style="font-weight:700">${escapeHtml(r.display_name || 'Miembro')}${r.user_id === CURRENT_USER.id ? ' <span class="pill">Tú</span>' : ''}</div>
-          <div class="meta">Asistencias: ${r.total_scans} • Puntos: ${r.points}</div>
-        </div>`;
+            <div style="width:28px;text-align:right;font-weight:800">${idx + 1}</div>
+            <div class="avatar" style="width:36px;height:36px;margin-left:8px">${r.avatar_url ? `<img src="${r.avatar_url}">` : (r.display_name || '?')[0]?.toUpperCase()}</div>
+            <div style="flex:1;min-width:160px;margin-left:8px">
+              <div style="font-weight:700">${escapeHtml(r.display_name || 'Miembro')}${r.user_id === CURRENT_USER.id ? ' <span class="pill">Tú</span>' : ''}</div>
+              <div class="meta">Asistencias: ${r.total_scans} • Puntos: ${r.points}</div>
+            </div>`;
           box.appendChild(el);
         });
       } catch (e) {
@@ -1872,7 +1773,7 @@
       }
     }
 
-    /* ====== Frases, valor extra y próximas acciones ====== */
+    /* ====== Frases, valor y próximas acciones ====== */
     const FRASES_PERFIL = [
       { texto: "Un solo delegado puede marcar la diferencia, pero un equipo unido transforma la historia.", tag: "Trabajo en equipo" },
       { texto: "La juventud no es el futuro del sindicato, es el presente que lo está cambiando.", tag: "Juventud" },
@@ -1917,9 +1818,7 @@
       }
     }
 
-    function cambiarFrasePerfil() {
-      aplicarFrasePerfil();
-    }
+    function cambiarFrasePerfil() { aplicarFrasePerfil(); }
 
     function buildNextActionsFromProfile(tel, servicios, cumple) {
       const ul = document.getElementById('perfilAccionesList');
@@ -1929,20 +1828,11 @@
       empty.style.display = "none";
 
       const acciones = [];
-      if (!tel) {
-        acciones.push("Agrega tu teléfono de contacto para que otros compañeros puedan localizarte cuando se necesite apoyo.");
-      }
-      if (!servicios) {
-        acciones.push("Describe tus servicios o habilidades (por ejemplo: programación, asesoría de contrato colectivo, formación, difusión, etc.).");
-      }
-      if (!cumple) {
-        acciones.push("Captura tu fecha de cumpleaños para poder considerar reconocimientos y detalles en tu día.");
-      }
+      if (!tel) acciones.push("Agrega tu teléfono de contacto para que otros compañeros puedan localizarte cuando se necesite apoyo.");
+      if (!servicios) acciones.push("Describe tus servicios o habilidades (por ejemplo: programación, asesoría, formación, difusión, etc.).");
+      if (!cumple) acciones.push("Captura tu fecha de cumpleaños para poder considerar reconocimientos y detalles en tu día.");
 
-      if (acciones.length === 0) {
-        empty.style.display = "block";
-        return;
-      }
+      if (acciones.length === 0) { empty.style.display = "block"; return; }
 
       acciones.forEach(txt => {
         const li = document.createElement('li');
