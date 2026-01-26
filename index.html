@@ -4,15 +4,26 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>SInOS — Sindical Innovation Operative System</title>
+  <title>Plataforma Sindical CG</title>
 
-  <!-- Favicon con el logo SInOS -->
   <link rel="icon" href="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.png" />
-
-  <link rel="stylesheet" href="theme.css">
 
   <style>
     :root {
+      /* --- PALETA DE COLORES STRICTA --- */
+      --bg-body: #1b2e45;
+      --bg-body-end: #152336;
+      --panel: #2e4f77;
+      
+      --primary: #4da1a8;       /* Turquesa */
+      --primary-light: #7ad1d6; /* Sky */
+      
+      --text-main: #f0fdfa;     /* Blanco menta */
+      --text-muted: #bce9eb;    /* Turquesa pálido */
+      
+      --ring: rgba(77, 161, 168, .35); /* Bordes */
+      
+      /* --- VARIABLES DE SISTEMA --- */
       --topbar: 56px;
       --boot-ms: 5200ms;
 
@@ -46,19 +57,33 @@
       margin: 0;
       overflow: hidden;
       overscroll-behavior: none;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    .grid-bg::before {
-      content: "";
+    /* Fondo general con degradado sutil */
+    .grid-bg {
       position: fixed;
       inset: 0;
       pointer-events: none;
-      opacity: .18;
-      background-image: linear-gradient(to right, rgba(96, 165, 250, .12) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(91, 215, 242, .10) 1px, transparent 1px);
-      background-size: 48px 48px, 48px 48px
+      background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%);
+      z-index: -1;
     }
 
+    /* Patrón sutil encima del fondo */
+    .grid-bg::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .08;
+      background-image: 
+        linear-gradient(to right, var(--primary) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--primary) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* --- TOPBAR --- */
     .topbar {
       position: fixed;
       inset: 0 0 auto 0;
@@ -67,10 +92,11 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 16px;
-      background: rgba(9, 14, 26, .55);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid rgba(91, 215, 242, .25);
-      z-index: 30
+      /* Panel Azul Profundo con transparencia */
+      background: rgba(46, 79, 119, 0.85); 
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--ring);
+      z-index: 30;
     }
 
     .mark {
@@ -78,37 +104,45 @@
       place-items: center;
       width: var(--mark);
       height: var(--mark);
-      border-radius: 10px;
-      background: rgba(91, 215, 242, .10);
-      border: 1px solid var(--ring, rgba(91, 215, 242, .35));
-      overflow: hidden
+      border-radius: 8px;
+      background: rgba(77, 161, 168, .15);
+      border: 1px solid var(--ring);
+      overflow: hidden;
     }
 
     .mark img {
       width: 100%;
       height: 100%;
-      object-fit: cover
+      object-fit: cover;
     }
 
     .title {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       font-weight: 600;
-      color: var(--primary, #5bd7f2);
-      letter-spacing: .3px
+      color: var(--text-main);
+      letter-spacing: .5px;
+    }
+
+    .title span {
+      color: var(--primary-light);
     }
 
     .title small {
-      opacity: .7;
-      margin-left: 6px
+      color: var(--text-muted);
+      opacity: .8;
+      font-weight: 400;
+      margin-left: 4px;
     }
 
     .clock {
-      font-size: 12px;
-      color: var(--text-muted, rgba(255, 255, 255, .7))
+      font-size: 13px;
+      color: var(--text-muted);
+      font-feature-settings: "tnum";
     }
 
+    /* --- CAPAS Y CONTENEDORES --- */
     .layer {
       position: fixed;
       left: 0;
@@ -122,55 +156,67 @@
     .wrap {
       padding: 24px 20px;
       max-width: 1200px;
-      margin: 0 auto
+      margin: 0 auto;
     }
 
     .brand {
       display: flex;
       gap: 16px;
       align-items: flex-end;
-      justify-content: space-between
+      justify-content: space-between;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--ring);
+      padding-bottom: 20px;
     }
 
     .brand h1 {
       margin: 0;
       font-size: 26px;
       font-weight: 700;
-      color: #fff
+      color: var(--text-main);
+    }
+
+    .brand .text-gradient {
+      background: linear-gradient(to right, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .brand p {
       margin: 6px 0 0;
-      color: var(--text-muted, rgba(255, 255, 255, .7));
+      color: var(--text-muted);
       font-size: 14px;
-      max-width: 640px
+      max-width: 640px;
     }
 
     .badge {
-      border: 1px solid var(--glass-border, rgba(91, 215, 242, .25));
-      background: rgba(91, 215, 242, .12);
-      padding: 6px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      color: var(--primary, #5bd7f2)
+      border: 1px solid var(--ring);
+      background: rgba(77, 161, 168, .12);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--primary-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
     }
 
+    /* --- TILES (TARJETAS) --- */
     .tiles {
-      margin-top: 18px;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px
+      gap: 16px;
     }
 
     @media(min-width:640px) {
       .tiles {
-        grid-template-columns: repeat(3, 1fr)
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 
     @media(min-width:960px) {
       .tiles {
-        grid-template-columns: repeat(4, 1fr)
+        grid-template-columns: repeat(4, 1fr);
       }
     }
 
@@ -179,39 +225,49 @@
       flex-direction: column;
       justify-content: space-between;
       min-height: var(--tile-min);
-      padding: 18px;
+      padding: 20px;
       cursor: pointer;
-      text-align: left
+      text-align: left;
+      /* Azul Profundo para las tarjetas */
+      background: rgba(46, 79, 119, 0.4);
+      border: 1px solid var(--ring);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      color: inherit;
+      font: inherit;
     }
 
     .tile:hover {
-      background: rgba(30, 41, 59, 0.8);
-      box-shadow: 0 0 0 1px var(--primary-glow, rgba(91, 215, 242, .35)) inset, 0 20px 40px rgba(0, 0, 0, .6)
+      background: var(--panel); /* Color solido #2e4f77 al hover */
+      border-color: var(--primary);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transform: translateY(-2px);
     }
 
     .icon {
       width: var(--tile-icon);
       height: var(--tile-icon);
-      border-radius: 16px;
+      border-radius: 12px;
       display: grid;
       place-items: center;
-      background: rgba(91, 215, 242, .1);
-      border: 1px solid var(--glass-border, rgba(91, 215, 242, .25));
-      color: var(--primary, #5bd7f2);
-      font-size: calc(var(--tile-icon) * .45)
+      background: rgba(77, 161, 168, .15);
+      border: 1px solid var(--ring);
+      color: var(--primary-light);
+      font-size: calc(var(--tile-icon) * .45);
     }
 
     .tile h3 {
-      margin: 0 0 4px;
+      margin: 0 0 6px;
       font-size: var(--tile-title);
-      color: #fff
+      color: var(--text-main);
+      font-weight: 600;
     }
 
     .tile p {
       margin: 0;
-      color: var(--text-muted, rgba(255, 255, 255, .7));
+      color: var(--text-muted);
       font-size: var(--tile-desc);
-      opacity: .85
+      line-height: 1.4;
     }
 
     .tile.ghost {
@@ -219,50 +275,70 @@
       pointer-events: none;
     }
 
+    /* --- APP VIEW --- */
     .app-wrap {
       max-width: 1200px;
       margin: 0 auto;
       padding: 10px 16px;
       height: 100%;
       display: flex;
-      flex-direction: column
+      flex-direction: column;
     }
 
     .app-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin: 6px 0 10px
+      margin: 6px 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--ring);
     }
 
     .app-meta {
       display: flex;
       align-items: center;
-      gap: 12px
+      gap: 14px;
     }
 
     .app-ic {
       width: var(--app-ic);
       height: var(--app-ic);
-      border-radius: 12px;
+      border-radius: 10px;
       display: grid;
       place-items: center;
-      background: rgba(91, 215, 242, .16);
-      border: 1px solid var(--glass-border, rgba(91, 215, 242, .25));
-      font-size: calc(var(--app-ic)*.52)
+      background: rgba(77, 161, 168, .2);
+      border: 1px solid var(--ring);
+      font-size: calc(var(--app-ic)*.52);
     }
 
     .app-title {
       margin: 0;
       font-size: 18px;
-      color: #fff;
-      font-weight: 600
+      color: var(--text-main);
+      font-weight: 600;
     }
 
     .app-desc {
-      margin: 0;
+      margin: 2px 0 0;
       font-size: 12px;
-      color: var(--text-muted, rgba(255, 255, 255, .7))
+      color: var(--text-muted);
+    }
+    
+    .btn {
+      background: transparent;
+      border: 1px solid var(--ring);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    
+    .btn:hover {
+      background: rgba(77, 161, 168, .15);
+      color: var(--primary-light);
+      border-color: var(--primary);
     }
 
     .app-body {
@@ -276,9 +352,9 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      border-radius: 18px;
-      border: 1px solid var(--glass-border, rgba(91, 215, 242, .25));
-      background: rgba(5, 14, 26, .5)
+      border-radius: 8px;
+      border: 1px solid var(--ring);
+      background: rgba(21, 35, 54, 0.6); /* Fondo oscuro para iframes */
     }
 
     #app-internal {
@@ -291,23 +367,23 @@
     .hide {
       opacity: 0;
       pointer-events: none;
-      transition: opacity .35s ease
+      transition: opacity .35s ease;
     }
 
     .show {
       opacity: 1;
-      transition: opacity .35s ease
+      transition: opacity .35s ease;
     }
 
+    /* --- BOOT SCREEN (ARRANQUE) --- */
     .boot {
       position: fixed;
       inset: 0;
       display: grid;
       place-items: center;
       z-index: 50;
-      background:
-        radial-gradient(60vmax 60vmax at 50% 40%, rgba(96, 165, 250, .18), transparent 60%),
-        linear-gradient(180deg, #071122, #0a0f1d)
+      /* Fondo de arranque alineado a la paleta */
+      background: radial-gradient(circle at 50% 30%, #2e4f77 0%, #1b2e45 60%, #152336 100%);
     }
 
     .boot .halo {
@@ -315,108 +391,104 @@
       width: 44vmin;
       height: 44vmin;
       border-radius: 50%;
-      filter: blur(60px);
-      background: radial-gradient(circle, rgba(91, 215, 242, .28), transparent 60%);
-      animation: pulse 4.6s ease-in-out infinite
+      filter: blur(80px);
+      background: radial-gradient(circle, rgba(77, 161, 168, 0.3), transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
     }
 
     .boot-card {
       position: relative;
-      display: grid;
-      place-items: center;
-      gap: 12px
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      z-index: 2;
     }
 
     .logo {
       width: var(--logo);
       height: var(--logo);
-      border-radius: 26px;
-      background: linear-gradient(135deg, rgba(96, 165, 250, .22), rgba(91, 215, 242, .12));
-      border: 1px solid var(--glass-border, rgba(91, 215, 242, .25));
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(46, 79, 119, .5), rgba(27, 46, 69, .8));
+      border: 1px solid var(--ring);
       display: grid;
       place-items: center;
-      box-shadow: 0 0 18px rgba(91, 215, 242, .35) inset;
-      overflow: hidden
+      box-shadow: 0 0 30px rgba(77, 161, 168, .15);
+      overflow: hidden;
     }
 
     .logo img {
       width: 100%;
       height: 100%;
-      object-fit: cover
-    }
-
-    .isvg {
-      display: none
+      object-fit: cover;
     }
 
     .boot h1 {
-      margin: 0;
-      color: #fff;
-      font-size: 30px;
-      letter-spacing: .4px
+      margin: 10px 0 0;
+      color: var(--text-main);
+      font-size: 28px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
     }
 
     .boot p {
-      margin: 2px 0 0;
-      color: var(--primary, #5bd7f2);
-      opacity: .85;
-      font-size: 12px
+      margin: 0;
+      color: var(--primary);
+      opacity: .9;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
     }
 
     .bar {
-      margin-top: 12px;
-      height: 10px;
-      width: 320px;
+      margin-top: 20px;
+      height: 6px;
+      width: 280px;
       max-width: 80vw;
       border-radius: 999px;
-      background: rgba(91, 215, 242, .14);
-      border: 1px solid var(--glass-border, rgba(91, 215, 242, .25));
-      overflow: hidden
+      background: rgba(27, 46, 69, 0.5);
+      border: 1px solid var(--ring);
+      overflow: hidden;
     }
 
     .bar span {
       display: block;
       height: 100%;
-      width: 34%;
-      background: linear-gradient(90deg, var(--c-cyan, #5bd7f2), var(--c-sky, #60a5fa));
-      animation: load var(--boot-ms) ease-in-out infinite
+      width: 30%;
+      /* Degradado Turquesa -> Sky */
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      border-radius: 99px;
+      box-shadow: 0 0 10px var(--primary);
+      animation: load var(--boot-ms) ease-in-out infinite;
     }
 
     .skip {
-      margin-top: 10px;
-      color: var(--text-muted, rgba(255, 255, 255, .7));
+      margin-top: 16px;
+      color: var(--text-muted);
       font-size: 11px;
-      opacity: .85
+      cursor: pointer;
+      padding: 8px;
+      opacity: 0.7;
+      transition: opacity 0.3s;
     }
+    
+    .skip:hover { opacity: 1; color: var(--primary-light); }
 
     #boot-tips {
-      margin-top: 6px;
+      margin-top: 8px;
       font-size: 12px;
-      color: var(--text-main, rgba(255, 255, 255, .9));
-      opacity: .85;
-      text-align: center
+      color: var(--text-muted);
+      font-style: italic;
     }
 
     @keyframes load {
-      0% {
-        transform: translateX(-120%)
-      }
-
-      100% {
-        transform: translateX(220%)
-      }
+      0% { transform: translateX(-150%); }
+      100% { transform: translateX(350%); }
     }
 
     @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: .6
-      }
-
-      50% {
-        opacity: 1
-      }
+      0%, 100% { opacity: .5; transform: scale(1); }
+      50% { opacity: .9; transform: scale(1.05); }
     }
   </style>
 </head>
@@ -424,64 +496,63 @@
 <body>
   <div class="grid-bg"></div>
 
-  <!-- BOOT -->
-  <div id="boot" class="boot show" onclick="window.SInOS && SInOS.skipBoot()" role="button" aria-label="Saltar arranque"
-    title="Toca para saltar">
+  <div id="boot" class="boot show" onclick="window.SInOS && SInOS.skipBoot()">
     <div class="boot-card">
       <div class="halo"></div>
-      <div class="logo" aria-label="Logo SInOS">
-        <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.png" alt="SInOS" />
+      <div class="logo">
+        <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.png" alt="Logo" />
       </div>
-      <h1>SInOS</h1>
-      <p>SINDICAL INNOVATION OPERATIVE SYSTEM</p>
+      <h1>Plataforma Sindical CG</h1>
+      <p>Gestión Inteligente</p>
+      
       <div class="bar"><span></span></div>
-      <div id="boot-tips">Inicializando módulos…</div>
-      <div class="skip">Toca para saltar ▸</div>
+      <div id="boot-tips">Cargando módulos...</div>
+      
+      <div class="skip">Tocar para iniciar</div>
     </div>
   </div>
 
-  <!-- TOP BAR -->
-  <div class="topbar glass-panel" id="topbar">
+  <div class="topbar" id="topbar">
     <div class="title">
-      <div class="mark" aria-hidden>
+      <div class="mark">
         <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.png" alt="" />
       </div>
-      <span>SInOS</span>
-      <small>Innovación Sindical</small>
+      <div>
+        <span>Plataforma</span> Sindical CG
+      </div>
     </div>
     <div class="clock" id="clock">--:--:--</div>
   </div>
 
-  <!-- HOME -->
   <main id="home" class="layer show" aria-live="polite">
     <section class="wrap">
       <section class="brand">
         <div>
-          <h1>Bienvenido a <span class="text-gradient">SInOS</span></h1>
-          <p>Sistema Operativo de Innovación Sindical. Módulos disponibles en el panel.</p>
+          <h1>Bienvenido, <span class="text-gradient">Carlos</span></h1>
+          <p>Panel de Control y Gestión Sindical.</p>
         </div>
-        <div style="display:flex;gap:8px">
-          <div class="badge">Equipo de Innovación Sindical</div>
+        <div>
+          <div class="badge">Sindicato Nacional Secc. XX</div>
         </div>
       </section>
+      
       <section class="tiles" id="tiles"></section>
     </section>
   </main>
 
-  <!-- APP VIEW -->
   <section id="app" class="layer hide" aria-live="polite">
     <div class="app-wrap">
       <div class="app-head">
         <div class="app-meta">
           <div class="app-ic" id="app-ic">🧩</div>
           <div>
-            <h2 class="app-title" id="app-title">Título</h2>
+            <h2 class="app-title" id="app-title">Módulo</h2>
             <p class="app-desc" id="app-desc">Descripción</p>
           </div>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div style="display:flex;gap:8px;">
           <button class="btn" onclick="SInOS.goHome()">🏠 Inicio</button>
-          <button class="btn" id="btn-open-new" style="display:none" disabled>🔗 Abrir</button>
+          <button class="btn" id="btn-open-new" style="display:none">🔗 Abrir</button>
           <button class="btn" onclick="SInOS.closeApp()">✖ Cerrar</button>
         </div>
       </div>
@@ -492,7 +563,6 @@
     </div>
   </section>
 
-  <!-- Facebook SDK helper (para Noticias) -->
   <script>
     function loadFacebookSDKOnce(locale = 'es_LA') {
       return new Promise((resolve) => {
@@ -511,13 +581,12 @@
     }
   </script>
 
-  <!-- APPS (TODAS VISIBLES) -->
   <script>
     const APPS = [
       {
         id: 'trascendencia',
-        title: 'TrascendencIA Sindical',
-        desc: 'Asistente IA.',
+        title: 'TrascendencIA',
+        desc: 'Asistente Virtual Sindical.',
         icon: '🤖',
         href: 'https://trascendencia-sindical-7t85.onrender.com/',
         quick: true
@@ -525,22 +594,22 @@
       {
         id: 'noticias',
         title: 'Noticias',
-        desc: 'Circulares y comunicados en tiempo real.',
+        desc: 'Comunicados oficiales en tiempo real.',
         icon: '📰',
         type: 'internal'
       },
       {
         id: 'agenda',
-        title: 'Red Unidad en Acción',
-        desc: 'Accede con tu usuario para ver la agenda.',
+        title: 'Red Unidad',
+        desc: 'Agenda y eventos de la Red.',
         icon: '📅',
         href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html',
         quick: true
       },
       {
         id: 'denuncias',
-        title: 'Asistente Generador de Escritos',
-        desc: 'Genera escritos formales con IA, listos para imprimir.',
+        title: 'Gestor de Escritos',
+        desc: 'Redacción asistida para denuncias.',
         icon: '📝',
         href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias',
         quick: true
@@ -548,39 +617,38 @@
       {
         id: 'directorio',
         title: 'Directorio',
-        desc: 'Delegados, jurídicos y atención a trabajadores.',
+        desc: 'Contactos clave y delegados.',
         icon: '📞',
         iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio',
         quick: true
       },
       {
         id: 'miniapp',
-        title: 'MiniApp WhatsApp',
-        desc: 'Automatizaciones por palabras clave y avisos.',
+        title: 'WhatsApp Bot',
+        desc: 'Automatización y respuestas rápidas.',
         icon: '💬',
         href: 'https://wa.me/XXXXXXXXXXX'
       },
       {
         id: 'calculadora',
-        title: 'Calculadora de prestaciones',
-        desc: 'Vacaciones, licencias, estímulos y antigüedad.',
-        icon: '📄',
+        title: 'Prestaciones',
+        desc: 'Cálculo de vacaciones y estímulos.',
+        icon: '📊',
         iframe: 'about:blank'
       },
       {
         id: 'ajustes',
-        title: 'Ajustes',
-        desc: 'Tema, accesibilidad y personalización.',
+        title: 'Configuración',
+        desc: 'Preferencias del sistema.',
         icon: '⚙️',
         iframe: 'about:blank'
       }
     ];
   </script>
 
-  <!-- SInOS: núcleo -->
   <script>
     const SInOS = {
-      BOOT_MS: 2200,
+      BOOT_MS: 3000, // Ajustado un poco más rápido para eficiencia
       bootEl: null, homeEl: null, appEl: null, appTitle: null, appDesc: null, appIc: null,
       appIframe: null, appInternal: null, btnOpenNew: null, currentApp: null, _cleanupNoticias: null,
 
@@ -600,19 +668,23 @@
 
           const FIRST_KEY = 'sinos:bootedOnce';
           const qs = new URLSearchParams(location.search);
-          const forceLong = qs.get('boot') === 'long';
           const forceReset = qs.get('boot') === 'reset';
           if (forceReset) { try { localStorage.removeItem(FIRST_KEY); } catch { } }
-          let firstTime = false; try { firstTime = !localStorage.getItem(FIRST_KEY); } catch { }
-          this.BOOT_MS = (forceLong || firstTime) ? 5200 : 2200;
+          
+          let firstTime = false; 
+          try { firstTime = !localStorage.getItem(FIRST_KEY); } catch { }
+          
+          // Si no es la primera vez, arranque rápido (1.5s), si es primera vez, normal (3s)
+          this.BOOT_MS = firstTime ? 3500 : 1500;
           document.documentElement.style.setProperty('--boot-ms', this.BOOT_MS + 'ms');
 
+          // Mensajes de carga rotativos
           (function () {
-            const tips = ['Inicializando módulos…', 'Montando apps del sistema…', 'Verificando integridad de interfaz…', 'Optimizando desempeño para tu dispositivo…'];
+            const tips = ['Conectando a base de datos segura...', 'Cargando perfil de usuario...', 'Sincronizando módulos...', 'Plataforma Sindical CG lista.'];
             let i = 0; setInterval(() => {
               const el = document.getElementById('boot-tips');
               if (el) { i = (i + 1) % tips.length; el.textContent = tips[i]; }
-            }, 1200);
+            }, 900);
           })();
 
           const _hide = this.hideBoot.bind(this);
@@ -623,18 +695,12 @@
           document.addEventListener('keydown', (e) => { if (e.key === 'Escape') this.goHome(); });
 
           window.addEventListener('resize', () => this.renderTiles());
-
-          document.addEventListener('click', (e) => {
-            const a = e.target.closest && e.target.closest('a[target="_blank"]');
-            if (a) { a.removeAttribute('target'); }
-          });
-
         } catch (err) { console.error('Init:', err); this.forceShowUI(); }
       },
 
       tickClock() {
         const el = document.getElementById('clock');
-        if (el) el.textContent = new Date().toLocaleTimeString('es-MX', { hour12: false });
+        if (el) el.textContent = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
       },
       hideBoot() { this.bootEl?.classList.add('hide'); this.bootEl?.classList.remove('show'); },
       skipBoot() { this.hideBoot(); },
@@ -643,28 +709,23 @@
       renderTiles() {
         const wrap = document.getElementById('tiles');
         wrap.innerHTML = '';
-
-        const visible = APPS; // TODAS
+        const visible = APPS;
 
         visible.forEach(a => {
           const b = document.createElement('button');
-          b.className = 'card tile';
-
-          if (a.href && !a.iframe && a.type !== 'internal') {
-            b.onclick = () => location.assign(a.href);
-          } else {
-            b.onclick = () => this.openApp(a.id);
-          }
-
-          b.setAttribute('aria-label', `${a.title}. ${a.desc || ''}`);
+          b.className = 'tile';
+          b.onclick = () => (a.href && !a.iframe && a.type !== 'internal') ? location.assign(a.href) : this.openApp(a.id);
+          
           b.innerHTML = `
-            <div style="display:flex;gap:14px;align-items:center">
+            <div style="display:flex;gap:14px;align-items:center;width:100%">
               <div class="icon">${a.icon || '🧩'}</div>
-              <div><h3>${a.title}</h3><p>${a.desc || ''}</p></div>
-            </div><div></div>`;
+              <div><h3>${a.title}</h3></div>
+            </div>
+            <p>${a.desc || ''}</p>`;
           wrap.appendChild(b);
         });
 
+        // Relleno visual (ghosts) para cuadrar grid
         const cols = (innerWidth >= 960) ? 4 : (innerWidth >= 640 ? 3 : 2);
         const missing = (cols - (visible.length % cols)) % cols;
         for (let i = 0; i < missing; i++) {
@@ -677,11 +738,6 @@
       openApp(id) {
         const app = APPS.find(x => x.id === id); if (!app) return;
         this.currentApp = app;
-
-        if (app.href && !app.iframe && app.type !== 'internal') {
-          location.assign(app.href);
-          return;
-        }
 
         if (this._cleanupNoticias) { try { this._cleanupNoticias(); } catch { } this._cleanupNoticias = null; }
 
@@ -703,43 +759,34 @@
           this.appIframe.src = app.iframe;
         }
 
-        if ('vibrate' in navigator) { try { navigator.vibrate(8); } catch { } }
+        if ('vibrate' in navigator) { try { navigator.vibrate(5); } catch { } }
       },
 
       async renderNoticias() {
         this.appInternal.style.display = 'block';
         const root = this.appInternal;
         root.innerHTML = `
-          <div id="fb-news-wrap" style="width:100%; padding:10px;">
-            <div class="fb-page"
+          <div id="fb-news-wrap" style="width:100%; padding:10px; display:flex; justify-content:center;">
+            <div class="fb-page" 
               data-href="https://www.facebook.com/profile.php?id=100063446307036"
-              data-tabs="timeline"
-              data-width="980"
-              data-height=""
-              data-small-header="true"
-              data-adapt-container-width="true"
-              data-hide-cover="true"
-              data-show-facepile="false">
-              <blockquote cite="https://www.facebook.com/profile.php?id=100063446307036" class="fb-xfbml-parse-ignore">
-                <a href="https://www.facebook.com/profile.php?id=100063446307036">Noticias</a>
-              </blockquote>
+              data-tabs="timeline" data-width="500" data-height="" 
+              data-small-header="true" data-adapt-container-width="true" 
+              data-hide-cover="false" data-show-facepile="false">
             </div>
-          </div>
-        `;
+          </div>`;
         const pageDiv = root.querySelector('.fb-page');
         const fit = () => {
-          const available = Math.max(280, Math.floor(root.clientWidth - 20));
+          const available = Math.min(500, Math.max(280, Math.floor(root.clientWidth - 20)));
           pageDiv.setAttribute('data-width', String(available));
-          if (window.FB && FB.XFBML && typeof FB.XFBML.parse === 'function') { FB.XFBML.parse(root); }
+          if (window.FB && FB.XFBML) FB.XFBML.parse(root);
         };
         await loadFacebookSDKOnce('es_LA');
-        fit(); setTimeout(fit, 60); setTimeout(fit, 300);
-        let t; const onResize = () => { clearTimeout(t); t = setTimeout(fit, 120); };
+        fit(); setTimeout(fit, 100);
+        let t; const onResize = () => { clearTimeout(t); t = setTimeout(fit, 150); };
         window.addEventListener('resize', onResize);
         this._cleanupNoticias = () => window.removeEventListener('resize', onResize);
       },
 
-      openExternal() { if (this.currentApp?.href) { location.assign(this.currentApp.href); } },
       closeApp() { this.goHome(); },
       goHome() {
         if (this._cleanupNoticias) { try { this._cleanupNoticias(); } catch { } this._cleanupNoticias = null; }
@@ -749,34 +796,18 @@
       }
     };
 
-    // Evita scroll fuera de capas (más seguro)
-    document.addEventListener('touchmove', function (e) {
-      const ok = e.target.closest?.('.layer, #app-body');
-      if (!ok) e.preventDefault();
-    }, { passive: false });
-
     window.SInOS = SInOS;
     document.addEventListener('DOMContentLoaded', () => SInOS.init());
   </script>
 
-  <!-- Paracaídas: oculta el boot si algo falla -->
   <script>
-    (function () {
-      function forceHideBoot() {
-        var b = document.getElementById('boot');
-        if (b) { b.style.transition = 'opacity .35s ease'; b.style.opacity = '0'; b.style.pointerEvents = 'none'; b.style.zIndex = '0'; b.classList.add('hide'); }
-        var home = document.getElementById('home'); if (home) { home.classList.add('show'); home.classList.remove('hide'); }
-        var tb = document.getElementById('topbar'); if (tb) tb.style.display = 'flex';
+    setTimeout(() => {
+      const b = document.getElementById('boot');
+      if (b && getComputedStyle(b).opacity !== '0') {
+        b.style.opacity = '0'; b.style.pointerEvents = 'none';
+        document.getElementById('home').classList.add('show');
       }
-      function scheduleFallback() {
-        var base = (window.SInOS && SInOS.BOOT_MS ? SInOS.BOOT_MS : 7000) + 1500;
-        setTimeout(forceHideBoot, base);
-      }
-      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', scheduleFallback); } else { scheduleFallback(); }
-      window.addEventListener('error', forceHideBoot);
-      window.addEventListener('unhandledrejection', forceHideBoot);
-    })();
+    }, 8000);
   </script>
 </body>
-
 </html>
