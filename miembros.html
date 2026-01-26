@@ -4,18 +4,25 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Unidad en Acción — Miembros</title>
+  <title>Plataforma Sindical CG — Miembros</title>
   <link rel="icon"
     href="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20Unidad%20en%20Accion.png?raw=true">
   <style>
     :root {
-      --bg: #0b1022;
-      --panel: #101a33;
-      --ring: rgba(91, 215, 242, .35);
-      --txt: #e6fbff;
-      --muted: #aee9f7;
-      --primary: #5bd7f2;
-      --sky: #60a5fa;
+      /* Ajuste de fondo para que contraste con el panel #2e4f77 */
+      --bg: #1b2e45; 
+      /* El color solicitado para los bloques principales */
+      --panel: #2e4f77;
+      /* Anillo de enfoque y bordes suaves basado en el turquesa */
+      --ring: rgba(77, 161, 168, .45);
+      /* Texto claro */
+      --txt: #f0fdfa;
+      /* Texto secundario (un turquesa muy pálido) */
+      --muted: #bce9eb;
+      /* El color solicitado para acciones y realces */
+      --primary: #4da1a8;
+      /* Variación más clara para degradados */
+      --sky: #7ad1d6;
     }
 
     * {
@@ -27,7 +34,8 @@
 
     body {
       min-height: 100vh;
-      background: linear-gradient(180deg, #0b1220, #0b1022);
+      /* Degradado sutil de fondo */
+      background: linear-gradient(180deg, #152336, #1b2e45);
       color: var(--txt);
       display: flex;
       flex-direction: column
@@ -41,9 +49,10 @@
       align-items: center;
       justify-content: space-between;
       padding: 10px 16px;
-      background: rgba(9, 14, 26, .55);
+      /* Fondo del header con transparencia azulada */
+      background: rgba(30, 50, 80, .75);
       backdrop-filter: blur(8px);
-      border-bottom: 1px solid rgba(91, 215, 242, .25)
+      border-bottom: 1px solid rgba(77, 161, 168, .35)
     }
 
     header img {
@@ -52,15 +61,15 @@
 
     header h1 {
       font-size: 18px;
-      color: #bff4ff;
+      color: #dcfce7;
       display: flex;
       align-items: center;
       gap: 10px
     }
 
     #btnLogout {
-      background: rgba(255, 70, 70, .15);
-      color: #ffaaaa;
+      background: rgba(255, 90, 90, .15);
+      color: #ffcccc;
       border: 1px solid rgba(255, 100, 100, .35);
       padding: 8px 12px;
       border-radius: 10px;
@@ -80,8 +89,8 @@
 
     nav {
       width: 240px;
-      background: rgba(11, 18, 32, .75);
-      border-right: 1px solid rgba(91, 215, 242, .25);
+      background: rgba(27, 46, 69, .85);
+      border-right: 1px solid rgba(77, 161, 168, .25);
       padding: 12px;
       display: flex;
       flex-direction: column;
@@ -91,7 +100,7 @@
     nav button {
       appearance: none;
       border: none;
-      background: rgba(91, 215, 242, .12);
+      background: rgba(77, 161, 168, .12);
       color: var(--txt);
       padding: 10px;
       border-radius: 10px;
@@ -103,7 +112,7 @@
     nav button:hover,
     nav button.active {
       background: linear-gradient(90deg, var(--primary), var(--sky));
-      color: #072133;
+      color: #0f2638;
       font-weight: 600
     }
 
@@ -120,7 +129,7 @@
 
     .card {
       background: var(--panel);
-      border: 1px solid rgba(91, 215, 242, .25);
+      border: 1px solid rgba(77, 161, 168, .35);
       border-radius: 16px;
       padding: 20px;
       box-shadow: 0 8px 25px rgba(0, 0, 0, .25);
@@ -141,7 +150,7 @@
 
     h2 {
       margin-bottom: 10px;
-      color: #bff4ff
+      color: #d1f5f7
     }
 
     p.muted {
@@ -160,7 +169,7 @@
       width: 110px;
       height: 110px;
       border-radius: 50%;
-      background: #0a1329;
+      background: #233b5c;
       border: 1px solid var(--ring);
       display: grid;
       place-items: center;
@@ -187,15 +196,15 @@
 
     label {
       font-size: 13px;
-      color: #bdefff
+      color: #bce9eb
     }
 
     input,
     textarea,
     select {
-      background: #0a1329;
-      border: 1px solid rgba(91, 215, 242, .3);
-      color: #e6fbff;
+      background: #1b2e45;
+      border: 1px solid rgba(77, 161, 168, .4);
+      color: #f0fdfa;
       padding: 9px 11px;
       border-radius: 10px
     }
@@ -210,7 +219,7 @@
       border: none;
       cursor: pointer;
       background: linear-gradient(90deg, var(--primary), var(--sky));
-      color: #072133;
+      color: #0f2638;
       font-weight: 600;
       padding: 10px 16px;
       border-radius: 12px;
@@ -224,8 +233,8 @@
 
     .subtle-btn {
       appearance: none;
-      border: 1px solid rgba(91, 215, 242, .28);
-      background: rgba(91, 215, 242, .08);
+      border: 1px solid rgba(77, 161, 168, .28);
+      background: rgba(77, 161, 168, .1);
       color: #fff;
       padding: 6px 10px;
       border-radius: 10px;
@@ -234,12 +243,12 @@
     }
 
     .subtle-btn:hover {
-      background: rgba(91, 215, 242, .18)
+      background: rgba(77, 161, 168, .25)
     }
 
     .meta {
       font-size: 12px;
-      color: #9fdcf0
+      color: #8ccacdb6
     }
 
     .row {
@@ -255,10 +264,10 @@
       gap: 6px;
       padding: 4px 8px;
       border-radius: 999px;
-      background: rgba(96, 165, 250, .12);
-      border: 1px solid rgba(96, 165, 250, .35);
+      background: rgba(77, 161, 168, .15);
+      border: 1px solid rgba(77, 161, 168, .35);
       font-size: 12px;
-      color: #cfefff
+      color: #d1f5f7
     }
 
     iframe {
@@ -281,14 +290,14 @@
       gap: 10px;
       padding: 10px 12px;
       border-radius: 12px;
-      background: rgba(91, 215, 242, .10);
-      border: 1px solid rgba(91, 215, 242, .28);
+      background: rgba(77, 161, 168, .15);
+      border: 1px solid rgba(77, 161, 168, .28);
       font-weight: 600;
-      color: #bff4ff
+      color: #d1f5f7
     }
 
     details.forum-toggle[open]>summary {
-      background: rgba(91, 215, 242, .18)
+      background: rgba(77, 161, 168, .25)
     }
 
     details.forum-toggle>summary::-webkit-details-marker {
@@ -306,8 +315,8 @@
     .qr-card {
       display: grid;
       place-items: center;
-      background: rgba(96, 165, 250, .08);
-      border: 1px solid rgba(96, 165, 250, .25);
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid rgba(77, 161, 168, .25);
       border-radius: 12px;
       padding: 12px;
       width: 220px
@@ -366,8 +375,8 @@
     }
 
     .perfil-extra-card {
-      background: #0a1329;
-      border: 1px solid rgba(91, 215, 242, .35);
+      background: #233b5c;
+      border: 1px solid rgba(77, 161, 168, .35);
       border-radius: 12px;
       padding: 10px 12px;
     }
@@ -375,7 +384,7 @@
     .perfil-extra-card h3 {
       margin: 0 0 6px;
       font-size: 14px;
-      color: #bff4ff;
+      color: #d1f5f7;
     }
 
     #perfilQuoteText {
@@ -390,7 +399,7 @@
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: .08em;
-      color: rgba(174, 233, 247, .85);
+      color: rgba(188, 233, 235, 0.85);
     }
 
     .btn-mini {
@@ -398,14 +407,14 @@
       font-size: 12px;
       padding: 5px 10px;
       border-radius: 999px;
-      border: 1px solid rgba(91, 215, 242, .6);
-      background: rgba(5, 14, 26, .9);
-      color: #e6fbff;
+      border: 1px solid rgba(77, 161, 168, .6);
+      background: rgba(21, 35, 54, 0.9);
+      color: #f0fdfa;
       cursor: pointer;
     }
 
     .btn-mini:hover {
-      background: rgba(91, 215, 242, .18);
+      background: rgba(77, 161, 168, .25);
     }
 
     #perfilValorList,
@@ -467,7 +476,7 @@
     <h1>
       <img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20Unidad%20en%20Accion.png?raw=true"
         alt="Logo">
-      Unidad en Acción — Miembros
+      Plataforma Sindical CG — Miembros
     </h1>
     <button id="btnLogout">Cerrar sesión</button>
   </header>
@@ -485,14 +494,13 @@
       <button class="tab" data-tab="personaliza">⚙️ Personaliza tu perfil</button>
     </nav>
 
-    <!-- PERFIL -->
     <section id="perfil" class="content active">
       <div class="card">
         <div class="perfil-layout">
           <div class="perfil-main">
             <div>
               <h2>👋 Bienvenido</h2>
-              <p class="muted">Esta es tu página de miembro dentro de Unidad en Acción</p>
+              <p class="muted">Esta es tu página de miembro dentro de la Plataforma Sindical CG</p>
 
               <div id="diagBox" class="diag" style="display:none;"></div>
 
@@ -512,7 +520,8 @@
               </div>
             </div>
 
-            <div class="card" id="asistenciaResumen" style="margin-top:20px; animation:fadeInSmall .2s ease">
+            <div class="card" id="asistenciaResumen"
+              style="margin-top:20px; background:#233b5c; animation:fadeInSmall .2s ease">
               <h3>📊 Asistencia y recompensas</h3>
               <div id="asistData" class="meta" style="margin-bottom:8px">Cargando tus datos...</div>
               <div class="row" style="flex-wrap:wrap;gap:20px">
@@ -535,7 +544,7 @@
               </div>
             </div>
 
-            <div class="card" id="miniTop" style="margin-top:12px; animation:fadeInSmall .2s ease">
+            <div class="card" id="miniTop" style="margin-top:12px; background:#233b5c; animation:fadeInSmall .2s ease">
               <h3>🏆 Top de asistencia </h3>
               <div id="miniTopMeta" class="meta" style="margin-top:6px">Cargando…</div>
               <div id="miniTopList" style="margin-top:10px;display:grid;gap:8px"></div>
@@ -571,7 +580,6 @@
       </div>
     </section>
 
-    <!-- MIEMBROS -->
     <section id="miembros" class="content">
       <div class="card">
         <h2>👥 Directorio de Miembros</h2>
@@ -586,7 +594,6 @@
       </div>
     </section>
 
-    <!-- CALENDARIO -->
     <section id="calendario" class="content">
       <div class="card">
         <h2>📅 Calendario de Actividades</h2>
@@ -595,7 +602,6 @@
       </div>
     </section>
 
-    <!-- FORO -->
     <section id="foro" class="content">
       <div class="card">
         <h2>🗣️ Foro de Miembros</h2>
@@ -604,7 +610,8 @@
           <summary><span class="rotate">▸</span><span>Crear una publicación</span></summary>
           <form id="forumForm" style="margin-top:12px">
             <label>Escribe una publicación (máx. 500 caracteres)</label>
-            <textarea id="forumInput" maxlength="500" placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
+            <textarea id="forumInput" maxlength="500"
+              placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
             <div class="row">
               <label style="font-size:13px">Categoría</label>
               <select id="forumCategory">
@@ -620,7 +627,6 @@
       </div>
     </section>
 
-    <!-- VIDEOLLAMADAS -->
     <section id="videollamadas" class="content">
       <div class="card">
         <h2>📞 Videollamadas</h2>
@@ -630,17 +636,15 @@
       </div>
     </section>
 
-    <!-- BIBLIOTECA -->
     <section id="biblioteca" class="content">
       <div class="card">
         <h2>📚 Biblioteca de Recursos</h2>
-        <p class="muted">Consulta y explora materiales digitales de la Red Unidad en Acción.</p>
+        <p class="muted">Consulta y explora materiales digitales de la Plataforma Sindical CG.</p>
         <iframe src="biblioteca.html"
           style="width:100%;min-height:650px;border:0;border-radius:12px;margin-top:12px" loading="lazy"></iframe>
       </div>
     </section>
 
-    <!-- VERIFICACIÓN -->
     <section id="verificacion" class="content">
       <div class="card">
         <h2>✅ Verificación de Asistencia</h2>
@@ -673,7 +677,6 @@
       </div>
     </section>
 
-    <!-- PERSONALIZA -->
     <section id="personaliza" class="content">
       <div class="card">
         <h2>⚙️ Edita tu información</h2>
@@ -772,7 +775,6 @@
     </section>
   </main>
 
-  <!-- Librerías -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
@@ -1395,7 +1397,7 @@
 
           contentEl.outerHTML = `
             <div class="edit-wrap" style="margin-top:8px;display:grid;gap:8px">
-              <textarea class="edit-textarea" style="min-height:120px;background:#0a1329;border:1px solid rgba(91,215,242,.3);color:#e6fbff;padding:9px 11px;border-radius:10px"></textarea>
+              <textarea class="edit-textarea" style="min-height:120px;background:#1b2e45;border:1px solid rgba(77, 161, 168, .3);color:#f0fdfa;padding:9px 11px;border-radius:10px"></textarea>
               <div class="row">
                 <button class="btn btn-save-edit" data-id="${postId}">💾 Guardar</button>
                 <button class="subtle-btn btn-cancel-edit">Cancelar</button>
@@ -1758,12 +1760,13 @@
 
         data.forEach((r, idx) => {
           const el = document.createElement('div');
+          const isMe = r.user_id === CURRENT_USER.id;
           el.className = 'row';
           el.innerHTML = `
             <div style="width:28px;text-align:right;font-weight:800">${idx + 1}</div>
             <div class="avatar" style="width:36px;height:36px;margin-left:8px">${r.avatar_url ? `<img src="${r.avatar_url}">` : (r.display_name || '?')[0]?.toUpperCase()}</div>
             <div style="flex:1;min-width:160px;margin-left:8px">
-              <div style="font-weight:700">${escapeHtml(r.display_name || 'Miembro')}${r.user_id === CURRENT_USER.id ? ' <span class="pill">Tú</span>' : ''}</div>
+              <div style="font-weight:700">${escapeHtml(r.display_name || 'Miembro')}${isMe ? ' <span class="pill">Tú</span>' : ''}</div>
               <div class="meta">Asistencias: ${r.total_scans} • Puntos: ${r.points}</div>
             </div>`;
           box.appendChild(el);
