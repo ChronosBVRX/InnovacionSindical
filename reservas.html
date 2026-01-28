@@ -282,6 +282,16 @@
         <div class="card" style="background:#233b5c;border-radius:14px">
           <div style="font-weight:800">➕ Crear / editar activo</div>
 
+          <!-- ✅ NUEVO: selector para editar activos existentes -->
+          <div class="row" style="margin-top:10px;gap:10px;align-items:flex-end;flex-wrap:wrap">
+            <div style="flex:1;min-width:240px">
+              <label class="meta">Editar activo existente</label>
+              <select id="adminAssetPick" style="width:100%"></select>
+            </div>
+            <button class="subtle-btn" type="button" id="btnLoadAsset">Cargar</button>
+            <button class="subtle-btn" type="button" id="btnClearAsset">Limpiar</button>
+          </div>
+
           <form id="assetForm" style="margin-top:10px;display:grid;gap:10px;max-width:720px">
             <input type="hidden" id="assetId">
 
@@ -480,6 +490,7 @@
 
   /* ====== Tabs ====== */
   document.addEventListener("DOMContentLoaded", ()=>{
+
     document.querySelectorAll(".tab").forEach(btn=>{
       btn.addEventListener("click",(e)=>{
         e.preventDefault();
@@ -518,6 +529,10 @@
     $("btnUploadPhoto").addEventListener("click", uploadAssetPhoto);
 
     $("blockForm").addEventListener("submit", createBlock);
+
+    // ✅ NUEVO: cargar activo existente al formulario
+    $("btnLoadAsset").addEventListener("click", loadSelectedAssetIntoForm);
+    $("btnClearAsset").addEventListener("click", resetAssetForm);
 
     init();
   });
@@ -611,6 +626,15 @@
         document.querySelector('.tab[data-tab="agenda"]').click();
         refreshAgenda();
       });
+
+      // ✅ Opcional: doble click para editar (solo admin)
+      if(IS_ADMIN){
+        card.addEventListener("dblclick", ()=>{
+          document.querySelector('.tab[data-tab="admin"]').click();
+          $("adminAssetPick").value = a.id;
+          loadSelectedAssetIntoForm();
+        });
+      }
 
       grid.appendChild(card);
     });
@@ -877,15 +901,32 @@
 
   /* ====== Admin ====== */
   function hydrateAdminAssetSelect(){
-    const sel = $("blockAsset");
-    if(!sel) return;
-    sel.innerHTML = "";
-    ASSETS.forEach(a=>{
-      const op = document.createElement("option");
-      op.value = a.id;
-      op.textContent = `${a.name} (${a.type})`;
-      sel.appendChild(op);
-    });
+    const selBlocks = $("blockAsset");
+    if(selBlocks){
+      selBlocks.innerHTML = "";
+      ASSETS.forEach(a=>{
+        const op = document.createElement("option");
+        op.value = a.id;
+        op.textContent = `${a.name} (${a.type})`;
+        selBlocks.appendChild(op);
+      });
+    }
+
+    const selAdmin = $("adminAssetPick");
+    if(selAdmin){
+      selAdmin.innerHTML = "";
+      const op0 = document.createElement("option");
+      op0.value = "";
+      op0.textContent = "— Selecciona un activo —";
+      selAdmin.appendChild(op0);
+
+      ASSETS.forEach(a=>{
+        const op = document.createElement("option");
+        op.value = a.id;
+        op.textContent = `${a.name} • ${a.type || "activo"} • ${a.location || ""}`.trim();
+        selAdmin.appendChild(op);
+      });
+    }
   }
 
   async function adminRefresh(){
@@ -893,6 +934,43 @@
     await loadAssets(true);
     hydrateAdminAssetSelect();
     await loadBlocksList();
+  }
+
+  // ✅ NUEVO: cargar activo seleccionado en el formulario para editar
+  function loadSelectedAssetIntoForm(){
+    if(!IS_ADMIN) return;
+
+    const id = $("adminAssetPick").value;
+    if(!id){
+      $("adminStatus").textContent = "Selecciona un activo para cargar.";
+      return;
+    }
+
+    const a = ASSETS.find(x=>x.id===id);
+    if(!a){
+      $("adminStatus").textContent = "No se encontró el activo (recarga).";
+      return;
+    }
+
+    $("assetId").value = a.id;
+    $("assetName").value = a.name || "";
+    $("assetType").value = a.type || "cancha";
+    $("assetLoc").value = a.location || "";
+    $("assetDesc").value = a.description || "";
+
+    $("assetOpen").value = (a.open_time || "08:00").slice(0,5);
+    $("assetClose").value = (a.close_time || "20:00").slice(0,5);
+
+    $("assetSlot").value = a.slot_minutes ?? 60;
+    $("assetBuf").value = a.buffer_minutes ?? 0;
+    $("assetAhead").value = a.max_days_ahead ?? 14;
+
+    $("assetActive").checked = !!a.is_active;
+    $("assetApproval").checked = !!a.requires_approval;
+
+    $("btnDeleteAsset").style.display = "inline-block";
+    $("adminStatus").textContent = "✅ Activo cargado. Ya puedes editar y guardar.";
+    $("photoStatus").textContent = "";
   }
 
   function resetAssetForm(){
@@ -911,6 +989,9 @@
     $("adminStatus").textContent = "";
     $("photoStatus").textContent = "";
     $("btnDeleteAsset").style.display = "none";
+
+    const pick = $("adminAssetPick");
+    if(pick) pick.value = "";
   }
 
   async function saveAsset(e){
@@ -959,6 +1040,11 @@
     $("btnDeleteAsset").style.display = "inline-block";
 
     await loadAssets(true);
+
+    // Si existe selector admin, deja seleccionado el activo guardado
+    if($("adminAssetPick")){
+      $("adminAssetPick").value = saved.id;
+    }
   }
 
   async function deleteAsset(){
@@ -983,7 +1069,7 @@
     if(!IS_ADMIN) return;
     const id = $("assetId").value;
     if(!id){
-      $("photoStatus").textContent = "Primero guarda el activo para tener un ID.";
+      $("photoStatus").textContent = "Primero guarda o carga el activo para tener un ID.";
       return;
     }
 
