@@ -17,31 +17,20 @@
       --danger:#ff5b5b;
     }
     *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto}
-    
+
     body{
       min-height:100vh;
       background:linear-gradient(180deg,#152336,#1b2e45);
       color:var(--txt);
       display:flex;flex-direction:column;
-      overflow-x: hidden; /* Evitar scroll lateral innecesario */
+      overflow-x:hidden;
     }
 
-    /* === ESTILOS PARA MODO IFRAME (EMBEBIDO) === */
-    body.is-embedded {
-        background: transparent; /* Fondo transparente para integrarse con la web padre */
-        min-height: 0;
-    }
-    body.is-embedded header {
-        display: none !important; /* Oculta el header superior */
-    }
-    body.is-embedded main {
-        height: 100vh; /* Ocupa todo el alto disponible */
-    }
-    /* Ajuste del menú lateral/superior cuando no hay header */
-    body.is-embedded nav {
-        top: 0; 
-    }
-    /* =========================================== */
+    /* === MODO IFRAME (EMBEBIDO) === */
+    body.is-embedded { background: transparent; min-height: 0; }
+    body.is-embedded header { display:none !important; }
+    body.is-embedded main { height:100vh; }
+    body.is-embedded nav { top:0; }
 
     header{
       position:sticky;top:0;z-index:10;
@@ -59,15 +48,15 @@
       padding:8px 12px;border-radius:10px;cursor:pointer
     }
     #btnLogout:hover{background:#ff5555;color:#fff}
-    
+
     main{flex:1;display:flex;min-height:0}
-    
+
     nav{
       width:260px;
       background:rgba(27,46,69,.85);
       border-right:1px solid rgba(77,161,168,.25);
       padding:12px;display:flex;flex-direction:column;gap:10px;
-      flex-shrink: 0; /* Evita que el nav se aplaste */
+      flex-shrink:0;
     }
     nav button{
       border:none;background:rgba(77,161,168,.12);
@@ -79,10 +68,10 @@
       background:linear-gradient(90deg,var(--primary),var(--sky));
       color:#0f2638;font-weight:700
     }
-    
-    section.content{flex:1;padding:20px;display:none;min-width:0; overflow-y: auto;} /* Scroll interno */
+
+    section.content{flex:1;padding:20px;display:none;min-width:0; overflow-y:auto;}
     section.content.active{display:block}
-    
+
     .card{
       background:var(--panel);
       border:1px solid rgba(77,161,168,.35);
@@ -174,14 +163,12 @@
     }
     .slot small{display:block}
     .two-col{display:grid;gap:12px;grid-template-columns:1.2fr .8fr}
-    
+
     @media(max-width:980px){
       nav{width:100%;flex-direction:row;position:sticky;top:52px;z-index:9;overflow:auto}
       main{flex-direction:column}
       .two-col{grid-template-columns:1fr}
-      
-      /* Ajuste específico móvil cuando está embebido y no hay header */
-      body.is-embedded nav { top: 0; }
+      body.is-embedded nav { top:0; }
     }
   </style>
 </head>
@@ -217,7 +204,6 @@
       </div>
 
       <div id="diagBox" class="diag"></div>
-
       <div id="assetsGrid" class="grid-assets"></div>
     </div>
   </section>
@@ -267,7 +253,7 @@
 
           <div class="card" style="margin-top:12px;background:#233b5c;border-radius:14px">
             <div style="font-weight:800">🚫 Bloqueos / ocupaciones</div>
-            <div class="meta" style="margin-top:6px" id="busyList">—</div>
+            <div class="meta" style="margin-top:6px;white-space:pre-wrap" id="busyList">—</div>
           </div>
         </div>
       </div>
@@ -408,25 +394,14 @@
 <script>
   /* ====== Config ====== */
   const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs"; // <- TU KEY CONSERVADA
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
   const LOGIN_URL = "login.html";
 
-  /* ==================================================
-     DETECCIÓN DE MODO IFRAME (EMBEBIDO)
-     Si estamos dentro de un iframe (la app), ocultamos header.
-  ================================================== */
-  if (window.self !== window.top) {
-    document.body.classList.add('is-embedded');
-    console.log("Modo embebido activo: Header oculto.");
-  }
+  if (window.self !== window.top) document.body.classList.add('is-embedded');
 
-  /* Redirección Segura: Fuerza la redirección en la ventana principal */
-  function safeRedirect(url) {
-    if (window.self !== window.top) {
-      window.top.location.href = url;
-    } else {
-      window.location.href = url;
-    }
+  function safeRedirect(url){
+    if (window.self !== window.top) window.top.location.href = url;
+    else window.location.href = url;
   }
 
   const supabaseClient = window.supabase.createClient(
@@ -439,26 +414,69 @@
 
   let CURRENT_USER=null;
   let IS_ADMIN=false;
-
   let ASSETS=[];
   let SELECTED_ASSET=null;
-
-  let PENDING_RESERVE=null; // {start,end}
+  let PENDING_RESERVE=null; // {start_at,end_at}
 
   /* ====== DIAG ====== */
   function diag(msg, extra){
     console.log("[DIAG]", msg, extra||"");
     const box = $("diagBox");
     if(!box) return;
-    box.style.display = "block";
-    box.textContent = String(msg) + (extra ? "\n\n" + (typeof extra === "string" ? extra : JSON.stringify(extra,null,2)) : "");
+    box.style.display="block";
+    box.textContent = String(msg) + (extra ? "\n\n" + (typeof extra==="string" ? extra : JSON.stringify(extra,null,2)) : "");
   }
   function clearDiag(){
     const box = $("diagBox");
     if(!box) return;
-    box.style.display = "none";
-    box.textContent = "";
+    box.style.display="none";
+    box.textContent="";
   }
+
+  /* ====== Helpers ====== */
+  function todayISO(){
+    const d=new Date();
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,"0");
+    const dd=String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${dd}`;
+  }
+
+  function escapeHtml(str){
+    return (str||"").replace(/[&<>\"']/g, s => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[s]));
+  }
+
+  function fmtDT(iso){
+    try{
+      return new Intl.DateTimeFormat("es-MX",{dateStyle:"medium", timeStyle:"short"}).format(new Date(iso));
+    }catch{ return iso; }
+  }
+
+  // Hora coherente (24h) para etiquetas "17:00 – 18:00"
+  function fmtHM(iso){
+    try{
+      return new Intl.DateTimeFormat("es-MX",{hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(iso));
+    }catch{ return iso; }
+  }
+
+  function toLocalDateTimeInputValue(d){
+    const pad=(n)=>String(n).padStart(2,"0");
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function combineDateTimeLocal(dateISO, timeHHMM){
+    // local -> ISO UTC
+    const d = new Date(`${dateISO}T${timeHHMM}:00`);
+    return d.toISOString();
+  }
+
+  function addMinutes(isoUTC, mins){
+    const d = new Date(isoUTC);
+    d.setMinutes(d.getMinutes()+mins);
+    return d.toISOString();
+  }
+
+  const overlaps = (s1,e1,s2,e2)=> (new Date(s1) < new Date(e2)) && (new Date(s2) < new Date(e1));
 
   /* ====== Tabs ====== */
   document.addEventListener("DOMContentLoaded", ()=>{
@@ -479,7 +497,7 @@
 
     $("btnLogout").addEventListener("click", async ()=>{
       await supabaseClient.auth.signOut();
-      safeRedirect(LOGIN_URL); // <-- USO DE REDIRECCIÓN SEGURA
+      safeRedirect(LOGIN_URL);
     });
 
     $("qAssets").addEventListener("input", renderAssets);
@@ -489,10 +507,9 @@
       $("datePick").value = todayISO();
       refreshAgenda();
     });
+
     $("btnRefreshAgenda").addEventListener("click", refreshAgenda);
-
     $("btnConfirmReserve").addEventListener("click", confirmReserve);
-
     $("btnReloadMine").addEventListener("click", loadMine);
 
     $("assetForm").addEventListener("submit", saveAsset);
@@ -512,7 +529,7 @@
     const { data:{session}, error } = await supabaseClient.auth.getSession();
     if(error) diag("Error obteniendo sesión", error);
     if(!session){
-      safeRedirect(LOGIN_URL); // <-- USO DE REDIRECCIÓN SEGURA
+      safeRedirect(LOGIN_URL);
       return;
     }
 
@@ -525,47 +542,6 @@
     await loadAssets(true);
     await loadMine();
     if(IS_ADMIN) await adminRefresh();
-  }
-
-  /* ====== Helpers ====== */
-  function todayISO(){
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,"0");
-    const dd = String(d.getDate()).padStart(2,"0");
-    return `${y}-${m}-${dd}`;
-  }
-
-  function escapeHtml(str){
-    return (str||"").replace(/[&<>\"']/g, s => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[s]));
-  }
-
-  function fmtDT(iso){
-    try{
-      return new Intl.DateTimeFormat("es-MX",{dateStyle:"medium", timeStyle:"short"}).format(new Date(iso));
-    }catch{ return iso; }
-  }
-
-  function toLocalDateTimeInputValue(d){
-    const pad = (n)=>String(n).padStart(2,"0");
-    const yy=d.getFullYear();
-    const mm=pad(d.getMonth()+1);
-    const dd=pad(d.getDate());
-    const hh=pad(d.getHours());
-    const mi=pad(d.getMinutes());
-    return `${yy}-${mm}-${dd}T${hh}:${mi}`;
-  }
-
-  function combineDateTimeLocal(dateISO, timeHHMM){
-    // Interpreta en hora local del navegador (Mexico City típicamente) y devuelve ISO UTC
-    const d = new Date(`${dateISO}T${timeHHMM}:00`);
-    return d.toISOString();
-  }
-
-  function addMinutes(isoUTC, mins){
-    const d = new Date(isoUTC);
-    d.setMinutes(d.getMinutes()+mins);
-    return d.toISOString();
   }
 
   /* ====== Assets ====== */
@@ -582,7 +558,7 @@
       return;
     }
 
-    ASSETS = (data||[]).filter(a=>a.is_active || IS_ADMIN); // usuarios ven activos activos
+    ASSETS = (data||[]).filter(a=>a.is_active || IS_ADMIN);
     renderAssets();
     hydrateAdminAssetSelect();
   }
@@ -608,6 +584,7 @@
     list.forEach(a=>{
       const card = document.createElement("div");
       card.className = "asset-card";
+
       const urls = Array.isArray(a.image_urls) ? a.image_urls : (a.image_urls||[]);
       const cover = urls[0];
 
@@ -631,7 +608,6 @@
 
       card.querySelector("button").addEventListener("click", ()=>{
         SELECTED_ASSET = a;
-        // cambiar a tab agenda
         document.querySelector('.tab[data-tab="agenda"]').click();
         refreshAgenda();
       });
@@ -640,7 +616,7 @@
     });
   }
 
-  /* ====== Agenda ====== */
+  /* ====== Agenda (CORREGIDA) ====== */
   async function refreshAgenda(){
     const meta = $("agendaMeta");
     const dateISO = $("datePick").value || todayISO();
@@ -657,8 +633,8 @@
       return;
     }
 
-    // reglas
     const a = SELECTED_ASSET;
+
     $("selAssetName").textContent = a.name || "Activo";
     $("selAssetInfo").textContent = `${a.type||"activo"} • ${a.location||"—"} • Horario ${a.open_time}–${a.close_time}`;
     $("selAssetRule").textContent = a.requires_approval ? "Requiere aprobación" : "Reserva automática";
@@ -675,44 +651,26 @@
       meta.textContent = `Mostrando disponibilidad para ${dateISO}.`;
     }
 
-    // preparar rango del día en UTC (usando local->ISO)
-    const dayStart = new Date(`${dateISO}T00:00:00`);
-    const dayEnd = new Date(`${dateISO}T23:59:59`);
-
-    // Traer reservas/bloqueos del día
-    const [resv, blocks] = await Promise.all([
-      supabaseClient
-        .from("reservations")
-        .select("id, user_id, start_at, end_at, status")
-        .eq("asset_id", a.id)
-        .in("status", ["pending","approved","active"])
-        .gte("start_at", dayStart.toISOString())
-        .lte("start_at", dayEnd.toISOString())
-        .order("start_at",{ascending:true}),
-      supabaseClient
-        .from("asset_blocks")
-        .select("id, start_at, end_at, reason")
-        .eq("asset_id", a.id)
-        .gte("start_at", dayStart.toISOString())
-        .lte("start_at", dayEnd.toISOString())
-        .order("start_at",{ascending:true})
-    ]);
-
-    if(resv.error) diag("Error leyendo reservations (RLS/policy).", resv.error);
-    if(blocks.error) diag("Error leyendo asset_blocks (RLS/policy).", blocks.error);
-
-    const reservations = resv.data || [];
-    const blockList = blocks.data || [];
-
-    // mostrar lista de ocupaciones
-    const busyLines = [];
-    reservations.forEach(r=>{
-      busyLines.push(`🏷️ Reserva ${fmtDT(r.start_at)} – ${fmtDT(r.end_at)} ${r.user_id===CURRENT_USER.id?"(Tú)":""}`);
+    // 🔥 CLAVE: obtener ocupaciones vía RPC para que TODOS vean ocupado
+    const { data: busyRows, error: busyErr } = await supabaseClient.rpc("get_busy_slots", {
+      p_asset_id: a.id,
+      p_day: dateISO
     });
-    blockList.forEach(b=>{
-      busyLines.push(`🚫 Bloqueo ${fmtDT(b.start_at)} – ${fmtDT(b.end_at)} • ${b.reason||"Bloqueo"}`);
-    });
-    $("busyList").textContent = busyLines.length ? busyLines.join("\n") : "Sin ocupaciones registradas en el día.";
+
+    if(busyErr){
+      diag("Error leyendo ocupaciones (rpc get_busy_slots).", busyErr);
+    }
+
+    const busy = (busyRows||[]).map(x => ({ start_at:x.start_at, end_at:x.end_at }));
+
+    // mostrar lista de ocupaciones (sin user_id)
+    const busyLines = (busy||[]).length
+      ? busy
+          .sort((x,y)=> new Date(x.start_at) - new Date(y.start_at))
+          .map(x => `⛔ Ocupado ${fmtDT(x.start_at)} – ${fmtDT(x.end_at)}`)
+      : ["Sin ocupaciones registradas en el día."];
+
+    $("busyList").textContent = busyLines.join("\n");
 
     // construir slots
     const slotsWrap = $("slotsWrap");
@@ -721,11 +679,10 @@
     const slotMin = a.slot_minutes ?? 60;
     const bufMin = a.buffer_minutes ?? 0;
 
-    // slots desde open_time a close_time (local)
     const startHH = a.open_time?.slice(0,5) || "08:00";
     const endHH = a.close_time?.slice(0,5) || "20:00";
 
-    // generar lista de HH:MM
+    // generar lista de horas
     const times = [];
     {
       const base = new Date(`${dateISO}T${startHH}:00`);
@@ -743,33 +700,30 @@
       return;
     }
 
-    const overlaps = (s1,e1,s2,e2)=> (new Date(s1) < new Date(e2)) && (new Date(s2) < new Date(e1));
-
     times.forEach(t=>{
       const slotStart = combineDateTimeLocal(dateISO, t);
       const slotEndRaw = addMinutes(slotStart, slotMin);
-      const slotEnd = addMinutes(slotEndRaw, bufMin); // buffer para impedir pegaditos (opcional)
+      const slotEnd = addMinutes(slotEndRaw, bufMin); // buffer opcional para impedir “pegados”
 
-      const busy =
-        reservations.some(r => overlaps(slotStart, slotEnd, r.start_at, r.end_at)) ||
-        blockList.some(b => overlaps(slotStart, slotEnd, b.start_at, b.end_at));
+      const isBusy = busy.some(r => overlaps(slotStart, slotEnd, r.start_at, r.end_at));
 
       const el = document.createElement("div");
-      el.className = "slot" + (busy ? " busy":"");
+      el.className = "slot" + (isBusy ? " busy" : "");
 
+      // ✅ Hora coherente: ambos 24h (t y fmtHM(slotEndRaw))
       el.innerHTML = `
         <div>
-          <div style="font-weight:800">${t} – ${new Date(slotEndRaw).toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"})}</div>
-          <small class="meta">${busy ? "No disponible" : "Disponible"}</small>
+          <div style="font-weight:800">${t} – ${fmtHM(slotEndRaw)}</div>
+          <small class="meta">${isBusy ? "No disponible" : "Disponible"}</small>
         </div>
-        <button class="${busy ? "subtle-btn" : "btn"}" ${busy ? "disabled":""} style="min-width:120px">
-          ${busy ? "Ocupado" : "Reservar"}
+        <button class="${isBusy ? "subtle-btn" : "btn"}" ${isBusy ? "disabled":""} style="min-width:120px">
+          ${isBusy ? "Ocupado" : "Reservar"}
         </button>
       `;
 
       const btn = el.querySelector("button");
       btn.addEventListener("click", ()=>{
-        if(busy) return;
+        if(isBusy) return;
 
         // reglas de anticipación
         const today = new Date(); today.setHours(0,0,0,0);
@@ -785,7 +739,7 @@
         }
 
         PENDING_RESERVE = { start_at: slotStart, end_at: slotEndRaw }; // guardo fin real (sin buffer)
-        $("detailBox").textContent = `Vas a reservar: ${a.name} el ${dateISO} de ${t} a ${new Date(slotEndRaw).toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"})}.`;
+        $("detailBox").textContent = `Vas a reservar: ${a.name} el ${dateISO} de ${t} a ${fmtHM(slotEndRaw)}.`;
         $("reserveWhen").textContent = `📌 ${fmtDT(slotStart)} – ${fmtDT(slotEndRaw)}`;
         $("reserveStatus").textContent = "";
         $("reserveNotes").value = "";
@@ -818,7 +772,6 @@
     const { error } = await supabaseClient.from("reservations").insert(payload);
 
     if(error){
-      // Si se empalma con otra reserva, el EXCLUDE constraint dará error -> es lo correcto
       diag("No se pudo crear la reserva (posible traslape).", error);
       $("reserveStatus").textContent = "❌ No se pudo reservar. Puede que alguien haya tomado ese horario (actualiza).";
       $("btnConfirmReserve").disabled = false;
@@ -855,7 +808,6 @@
       return;
     }
 
-    // mapa assets
     const assetMap = new Map(ASSETS.map(a=>[a.id,a]));
 
     wrap.innerHTML = "";
@@ -1051,10 +1003,9 @@
     const ext = (file.name.split(".").pop()||"jpg").toLowerCase();
     const path = `${id}/portada.${ext}`;
 
-    // upsert para reemplazar la portada
     const { error: upErr } = await supabaseClient.storage
       .from("assets")
-      .upload(path, file, { upsert: true, cacheControl: "3600", contentType: file.type });
+      .upload(path, file, { upsert:true, cacheControl:"3600", contentType:file.type });
 
     if(upErr){
       diag("Error subiendo foto (bucket/policy).", upErr);
@@ -1070,8 +1021,6 @@
       return;
     }
 
-    // guardar URL como portada (primer elemento)
-    // obtenemos asset actual
     const asset = ASSETS.find(a=>a.id===id);
     const urls = Array.isArray(asset?.image_urls) ? asset.image_urls.slice() : [];
     const next = [url, ...urls.filter(u=>u!==url)].slice(0,5);
@@ -1161,7 +1110,7 @@
     data.forEach(b=>{
       const a = map.get(b.asset_id);
       const line = document.createElement("div");
-      line.style.marginBottom = "8px";
+      line.style.marginBottom="8px";
       line.innerHTML = `
         <div>🚫 <strong>${escapeHtml(a?.name||"Activo")}</strong> • ${fmtDT(b.start_at)} – ${fmtDT(b.end_at)}</div>
         <div class="meta">${escapeHtml(b.reason||"Bloqueo")}</div>
@@ -1182,7 +1131,6 @@
     });
   }
 
-  // Cargar valores útiles en admin (datetime-local)
   (function seedAdminDates(){
     const now = new Date();
     now.setMinutes(0,0,0);
@@ -1194,7 +1142,6 @@
       resetAssetForm();
     });
   })();
-
 </script>
 </body>
 </html>
