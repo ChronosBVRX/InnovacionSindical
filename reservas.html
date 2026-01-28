@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plataforma Sindical CG — Reservas</title>
+  <link rel="icon" href="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20Unidad%20en%20Accion.png?raw=true">
+  <style>
+    :root{
+      --bg:#1b2e45;
+      --panel:#2e4f77;
+      --ring:rgba(77,161,168,.45);
+      --txt:#f0fdfa;
+      --muted:#bce9eb;
+      --primary:#4da1a8;
+      --sky:#7ad1d6;
+      --danger:#ff5b5b;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto}
+    body{
+      min-height:100vh;
+      background:linear-gradient(180deg,#152336,#1b2e45);
+      color:var(--txt);
+      display:flex;flex-direction:column
+    }
+    header{
+      position:sticky;top:0;z-index:10;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 16px;
+      background:rgba(30,50,80,.75);
+      backdrop-filter:blur(8px);
+      border-bottom:1px solid rgba(77,161,168,.35)
+    }
+    header img{height:40px}
+    header h1{font-size:18px;color:#dcfce7;display:flex;align-items:center;gap:10px}
+    #btnLogout{
+      background:rgba(255,90,90,.15);
+      color:#ffcccc;border:1px solid rgba(255,100,100,.35);
+      padding:8px 12px;border-radius:10px;cursor:pointer
+    }
+    #btnLogout:hover{background:#ff5555;color:#fff}
+    main{flex:1;display:flex;min-height:0}
+    nav{
+      width:260px;
+      background:rgba(27,46,69,.85);
+      border-right:1px solid rgba(77,161,168,.25);
+      padding:12px;display:flex;flex-direction:column;gap:10px
+    }
+    nav button{
+      border:none;background:rgba(77,161,168,.12);
+      color:var(--txt);
+      padding:10px;border-radius:10px;text-align:left;
+      cursor:pointer;transition:.2s
+    }
+    nav button:hover, nav button.active{
+      background:linear-gradient(90deg,var(--primary),var(--sky));
+      color:#0f2638;font-weight:700
+    }
+    section.content{flex:1;padding:20px;display:none;min-width:0}
+    section.content.active{display:block}
+    .card{
+      background:var(--panel);
+      border:1px solid rgba(77,161,168,.35);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:0 8px 25px rgba(0,0,0,.25);
+      animation:fade .35s ease
+    }
+    @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+    h2{margin-bottom:10px;color:#d1f5f7}
+    .meta{font-size:12px;color:#8ccacdb6}
+    .muted{color:var(--muted)}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    input, textarea, select{
+      background:#1b2e45;border:1px solid rgba(77,161,168,.4);
+      color:#f0fdfa;padding:9px 11px;border-radius:10px
+    }
+    textarea{min-height:90px;resize:vertical}
+    .btn{
+      border:none;cursor:pointer;
+      background:linear-gradient(90deg,var(--primary),var(--sky));
+      color:#0f2638;font-weight:700;
+      padding:10px 16px;border-radius:12px;
+      transition:.2s
+    }
+    .btn:hover{filter:brightness(1.12)}
+    .subtle-btn{
+      border:1px solid rgba(77,161,168,.28);
+      background:rgba(77,161,168,.1);
+      color:#fff;padding:8px 12px;border-radius:10px;
+      cursor:pointer;font-size:13px
+    }
+    .subtle-btn:hover{background:rgba(77,161,168,.25)}
+    .danger-btn{
+      border:1px solid rgba(255,90,90,.35);
+      background:rgba(255,90,90,.12);
+      color:#ffd1d1;padding:8px 12px;border-radius:10px;
+      cursor:pointer;font-size:13px
+    }
+    .danger-btn:hover{background:rgba(255,90,90,.25)}
+    .diag{
+      margin-top:10px;padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(255,200,120,.35);
+      background:rgba(255,200,120,.08);
+      color:#ffe8c7;font-size:12px;white-space:pre-wrap;display:none
+    }
+    .grid-assets{
+      margin-top:12px;
+      display:grid;gap:12px;
+      grid-template-columns:repeat(auto-fill,minmax(260px,1fr))
+    }
+    .asset-card{
+      background:#233b5c;
+      border:1px solid rgba(77,161,168,.30);
+      border-radius:14px;
+      overflow:hidden;
+      display:flex;flex-direction:column
+    }
+    .asset-img{
+      height:150px;background:#1b2e45;
+      display:flex;align-items:center;justify-content:center;
+      border-bottom:1px solid rgba(77,161,168,.25)
+    }
+    .asset-img img{width:100%;height:100%;object-fit:cover}
+    .asset-body{padding:12px}
+    .pill{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:4px 8px;border-radius:999px;
+      background:rgba(77,161,168,.15);
+      border:1px solid rgba(77,161,168,.35);
+      font-size:12px;color:#d1f5f7
+    }
+    .slots{
+      margin-top:12px;
+      display:grid;gap:10px;
+      grid-template-columns:repeat(auto-fill,minmax(220px,1fr))
+    }
+    .slot{
+      background:#233b5c;
+      border:1px solid rgba(77,161,168,.28);
+      border-radius:12px;
+      padding:10px 12px;
+      display:flex;justify-content:space-between;align-items:center;gap:10px
+    }
+    .slot.busy{
+      opacity:.65;
+      border-color:rgba(255,90,90,.35);
+      background:rgba(255,90,90,.08);
+    }
+    .slot small{display:block}
+    .two-col{display:grid;gap:12px;grid-template-columns:1.2fr .8fr}
+    @media(max-width:980px){
+      nav{width:100%;flex-direction:row;position:sticky;top:52px;z-index:9;overflow:auto}
+      main{flex-direction:column}
+      .two-col{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <h1>
+    <img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20Unidad%20en%20Accion.png?raw=true" alt="Logo">
+    Plataforma Sindical CG — Reservas
+  </h1>
+  <button id="btnLogout">Cerrar sesión</button>
+</header>
+
+<main>
+  <nav>
+    <button class="tab active" data-tab="catalogo">🏟️ Activos</button>
+    <button class="tab" data-tab="agenda">🗓️ Agenda</button>
+    <button class="tab" data-tab="mis">📌 Mis reservas</button>
+    <button class="tab" data-tab="admin" id="tabAdmin" style="display:none">🛠️ Admin</button>
+  </nav>
+
+  <section id="catalogo" class="content active">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <h2>🏟️ Catálogo de activos</h2>
+          <p class="muted">Selecciona un activo para ver su agenda y reservar.</p>
+        </div>
+        <div class="row">
+          <input id="qAssets" placeholder="Buscar por nombre o tipo" style="min-width:240px">
+          <button class="subtle-btn" id="btnReloadAssets">Actualizar</button>
+        </div>
+      </div>
+
+      <div id="diagBox" class="diag"></div>
+
+      <div id="assetsGrid" class="grid-assets"></div>
+    </div>
+  </section>
+
+  <section id="agenda" class="content">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <h2>🗓️ Agenda y disponibilidad</h2>
+          <div class="meta" id="agendaMeta">Selecciona un activo en “Activos”.</div>
+        </div>
+        <div class="row">
+          <input id="datePick" type="date">
+          <button class="subtle-btn" id="btnToday">Hoy</button>
+          <button class="subtle-btn" id="btnRefreshAgenda">Actualizar</button>
+        </div>
+      </div>
+
+      <div class="two-col" style="margin-top:12px">
+        <div>
+          <div class="card" style="background:#233b5c;border-radius:14px">
+            <div class="row" style="justify-content:space-between">
+              <div>
+                <div style="font-weight:800" id="selAssetName">—</div>
+                <div class="meta" id="selAssetInfo">—</div>
+              </div>
+              <span class="pill" id="selAssetRule">—</span>
+            </div>
+            <div id="slotsWrap" class="slots"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="background:#233b5c;border-radius:14px">
+            <div style="font-weight:800">📌 Detalles</div>
+            <div class="meta" style="margin-top:6px" id="detailBox">
+              Elige un horario disponible para reservar.
+            </div>
+
+            <div id="reserveBox" style="margin-top:12px;display:none">
+              <div class="meta" id="reserveWhen"></div>
+              <textarea id="reserveNotes" placeholder="Notas (opcional)"></textarea>
+              <button class="btn" id="btnConfirmReserve" style="margin-top:10px;width:100%">✅ Confirmar reserva</button>
+              <div class="meta" id="reserveStatus" style="margin-top:8px"></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:12px;background:#233b5c;border-radius:14px">
+            <div style="font-weight:800">🚫 Bloqueos / ocupaciones</div>
+            <div class="meta" style="margin-top:6px" id="busyList">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mis" class="content">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <h2>📌 Mis reservas</h2>
+          <p class="muted">Aquí puedes ver y cancelar tus reservas.</p>
+        </div>
+        <button class="subtle-btn" id="btnReloadMine">Actualizar</button>
+      </div>
+      <div id="mineList" style="margin-top:12px;display:grid;gap:12px"></div>
+    </div>
+  </section>
+
+  <section id="admin" class="content">
+    <div class="card">
+      <h2>🛠️ Admin — Activos y bloqueos</h2>
+      <p class="muted">Crea/edita activos, sube fotos, ajusta reglas y bloquea horarios por mantenimiento o eventos.</p>
+
+      <div class="two-col" style="margin-top:12px">
+        <div class="card" style="background:#233b5c;border-radius:14px">
+          <div style="font-weight:800">➕ Crear / editar activo</div>
+
+          <form id="assetForm" style="margin-top:10px;display:grid;gap:10px;max-width:720px">
+            <input type="hidden" id="assetId">
+
+            <label class="meta">Nombre</label>
+            <input id="assetName" placeholder="Ej. Cancha 1">
+
+            <label class="meta">Tipo</label>
+            <input id="assetType" placeholder="Ej. cancha, salón, equipo">
+
+            <label class="meta">Ubicación</label>
+            <input id="assetLoc" placeholder="Ej. Unidad Deportiva — Morelia">
+
+            <label class="meta">Descripción</label>
+            <textarea id="assetDesc" placeholder="Detalles, reglas, etc."></textarea>
+
+            <div class="row">
+              <div style="flex:1;min-width:180px">
+                <label class="meta">Apertura</label>
+                <input id="assetOpen" type="time" value="08:00">
+              </div>
+              <div style="flex:1;min-width:180px">
+                <label class="meta">Cierre</label>
+                <input id="assetClose" type="time" value="20:00">
+              </div>
+            </div>
+
+            <div class="row">
+              <div style="flex:1;min-width:180px">
+                <label class="meta">Duración (min)</label>
+                <input id="assetSlot" type="number" value="60" min="15" step="15">
+              </div>
+              <div style="flex:1;min-width:180px">
+                <label class="meta">Buffer (min)</label>
+                <input id="assetBuf" type="number" value="0" min="0" step="5">
+              </div>
+            </div>
+
+            <div class="row">
+              <div style="flex:1;min-width:180px">
+                <label class="meta">Anticipación máx (días)</label>
+                <input id="assetAhead" type="number" value="14" min="1" max="365">
+              </div>
+              <label class="row" style="gap:8px;align-items:center;margin-left:auto">
+                <input type="checkbox" id="assetActive" checked>
+                <span class="meta">Activo</span>
+              </label>
+            </div>
+
+            <label class="row" style="gap:8px;align-items:center;">
+              <input type="checkbox" id="assetApproval">
+              <span class="meta">Requiere aprobación (si se activa, las reservas quedan “pending”)</span>
+            </label>
+
+            <div class="row" style="gap:10px">
+              <button class="btn" type="submit">💾 Guardar activo</button>
+              <button class="subtle-btn" type="button" id="btnNewAsset">Nuevo</button>
+              <button class="danger-btn" type="button" id="btnDeleteAsset" style="display:none">🗑️ Eliminar</button>
+            </div>
+
+            <div class="card" style="background:#1b2e45;border-radius:12px">
+              <div style="font-weight:800">🖼️ Foto principal (Storage bucket: assets)</div>
+              <div class="meta" style="margin-top:6px">Se sube como <code>asset_id/portada.jpg</code> y se guarda el URL en el activo.</div>
+              <input id="assetPhoto" type="file" accept="image/png,image/jpeg,image/webp">
+              <button class="subtle-btn" type="button" id="btnUploadPhoto">Subir foto</button>
+              <div class="meta" id="photoStatus" style="margin-top:6px"></div>
+            </div>
+
+            <div class="meta" id="adminStatus"></div>
+          </form>
+        </div>
+
+        <div class="card" style="background:#233b5c;border-radius:14px">
+          <div style="font-weight:800">🚫 Bloquear horarios (mantenimiento / torneo)</div>
+          <div class="meta" style="margin-top:6px">Selecciona un activo y crea un bloqueo por rango.</div>
+
+          <form id="blockForm" style="margin-top:10px;display:grid;gap:10px">
+            <label class="meta">Activo</label>
+            <select id="blockAsset"></select>
+
+            <div class="row">
+              <div style="flex:1;min-width:180px">
+                <label class="meta">Inicio</label>
+                <input id="blockStart" type="datetime-local">
+              </div>
+              <div style="flex:1;min-width:180px">
+                <label class="meta">Fin</label>
+                <input id="blockEnd" type="datetime-local">
+              </div>
+            </div>
+
+            <label class="meta">Razón</label>
+            <input id="blockReason" placeholder="Ej. Mantenimiento, Torneo, Evento">
+
+            <button class="btn" type="submit">➕ Crear bloqueo</button>
+            <div class="meta" id="blockStatus"></div>
+          </form>
+
+          <div class="card" style="margin-top:12px;background:#1b2e45;border-radius:12px">
+            <div style="font-weight:800">Lista de bloqueos próximos</div>
+            <div id="blocksList" class="meta" style="margin-top:8px">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  /* ====== Config ====== */
+  const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+  const SUPABASE_ANON_KEY = "PEGA_AQUI_TU_ANON_KEY_SIN_CAMBIAR_POLICIES"; // <- pega tu key
+  const LOGIN_URL = "login.html";
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
+    { auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true } }
+  );
+
+  const $ = (id)=>document.getElementById(id);
+
+  let CURRENT_USER=null;
+  let IS_ADMIN=false;
+
+  let ASSETS=[];
+  let SELECTED_ASSET=null;
+
+  let PENDING_RESERVE=null; // {start,end}
+
+  /* ====== DIAG ====== */
+  function diag(msg, extra){
+    console.log("[DIAG]", msg, extra||"");
+    const box = $("diagBox");
+    if(!box) return;
+    box.style.display = "block";
+    box.textContent = String(msg) + (extra ? "\n\n" + (typeof extra === "string" ? extra : JSON.stringify(extra,null,2)) : "");
+  }
+  function clearDiag(){
+    const box = $("diagBox");
+    if(!box) return;
+    box.style.display = "none";
+    box.textContent = "";
+  }
+
+  /* ====== Tabs ====== */
+  document.addEventListener("DOMContentLoaded", ()=>{
+    document.querySelectorAll(".tab").forEach(btn=>{
+      btn.addEventListener("click",(e)=>{
+        e.preventDefault();
+        const id=btn.dataset.tab;
+        document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+        document.querySelectorAll(".content").forEach(c=>c.classList.remove("active"));
+        btn.classList.add("active");
+        $(id).classList.add("active");
+
+        if(id==="agenda") refreshAgenda();
+        if(id==="mis") loadMine();
+        if(id==="admin") adminRefresh();
+      });
+    });
+
+    $("btnLogout").addEventListener("click", async ()=>{
+      await supabaseClient.auth.signOut();
+      location.href = LOGIN_URL;
+    });
+
+    $("qAssets").addEventListener("input", renderAssets);
+    $("btnReloadAssets").addEventListener("click", ()=>loadAssets(true));
+
+    $("btnToday").addEventListener("click", ()=>{
+      $("datePick").value = todayISO();
+      refreshAgenda();
+    });
+    $("btnRefreshAgenda").addEventListener("click", refreshAgenda);
+
+    $("btnConfirmReserve").addEventListener("click", confirmReserve);
+
+    $("btnReloadMine").addEventListener("click", loadMine);
+
+    $("assetForm").addEventListener("submit", saveAsset);
+    $("btnNewAsset").addEventListener("click", resetAssetForm);
+    $("btnDeleteAsset").addEventListener("click", deleteAsset);
+    $("btnUploadPhoto").addEventListener("click", uploadAssetPhoto);
+
+    $("blockForm").addEventListener("submit", createBlock);
+
+    init();
+  });
+
+  /* ====== Init ====== */
+  async function init(){
+    clearDiag();
+
+    const { data:{session}, error } = await supabaseClient.auth.getSession();
+    if(error) diag("Error obteniendo sesión", error);
+    if(!session){
+      location.href = LOGIN_URL;
+      return;
+    }
+
+    CURRENT_USER = session.user;
+    IS_ADMIN = (CURRENT_USER.app_metadata?.role === "admin");
+    if(IS_ADMIN) $("tabAdmin").style.removeProperty("display");
+
+    $("datePick").value = todayISO();
+
+    await loadAssets(true);
+    await loadMine();
+    if(IS_ADMIN) await adminRefresh();
+  }
+
+  /* ====== Helpers ====== */
+  function todayISO(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const dd = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${dd}`;
+  }
+
+  function escapeHtml(str){
+    return (str||"").replace(/[&<>\"']/g, s => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[s]));
+  }
+
+  function fmtDT(iso){
+    try{
+      return new Intl.DateTimeFormat("es-MX",{dateStyle:"medium", timeStyle:"short"}).format(new Date(iso));
+    }catch{ return iso; }
+  }
+
+  function toLocalDateTimeInputValue(d){
+    const pad = (n)=>String(n).padStart(2,"0");
+    const yy=d.getFullYear();
+    const mm=pad(d.getMonth()+1);
+    const dd=pad(d.getDate());
+    const hh=pad(d.getHours());
+    const mi=pad(d.getMinutes());
+    return `${yy}-${mm}-${dd}T${hh}:${mi}`;
+  }
+
+  function combineDateTimeLocal(dateISO, timeHHMM){
+    // Interpreta en hora local del navegador (Mexico City típicamente) y devuelve ISO UTC
+    const d = new Date(`${dateISO}T${timeHHMM}:00`);
+    return d.toISOString();
+  }
+
+  function addMinutes(isoUTC, mins){
+    const d = new Date(isoUTC);
+    d.setMinutes(d.getMinutes()+mins);
+    return d.toISOString();
+  }
+
+  /* ====== Assets ====== */
+  async function loadAssets(force=false){
+    if(!force && ASSETS.length) return;
+
+    const { data, error } = await supabaseClient
+      .from("assets")
+      .select("id,name,type,location,description,image_urls,is_active,requires_approval,slot_minutes,buffer_minutes,open_time,close_time,max_days_ahead")
+      .order("name",{ascending:true});
+
+    if(error){
+      diag("Error cargando assets (RLS/tabla).", error);
+      return;
+    }
+
+    ASSETS = (data||[]).filter(a=>a.is_active || IS_ADMIN); // usuarios ven activos activos
+    renderAssets();
+    hydrateAdminAssetSelect();
+  }
+
+  function renderAssets(){
+    const grid = $("assetsGrid");
+    const q = ($("qAssets").value||"").trim().toLowerCase();
+
+    let list = ASSETS.slice();
+    if(q){
+      list = list.filter(a =>
+        (a.name||"").toLowerCase().includes(q) ||
+        (a.type||"").toLowerCase().includes(q)
+      );
+    }
+
+    grid.innerHTML = "";
+    if(!list.length){
+      grid.innerHTML = `<div class="meta">No hay activos para mostrar.</div>`;
+      return;
+    }
+
+    list.forEach(a=>{
+      const card = document.createElement("div");
+      card.className = "asset-card";
+      const urls = Array.isArray(a.image_urls) ? a.image_urls : (a.image_urls||[]);
+      const cover = urls[0];
+
+      card.innerHTML = `
+        <div class="asset-img">
+          ${cover ? `<img src="${escapeHtml(cover)}" alt="foto">` : `<div class="meta">Sin foto</div>`}
+        </div>
+        <div class="asset-body">
+          <div class="row" style="justify-content:space-between">
+            <div style="font-weight:800">${escapeHtml(a.name)}</div>
+            <span class="pill">${escapeHtml(a.type||"activo")}</span>
+          </div>
+          <div class="meta" style="margin-top:6px">${escapeHtml(a.location||"")}</div>
+          <div class="muted" style="margin-top:8px;line-height:1.4">${escapeHtml((a.description||"").slice(0,120))}${(a.description||"").length>120?"…":""}</div>
+          <div class="row" style="margin-top:10px;justify-content:space-between">
+            <div class="meta">⏱️ ${a.slot_minutes} min • 📆 ${a.max_days_ahead} días</div>
+            <button class="subtle-btn">Ver agenda</button>
+          </div>
+        </div>
+      `;
+
+      card.querySelector("button").addEventListener("click", ()=>{
+        SELECTED_ASSET = a;
+        // cambiar a tab agenda
+        document.querySelector('.tab[data-tab="agenda"]').click();
+        refreshAgenda();
+      });
+
+      grid.appendChild(card);
+    });
+  }
+
+  /* ====== Agenda ====== */
+  async function refreshAgenda(){
+    const meta = $("agendaMeta");
+    const dateISO = $("datePick").value || todayISO();
+
+    if(!SELECTED_ASSET){
+      meta.textContent = "Selecciona un activo en “Activos”.";
+      $("slotsWrap").innerHTML = "";
+      $("busyList").textContent = "—";
+      $("selAssetName").textContent = "—";
+      $("selAssetInfo").textContent = "—";
+      $("selAssetRule").textContent = "—";
+      $("reserveBox").style.display = "none";
+      $("detailBox").textContent = "Elige un horario disponible para reservar.";
+      return;
+    }
+
+    // reglas
+    const a = SELECTED_ASSET;
+    $("selAssetName").textContent = a.name || "Activo";
+    $("selAssetInfo").textContent = `${a.type||"activo"} • ${a.location||"—"} • Horario ${a.open_time}–${a.close_time}`;
+    $("selAssetRule").textContent = a.requires_approval ? "Requiere aprobación" : "Reserva automática";
+
+    // validar maxDaysAhead
+    const today = new Date(); today.setHours(0,0,0,0);
+    const pick = new Date(`${dateISO}T00:00:00`);
+    const diffDays = Math.round((pick - today) / (1000*60*60*24));
+    if(diffDays < 0){
+      meta.textContent = "No puedes reservar en fechas pasadas.";
+    } else if(diffDays > (a.max_days_ahead ?? 14)){
+      meta.textContent = `Límite: ${a.max_days_ahead ?? 14} días de anticipación para este activo.`;
+    } else {
+      meta.textContent = `Mostrando disponibilidad para ${dateISO}.`;
+    }
+
+    // preparar rango del día en UTC (usando local->ISO)
+    const dayStart = new Date(`${dateISO}T00:00:00`);
+    const dayEnd = new Date(`${dateISO}T23:59:59`);
+
+    // Traer reservas/bloqueos del día
+    const [resv, blocks] = await Promise.all([
+      supabaseClient
+        .from("reservations")
+        .select("id, user_id, start_at, end_at, status")
+        .eq("asset_id", a.id)
+        .in("status", ["pending","approved","active"])
+        .gte("start_at", dayStart.toISOString())
+        .lte("start_at", dayEnd.toISOString())
+        .order("start_at",{ascending:true}),
+      supabaseClient
+        .from("asset_blocks")
+        .select("id, start_at, end_at, reason")
+        .eq("asset_id", a.id)
+        .gte("start_at", dayStart.toISOString())
+        .lte("start_at", dayEnd.toISOString())
+        .order("start_at",{ascending:true})
+    ]);
+
+    if(resv.error) diag("Error leyendo reservations (RLS/policy).", resv.error);
+    if(blocks.error) diag("Error leyendo asset_blocks (RLS/policy).", blocks.error);
+
+    const reservations = resv.data || [];
+    const blockList = blocks.data || [];
+
+    // mostrar lista de ocupaciones
+    const busyLines = [];
+    reservations.forEach(r=>{
+      busyLines.push(`🏷️ Reserva ${fmtDT(r.start_at)} – ${fmtDT(r.end_at)} ${r.user_id===CURRENT_USER.id?"(Tú)":""}`);
+    });
+    blockList.forEach(b=>{
+      busyLines.push(`🚫 Bloqueo ${fmtDT(b.start_at)} – ${fmtDT(b.end_at)} • ${b.reason||"Bloqueo"}`);
+    });
+    $("busyList").textContent = busyLines.length ? busyLines.join("\n") : "Sin ocupaciones registradas en el día.";
+
+    // construir slots
+    const slotsWrap = $("slotsWrap");
+    slotsWrap.innerHTML = "";
+
+    const slotMin = a.slot_minutes ?? 60;
+    const bufMin = a.buffer_minutes ?? 0;
+
+    // slots desde open_time a close_time (local)
+    const startHH = a.open_time?.slice(0,5) || "08:00";
+    const endHH = a.close_time?.slice(0,5) || "20:00";
+
+    // generar lista de HH:MM
+    const times = [];
+    {
+      const base = new Date(`${dateISO}T${startHH}:00`);
+      const end = new Date(`${dateISO}T${endHH}:00`);
+      while(base < end){
+        const hh = String(base.getHours()).padStart(2,"0");
+        const mm = String(base.getMinutes()).padStart(2,"0");
+        times.push(`${hh}:${mm}`);
+        base.setMinutes(base.getMinutes()+slotMin);
+      }
+    }
+
+    if(!times.length){
+      slotsWrap.innerHTML = `<div class="meta">No hay slots configurados para este activo.</div>`;
+      return;
+    }
+
+    const overlaps = (s1,e1,s2,e2)=> (new Date(s1) < new Date(e2)) && (new Date(s2) < new Date(e1));
+
+    times.forEach(t=>{
+      const slotStart = combineDateTimeLocal(dateISO, t);
+      const slotEndRaw = addMinutes(slotStart, slotMin);
+      const slotEnd = addMinutes(slotEndRaw, bufMin); // buffer para impedir pegaditos (opcional)
+
+      const busy =
+        reservations.some(r => overlaps(slotStart, slotEnd, r.start_at, r.end_at)) ||
+        blockList.some(b => overlaps(slotStart, slotEnd, b.start_at, b.end_at));
+
+      const el = document.createElement("div");
+      el.className = "slot" + (busy ? " busy":"");
+
+      el.innerHTML = `
+        <div>
+          <div style="font-weight:800">${t} – ${new Date(slotEndRaw).toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"})}</div>
+          <small class="meta">${busy ? "No disponible" : "Disponible"}</small>
+        </div>
+        <button class="${busy ? "subtle-btn" : "btn"}" ${busy ? "disabled":""} style="min-width:120px">
+          ${busy ? "Ocupado" : "Reservar"}
+        </button>
+      `;
+
+      const btn = el.querySelector("button");
+      btn.addEventListener("click", ()=>{
+        if(busy) return;
+
+        // reglas de anticipación
+        const today = new Date(); today.setHours(0,0,0,0);
+        const pick = new Date(`${dateISO}T00:00:00`);
+        const diffDays = Math.round((pick - today) / (1000*60*60*24));
+        if(diffDays < 0){
+          alert("No puedes reservar en fechas pasadas.");
+          return;
+        }
+        if(diffDays > (a.max_days_ahead ?? 14)){
+          alert(`Este activo permite reservar con máximo ${(a.max_days_ahead ?? 14)} días de anticipación.`);
+          return;
+        }
+
+        PENDING_RESERVE = { start_at: slotStart, end_at: slotEndRaw }; // guardo fin real (sin buffer)
+        $("detailBox").textContent = `Vas a reservar: ${a.name} el ${dateISO} de ${t} a ${new Date(slotEndRaw).toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"})}.`;
+        $("reserveWhen").textContent = `📌 ${fmtDT(slotStart)} – ${fmtDT(slotEndRaw)}`;
+        $("reserveStatus").textContent = "";
+        $("reserveNotes").value = "";
+        $("reserveBox").style.display = "block";
+        window.scrollTo({top:0, behavior:"smooth"});
+      });
+
+      slotsWrap.appendChild(el);
+    });
+  }
+
+  async function confirmReserve(){
+    if(!SELECTED_ASSET || !PENDING_RESERVE) return;
+
+    $("btnConfirmReserve").disabled = true;
+    $("reserveStatus").textContent = "Guardando…";
+
+    const a = SELECTED_ASSET;
+    const status = a.requires_approval ? "pending" : "approved";
+
+    const payload = {
+      asset_id: a.id,
+      user_id: CURRENT_USER.id,
+      start_at: PENDING_RESERVE.start_at,
+      end_at: PENDING_RESERVE.end_at,
+      status,
+      notes: ($("reserveNotes").value || "").trim()
+    };
+
+    const { error } = await supabaseClient.from("reservations").insert(payload);
+
+    if(error){
+      // Si se empalma con otra reserva, el EXCLUDE constraint dará error -> es lo correcto
+      diag("No se pudo crear la reserva (posible traslape).", error);
+      $("reserveStatus").textContent = "❌ No se pudo reservar. Puede que alguien haya tomado ese horario (actualiza).";
+      $("btnConfirmReserve").disabled = false;
+      return;
+    }
+
+    $("reserveStatus").textContent = status==="pending"
+      ? "✅ Solicitud enviada (pendiente de aprobación)."
+      : "✅ Reserva confirmada.";
+
+    PENDING_RESERVE = null;
+    $("reserveBox").style.display = "none";
+
+    await refreshAgenda();
+    await loadMine();
+    $("btnConfirmReserve").disabled = false;
+  }
+
+  /* ====== Mis reservas ====== */
+  async function loadMine(){
+    const wrap = $("mineList");
+    wrap.innerHTML = `<div class="meta">Cargando…</div>`;
+
+    const { data, error } = await supabaseClient
+      .from("reservations")
+      .select("id, asset_id, start_at, end_at, status, notes, created_at")
+      .eq("user_id", CURRENT_USER.id)
+      .order("start_at",{ascending:false})
+      .limit(50);
+
+    if(error){
+      diag("Error cargando mis reservas.", error);
+      wrap.innerHTML = `<div class="meta">❌ No se pudieron cargar tus reservas.</div>`;
+      return;
+    }
+
+    // mapa assets
+    const assetMap = new Map(ASSETS.map(a=>[a.id,a]));
+
+    wrap.innerHTML = "";
+    if(!data || !data.length){
+      wrap.innerHTML = `<div class="meta">Aún no tienes reservas.</div>`;
+      return;
+    }
+
+    data.forEach(r=>{
+      const a = assetMap.get(r.asset_id);
+      const name = a?.name || "Activo";
+      const where = a?.location || "";
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.background = "#233b5c";
+
+      const canCancel = ["pending","approved","active"].includes(r.status);
+
+      card.innerHTML = `
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <div style="font-weight:900">${escapeHtml(name)}</div>
+            <div class="meta">${escapeHtml(where)} • ${fmtDT(r.start_at)} – ${fmtDT(r.end_at)}</div>
+            <div class="meta" style="margin-top:6px">Estado: <strong>${escapeHtml(r.status)}</strong></div>
+            ${r.notes ? `<div class="muted" style="margin-top:8px;white-space:pre-wrap">${escapeHtml(r.notes)}</div>` : ``}
+          </div>
+          <div class="row">
+            <button class="subtle-btn" data-open>Ver en agenda</button>
+            <button class="danger-btn" data-cancel ${canCancel ? "" : "disabled"}>${canCancel ? "Cancelar" : "—"}</button>
+          </div>
+        </div>
+      `;
+
+      card.querySelector("[data-open]").addEventListener("click", ()=>{
+        const asset = ASSETS.find(x=>x.id===r.asset_id);
+        if(asset){
+          SELECTED_ASSET = asset;
+          const d = new Date(r.start_at);
+          $("datePick").value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+          document.querySelector('.tab[data-tab="agenda"]').click();
+          refreshAgenda();
+        }
+      });
+
+      card.querySelector("[data-cancel]").addEventListener("click", async ()=>{
+        if(!canCancel) return;
+        if(!confirm("¿Cancelar esta reserva?")) return;
+
+        const { error } = await supabaseClient
+          .from("reservations")
+          .update({ status:"cancelled", updated_at:new Date().toISOString() })
+          .eq("id", r.id);
+
+        if(error){
+          diag("Error cancelando reserva.", error);
+          alert("❌ No se pudo cancelar.");
+          return;
+        }
+        await loadMine();
+        await refreshAgenda();
+      });
+
+      wrap.appendChild(card);
+    });
+  }
+
+  /* ====== Admin ====== */
+  function hydrateAdminAssetSelect(){
+    const sel = $("blockAsset");
+    if(!sel) return;
+    sel.innerHTML = "";
+    ASSETS.forEach(a=>{
+      const op = document.createElement("option");
+      op.value = a.id;
+      op.textContent = `${a.name} (${a.type})`;
+      sel.appendChild(op);
+    });
+  }
+
+  async function adminRefresh(){
+    if(!IS_ADMIN) return;
+    await loadAssets(true);
+    hydrateAdminAssetSelect();
+    await loadBlocksList();
+  }
+
+  function resetAssetForm(){
+    $("assetId").value = "";
+    $("assetName").value = "";
+    $("assetType").value = "cancha";
+    $("assetLoc").value = "";
+    $("assetDesc").value = "";
+    $("assetOpen").value = "08:00";
+    $("assetClose").value = "20:00";
+    $("assetSlot").value = 60;
+    $("assetBuf").value = 0;
+    $("assetAhead").value = 14;
+    $("assetActive").checked = true;
+    $("assetApproval").checked = false;
+    $("adminStatus").textContent = "";
+    $("photoStatus").textContent = "";
+    $("btnDeleteAsset").style.display = "none";
+  }
+
+  async function saveAsset(e){
+    e.preventDefault();
+    if(!IS_ADMIN) return;
+
+    $("adminStatus").textContent = "Guardando…";
+
+    const id = $("assetId").value || null;
+    const payload = {
+      name: ($("assetName").value||"").trim(),
+      type: ($("assetType").value||"").trim() || "cancha",
+      location: ($("assetLoc").value||"").trim(),
+      description: ($("assetDesc").value||"").trim(),
+      open_time: $("assetOpen").value || "08:00",
+      close_time: $("assetClose").value || "20:00",
+      slot_minutes: parseInt($("assetSlot").value,10) || 60,
+      buffer_minutes: parseInt($("assetBuf").value,10) || 0,
+      max_days_ahead: parseInt($("assetAhead").value,10) || 14,
+      is_active: !!$("assetActive").checked,
+      requires_approval: !!$("assetApproval").checked,
+      updated_at: new Date().toISOString()
+    };
+
+    if(!payload.name){
+      $("adminStatus").textContent = "❌ El nombre es obligatorio.";
+      return;
+    }
+
+    let resp;
+    if(id){
+      resp = await supabaseClient.from("assets").update(payload).eq("id", id).select().maybeSingle();
+    }else{
+      resp = await supabaseClient.from("assets").insert(payload).select().maybeSingle();
+    }
+
+    if(resp.error){
+      diag("Error guardando asset (RLS/tabla).", resp.error);
+      $("adminStatus").textContent = "❌ No se pudo guardar (revisa RLS y consola).";
+      return;
+    }
+
+    $("adminStatus").textContent = "✅ Guardado.";
+    const saved = resp.data;
+    $("assetId").value = saved.id;
+    $("btnDeleteAsset").style.display = "inline-block";
+
+    await loadAssets(true);
+  }
+
+  async function deleteAsset(){
+    if(!IS_ADMIN) return;
+    const id = $("assetId").value;
+    if(!id) return;
+    if(!confirm("¿Eliminar este activo? También eliminará sus reservas y bloqueos.")) return;
+
+    const { error } = await supabaseClient.from("assets").delete().eq("id", id);
+    if(error){
+      diag("Error eliminando asset.", error);
+      $("adminStatus").textContent = "❌ No se pudo eliminar.";
+      return;
+    }
+
+    $("adminStatus").textContent = "✅ Eliminado.";
+    resetAssetForm();
+    await loadAssets(true);
+  }
+
+  async function uploadAssetPhoto(){
+    if(!IS_ADMIN) return;
+    const id = $("assetId").value;
+    if(!id){
+      $("photoStatus").textContent = "Primero guarda el activo para tener un ID.";
+      return;
+    }
+
+    const file = $("assetPhoto").files?.[0];
+    if(!file){
+      $("photoStatus").textContent = "Selecciona una imagen.";
+      return;
+    }
+
+    if(!['image/png','image/jpeg','image/webp'].includes(file.type)){
+      $("photoStatus").textContent = "Formato no soportado (usa PNG/JPG/WebP).";
+      return;
+    }
+
+    $("photoStatus").textContent = "Subiendo…";
+
+    const ext = (file.name.split(".").pop()||"jpg").toLowerCase();
+    const path = `${id}/portada.${ext}`;
+
+    // upsert para reemplazar la portada
+    const { error: upErr } = await supabaseClient.storage
+      .from("assets")
+      .upload(path, file, { upsert: true, cacheControl: "3600", contentType: file.type });
+
+    if(upErr){
+      diag("Error subiendo foto (bucket/policy).", upErr);
+      $("photoStatus").textContent = "❌ No se pudo subir. Revisa bucket 'assets' y policies.";
+      return;
+    }
+
+    const { data } = supabaseClient.storage.from("assets").getPublicUrl(path);
+    const url = data?.publicUrl;
+
+    if(!url){
+      $("photoStatus").textContent = "Subida OK, pero no se obtuvo URL pública.";
+      return;
+    }
+
+    // guardar URL como portada (primer elemento)
+    // obtenemos asset actual
+    const asset = ASSETS.find(a=>a.id===id);
+    const urls = Array.isArray(asset?.image_urls) ? asset.image_urls.slice() : [];
+    const next = [url, ...urls.filter(u=>u!==url)].slice(0,5);
+
+    const { error: saveErr } = await supabaseClient.from("assets")
+      .update({ image_urls: next, updated_at: new Date().toISOString() })
+      .eq("id", id);
+
+    if(saveErr){
+      diag("Error guardando image_urls.", saveErr);
+      $("photoStatus").textContent = "❌ Foto subida, pero no se guardó en el activo.";
+      return;
+    }
+
+    $("photoStatus").textContent = "✅ Foto actualizada.";
+    await loadAssets(true);
+  }
+
+  async function createBlock(e){
+    e.preventDefault();
+    if(!IS_ADMIN) return;
+
+    $("blockStatus").textContent = "Guardando…";
+
+    const assetId = $("blockAsset").value;
+    const startLocal = $("blockStart").value;
+    const endLocal = $("blockEnd").value;
+    const reason = ($("blockReason").value||"Bloqueo").trim();
+
+    if(!assetId || !startLocal || !endLocal){
+      $("blockStatus").textContent = "❌ Completa activo, inicio y fin.";
+      return;
+    }
+
+    const startISO = new Date(startLocal).toISOString();
+    const endISO = new Date(endLocal).toISOString();
+
+    const { error } = await supabaseClient.from("asset_blocks").insert({
+      asset_id: assetId,
+      start_at: startISO,
+      end_at: endISO,
+      reason,
+      created_by: CURRENT_USER.id
+    });
+
+    if(error){
+      diag("Error creando bloqueo (posible traslape / policy).", error);
+      $("blockStatus").textContent = "❌ No se pudo crear. Puede empalmar con otro bloqueo.";
+      return;
+    }
+
+    $("blockStatus").textContent = "✅ Bloqueo creado.";
+    $("blockReason").value = "";
+    await loadBlocksList();
+    await refreshAgenda();
+  }
+
+  async function loadBlocksList(){
+    const el = $("blocksList");
+    el.textContent = "Cargando…";
+
+    const from = new Date();
+    const to = new Date();
+    to.setDate(to.getDate()+30);
+
+    const { data, error } = await supabaseClient
+      .from("asset_blocks")
+      .select("id, asset_id, start_at, end_at, reason")
+      .gte("start_at", from.toISOString())
+      .lte("start_at", to.toISOString())
+      .order("start_at",{ascending:true})
+      .limit(50);
+
+    if(error){
+      diag("Error cargando bloqueos.", error);
+      el.textContent = "❌ No se pudieron cargar.";
+      return;
+    }
+
+    const map = new Map(ASSETS.map(a=>[a.id,a]));
+    if(!data || !data.length){
+      el.textContent = "No hay bloqueos próximos.";
+      return;
+    }
+
+    el.innerHTML = "";
+    data.forEach(b=>{
+      const a = map.get(b.asset_id);
+      const line = document.createElement("div");
+      line.style.marginBottom = "8px";
+      line.innerHTML = `
+        <div>🚫 <strong>${escapeHtml(a?.name||"Activo")}</strong> • ${fmtDT(b.start_at)} – ${fmtDT(b.end_at)}</div>
+        <div class="meta">${escapeHtml(b.reason||"Bloqueo")}</div>
+        <button class="danger-btn" style="margin-top:6px" data-del>Eliminar</button>
+      `;
+      line.querySelector("[data-del]").addEventListener("click", async ()=>{
+        if(!confirm("¿Eliminar este bloqueo?")) return;
+        const { error } = await supabaseClient.from("asset_blocks").delete().eq("id", b.id);
+        if(error){
+          diag("Error eliminando bloqueo.", error);
+          alert("❌ No se pudo eliminar.");
+          return;
+        }
+        await loadBlocksList();
+        await refreshAgenda();
+      });
+      el.appendChild(line);
+    });
+  }
+
+  // Cargar valores útiles en admin (datetime-local)
+  (function seedAdminDates(){
+    const now = new Date();
+    now.setMinutes(0,0,0);
+    const later = new Date(now);
+    later.setHours(later.getHours()+2);
+    document.addEventListener("DOMContentLoaded", ()=>{
+      if($("blockStart")) $("blockStart").value = toLocalDateTimeInputValue(now);
+      if($("blockEnd")) $("blockEnd").value = toLocalDateTimeInputValue(later);
+      resetAssetForm();
+    });
+  })();
+
+</script>
+</body>
+</html>
