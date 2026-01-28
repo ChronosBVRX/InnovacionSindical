@@ -56,6 +56,39 @@
     cursor:pointer;
   }
   .link-sm:hover{color:#fff}
+
+  /* 🔎 Combo autocompletable (Categoría) */
+  .combo{ position:relative; }
+  .combo-list{
+    position:absolute;
+    top:calc(100% + 6px);
+    left:0; right:0;
+    z-index:50;
+    background:#0a1329;
+    border:1px solid rgba(91,215,242,.28);
+    border-radius:12px;
+    box-shadow:0 10px 40px rgba(0,0,0,.45);
+    max-height:260px;
+    overflow:auto;
+    padding:6px;
+    display:none;
+  }
+  .combo-item{
+    padding:10px 10px;
+    border-radius:10px;
+    cursor:pointer;
+    color:var(--txt);
+  }
+  .combo-item:hover,
+  .combo-item.active{
+    background:rgba(91,215,242,.16);
+    outline:1px solid rgba(91,215,242,.25);
+  }
+  .combo-empty{
+    padding:10px 10px;
+    color:var(--muted);
+    font-size:12px;
+  }
 </style>
 </head>
 <body>
@@ -116,9 +149,24 @@
           <input id="suBirth" type="date" required>
         </div>
 
-        <div>
+        <!-- ✅ CATEGORÍA CON AUTOCOMPLETADO -->
+        <div class="grid-1">
           <label for="suCategoria">Categoría</label>
-          <input id="suCategoria" placeholder="Ej. Enfermera General A" required>
+
+          <div class="combo">
+            <input id="suCategoria"
+                   placeholder="Escribe tu categoría (ej. Enfermera, Técnico, Médico...)"
+                   autocomplete="off"
+                   required
+                   role="combobox"
+                   aria-autocomplete="list"
+                   aria-expanded="false"
+                   aria-controls="catList" />
+
+            <div id="catList" class="combo-list" role="listbox" aria-label="Sugerencias de categoría"></div>
+          </div>
+
+          <div class="hint">Tip: escribe 2–3 letras para ver opciones.</div>
         </div>
 
         <!-- 🔵 ADSCRIPCIÓN SELECT -->
@@ -237,22 +285,22 @@
     const liErr = $('#liErr'), suErr = $('#suErr');
     const forgotPass = $('#forgotPass');
 
-    function showLogin(){ 
-      fLogin.style.display='grid'; 
-      fSignup.style.display='none'; 
-      tabLogin.classList.add('active'); 
-      tabSignup.classList.remove('active'); 
-      liErr.textContent=''; 
-      suErr.textContent=''; 
+    function showLogin(){
+      fLogin.style.display='grid';
+      fSignup.style.display='none';
+      tabLogin.classList.add('active');
+      tabSignup.classList.remove('active');
+      liErr.textContent='';
+      suErr.textContent='';
     }
 
-    function showSignup(){ 
-      fLogin.style.display='none'; 
-      fSignup.style.display='grid'; 
-      tabSignup.classList.add('active'); 
-      tabLogin.classList.remove('active'); 
-      liErr.textContent=''; 
-      suErr.textContent=''; 
+    function showSignup(){
+      fLogin.style.display='none';
+      fSignup.style.display='grid';
+      tabSignup.classList.add('active');
+      tabLogin.classList.remove('active');
+      liErr.textContent='';
+      suErr.textContent='';
     }
 
     tabLogin.addEventListener('click', showLogin);
@@ -260,6 +308,182 @@
 
     supabase.auth.getSession().then(({data})=>{
       if (data?.session) location.href = REDIRECT_AFTER_LOGIN;
+    });
+
+    /* =========================
+       ✅ AUTOCOMPLETADO CATEGORÍA
+       ========================= */
+    const CATEGORIAS = [
+      "Pasante de Abogado","Abogado","Auxiliar Técnico de Actuariado Social","Oficial Técnico de Actuariado Social",
+      "Técnico de Actuariado Social","Actuario Social Matemático","Auxiliar de Almacén","Oficial de Almacén",
+      "Coordinador de Almacén","Jefe de Grupo de Almacén","Especialista de Almacén","Arquitecto","Asistente Médica",
+      "Coordinadora de Asistentes Médicas","Ayudante de Autopsia","Auxiliar de Servicios Administrativos","Técnico de Bibliotecas",
+      "Asistente de Bibliotecario","Bibliotecario","Biólogo","Ayudante de Cajero B","Ayudante de Cajero A","Cajero D","Cajero C",
+      "Cajero B","Cajero A","Camillero de Unidades Hospitalarias","Auxiliar de Administración de Centro Vacacional",
+      "Auxiliar de Atención Médica de Centro Vacacional","Auxiliar de Hospedaje de Centro Vacacional","Auxiliar de Operación Contable de Centro Vacacional",
+      "Lavandero en Centros Vacacionales","Operador de Seguridad en Albercas de Centro Vacacional","Operador de Servicios Internos de Centro Vacacional",
+      "Operador de Vehículos de Centro Vacacional","Planchador en Centros Vacacionales","Vigilante de Centros Vacacionales","Cirujano Máxilo Facial",
+      "Citotecnólogo","Técnico Polivalente","Técnico Electricista","Técnico Electrónico","Técnico Mecánico","Técnico Plomero",
+      "Técnico A en Aire Acondicionado y Refrigeración","Técnico A en Equipos Médicos","Técnico A en Fluidos y Energéticos","Técnico A en Plantas de Lavado",
+      "Técnico A en Telecomunicaciones","Técnico B en Equipos Médicos","Técnico B en Fluidos y Energéticos","Técnico B en Plantas de Lavado",
+      "Técnico B en Telecomunicaciones","Técnico en Equipos Reciprocantes","Técnico en Electrónica Médica y Laboratorio","Técnico C en Fluidos y Energéticos",
+      "Técnico C en Plantas de Lavado","Técnico C en Telecomunicaciones","Técnico en Mecánica, Fluidos y Especialidades","Técnico en Equipos de Absorción",
+      "Técnico en Equipos Helicoidal","Técnico en Equipos de Rayos X","Técnico en Equipos Turbocentrífugo","Especialista en Equipos de Especialidades",
+      "Especialista en Equipos de Laboratorio","Especialista en Equipos de Mecánica y Fluidos","Especialista en Equipos de Aire Acondicionado y Refrigeración",
+      "Especialista en Plantas de Lavado","Especialista en Equipos de Electrónica Médica","Especialista en Equipos de Rayos X","Especialista en Fluidos y Energéticos",
+      "Contador","Contador Auditor","Cuidador de Animales","Dibujante de Construcción","Dibujante de Estadística y Publicidad C","Dibujante de Estadística y Publicidad B",
+      "Dibujante de Estadística y Publicidad A","Dibujante de Ingeniería y Arquitectura","Pasante de Economista","Economista","Educadora","Electrocardiografista",
+      "Elevadorista","Auxiliar de Enfermería General","Auxiliar de Enfermería en Salud Pública","Enfermera General","Enfermera General Clínica","Enfermera Especialista",
+      "Enfermera Jefe de Piso","Estomatólogo","Auxiliar de Farmacia","Ayudante de Farmacia","Oficial de Farmacia","Coordinador de Farmacia","Fonoaudiólogo","Guardavidas",
+      "Oficial de Puericultura","Técnico de Puericultura","Heliografista","Histotecnólogo","Pasante de Ingeniero","Ingeniero","Inhaloterapeuta","Auxiliar de Servicios de Intendencia",
+      "Ayudante de Servicios de Intendencia","Oficial de Servicios de Intendencia","Intendente","Auxiliar de Laboratorio","Laboratorista","Operador de Servicios de Lavandería",
+      "Oficial de Servicios de Lavandería","Auxiliar de Limpieza e Higiene en Unidades Médicas y No Médicas","Ayudante de Limpieza e Higiene en Unidades Médicas y No Médicas",
+      "Machetero","Masajista","Médico General","Médico No Familiar","Médico Familiar","Técnico de Microfotografía","Multilitista","Nutricionista Dietista",
+      "Especialista en Nutrición y Dietética","Nutriólogo Clínico Especializado","Operador de Equipo de Intercomunicación Neumática","Operador de Máquinas de Revelado Automático",
+      "Optometrista","Orientador","Orientador de Actividades Familiares","Orientador de Actividades Artísticas (Clásica y Moderna)","Orientador de Actividades Artísticas (Danza Regional)",
+      "Orientador de Actividades Artísticas (Maestro de Música)","Orientador de Actividades Artísticas (Arte Dramático)","Orientador de Educación Física","Orientador de Iniciación Cultural",
+      "Orientador Técnico Médico","Auxiliar de Orientador Técnico Médico","Ortopedista","Partera","Jefe de Parteras","Peluquero","Pianista","Auxiliar de Administración en Unidad Médica",
+      "Auxiliar de Enfermería en Unidad Médica","Auxiliar de Limpieza y Cocina en Unidad Médica","Auxiliar de Servicios Generales en Unidad Médica","Profesor de Educación Física A",
+      "Profesor de Educación Física B","Profesor de Educación Física C","Promotor de Estomatología","Promotor de Salud Comunitaria","Psicólogo","Psicólogo Clínico","Psicómetra","Químico Clínico",
+      "Preparador de Mezclas","Químico Clínico Jefe de Sección","Técnico Radiólogo","Radioterapeuta","Redactor B","Manejador de Alimentos","Cocinero Técnico 2","Cocinero Técnico 1",
+      "Sociólogo","Auxiliar de Soporte Técnico en Informática","Oficial de Soporte Técnico en Informática","Coordinador de Soporte Técnico en Informática","Técnico en Anestesia",
+      "Técnico en el Manejo de Aparatos de Electrodiagnóstico","Técnico en Medicina Nuclear","Auxiliar de Técnico en Servicios de Dietología","Operador Telefónico A","Operador Telefónico B",
+      "Operador Telefónico C","Coordinador de Operadores Telefónicos","Terapista Físico","Terapista Ocupacional","Operador General en Tiendas","Jefe de Línea en Tiendas","Trabajadora Social",
+      "Trabajador Social Clínico","Auxiliar de Trabajo Social","Chofer","Motociclista","Controlador de Vehículos","Enfermera para el Traslado de Pacientes de Urgencia",
+      "Enfermera para el Traslado de Pacientes de Terapia Intensiva","Técnico Operador de Transporte de Pacientes de Urgencia","Técnico Operador de Transporte de Pacientes de Terapia Intensiva",
+      "Médico para el Traslado de Pacientes de Urgencia","Médico para el Traslado de Pacientes de Terapia Intensiva","Auxiliar de Administración en Unidad Médica de Esquema Modificado y Campo",
+      "Auxiliar de Atención Médica en Unidad Médica de Esquema Modificado y Campo","Auxiliar de Laboratorio en Unidad Médica de Esquema Modificado y Campo","Auxiliar de Servicios Generales en Unidad Médica de Esquema Modificado y Campo",
+      "Estomatólogo en Unidad Médica de Esquema Modificado y Campo","Operador de Servicios de Radiodiagnóstico en Unidad Médica de Esquema Modificado y Campo","Auxiliar de Administración en Unidad Médica de Campo",
+      "Auxiliar de Área Médica en Unidad Médica de Campo","Auxiliar de Servicios Generales en Unidad Médica de Campo","Estomatólogo en Unidad Médica de Campo","Operador de Mantenimiento en Unidad Médica de Campo",
+      "Operador de Servicios Auxiliares en Unidad Médica de Campo (Laboratorio)","Operador de Servicios Auxiliares en Unidad Médica de Campo (Radiodiagnóstico)","Mensajero","Auxiliar Universal de Oficinas",
+      "Oficial de Tesorería","Coordinador de Tesorería","Jefe de Grupo de Tesorería","Especialista de Tesorería","Oficial de Servicios Técnicos","Coordinador de Servicios Técnicos",
+      "Jefe de Grupo de Servicios Técnicos","Especialista de Servicios Técnicos","Oficial de Servicios Administrativos","Coordinador de Servicios Administrativos","Jefe de Grupo de Servicios Administrativos",
+      "Especialista de Servicios Administrativos","Oficial de Personal","Coordinador de Personal","Jefe de Grupo de Personal","Especialista de Personal","Oficial de Estadística","Coordinador de Estadística",
+      "Jefe de Grupo de Estadística","Especialista de Estadística","Oficial de Procesamiento de Datos","Coordinador de Procesamiento de Datos","Jefe de Grupo de Procesamiento de Datos",
+      "Especialista de Procesamiento de Datos","Oficial de Contabilidad","Coordinador de Contabilidad","Especialista de Contabilidad","Jefe de Oficina A","Jefe Técnico de Cobranzas y Adeudos",
+      "Jefe de Grupo de Servicios de Personal","Camillero en Vehículos de Servicios Ordinarios y Programados","Operador de Vehículos de Servicios Ordinarios y Programados","Operador de Ambulancias",
+      "Controlador de Vehículos de Servicios Ordinarios y Programados","Auxiliar de Velatorio","Operador de Velatorio","Ayudante de Embalsamamiento","Veterinario","Yesista","Médico Residente R1","Médico Residente R2",
+      "Médico Residente R3","Médico Residente R4","Médico Residente R5","Médico Residente R6","Médico Residente R7","Médico Residente R8"
+    ];
+
+    CATEGORIAS.sort((a,b)=>a.localeCompare(b,'es',{sensitivity:'base'}));
+
+    const catInput = document.getElementById('suCategoria');
+    const catList  = document.getElementById('catList');
+
+    let catOpen = false;
+    let catActiveIndex = -1;
+    let catResults = [];
+
+    const norm = (s)=> (s||"")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g,"");
+
+    function closeCat(){
+      catList.style.display = 'none';
+      catInput.setAttribute('aria-expanded','false');
+      catOpen = false;
+      catActiveIndex = -1;
+    }
+
+    function openCat(){
+      if (!catResults.length){
+        closeCat();
+        return;
+      }
+      catList.style.display = 'block';
+      catInput.setAttribute('aria-expanded','true');
+      catOpen = true;
+    }
+
+    function highlightCat(idx){
+      const nodes = [...catList.querySelectorAll('.combo-item')];
+      nodes.forEach(n=>n.classList.remove('active'));
+      catActiveIndex = idx;
+
+      if (idx >= 0 && nodes[idx]){
+        nodes[idx].classList.add('active');
+        nodes[idx].scrollIntoView({block:'nearest'});
+      }
+    }
+
+    function selectCat(idx){
+      const chosen = catResults[idx];
+      if (!chosen) return;
+      catInput.value = chosen;
+      closeCat();
+    }
+
+    function renderCat(items){
+      catList.innerHTML = '';
+
+      if (!items.length){
+        catList.innerHTML = `<div class="combo-empty">Sin coincidencias</div>`;
+        openCat();
+        return;
+      }
+
+      items.slice(0, 30).forEach((txt, idx)=>{
+        const div = document.createElement('div');
+        div.className = 'combo-item';
+        div.textContent = txt;
+        div.setAttribute('role','option');
+        div.addEventListener('mousedown', (e)=>{
+          e.preventDefault(); // evita blur antes de seleccionar
+          selectCat(idx);
+        });
+        catList.appendChild(div);
+      });
+
+      openCat();
+      highlightCat(-1);
+    }
+
+    function filterCat(){
+      const q = norm(catInput.value.trim());
+      if (q.length < 2){
+        catResults = [];
+        closeCat();
+        return;
+      }
+      catResults = CATEGORIAS.filter(c => norm(c).includes(q));
+      renderCat(catResults);
+    }
+
+    catInput.addEventListener('input', filterCat);
+    catInput.addEventListener('focus', filterCat);
+    catInput.addEventListener('blur', ()=> setTimeout(closeCat, 120));
+
+    catInput.addEventListener('keydown', (e)=>{
+      const nodes = [...catList.querySelectorAll('.combo-item')];
+
+      if (!catOpen && (e.key === 'ArrowDown' || e.key === 'ArrowUp')){
+        filterCat();
+        return;
+      }
+      if (!catOpen) return;
+
+      if (e.key === 'ArrowDown'){
+        e.preventDefault();
+        const next = Math.min(nodes.length - 1, catActiveIndex + 1);
+        highlightCat(next);
+      } else if (e.key === 'ArrowUp'){
+        e.preventDefault();
+        const prev = Math.max(0, catActiveIndex - 1);
+        highlightCat(prev);
+      } else if (e.key === 'Enter'){
+        if (catActiveIndex >= 0){
+          e.preventDefault();
+          selectCat(catActiveIndex);
+        }
+      } else if (e.key === 'Escape'){
+        closeCat();
+      }
+    });
+
+    document.addEventListener('click', (e)=>{
+      if (!catList.contains(e.target) && e.target !== catInput) closeCat();
     });
 
     /* LOGIN */
@@ -271,8 +495,8 @@
 
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error){
-        liErr.textContent = 'Error: ' + (error.message || 'No se pudo iniciar sesión'); 
-        return; 
+        liErr.textContent = 'Error: ' + (error.message || 'No se pudo iniciar sesión');
+        return;
       }
       location.href = REDIRECT_AFTER_LOGIN;
     });
@@ -315,7 +539,13 @@
       const password     = $('#suPass').value;
 
       if (!display_name || !phone || !birthdate || !categoria || !adscripcion){
-        suErr.textContent = 'Completa todos los campos del perfil.'; 
+        suErr.textContent = 'Completa todos los campos del perfil.';
+        return;
+      }
+
+      // ✅ Validación: obliga a elegir de la lista
+      if (!CATEGORIAS.includes(categoria)){
+        suErr.textContent = "Selecciona una categoría válida de la lista (escribe y elige una opción).";
         return;
       }
 
