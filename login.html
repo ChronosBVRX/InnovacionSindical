@@ -374,6 +374,8 @@
     let catOpen = false;
     let catActiveIndex = -1;
     let catResults = [];
+    let categoriaSeleccionada = false;
+
 
     const norm = (s)=> (s||"")
       .toLowerCase()
@@ -409,10 +411,12 @@
     }
 
     function selectCat(idx){
-      const chosen = catResults[idx];
-      if (!chosen) return;
-      catInput.value = chosen;
-      closeCat();
+  const chosen = catResults[idx];
+  if (!chosen) return;
+  catInput.value = chosen;
+  categoriaSeleccionada = true; // ✅ SOLO aquí se vuelve válida
+  closeCat();
+
     }
 
     function renderCat(items){
@@ -452,8 +456,15 @@
     }
 
     catInput.addEventListener('input', filterCat);
+    catInput.addEventListener('input', ()=>{
+  categoriaSeleccionada = false; // ❌ escribir NO cuenta como seleccionar
+});
     catInput.addEventListener('focus', filterCat);
-    catInput.addEventListener('blur', ()=> setTimeout(closeCat, 120));
+    catInput.addEventListener('blur', ()=>{
+  if (!categoriaSeleccionada) catInput.value = '';
+  setTimeout(closeCat, 120);
+});
+
 
     catInput.addEventListener('keydown', (e)=>{
       const nodes = [...catList.querySelectorAll('.combo-item')];
@@ -544,10 +555,12 @@
       }
 
       // ✅ Validación: obliga a elegir de la lista
-      if (!CATEGORIAS.includes(categoria)){
-        suErr.textContent = "Selecciona una categoría válida de la lista (escribe y elige una opción).";
-        return;
-      }
+    if (!categoriaSeleccionada){
+  suErr.textContent = "Debes seleccionar una categoría de la lista desplegable.";
+  catInput.focus();
+  return;
+}
+
 
       const { error } = await supabase.auth.signUp({
         email,
