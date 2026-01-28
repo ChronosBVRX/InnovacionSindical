@@ -3,59 +3,129 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Red Sindical CG — Acceso</title>
+<title>Plataforma Sindical CG — Acceso</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <style>
   :root{
-    --bg:#0b1022; --panel:#0e1730; --ring:rgba(91,215,242,.35);
-    --txt:#e6fbff; --muted:#aee9f7; --accent:#5bd7f2; --sky:#60a5fa; --err:#ff7b7b;
+    /* ✅ Paleta oficial — Plataforma Sindical CG */
+    --bg:#1b2e45;          /* body */
+    --bg2:#152336;         /* degradado */
+    --panel:#2e4f77;       /* cards */
+    --ring:rgba(77,161,168,.35); /* bordes/anillos */
+    --txt:#f0fdfa;         /* texto principal */
+    --muted:#bce9eb;       /* texto secundario */
+    --accent:#4da1a8;      /* primary */
+    --sky:#7ad1d6;         /* sky */
+    --err:#ff7b7b;
   }
+
   *{box-sizing:border-box}
+
   html,body{
     height:100%; margin:0; color:var(--txt);
     font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
     background:
-      radial-gradient(70vmax 70vmax at 50% 20%, rgba(96,165,250,.12), transparent 60%),
-      radial-gradient(60vmax 60vmax at 80% 80%, rgba(91,215,242,.10), transparent 60%),
-      linear-gradient(180deg,#0b1220,#0b1022);
+      radial-gradient(70vmax 70vmax at 50% 20%, rgba(77,161,168,.18), transparent 60%),
+      radial-gradient(60vmax 60vmax at 80% 80%, rgba(122,209,214,.12), transparent 60%),
+      linear-gradient(180deg,var(--bg2),var(--bg));
   }
+
   .wrap{max-width:980px;margin:0 auto;padding:22px}
+
   .card{
-    background:linear-gradient(180deg,var(--panel),#0b1328);
-    border:1px solid rgba(91,215,242,.25); border-radius:16px; padding:16px;
+    background:linear-gradient(180deg, rgba(46,79,119,.92), rgba(27,46,69,.92));
+    border:1px solid var(--ring);
+    border-radius:16px;
+    padding:16px;
     box-shadow:0 10px 40px rgba(0,0,0,.45);
+    backdrop-filter: blur(6px);
   }
-  .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-  .brand{display:flex;align-items:center;gap:10px}
-  .brand img{width:40px;height:40px;border-radius:10px;border:1px solid rgba(91,215,242,.25);background:#071022;object-fit:contain}
-  h1{margin:0;font-size:18px;color:#d8fbff}
-  .muted{color:#aee9f7}
+
+  .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:12px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:10px;min-width:240px}
+  .brand img{
+    width:42px;height:42px;border-radius:12px;
+    border:1px solid var(--ring);
+    background:rgba(21,35,54,.9);
+    object-fit:contain;
+  }
+
+  h1{margin:0;font-size:18px;color:var(--txt)}
+  .muted{color:var(--muted)}
   .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
-  .tabs{display:flex;gap:8px;margin:8px 0 12px}
-  .tab{appearance:none;border:1px solid rgba(91,215,242,.35);background:rgba(91,215,242,.14);color:#e6fbff;border-radius:12px;padding:8px 12px;cursor:pointer}
-  .tab.active{background:linear-gradient(90deg,var(--accent),var(--sky));border:none;color:#072133}
-
-  label{display:block;font-size:12px;color:#bdefff;margin:6px 0 4px}
-  input,select{
-    width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(91,215,242,.28);
-    background:#0a1329;color:#e6fbff;outline:none
+  .tabs{display:flex;gap:8px;margin:8px 0 12px;flex-wrap:wrap}
+  .tab{
+    appearance:none;
+    border:1px solid var(--ring);
+    background:rgba(77,161,168,.12);
+    color:var(--txt);
+    border-radius:12px;
+    padding:8px 12px;
+    cursor:pointer;
   }
+  .tab.active{
+    background:linear-gradient(90deg,var(--accent),var(--sky));
+    border:none;
+    color:#0b2230;
+    font-weight:700;
+  }
+
+  label{display:block;font-size:12px;color:var(--muted);margin:6px 0 4px}
+
+  input,select{
+    width:100%;
+    padding:10px 12px;
+    border-radius:12px;
+    border:1px solid var(--ring);
+    background:rgba(21,35,54,.85);
+    color:var(--txt);
+    outline:none;
+  }
+  input:focus, select:focus{
+    border-color: rgba(122,209,214,.65);
+    box-shadow: 0 0 0 4px rgba(77,161,168,.18);
+  }
+
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .grid-1{grid-column:1/-1}
   @media(max-width:760px){ .grid{grid-template-columns:1fr} }
-  .btn{appearance:none;border:1px solid rgba(91,215,242,.45);background:rgba(91,215,242,.14);
-       color:#e6fbff;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer}
-  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--sky));border:none;color:#072133}
+
+  .btn{
+    appearance:none;
+    border:1px solid var(--ring);
+    background:rgba(77,161,168,.12);
+    color:var(--txt);
+    border-radius:12px;
+    padding:10px 14px;
+    font-size:14px;
+    cursor:pointer;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  .btn:hover{filter:brightness(1.05)}
+  .btn.primary{
+    background:linear-gradient(90deg,var(--accent),var(--sky));
+    border:none;
+    color:#0b2230;
+    font-weight:800;
+  }
+
   .error{color:var(--err);font-size:13px;margin-top:8px}
-  .hint{font-size:12px;color:#9fdff0}
+  .hint{font-size:12px;color:rgba(188,233,235,.92)}
+
   .link-sm{
     font-size:12px;
     color:var(--muted);
     text-decoration:underline;
     cursor:pointer;
   }
-  .link-sm:hover{color:#fff}
+  .link-sm:hover{color:var(--txt)}
+
+  hr.sep{border:none;border-top:1px solid var(--ring)}
 
   /* 🔎 Combo autocompletable (Categoría) */
   .combo{ position:relative; }
@@ -64,8 +134,8 @@
     top:calc(100% + 6px);
     left:0; right:0;
     z-index:50;
-    background:#0a1329;
-    border:1px solid rgba(91,215,242,.28);
+    background:rgba(21,35,54,.98);
+    border:1px solid var(--ring);
     border-radius:12px;
     box-shadow:0 10px 40px rgba(0,0,0,.45);
     max-height:260px;
@@ -81,8 +151,8 @@
   }
   .combo-item:hover,
   .combo-item.active{
-    background:rgba(91,215,242,.16);
-    outline:1px solid rgba(91,215,242,.25);
+    background:rgba(77,161,168,.18);
+    outline:1px solid rgba(77,161,168,.25);
   }
   .combo-empty{
     padding:10px 10px;
@@ -91,14 +161,15 @@
   }
 </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="card">
       <div class="head">
         <div class="brand">
-          <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/refs/heads/main/Logo%20SNTSS.jpeg">
+          <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/refs/heads/main/Logo%20SNTSS.jpeg" alt="Logo">
           <div>
-            <h1>Red Sindical CG</h1>
+            <h1>Plataforma Sindical CG</h1>
             <div class="muted">Acceso a miembros</div>
           </div>
         </div>
@@ -243,7 +314,7 @@
           </select>
         </div>
 
-        <div class="grid-1"><hr style="border:none;border-top:1px solid rgba(91,215,242,.25)"></div>
+        <div class="grid-1"><hr class="sep"></div>
 
         <div>
           <label for="suEmail">Correo</label>
@@ -259,6 +330,7 @@
           <button class="btn primary" type="submit">Crear cuenta</button>
           <span class="hint">Te enviaremos un correo para confirmar.</span>
         </div>
+
         <div id="suErr" class="grid-1 error" role="alert"></div>
       </form>
 
@@ -269,6 +341,7 @@
   <script>
   (()=>{
 
+    // ✅ Supabase
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
 
@@ -376,7 +449,6 @@
     let catResults = [];
     let categoriaSeleccionada = false;
 
-
     const norm = (s)=> (s||"")
       .toLowerCase()
       .normalize("NFD")
@@ -411,12 +483,11 @@
     }
 
     function selectCat(idx){
-  const chosen = catResults[idx];
-  if (!chosen) return;
-  catInput.value = chosen;
-  categoriaSeleccionada = true; // ✅ SOLO aquí se vuelve válida
-  closeCat();
-
+      const chosen = catResults[idx];
+      if (!chosen) return;
+      catInput.value = chosen;
+      categoriaSeleccionada = true; // ✅ SOLO aquí se vuelve válida
+      closeCat();
     }
 
     function renderCat(items){
@@ -456,15 +527,12 @@
     }
 
     catInput.addEventListener('input', filterCat);
-    catInput.addEventListener('input', ()=>{
-  categoriaSeleccionada = false; // ❌ escribir NO cuenta como seleccionar
-});
+    catInput.addEventListener('input', ()=>{ categoriaSeleccionada = false; }); // escribir NO cuenta como seleccionar
     catInput.addEventListener('focus', filterCat);
     catInput.addEventListener('blur', ()=>{
-  if (!categoriaSeleccionada) catInput.value = '';
-  setTimeout(closeCat, 120);
-});
-
+      if (!categoriaSeleccionada) catInput.value = '';
+      setTimeout(closeCat, 120);
+    });
 
     catInput.addEventListener('keydown', (e)=>{
       const nodes = [...catList.querySelectorAll('.combo-item')];
@@ -555,12 +623,11 @@
       }
 
       // ✅ Validación: obliga a elegir de la lista
-    if (!categoriaSeleccionada){
-  suErr.textContent = "Debes seleccionar una categoría de la lista desplegable.";
-  catInput.focus();
-  return;
-}
-
+      if (!categoriaSeleccionada){
+        suErr.textContent = "Debes seleccionar una categoría de la lista desplegable.";
+        catInput.focus();
+        return;
+      }
 
       const { error } = await supabase.auth.signUp({
         email,
