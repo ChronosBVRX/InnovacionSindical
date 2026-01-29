@@ -15,23 +15,23 @@
     --bg-gradient: radial-gradient(circle at top center, #1e293b, #0f172a);
     --panel-bg: rgba(30, 41, 59, 0.7); /* Efecto cristal */
     --panel-border: rgba(148, 163, 184, 0.1);
-    
+
     --primary: #38bdf8; /* Azul cielo brillante */
     --primary-hover: #0ea5e9;
     --accent: #7dd3fc;
-    
+
     --text-main: #f1f5f9;
     --text-muted: #94a3b8;
-    
+
     --input-bg: rgba(15, 23, 42, 0.6);
     --input-border: rgba(148, 163, 184, 0.2);
     --focus-ring: rgba(56, 189, 248, 0.5);
-    
+
     --radius: 12px;
   }
 
   * { box-sizing: border-box; }
-  
+
   html, body {
     height: 100%; margin: 0;
     background: var(--bg-dark);
@@ -42,21 +42,21 @@
   }
 
   .wrap { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
-  
+
   /* Encabezado */
   .header-group { margin-bottom: 30px; text-align: center; }
-  h1 { 
-    margin: 10px 0; 
-    font-size: 28px; 
-    font-weight: 700; 
-    background: linear-gradient(90deg, #fff, var(--primary)); 
-    -webkit-background-clip: text; 
-    -webkit-text-fill-color: transparent; 
+  h1 {
+    margin: 10px 0;
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #fff, var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
   p.muted { color: var(--text-muted); font-size: 15px; margin-top: 5px; line-height: 1.5; }
-  
+
   .top-actions { display: flex; justify-content: flex-start; margin-bottom: 20px; }
-  
+
   /* Tarjeta Principal (Glassmorphism) */
   .card {
     background: var(--panel-bg);
@@ -68,7 +68,7 @@
   }
 
   form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  
+
   /* Etiquetas e Inputs */
   label {
     display: block;
@@ -131,10 +131,10 @@
     border-radius: 16px;
     margin-bottom: 10px;
   }
-  
+
   /* Botones */
   .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 20px; }
-  
+
   .btn {
     appearance: none;
     border: 1px solid var(--panel-border);
@@ -152,7 +152,7 @@
     font-weight: 600;
     transition: all 0.2s ease;
   }
-  
+
   .btn:hover {
     background: rgba(255, 255, 255, 0.1);
     transform: translateY(-1px);
@@ -164,7 +164,7 @@
     color: #0f172a;
     box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
   }
-  
+
   .btn.primary:hover {
     filter: brightness(1.1);
     box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
@@ -199,7 +199,7 @@
     opacity: 0; transition: opacity 0.3s;
   }
   .modal.show { display: flex; opacity: 1; }
-  
+
   .modal-card {
     width: clamp(320px, 95vw, 1000px);
     background: #1e293b;
@@ -210,7 +210,7 @@
     overflow: hidden;
     animation: slideUp 0.4s ease-out;
   }
-  
+
   @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
   .modal-h {
@@ -230,27 +230,28 @@
     color: #111;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     position: relative;
-    /* Efecto de papel sutil */
-    filter: contrast(0.95); 
+    /* IMPORTANTE: NO usar filter aquí (lavaba el PDF/impresión) */
+    filter: none;
   }
-  .page.carta { width: 816px; height: 1056px; } 
-  .sheet { 
-    padding: 72px 64px; 
-    font-family: "Times New Roman", Times, serif; 
-    font-size: 12pt; /* Ajustado a tamaño real de punto */
-    line-height: 1.5; 
-    white-space: pre-wrap; 
+  .page.carta { width: 816px; height: 1056px; }
+  .sheet {
+    padding: 72px 64px;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+    line-height: 1.5;
+    white-space: pre-wrap;
   }
-  
-  /* Estilos internos del documento para impresión */
-  .sheet header { font-size: 11pt; text-align: right; margin-bottom: 2em; font-weight: 700; } 
+
+  /* Estilos internos del documento */
+  .sheet header { font-size: 11pt; text-align: right; margin-bottom: 2em; font-weight: 700; }
   .sheet .dest { font-weight: 700; margin-top: 1em; margin-bottom: 0.5em; text-transform: uppercase; }
   .sheet .pres { margin: 0 0 2em 0; }
   .sheet h6 { font-weight: 700; margin: 1.5em 0 0.5em 0; font-size: 12pt; text-transform: uppercase; }
   .sheet p { text-align: justify; margin-bottom: 1em; }
-  .sheet .pie { 
-    position: absolute; bottom: 80px; left: 64px; right: 64px; 
+  .sheet .pie {
+    position: absolute; bottom: 80px; left: 64px; right: 64px;
     text-align: center; font-weight: 700;
+    white-space: pre-wrap;
   }
 
   /* Responsive */
@@ -266,6 +267,7 @@
   }
 </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="top-actions">
@@ -282,7 +284,7 @@
 
     <div class="card">
       <form id="fDenuncia" autocomplete="on" novalidate>
-        
+
         <div class="highlight-section">
           <label for="puestoCatalogo">1. ¿A quién va dirigido el escrito?</label>
           <select id="puestoCatalogo">
@@ -341,16 +343,16 @@
           <label for="destinatario">Nombre del titular (Automático)</label>
           <input id="destinatario" name="destinatario" placeholder="Se llena al elegir puesto..." readonly aria-readonly="true" required>
         </div>
-        
+
         <div>
-           <label for="fecha">Fecha del escrito</label>
-           <input id="fecha" name="fecha" type="date">
+          <label for="fecha">Fecha del escrito</label>
+          <input id="fecha" name="fecha" type="date">
         </div>
 
         <input id="cargo" name="cargo" type="hidden">
 
         <div class="grid-full">
-            <hr style="border:0; border-top:1px solid var(--panel-border); margin: 10px 0 20px;">
+          <hr style="border:0; border-top:1px solid var(--panel-border); margin: 10px 0 20px;">
         </div>
 
         <div>
@@ -369,10 +371,10 @@
           <label for="lugar">Adscripción / Centro de Trabajo</label>
           <input id="lugar" name="lugar" placeholder="Ej. HGZ No. XX, Urgencias">
         </div>
-        
+
         <div class="grid-full">
-             <label for="ciudad">Ciudad / Municipio</label>
-             <input id="ciudad" name="ciudad" placeholder="Ej. Lázaro Cárdenas, Michoacán" required>
+          <label for="ciudad">Ciudad / Municipio</label>
+          <input id="ciudad" name="ciudad" placeholder="Ej. Lázaro Cárdenas, Michoacán" required>
         </div>
 
         <div class="grid-full">
@@ -416,7 +418,7 @@
   <script>
   document.addEventListener('DOMContentLoaded', () => {
     // === CONFIG ===
-    const API_BASE = "https://sinos-api.onrender.com"; 
+    const API_BASE = "https://sinos-api.onrender.com";
     const FORM_KEY = 'sinos_denuncias_v1';
 
     const $ = s => document.querySelector(s);
@@ -431,7 +433,7 @@
           clearInterval(t);
           resolve(window.jspdf);
         }
-        if (tries > 200){ 
+        if (tries > 200){
           clearInterval(t);
           reject(new Error('jsPDF/html2canvas no cargaron'));
         }
@@ -452,7 +454,7 @@
 
     async function redactarIA(d){
       const ctrl = new AbortController();
-      const timeout = setTimeout(()=> ctrl.abort(), 12000); 
+      const timeout = setTimeout(()=> ctrl.abort(), 12000);
       try{
         setStatus("🧠 La IA está redactando tu escrito formal...");
 
@@ -614,14 +616,106 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
     }
     function cerrarPreview(){ closeModal(); }
 
-    async function generarPDF(d, {action='print'} = {}){
+    // ===== IMPRESIÓN NÍTIDA (HTML REAL) =====
+    async function imprimirHTML(d){
+      setStatus('🖨️ Preparando impresión…');
+      try{
+        const { encabezadoTop, dest, cuerpo, pie } = await getOficio(d);
+        if(!cuerpo){ throw new Error('No se generó el cuerpo del escrito.'); }
+
+        const html = buildPreviewHTML(encabezadoTop, dest, cuerpo, pie);
+
+        let iframe = document.getElementById('print-html-iframe');
+        if(!iframe){
+          iframe = document.createElement('iframe');
+          iframe.id = 'print-html-iframe';
+          iframe.style.position = 'fixed';
+          iframe.style.right = '0';
+          iframe.style.bottom = '0';
+          iframe.style.width = '0';
+          iframe.style.height = '0';
+          iframe.style.border = '0';
+          iframe.style.visibility = 'hidden';
+          document.body.appendChild(iframe);
+        }
+
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(`
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Impresión</title>
+<style>
+  @page { size: letter; margin: 0; }
+  html, body { margin: 0; padding: 0; background: #fff; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  .page{
+    width: 8.5in;
+    height: 11in;
+    background: #fff;
+    color: #111;
+    margin: 0 auto;
+  }
+  .sheet{
+    padding: 72px 64px;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+    line-height: 1.5;
+    white-space: normal;
+  }
+
+  .sheet header { font-size: 11pt; text-align: right; margin-bottom: 2em; font-weight: 700; }
+  .sheet .dest { font-weight: 700; margin-top: 1em; margin-bottom: 0.5em; text-transform: uppercase; }
+  .sheet .pres { margin: 0 0 2em 0; }
+  .sheet h6 { font-weight: 700; margin: 1.5em 0 0.5em 0; font-size: 12pt; text-transform: uppercase; }
+  .sheet p { text-align: justify; margin: 0 0 1em 0; }
+  /* En impresión es mejor dejar el pie como bloque normal para evitar cortes raros */
+  .sheet .pie{
+    margin-top: 2em;
+    text-align: center;
+    font-weight: 700;
+    white-space: pre-wrap;
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="sheet">
+      ${html}
+    </div>
+  </div>
+</body>
+</html>
+        `);
+        doc.close();
+
+        await new Promise(res => setTimeout(res, 120));
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+
+        setStatus('✅ Enviado a impresión.');
+      }catch(e){
+        console.error(e);
+        setStatus('❌ Error al imprimir.');
+        alert('No se pudo imprimir.\n' + e.message);
+      }finally{
+        setTimeout(()=>setStatus(""), 4000);
+      }
+    }
+
+    // ===== PDF (DESCARGA) =====
+    async function generarPDF(d, {action='download'} = {}){
       setStatus('📄 Generando documento PDF…');
       try{
         const { jsPDF } = await ensureJsPDF();
         const doc = new jsPDF({ unit:'pt', format:'letter' });
 
         const dims = {W:612, H:792};
-        const M = 64; 
+        const M = 64;
         const topBase = 72;
 
         const { encabezadoTop, dest, cuerpo, pie } = await getOficio(d);
@@ -633,8 +727,8 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         wrapper.style.position = 'fixed';
         wrapper.style.left = '-10000px';
         wrapper.innerHTML = `
-          <div class="page carta">
-            <div class="sheet" style="padding:0">
+          <div class="page carta" style="background:#fff; box-shadow:none; filter:none;">
+            <div class="sheet" style="padding:0; color:#111; background:#fff;">
               ${html}
             </div>
           </div>
@@ -649,7 +743,11 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
           y: topBase - 24,
           width: dims.W - M*2,
           windowWidth: 816,
-          html2canvas: { scale: 1 }
+          html2canvas: {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            useCORS: true
+          }
         });
 
         document.body.removeChild(wrapper);
@@ -657,31 +755,6 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
         if(action==='download'){
           doc.save('Escrito_Sindicato.pdf');
           setStatus('✅ PDF descargado.');
-        } else {
-          const blob = doc.output('blob');
-          const url = URL.createObjectURL(blob);
-          let iframe = document.getElementById('print-iframe');
-          if(!iframe){
-            iframe = document.createElement('iframe');
-            iframe.id = 'print-iframe';
-            iframe.style.position='fixed'; iframe.style.right='0'; iframe.style.bottom='0';
-            iframe.style.width='0'; iframe.style.height='0'; iframe.style.border='0'; iframe.style.visibility='hidden';
-            document.body.appendChild(iframe);
-          }
-          await new Promise(res=>{
-            iframe.onload = ()=>{
-              try{
-                iframe.contentWindow.focus();
-                setTimeout(()=>{
-                  iframe.contentWindow.print();
-                  setTimeout(()=> URL.revokeObjectURL(url), 5000);
-                  res();
-                }, 120);
-              }catch(e){ res(); }
-            };
-            iframe.src = url;
-          });
-          setStatus('🖨️ Listo para imprimir.');
         }
       }catch(e){
         console.error(e);
@@ -735,18 +808,23 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
       if(e.key === 'Tab') trapFocus(e);
     }
 
+    // ===== EVENTOS =====
     document.getElementById('btnPreview').addEventListener('click', abrirPreview);
     document.getElementById('btnClose').addEventListener('click', cerrarPreview);
+
     document.getElementById('btnDownload').addEventListener('click', async ()=>{
       const d = datos();
       if(!d.problematica) { alert('Faltan campos'); return; }
       await generarPDF(d, {action:'download'});
     });
+
+    // Imprimir = HTML real (nítido)
     document.getElementById('btnPrint').addEventListener('click', async ()=>{
       const d = datos();
       if(!d.problematica) { alert('Faltan campos'); return; }
-      await generarPDF(d, {action:'print'});
+      await imprimirHTML(d);
     });
+
     document.getElementById('btnCopy').addEventListener('click', async ()=>{
       try{
         const d = datos();
@@ -759,12 +837,19 @@ Categoría: ${d.categoria}${N(d.lugar)?`\n${d.lugar}`:''}`;
       finally{ setTimeout(()=>setStatus(""), 3000); }
     });
 
+    // Botón principal: Generar Documento -> Imprime nítido (HTML real)
     document.getElementById('fDenuncia').addEventListener('submit', async (e)=>{
       e.preventDefault();
       e.stopPropagation();
       const d = datos();
-      if(!d.problematica) { alert('Faltan campos'); return; }
-      await generarPDF(d, {action:'print'});
+      const required = ['ciudad','destinatario','nombre','matricula','categoria','problematica'];
+      for(const k of required){
+        if(!d[k]){
+          alert('Por favor completa todos los campos obligatorios.');
+          return;
+        }
+      }
+      await imprimirHTML(d);
     });
 
     document.getElementById('puestoCatalogo').addEventListener('change', (e)=>{
