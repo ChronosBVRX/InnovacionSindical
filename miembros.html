@@ -9,19 +9,12 @@
     href="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/refs/heads/main/Logo%20SNTSS.jpeg">
   <style>
     :root {
-      /* Ajuste de fondo para que contraste con el panel #2e4f77 */
-      --bg: #1b2e45; 
-      /* El color solicitado para los bloques principales */
+      --bg: #1b2e45;
       --panel: #2e4f77;
-      /* Anillo de enfoque y bordes suaves basado en el turquesa */
       --ring: rgba(77, 161, 168, .45);
-      /* Texto claro */
       --txt: #f0fdfa;
-      /* Texto secundario (un turquesa muy pálido) */
       --muted: #bce9eb;
-      /* El color solicitado para acciones y realces */
       --primary: #4da1a8;
-      /* Variación más clara para degradados */
       --sky: #7ad1d6;
     }
 
@@ -34,7 +27,6 @@
 
     body {
       min-height: 100vh;
-      /* Degradado sutil de fondo */
       background: linear-gradient(180deg, #152336, #1b2e45);
       color: var(--txt);
       display: flex;
@@ -49,7 +41,6 @@
       align-items: center;
       justify-content: space-between;
       padding: 10px 16px;
-      /* Fondo del header con transparencia azulada */
       background: rgba(30, 50, 80, .75);
       backdrop-filter: blur(8px);
       border-bottom: 1px solid rgba(77, 161, 168, .35)
@@ -490,7 +481,7 @@
       <button class="tab" data-tab="foro">🗣️ Foro</button>
       <button class="tab" data-tab="videollamadas">📞 Videollamadas</button>
       <button class="tab" data-tab="biblioteca">📚 Biblioteca</button>
-      <button class="tab" data-tab="verificacion">✅ Verificación</button>
+      <!-- ✅ Verificación QUITADA del menú (ahora está integrada en Perfil) -->
       <button class="tab" data-tab="scanner" id="tabScanner" style="display:none">🔎 Scanner</button>
       <button class="tab" data-tab="personaliza">⚙️ Personaliza tu perfil</button>
     </nav>
@@ -550,6 +541,43 @@
               <div id="miniTopMeta" class="meta" style="margin-top:6px">Cargando…</div>
               <div id="miniTopList" style="margin-top:10px;display:grid;gap:8px"></div>
             </div>
+
+            <!-- ✅ INTEGRADO EN PERFIL: Próximo QR de verificación -->
+            <div class="card" id="perfilQRCard" style="margin-top:12px; background:#233b5c; animation:fadeInSmall .2s ease">
+              <h3>✅ Próximo QR de verificación</h3>
+              <p class="muted" style="margin-top:6px">
+                Aquí aparecerá el próximo QR para verificar tu asistencia al próximo evento sindical.
+                Confirma tu asistencia para generarlo.
+              </p>
+
+              <div id="eventBox" class="meta" style="margin-top:10px">Buscando el próximo evento…</div>
+
+              <div id="rsvpBox" style="margin-top:12px; display:none">
+                <div class="row">
+                  <button class="btn" id="btnYes">✔️ Asistiré</button>
+                  <button class="subtle-btn" id="btnNo">✖️ No asistiré</button>
+                  <span class="meta" id="rsvpStatus"></span>
+                </div>
+
+                <div id="qrWrap" style="margin-top:12px; display:none">
+                  <div class="qr-card"><canvas id="qrCanvas" aria-label="Código QR"></canvas></div>
+                  <div class="meta" style="margin-top:6px">Muestra este QR al llegar.</div>
+                </div>
+              </div>
+
+              <div id="adminRSVPPanel" class="perfil-extra-card" style="margin-top:16px; display:none;">
+                <h3>📊 Confirmaciones de asistencia (solo admins)</h3>
+                <p class="meta" id="adminRSVPText">Cargando…</p>
+
+                <div id="adminRSVPListWrap" style="margin-top:8px; display:none;">
+                  <p class="meta" style="margin-bottom:4px;">Personas que confirmaron:</p>
+                  <ul id="adminRSVPList"
+                    style="margin:0 0 4px 18px; padding:0; font-size:13px; color:var(--muted); list-style:disc;"></ul>
+                  <p class="meta" id="adminRSVPMore" style="display:none;"></p>
+                </div>
+              </div>
+            </div>
+            <!-- /QR -->
           </div>
 
           <aside class="perfil-extra">
@@ -604,13 +632,13 @@
     </section>
 
     <section id="reservas" class="content">
-  <div class="card">
-    <h2>🗓️ Reservas</h2>
-    <p class="muted">Gestiona y consulta reservas desde esta pestaña.</p>
-    <iframe src="reservas.html"
-      style="width:100%;min-height:650px;border:0;border-radius:12px;margin-top:12px" loading="lazy"></iframe>
-  </div>
-</section>
+      <div class="card">
+        <h2>🗓️ Reservas</h2>
+        <p class="muted">Gestiona y consulta reservas desde esta pestaña.</p>
+        <iframe src="reservas.html"
+          style="width:100%;min-height:650px;border:0;border-radius:12px;margin-top:12px" loading="lazy"></iframe>
+      </div>
+    </section>
 
     <section id="foro" class="content">
       <div class="card">
@@ -655,37 +683,7 @@
       </div>
     </section>
 
-    <section id="verificacion" class="content">
-      <div class="card">
-        <h2>✅ Verificación de Asistencia</h2>
-        <p class="muted">Confirma si asistirás al próximo evento. Si confirmas, obtendrás un QR para registrar tu
-          llegada.</p>
-        <div id="eventBox" class="meta">Buscando el próximo evento…</div>
-        <div id="rsvpBox" style="margin-top:12px; display:none">
-          <div class="row">
-            <button class="btn" id="btnYes">✔️ Asistiré</button>
-            <button class="subtle-btn" id="btnNo">✖️ No asistiré</button>
-            <span class="meta" id="rsvpStatus"></span>
-          </div>
-          <div id="qrWrap" style="margin-top:12px; display:none">
-            <div class="qr-card"><canvas id="qrCanvas" aria-label="Código QR"></canvas></div>
-            <div class="meta" style="margin-top:6px">Muestra este QR al llegar.</div>
-          </div>
-        </div>
-
-        <div id="adminRSVPPanel" class="perfil-extra-card" style="margin-top:16px; display:none;">
-          <h3>📊 Confirmaciones de asistencia (solo admins)</h3>
-          <p class="meta" id="adminRSVPText">Cargando…</p>
-
-          <div id="adminRSVPListWrap" style="margin-top:8px; display:none;">
-            <p class="meta" style="margin-bottom:4px;">Personas que confirmaron:</p>
-            <ul id="adminRSVPList"
-              style="margin:0 0 4px 18px; padding:0; font-size:13px; color:var(--muted); list-style:disc;"></ul>
-            <p class="meta" id="adminRSVPMore" style="display:none;"></p>
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- ✅ SECCIÓN "verificacion" ELIMINADA (ahora está integrada en Perfil) -->
 
     <section id="personaliza" class="content">
       <div class="card">
@@ -797,9 +795,7 @@
     const GOOGLE_API_KEY = "AIzaSyDdtYPPE-jTvw_Gypxrq2c5UePpbK9ZxZ0";
     const CALENDAR_ID = "redunidadenaccion@gmail.com";
 
-    /* ====== Cliente (IMPORTANTE) ======
-       En CDN v2 el global es "supabase", y trae createClient
-    */
+    /* ====== Cliente ====== */
     const supabaseClient = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_ANON_KEY,
@@ -852,8 +848,8 @@
           location.hash = id;
 
           if (id === 'miembros') renderMembers();
-          if (id === 'verificacion') initVerification();
           if (id === 'foro') loadPostsDeb();
+          // ✅ verificación ya no es pestaña; se carga dentro de Perfil
         });
       });
 
@@ -883,9 +879,7 @@
 
       // 1) sesión
       const { data: { session }, error: sessErr } = await supabaseClient.auth.getSession();
-      if (sessErr) {
-        diag("Error obteniendo sesión (auth.getSession).", sessErr);
-      }
+      if (sessErr) diag("Error obteniendo sesión (auth.getSession).", sessErr);
 
       if (!session) {
         diag("No hay sesión activa. Se redirige a login.html");
@@ -898,7 +892,7 @@
 
       if (IS_ADMIN) $("tabScanner").style.removeProperty('display');
 
-      // 2) cargar datos (con diagnóstico)
+      // 2) cargar datos
       await loadProfile();
       initPerfilExtras();
 
@@ -906,8 +900,18 @@
       initPresence();
       initForum();
 
+      // ✅ CARGAR VERIFICACIÓN (QR) EN PERFIL
+      await initVerification();
+
       // 3) tabs hash
       const wanted = (location.hash || '#perfil').slice(1);
+
+      // si alguien trae hash viejo #verificacion, lo mandamos a perfil
+      if (wanted === 'verificacion') {
+        (document.querySelector('.tab[data-tab="perfil"]'))?.click();
+        return;
+      }
+
       if (wanted === 'scanner') {
         if (IS_ADMIN) window.location.replace(SCANNER_REDIRECT_URL);
         else (document.querySelector('.tab[data-tab="perfil"]'))?.click();
@@ -969,10 +973,7 @@
           .eq('user_id', CURRENT_USER.id)
           .maybeSingle();
 
-        if (error) {
-          // ESTE ES EL ERROR CLAVE CUANDO NO CARGA: normalmente "permission denied" por RLS
-          diag("Error leyendo tabla 'profiles'. (Probable RLS / policy)", error);
-        }
+        if (error) diag("Error leyendo tabla 'profiles'. (Probable RLS / policy)", error);
 
         const telRaw = prof?.telefono || CURRENT_USER.user_metadata?.telefono;
         const telPublicFlag = (prof?.telefono_publico ?? CURRENT_USER.user_metadata?.telefono_publico) === true;
@@ -1085,6 +1086,9 @@
 
         $("status").textContent = "✅ Cambios guardados.";
         await loadProfile();
+
+        // ✅ refrescar QR / RSVP por si cambió algo del usuario
+        await initVerification();
       } catch (e) {
         console.error(e);
         $("status").textContent = "❌ Ocurrió un error guardando tu perfil.";
@@ -1190,7 +1194,6 @@
         ch.subscribe(async (status) => {
           if (status === 'SUBSCRIBED') {
             ch.track({ last_active: Date.now() });
-            // si falla por RLS, no rompe la app; solo diagnostica
             const { error } = await supabaseClient.from('profiles')
               .update({ last_seen: new Date().toISOString() })
               .eq('user_id', CURRENT_USER.id);
@@ -1504,6 +1507,8 @@
     }
 
     async function initVerification() {
+      if (!$("rsvpBox") || !$("eventBox")) return; // por seguridad
+
       $("rsvpBox").style.display = CURRENT_USER ? 'block' : 'none';
       $("rsvpStatus").textContent = '';
       $("qrWrap").style.display = 'none';
@@ -1694,7 +1699,6 @@
       const info = document.getElementById('asistData');
 
       if (error) {
-        // Si tu tabla no existe o está bloqueada por RLS lo verás aquí
         diag("Error leyendo attendance_scans (tabla/policy).", error);
         info.textContent = "No se pudieron cargar tus datos.";
         return;
