@@ -7,71 +7,60 @@
   <title>Plataforma Sindical CG</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <link rel="icon" href="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" />
 
   <style>
     :root {
-      /* --- PALETA PROYECTO AZUL MODERNIZADA --- */
-      --bg-deep: #0f172a;       /* Azul nocturno profundo */
-      --bg-gradient: radial-gradient(circle at 50% 0%, #1e3a8a 0%, #0f172a 60%);
-      
-      --glass-surface: rgba(30, 41, 59, 0.65);
-      --glass-border: rgba(255, 255, 255, 0.08);
-      --glass-highlight: rgba(255, 255, 255, 0.03);
+      /* --- PALETA ORIGINAL RESTAURADA --- */
+      --bg-body: #1b2e45;
+      --bg-body-end: #152336;
+      --panel-base: 46, 79, 119; /* Desglosado para usar con opacidad */
 
-      --primary: #06b6d4;       /* Cian eléctrico */
-      --primary-glow: #06b6d480;
-      --accent: #3b82f6;        /* Azul real */
+      --primary: #4da1a8;
+      --primary-light: #7ad1d6;
 
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
+      --text-main: #f0fdfa;
+      --text-muted: #bce9eb;
 
-      /* --- VARIABLES DE SISTEMA --- */
+      --ring: rgba(77, 161, 168, .35);
+
+      /* --- VARIABLES DE SISTEMA MODERNAS --- */
       --topbar: 64px;
-      --boot-ms: 4500ms;
       --radius: 16px;
       
-      /* Escalas responsivas */
-      --tile-min: 160px;
-      --tile-icon: 64px;
-      --logo: 110px;
+      /* Glassmorphism sutil basado en tus colores */
+      --glass-bg: rgba(var(--panel-base), 0.35);
+      --glass-border: rgba(77, 161, 168, 0.2);
+      --glass-highlight: rgba(255, 255, 255, 0.05);
     }
 
     html, body {
       height: 100%;
       margin: 0;
       overflow: hidden;
-      overscroll-behavior: none;
-      background-color: var(--bg-deep);
+      background-color: var(--bg-body);
       color: var(--text-main);
       font-family: 'Inter', sans-serif;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Fondo ambiental */
+    /* Fondo original con un toque más suave */
     .ambient-bg {
       position: fixed;
       inset: 0;
       z-index: -1;
-      background: var(--bg-gradient);
+      background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%);
     }
     
-    /* Orbes de luz decorativos */
+    /* Patrón sutil original */
     .ambient-bg::before {
-      content: '';
-      position: absolute;
-      top: -20%;
-      right: -10%;
-      width: 60vw;
-      height: 60vw;
-      background: radial-gradient(circle, rgba(6, 182, 212, 0.15), transparent 70%);
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.6;
-      animation: float 10s ease-in-out infinite alternate;
+      content: ""; position: absolute; inset: 0; opacity: .06;
+      background-image: linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px);
+      background-size: 40px 40px;
     }
 
     /* --- TOPBAR GLASS --- */
@@ -83,390 +72,256 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 24px;
-      background: rgba(15, 23, 42, 0.7);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--glass-border);
+      /* Usamos tu color de panel con transparencia */
+      background: rgba(var(--panel-base), 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--ring);
       z-index: 30;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     }
 
     .mark {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--glass-border);
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: rgba(77, 161, 168, .15);
+      border: 1px solid var(--ring);
       overflow: hidden;
-      box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+      display: grid; place-items: center;
     }
     .mark img { width: 100%; height: 100%; object-fit: cover; }
 
     .title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 700;
-      font-size: 15px;
-      letter-spacing: -0.01em;
+      display: flex; align-items: center; gap: 12px;
+      font-weight: 600; font-size: 16px; letter-spacing: 0.5px;
     }
-    .title span { color: var(--primary); }
+    .title span { color: var(--primary-light); }
 
     .clock {
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 500;
-      background: rgba(255,255,255,0.05);
-      padding: 6px 12px;
-      border-radius: 20px;
-      border: 1px solid var(--glass-border);
+      font-size: 13px; color: var(--text-muted);
+      background: rgba(var(--panel-base), 0.4);
+      padding: 4px 10px; border-radius: 12px;
+      border: 1px solid var(--ring);
     }
 
     /* --- CAPAS --- */
     .layer {
-      position: fixed;
-      inset: 0;
-      top: var(--topbar);
-      overflow-y: auto;
-      overflow-x: hidden;
-      scroll-behavior: smooth;
+      position: fixed; inset: 0; top: var(--topbar);
+      overflow-y: auto; scroll-behavior: smooth;
     }
 
-    .wrap {
-      padding: 32px 24px;
-      max-width: 1280px;
-      margin: 0 auto;
-    }
+    .wrap { padding: 32px 24px; max-width: 1200px; margin: 0 auto; }
 
-    /* --- HEADER DE MARCA --- */
+    /* --- HEADER --- */
     .brand {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      align-items: flex-end;
-      justify-content: space-between;
-      margin-bottom: 40px;
-      padding-bottom: 24px;
-      border-bottom: 1px solid var(--glass-border);
+      display: flex; flex-wrap: wrap; gap: 20px;
+      align-items: flex-end; justify-content: space-between;
+      margin-bottom: 32px; padding-bottom: 20px;
+      border-bottom: 1px solid var(--ring);
     }
 
     .brand h1 {
-      margin: 0;
-      font-size: 32px;
-      font-weight: 700;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
+      margin: 0; font-size: 28px; font-weight: 700; color: var(--text-main);
     }
 
     .text-gradient {
-      background: linear-gradient(135deg, #fff 30%, var(--primary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      background: linear-gradient(to right, var(--primary-light), var(--text-main));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    .brand p {
-      margin: 8px 0 0;
-      color: var(--text-muted);
-      font-size: 15px;
-    }
+    .brand p { margin: 8px 0 0; color: var(--text-muted); font-size: 15px; }
 
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(6, 182, 212, 0.1);
-      border: 1px solid rgba(6, 182, 212, 0.2);
-      color: var(--primary);
-      padding: 8px 16px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      box-shadow: 0 0 15px rgba(6, 182, 212, 0.1);
+      background: rgba(77, 161, 168, .15);
+      border: 1px solid var(--ring);
+      color: var(--primary-light);
+      padding: 6px 14px; border-radius: 8px;
+      font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 1px;
     }
 
-    /* --- TILES (TARJETAS) --- */
+    /* --- TILES MODERNIZADOS (Iconos Integrados) --- */
     .tiles {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
     }
 
     .tile {
       position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: var(--tile-min);
+      display: flex; flex-direction: column;
+      min-height: 180px; /* Un poco más altas para los nuevos iconos */
       padding: 24px;
-      cursor: pointer;
-      text-align: left;
+      cursor: pointer; text-align: left;
       
-      /* Glass Effect */
-      background: var(--glass-surface);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--glass-border);
+      /* Glassmorphism con tus colores */
+      background: var(--glass-bg);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--ring);
       border-radius: var(--radius);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       
-      color: inherit;
-      font: inherit;
-      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      color: inherit; font: inherit;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
       overflow: hidden;
     }
 
-    /* Highlight superior */
+    /* Brillo superior sutil */
     .tile::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: var(--radius);
+      content: ''; position: absolute; inset: 0;
       background: linear-gradient(180deg, var(--glass-highlight) 0%, transparent 100%);
       pointer-events: none;
     }
 
     .tile:hover {
-      transform: translateY(-5px) scale(1.02);
-      border-color: rgba(6, 182, 212, 0.3);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 
-                  0 0 20px rgba(6, 182, 212, 0.1);
-      background: rgba(30, 41, 59, 0.85);
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      background: rgba(var(--panel-base), 0.6); /* Más opaco al hover */
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
     }
 
-    .icon-box {
-      width: 56px;
-      height: 56px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: rgba(15, 23, 42, 0.4);
-      border: 1px solid var(--glass-border);
-      font-size: 26px;
-      transition: 0.3s;
+    /* ESTILO DEL NUEVO ICONO INTEGRADO */
+    .tile-icon-integrated {
+      font-size: 48px; /* Iconos grandes */
+      color: var(--primary-light); /* Color base */
+      margin-bottom: 16px;
+      display: inline-block;
+      
+      /* Efecto Duotone: La segunda capa del icono es más oscura */
+      .ph-duotone {
+        --ph-duotone-accent: var(--primary); /* Color de la capa secundaria */
+        opacity: 0.9;
+      }
+      transition: transform 0.3s ease;
     }
-
-    .tile:hover .icon-box {
-      background: var(--primary);
-      color: #0f172a;
-      box-shadow: 0 0 20px var(--primary-glow);
-      border-color: transparent;
-    }
-
-    .tile-content {
-      margin-top: 20px;
+    
+    /* Pequeña animación del icono al hacer hover en la tarjeta */
+    .tile:hover .tile-icon-integrated {
+      transform: scale(1.1) translateZ(0);
+      color: var(--text-main); /* Se ilumina un poco */
     }
 
     .tile h3 {
-      margin: 0 0 8px;
-      font-size: 18px;
-      color: #fff;
-      font-weight: 600;
+      margin: 0 0 8px; font-size: 18px;
+      color: var(--text-main); font-weight: 600;
     }
 
     .tile p {
-      margin: 0;
-      color: var(--text-muted);
-      font-size: 13px;
-      line-height: 1.5;
+      margin: 0; color: var(--text-muted);
+      font-size: 13px; line-height: 1.5; opacity: 0.9;
     }
 
     /* Animación de entrada escalonada */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .tile-enter {
-      animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-      opacity: 0;
-    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .tile-enter { animation: fadeUp 0.5s ease forwards; opacity: 0; }
 
     /* --- APP VIEW --- */
     .app-wrap {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 16px 24px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      box-sizing: border-box;
+      max-width: 1200px; margin: 0 auto; padding: 16px 24px;
+      height: 100%; display: flex; flex-direction: column; box-sizing: border-box;
     }
 
     .app-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--glass-border);
-      background: transparent;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; padding-bottom: 16px;
+      border-bottom: 1px solid var(--ring);
     }
 
     .app-meta { display: flex; align-items: center; gap: 16px; }
     
+    /* Icono en la vista de app */
     .app-ic {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      background: rgba(6, 182, 212, 0.15);
-      border: 1px solid rgba(6, 182, 212, 0.3);
-      font-size: 24px;
+      font-size: 32px;
+      color: var(--primary-light);
+      display: grid; place-items: center;
     }
 
-    .app-title { margin: 0; font-size: 20px; font-weight: 600; color: #fff; }
+    .app-title { margin: 0; font-size: 20px; font-weight: 600; color: var(--text-main); }
     .app-desc { margin: 2px 0 0; font-size: 13px; color: var(--text-muted); }
 
     .btn {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--glass-border);
+      background: rgba(var(--panel-base), 0.3);
+      border: 1px solid var(--ring);
       color: var(--primary);
-      padding: 8px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      font-family: inherit;
+      padding: 8px 18px; border-radius: 8px;
+      cursor: pointer; font-size: 13px; font-weight: 500;
       transition: all 0.2s;
+      display: flex; align-items: center; gap: 6px; /* Para iconos dentro de botones */
     }
 
     .btn:hover {
-      background: rgba(6, 182, 212, 0.15);
-      border-color: var(--primary);
-      box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
-      color: #fff;
+      background: rgba(77, 161, 168, .15);
+      border-color: var(--primary-light);
+      color: var(--primary-light);
     }
 
     .app-body {
-      position: relative;
-      flex: 1;
-      min-height: 0;
-      background: rgba(15, 23, 42, 0.5);
-      border-radius: var(--radius);
-      border: 1px solid var(--glass-border);
+      position: relative; flex: 1; min-height: 0;
+      background: rgba(21, 35, 54, 0.6); /* Fondo del iframe original */
+      border-radius: 12px; border: 1px solid var(--ring);
       overflow: hidden;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
     }
 
-    .iframe {
-      width: 100%; height: 100%; border: none;
-      background: #fff; /* Muchos iframes necesitan fondo blanco */
-    }
-
+    .iframe { width: 100%; height: 100%; border: none; }
     #app-internal { position: absolute; inset: 0; overflow: auto; }
-
     .hide { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
     .show { opacity: 1; transition: opacity 0.4s ease; }
 
-    /* --- BOOT SCREEN (MODERNO) --- */
+    /* --- BOOT SCREEN (Colores Originales) --- */
     .boot {
-      position: fixed;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      z-index: 50;
-      background: #0f172a;
-      transition: opacity 0.8s ease;
-    }
-
-    .boot-bg {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 50% 50%, #1e3a8a 0%, #0f172a 70%);
-      opacity: 0.6;
+      position: fixed; inset: 0; display: grid; place-items: center; z-index: 50;
+      /* Degradado original */
+      background: radial-gradient(circle at 50% 30%, #2e4f77 0%, #1b2e45 60%, #152336 100%);
+      transition: opacity 0.6s ease;
     }
 
     .boot-card {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 2;
-      width: 300px;
+      position: relative; display: flex; flex-direction: column;
+      align-items: center; z-index: 2; width: 300px;
     }
 
-    .logo-glow {
-      position: relative;
-      width: 120px;
-      height: 120px;
-      border-radius: 30px;
-      background: linear-gradient(135deg, rgba(30, 41, 59, 1), rgba(15, 23, 42, 1));
-      border: 1px solid rgba(255,255,255,0.1);
-      display: grid;
-      place-items: center;
-      box-shadow: 0 0 50px rgba(6, 182, 212, 0.15);
-      margin-bottom: 24px;
-      overflow: hidden;
+    .logo-boot {
+      width: 110px; height: 110px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(46, 79, 119, .5), rgba(27, 46, 69, .8));
+      border: 1px solid var(--ring);
+      display: grid; place-items: center;
+      box-shadow: 0 0 40px rgba(77, 161, 168, .2);
+      margin-bottom: 24px; overflow: hidden;
     }
-    .logo-glow img { width: 100%; height: 100%; object-fit: cover; }
+    .logo-boot img { width: 100%; height: 100%; object-fit: cover; }
     
-    .logo-glow::after {
-      content:''; position:absolute; inset:0;
-      border-radius: 30px;
-      box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
-    }
-
     .boot h1 {
-      margin: 0;
-      color: #fff;
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
+      margin: 0; color: var(--text-main); font-size: 24px;
+      font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
     }
 
     .boot p {
-      margin: 4px 0 0;
-      color: var(--primary);
-      font-size: 12px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      opacity: 0.8;
+      margin: 4px 0 0; color: var(--primary); font-size: 13px;
+      letter-spacing: 3px; text-transform: uppercase; opacity: 0.9;
     }
 
-    .loader-line {
-      margin-top: 30px;
-      width: 100%;
-      height: 2px;
-      background: rgba(255,255,255,0.1);
-      position: relative;
-      overflow: hidden;
-      border-radius: 2px;
+    /* Barra de carga original mejorada */
+    .bar {
+      margin-top: 30px; height: 4px; width: 100%; max-width: 240px;
+      border-radius: 99px; background: rgba(27, 46, 69, 0.5);
+      border: 1px solid var(--ring); overflow: hidden; position: relative;
     }
-
-    .loader-line::after {
-      content: '';
+    .bar span {
+      display: block; height: 100%; width: 30%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      border-radius: 99px; box-shadow: 0 0 15px var(--primary);
       position: absolute;
-      top: 0; left: 0; bottom: 0;
-      width: 40%;
-      background: linear-gradient(90deg, transparent, var(--primary), transparent);
-      transform: translateX(-100%);
-      animation: loadLine 2s ease-in-out infinite;
+      animation: load 2s ease-in-out infinite;
     }
 
-    #boot-tips {
-      margin-top: 12px;
-      font-size: 11px;
-      color: var(--text-muted);
-      height: 15px;
-    }
-
-    @keyframes loadLine {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(350%); }
-    }
-    
-    @keyframes float {
-      0% { transform: translateY(0px) scale(1); }
-      100% { transform: translateY(20px) scale(1.05); }
-    }
+    #boot-tips { margin-top: 16px; font-size: 12px; color: var(--text-muted); font-style: italic; }
+    @keyframes load { 0% { left: -30%; } 100% { left: 100%; } }
 
     /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+    ::-webkit-scrollbar-thumb { background: rgba(77, 161, 168, 0.3); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(77, 161, 168, 0.5); }
 
   </style>
 </head>
@@ -475,16 +330,15 @@
   <div class="ambient-bg"></div>
 
   <div id="boot" class="boot" onclick="window.SInOS && SInOS.skipBoot()">
-    <div class="boot-bg"></div>
     <div class="boot-card">
-      <div class="logo-glow">
+      <div class="logo-boot">
         <img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" alt="Logo" />
       </div>
-      <h1>SNTSS</h1>
-      <p>Sistema Inteligente</p>
+      <h1>Plataforma Sindical CG</h1>
+      <p>Gestión Inteligente</p>
 
-      <div class="loader-line"></div>
-      <div id="boot-tips">Inicializando protocolos seguros...</div>
+      <div class="bar"><span></span></div>
+      <div id="boot-tips">Cargando módulos...</div>
     </div>
   </div>
 
@@ -494,7 +348,7 @@
         <img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" alt="" />
       </div>
       <div>
-        <span style="color:var(--text-main)">Plataforma</span> <span style="color:var(--primary)">Sindical CG</span>
+        <span>Plataforma</span> Sindical CG
       </div>
     </div>
     <div class="clock" id="clock">--:--</div>
@@ -504,13 +358,11 @@
     <section class="wrap">
       <section class="brand">
         <div>
-          <h1>Bienvenido, <span class="text-gradient">Dr. Guerrero</span></h1>
-          <p>Panel de Gestión Estratégica y Comunicación.</p>
+          <h1>Bienvenido, <span class="text-gradient">Compañero</span></h1>
+          <p>Panel de Control y Gestión Sindical.</p>
         </div>
         <div>
-          <div class="badge">
-             <span style="font-size:14px">💠</span> Proyecto Azul 2026
-          </div>
+          <div class="badge"><i class="ph-fill ph-shield-check" style="vertical-align: -2px; margin-right:4px"></i> SNTSS Secc. XX</div>
         </div>
       </section>
 
@@ -522,16 +374,16 @@
     <div class="app-wrap">
       <div class="app-head">
         <div class="app-meta">
-          <div class="app-ic" id="app-ic">🧩</div>
+          <div class="app-ic" id="app-ic"><i class="ph-duotone ph-squares-four"></i></div>
           <div>
             <h2 class="app-title" id="app-title">Módulo</h2>
             <p class="app-desc" id="app-desc">Descripción</p>
           </div>
         </div>
         <div style="display:flex; gap:10px;">
-          <button class="btn" onclick="SInOS.goHome()">🏠 Inicio</button>
-          <button class="btn" id="btn-open-new" style="display:none">🔗 Externo</button>
-          <button class="btn" onclick="SInOS.closeApp()">✖ Cerrar</button>
+          <button class="btn" onclick="SInOS.goHome()"><i class="ph-bold ph-house"></i> Inicio</button>
+          <button class="btn" id="btn-open-new" style="display:none"><i class="ph-bold ph-arrow-square-out"></i> Abrir</button>
+          <button class="btn" onclick="SInOS.closeApp()"><i class="ph-bold ph-x"></i> Cerrar</button>
         </div>
       </div>
       <div id="app-body" class="app-body">
@@ -560,59 +412,59 @@
   </script>
 
   <script>
-    /* DATOS DE LOS MÓDULOS */
+    /* DATOS: SE HAN CAMBIADO LOS EMOJIS POR CLASES DE ICONOS PHOSPHOR DUOTONE */
     const APPS = [
       {
         id: 'trascendencia',
         title: 'TrascendencIA',
-        desc: 'Asistente Virtual con IA Sindical.',
-        icon: '🤖',
+        desc: 'Asistente Virtual Sindical.',
+        iconClass: 'ph-duotone ph-brain', // Icono de Cerebro
         href: 'https://trascendencia-sindical-7t85.onrender.com/',
         quick: true
       },
       {
         id: 'noticias',
-        title: 'Noticias Oficiales',
-        desc: 'Comunicados en tiempo real.',
-        icon: '📰',
+        title: 'Noticias',
+        desc: 'Comunicados oficiales en tiempo real.',
+        iconClass: 'ph-duotone ph-newspaper-clipping', // Icono de Periódico
         type: 'internal'
       },
       {
         id: 'agenda',
         title: 'Red Sindical',
-        desc: 'Agenda y eventos políticos.',
-        icon: '📅',
+        desc: 'Agenda y eventos de la vida sindical.',
+        iconClass: 'ph-duotone ph-calendar-dots', // Icono de Calendario
         href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html',
         quick: true
       },
       {
         id: 'denuncias',
         title: 'Gestor de Escritos',
-        desc: 'Redacción jurídica asistida.',
-        icon: '⚖️',
+        desc: 'Redacción asistida para denuncias.',
+        iconClass: 'ph-duotone ph-signature', // Icono de Firma/Escrito
         href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias',
         quick: true
       },
       {
         id: 'directorio',
         title: 'Directorio',
-        desc: 'Contactos clave Secc. XX.',
-        icon: '📞',
+        desc: 'Contactos clave y delegados.',
+        iconClass: 'ph-duotone ph-address-book', // Icono de Agenda telefónica
         iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio',
         quick: true
       },
       {
         id: 'miniapp',
         title: 'WhatsApp Bot',
-        desc: 'Automatización de respuestas.',
-        icon: '💬',
-        href: 'https://wa.me/521XXXXXXXXXX' 
+        desc: 'Automatización y respuestas rápidas.',
+        iconClass: 'ph-duotone ph-whatsapp-logo', // Icono de WhatsApp
+        href: 'https://wa.me/XXXXXXXXXXX' 
       },
       {
         id: 'prestaciones',
         title: 'Prestaciones',
-        desc: 'Calculadora de vacaciones y bonos.',
-        icon: '📊',
+        desc: 'Cálculo de vacaciones y estímulos.',
+        iconClass: 'ph-duotone ph-calculator', // Icono de Calculadora
         iframe: 'prestaciones.html',
         quick: true
       },
@@ -620,7 +472,7 @@
         id: 'ajustes',
         title: 'Configuración',
         desc: 'Preferencias del sistema.',
-        icon: '⚙️',
+        iconClass: 'ph-duotone ph-gear-six', // Icono de Engranaje
         iframe: 'about:blank'
       }
     ];
@@ -647,32 +499,21 @@
 
           this.renderTiles();
 
-          // Lógica de primer arranque vs recarga
-          const FIRST_KEY = 'sinos:bootedV2';
+          const FIRST_KEY = 'sinos:bootedV3';
           const qs = new URLSearchParams(location.search);
           if (qs.get('boot') === 'reset') localStorage.removeItem(FIRST_KEY);
 
           let firstTime = !localStorage.getItem(FIRST_KEY);
-          this.BOOT_MS = firstTime ? 3800 : 1200;
+          this.BOOT_MS = firstTime ? 3500 : 1200;
 
-          // Mensajes de carga aleatorios más "tech"
           (function () {
-            const tips = [
-              'Encriptando conexión...', 
-              'Cargando perfil: C. Guerrero...', 
-              'Sincronizando Secc. XX...', 
-              'Sistema Listo.'
-            ];
+            const tips = ['Conectando a base de datos...', 'Sincronizando módulos...', 'Plataforma lista.'];
             let i = 0; 
             const el = document.getElementById('boot-tips');
             if(el) {
               const interval = setInterval(() => {
-                el.style.opacity = 0.5;
-                setTimeout(()=>{ 
                    i = (i + 1) % tips.length; 
                    el.textContent = tips[i]; 
-                   el.style.opacity = 1; 
-                }, 200);
               }, 900);
               setTimeout(()=> clearInterval(interval), 4000);
             }
@@ -693,7 +534,7 @@
       },
 
       hideBoot() { 
-        try { localStorage.setItem('sinos:bootedV2', '1'); } catch { }
+        try { localStorage.setItem('sinos:bootedV3', '1'); } catch { }
         if(this.bootEl) {
           this.bootEl.style.opacity = '0';
           this.bootEl.style.pointerEvents = 'none';
@@ -701,7 +542,6 @@
         if(this.homeEl) {
           this.homeEl.classList.remove('hide');
           this.homeEl.classList.add('show');
-          // Activar animaciones de entrada
           const tiles = document.querySelectorAll('.tile');
           tiles.forEach((t, i) => {
             t.style.animationDelay = `${i * 0.05}s`;
@@ -715,18 +555,18 @@
 
       renderTiles() {
         const wrap = document.getElementById('tiles');
-        // Solo re-renderizar si está vacío para no romper animaciones
         if(wrap.innerHTML !== '') return; 
 
         APPS.forEach(a => {
-          const b = document.createElement('div'); // Cambiado a div para mejor control de layout
+          const b = document.createElement('div');
           b.className = 'tile';
           b.onclick = () => (a.href && !a.iframe && a.type !== 'internal') ? location.assign(a.href) : this.openApp(a.id);
 
+          // NUEVA ESTRUCTURA DEL TILE: Icono integrado arriba, sin caja
+          const iconClass = a.iconClass || 'ph-duotone ph-squares-four';
           b.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:start; width:100%">
-              <div class="icon-box">${a.icon || '💠'}</div>
-              ${a.quick ? '<div style="width:6px; height:6px; background:var(--primary); border-radius:50%;"></div>' : ''}
+            <div>
+              <i class="${iconClass} tile-icon-integrated"></i>
             </div>
             <div class="tile-content">
               <h3>${a.title}</h3>
@@ -747,7 +587,10 @@
 
         this.appTitle.textContent = app.title;
         this.appDesc.textContent = app.desc || '';
-        this.appIc.textContent = app.icon || '🧩';
+        
+        // Actualizar icono en la vista de app
+        const iconClass = app.iconClass || 'ph-duotone ph-squares-four';
+        this.appIc.innerHTML = `<i class="${iconClass}"></i>`;
 
         this.appIframe.style.display = 'none'; this.appIframe.src = 'about:blank';
         this.appInternal.style.display = 'none'; this.appInternal.innerHTML = '';
