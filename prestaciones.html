@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plataforma Sindical CG — Calculadoras CCT</title>
+  <link rel="icon" href="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/refs/heads/main/Logo%20SNTSS.jpeg">
+
+  <style>
+    :root{
+      --bg:#1b2e45;
+      --bg2:#152336;
+      --panel:#2e4f77;
+      --ring:rgba(77,161,168,.35);
+      --txt:#f0fdfa;
+      --muted:#bce9eb;
+      --primary:#4da1a8;
+      --sky:#7ad1d6;
+      --danger:#ff5b5b;
+      --ok:#45d39f;
+      --shadow: 0 18px 40px rgba(0,0,0,.25);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial}
+    body{
+      min-height:100vh;
+      color:var(--txt);
+      background:
+        radial-gradient(70vmax 70vmax at 50% 12%, rgba(77,161,168,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      padding: 18px;
+    }
+    .wrap{max-width:1220px;margin:0 auto}
+    .topbar{
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      background: rgba(46,79,119,.72);
+      border: 1px solid rgba(188,233,235,.16);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .brand{display:flex; gap:10px; align-items:center; min-width: 240px;}
+    .logo{
+      width:40px;height:40px;border-radius:12px;
+      background: linear-gradient(135deg, rgba(77,161,168,.95), rgba(122,209,214,.95));
+      box-shadow: 0 10px 25px rgba(0,0,0,.25);
+      display:grid;place-items:center;
+      color:#083341;font-weight:900;
+    }
+    .title{display:flex;flex-direction:column;line-height:1.1}
+    .title b{font-size:14px;letter-spacing:.2px}
+    .title span{font-size:12px;color:var(--muted)}
+    .pill{display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap;}
+    .chip{
+      padding:8px 10px;
+      background: rgba(27,46,69,.55);
+      border: 1px solid rgba(188,233,235,.16);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12px;
+      user-select:none;
+    }
+
+    .grid{
+      margin-top: 16px;
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 980px){ .grid{grid-template-columns: 1fr;} }
+
+    .panel{
+      background: rgba(46,79,119,.72);
+      border: 1px solid rgba(188,233,235,.16);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+    .panel .hd{
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid rgba(188,233,235,.12);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .panel .hd h2{font-size:14px;letter-spacing:.2px}
+    .panel .hd small{color:var(--muted);font-size:12px}
+    .panel .bd{padding: 14px;}
+
+    .menu{display:flex; flex-direction:column; gap:10px;}
+    .btn{
+      width:100%;
+      text-align:left;
+      padding: 12px 12px;
+      background: rgba(27,46,69,.55);
+      border: 1px solid rgba(188,233,235,.14);
+      border-radius: 14px;
+      color: var(--txt);
+      cursor:pointer;
+      transition: transform .08s ease, border-color .15s ease, background .15s ease;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(122,209,214,.38)}
+    .btn.active{
+      background: linear-gradient(135deg, rgba(77,161,168,.30), rgba(122,209,214,.18));
+      border-color: rgba(122,209,214,.45);
+      box-shadow: 0 12px 30px rgba(0,0,0,.2);
+    }
+    .btn b{display:block;font-size:13px}
+    .btn span{display:block;margin-top:4px;color:var(--muted);font-size:12px}
+
+    .kicker{color:var(--muted);font-size:12px;margin-top:10px;line-height:1.45}
+
+    .sectionTitle{
+      font-size: 13px;
+      letter-spacing:.2px;
+      margin-bottom: 8px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .sectionTitle small{color:var(--muted);font-weight:700}
+
+    .form{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    @media (max-width: 720px){ .form{grid-template-columns: 1fr;} }
+
+    label{display:flex;flex-direction:column;gap:6px}
+    label span{font-size:12px;color:var(--muted)}
+    input, select{
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(188,233,235,.18);
+      background: rgba(27,46,69,.55);
+      color: var(--txt);
+      outline:none;
+    }
+    input:focus, select:focus{
+      border-color: rgba(122,209,214,.55);
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    .actions{
+      margin-top: 12px;
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+    .primary{
+      background: linear-gradient(135deg, rgba(77,161,168,.95), rgba(122,209,214,.92));
+      color:#083341;
+      border: none;
+      padding: 11px 14px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight: 950;
+      letter-spacing:.2px;
+    }
+    .ghost{
+      background: rgba(27,46,69,.55);
+      border: 1px solid rgba(188,233,235,.18);
+      color: var(--txt);
+      padding: 11px 14px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight: 850;
+    }
+
+    .note{
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .result{
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(188,233,235,.16);
+      background: rgba(27,46,69,.55);
+    }
+    .result .row{
+      display:flex; justify-content:space-between; gap:10px;
+      padding: 6px 0;
+      border-bottom: 1px dashed rgba(188,233,235,.14);
+    }
+    .result .row:last-child{border-bottom:none}
+    .result .k{color:var(--muted);font-size:12px}
+    .result .v{font-weight:950}
+    .big{
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: 980;
+      letter-spacing:.2px;
+    }
+
+    .warn{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,91,91,.35);
+      background: rgba(255,91,91,.12);
+      color: #ffe6e6;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .ok{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(69,211,159,.35);
+      background: rgba(69,211,159,.10);
+      color: #dffcf2;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .hide{display:none}
+
+    table{
+      width:100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      overflow:hidden;
+      border-radius: 12px;
+      border: 1px solid rgba(188,233,235,.16);
+    }
+    th, td{
+      padding: 9px 10px;
+      border-bottom: 1px solid rgba(188,233,235,.10);
+      font-size: 12px;
+    }
+    th{
+      text-align:left;
+      color: var(--muted);
+      background: rgba(27,46,69,.55);
+      font-weight: 950;
+    }
+    tr:last-child td{border-bottom:none}
+    .right{text-align:right}
+    .mono{font-variant-numeric: tabular-nums;}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">CG</div>
+        <div class="title">
+          <b>Calculadoras de Prestaciones (CCT)</b>
+          <span>Plataforma Sindical CG · Listo para iframe</span>
+        </div>
+      </div>
+      <div class="pill">
+        <div class="chip">Paleta oficial</div>
+        <div class="chip">MXN</div>
+        <div class="chip">Sin intereses donde aplique</div>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <!-- Menú -->
+      <section class="panel">
+        <div class="hd">
+          <h2>Calculadoras</h2>
+          <small>CCT</small>
+        </div>
+        <div class="bd">
+          <div class="menu">
+            <button class="btn active" data-view="v-c97">
+              <b>Anticipo de sueldo (Cláusula 97)</b>
+              <span>1–4 meses · 10 quincenas/mes · 0% interés</span>
+            </button>
+
+            <button class="btn" data-view="v-julio">
+              <b>2da Quincena de Julio (Fondo de Ahorro)</b>
+              <span>Cláusula 144 · 46 días · proporcional</span>
+            </button>
+
+            <button class="btn" data-view="v-tiempoextra">
+              <b>Pago de tiempo extra</b>
+              <span>Cláusulas 32/33/37 · redondeo · doble/triple</span>
+            </button>
+
+            <button class="btn" data-view="v-creditos">
+              <b>Créditos (Vivienda y Auto)</b>
+              <span>SMI × 1.20 · descuentos quincenales</span>
+            </button>
+
+            <button class="btn" data-view="v-aguinaldo">
+              <b>Anticipo de Aguinaldo y Aguinaldo total</b>
+              <span>Cláusula 107 · total 3 meses · libre de impuestos</span>
+            </button>
+          </div>
+
+          <div class="kicker">
+            Nota: Esta página calcula con tus fórmulas del CCT. Las <b>restricciones</b> (p. ej. 1 vez al año, prioridad por asistencia) se muestran como advertencias.
+          </div>
+        </div>
+      </section>
+
+      <!-- Contenido -->
+      <main class="panel">
+        <div class="hd">
+          <h2 id="calcTitle">Anticipo de sueldo (Cláusula 97)</h2>
+          <small id="calcHint">Monto = SueldoMensual × Meses · Plazo = Meses × 10 quincenas · Descuento = Monto/Plazo</small>
+        </div>
+
+        <div class="bd">
+
+          <!-- C97 -->
+          <section id="v-c97">
+            <div class="sectionTitle">
+              <div><b>Anticipo de sueldo — Cláusula 97</b></div>
+              <small>Sin intereses</small>
+            </div>
+
+            <div class="form">
+              <label style="grid-column:1 / -1">
+                <span>Sueldo Mensual (Sueldo Tabular + Ayuda de Renta) ($)</span>
+                <input id="c97_sueldo" type="number" min="0" step="0.01" placeholder="Ej. 15000.00">
+              </label>
+
+              <label>
+                <span>Meses solicitados</span>
+                <select id="c97_meses">
+                  <option value="1" selected>1 mes</option>
+                  <option value="2">2 meses</option>
+                  <option value="3">3 meses</option>
+                  <option value="4">4 meses</option>
+                </select>
+              </label>
+
+              <label>
+                <span>¿Ya solicitaste este año?</span>
+                <select id="c97_ya">
+                  <option value="no" selected>No</option>
+                  <option value="si">Sí</option>
+                </select>
+              </label>
+
+              <label>
+                <span>¿Tienes anticipo vigente equivalente a 3 meses?</span>
+                <select id="c97_3meses">
+                  <option value="no" selected>No</option>
+                  <option value="si">Sí</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Índice de asistencia (solo prioridad)</span>
+                <select id="c97_asistencia">
+                  <option value="alta" selected>Alta</option>
+                  <option value="media">Media</option>
+                  <option value="baja">Baja</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="actions">
+              <button class="primary" id="c97_calc">Calcular</button>
+              <button class="ghost" id="c97_clear">Limpiar</button>
+            </div>
+
+            <div class="result hide" id="c97_res">
+              <div class="row"><div class="k">Monto a recibir</div><div class="v mono" id="c97_monto">$0.00</div></div>
+              <div class="row"><div class="k">Plazo total</div><div class="v mono" id="c97_plazo">0 quincenas</div></div>
+              <div class="row"><div class="k">Descuento quincenal</div><div class="v mono" id="c97_desc">$0.00</div></div>
+              <div class="row"><div class="k">Intereses</div><div class="v mono">$0.00</div></div>
+              <div class="big">Descuento por nómina: <span class="mono" id="c97_big">$0.00</span> / quincena</div>
+            </div>
+
+            <div class="warn hide" id="c97_warn"></div>
+
+            <div class="ok">
+              Matemáticamente, el descuento quincenal es fijo: <b>10% del Sueldo Mensual</b> (porque Meses×10 quincenas ⇒ Monto/Plazo = SueldoMensual/10).
+            </div>
+
+            <div class="note">
+              Restricciones (negocio): 1 vez al año (aunque fraccionado hasta 4 meses), regla de liquidez (si ya hay vigente de 3 meses, no se permite uno nuevo), prioridad por asistencia.
+            </div>
+          </section>
+
+          <!-- Fondo de Ahorro Julio -->
+          <section id="v-julio" class="hide">
+            <div class="sectionTitle">
+              <div><b>2da Quincena de Julio — Fondo de Ahorro</b></div>
+              <small>Cláusula 144 · Libre de impuestos</small>
+            </div>
+
+            <div class="form">
+              <label style="grid-column:1 / -1">
+                <span>Sueldo Tabular Mensual ($)</span>
+                <input id="j_sueldo_tab" type="number" min="0" step="0.01" placeholder="Ej. 12000.00">
+              </label>
+
+              <label>
+                <span>Días trabajados (1 Jul–30 Jun)</span>
+                <input id="j_dias" type="number" min="0" max="365" step="1" placeholder="Máx 365">
+              </label>
+
+              <label>
+                <span>Base máxima</span>
+                <select id="j_base">
+                  <option value="365" selected>365</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="actions">
+              <button class="primary" id="j_calc">Calcular</button>
+              <button class="ghost" id="j_clear">Limpiar</button>
+            </div>
+
+            <div class="result hide" id="j_res">
+              <div class="row"><div class="k">Sueldo tabular diario (Sueldo/30)</div><div class="v mono" id="j_diario">$0.00</div></div>
+              <div class="row"><div class="k">Factor días (46 días)</div><div class="v mono">46</div></div>
+              <div class="row"><div class="k">Proporción (Días/365)</div><div class="v mono" id="j_prop">0.0000</div></div>
+              <div class="big">Pago Fondo de Ahorro: <span class="mono" id="j_total">$0.00</span></div>
+            </div>
+
+            <div class="warn hide" id="j_warn"></div>
+
+            <div class="ok">
+              Fórmula (CCT): <b>(SueldoTabular/30) × 46 × (DíasTrabajados/365)</b> · No paga impuestos.
+            </div>
+          </section>
+
+          <!-- Tiempo Extra -->
+          <section id="v-tiempoextra" class="hide">
+            <div class="sectionTitle">
+              <div><b>Pago de Tiempo Extra</b></div>
+              <small>Cláusulas 32, 33 y 37</small>
+            </div>
+
+            <div class="form">
+              <label style="grid-column:1 / -1">
+                <span>Sueldo mensual (para salario diario = sueldo/30) ($)</span>
+                <input id="te_sueldo_m" type="number" min="0" step="0.01" placeholder="Ej. 15000.00">
+              </label>
+
+              <label>
+                <span>Horas por jornada</span>
+                <select id="te_h_jornada">
+                  <option value="8" selected>8</option>
+                  <option value="7.5">7.5</option>
+                  <option value="7">7</option>
+                  <option value="6">6</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Tipo de día</span>
+                <select id="te_tipo">
+                  <option value="ordinario" selected>Ordinario (prolongación)</option>
+                  <option value="descanso">Descanso semanal (Sáb/Dom)</option>
+                  <option value="obligatorio">Descanso obligatorio (festivo)</option>
+                  <option value="ambos">Descanso obligatorio que coincide con semanal</option>
+                </select>
+              </label>
+
+              <label id="te_min_wrap">
+                <span>Minutos extra (Cláusula 33: redondeo)</span>
+                <input id="te_min" type="number" min="0" step="1" value="0">
+              </label>
+
+              <label id="te_acum_wrap">
+                <span>Horas extra acumuladas en la semana (antes de este evento)</span>
+                <input id="te_acum" type="number" min="0" step="0.5" value="0">
+              </label>
+            </div>
+
+            <div class="actions">
+              <button class="primary" id="te_calc">Calcular</button>
+              <button class="ghost" id="te_clear">Limpiar</button>
+            </div>
+
+            <div class="result hide" id="te_res">
+              <div class="row"><div class="k">Salario diario (Sueldo/30)</div><div class="v mono" id="te_diario">$0.00</div></div>
+              <div class="row"><div class="k">Salario por hora (Diario/HorasJornada)</div><div class="v mono" id="te_hora">$0.00</div></div>
+
+              <div id="te_ordinario_rows" class="hide">
+                <div class="row"><div class="k">Horas pagadas por redondeo</div><div class="v mono" id="te_h_pag">0.0</div></div>
+                <div class="row"><div class="k">Horas al doble (hasta 9/semana)</div><div class="v mono" id="te_h_dob">0.0</div></div>
+                <div class="row"><div class="k">Horas al triple (excedente)</div><div class="v mono" id="te_h_tri">0.0</div></div>
+                <div class="row"><div class="k">Pago doble</div><div class="v mono" id="te_p_dob">$0.00</div></div>
+                <div class="row"><div class="k">Pago triple</div><div class="v mono" id="te_p_tri">$0.00</div></div>
+              </div>
+
+              <div id="te_descanso_rows" class="hide">
+                <div class="row"><div class="k">Pago por día completo</div><div class="v mono" id="te_p_dia">$0.00</div></div>
+              </div>
+
+              <div class="big">Total tiempo extra: <span class="mono" id="te_total">$0.00</span></div>
+            </div>
+
+            <div class="warn hide" id="te_warn"></div>
+
+            <div class="ok">
+              Redondeo (Cl. 33): si minutos &lt; 30 ⇒ <b>0.5 h</b>; si 30–59 ⇒ <b>1.0 h</b>. <br/>
+              Ordinario: primeras 9 h/semana al <b>doble</b>, excedente al <b>triple</b>. <br/>
+              Descansos: pago por día completo: semanal/obligatorio = <b>diario × 3</b>, si coinciden = <b>diario × 4</b>.
+            </div>
+          </section>
+
+          <!-- Créditos -->
+          <section id="v-creditos" class="hide">
+            <div class="sectionTitle">
+              <div><b>Créditos — Vivienda y Auto</b></div>
+              <small>Cláusulas 81, 81 Bis, 146</small>
+            </div>
+
+            <div class="form">
+              <label>
+                <span>Sueldo Tabular Mensual ($)</span>
+                <input id="cr_tab" type="number" min="0" step="0.01" placeholder="Ej. 12000.00">
+              </label>
+
+              <label>
+                <span>Ayuda de Renta (Cl. 63 Bis inc. b) ($)</span>
+                <input id="cr_renta" type="number" min="0" step="0.01" placeholder="Ej. 1000.00">
+              </label>
+
+              <label>
+                <span>Tipo de crédito</span>
+                <select id="cr_tipo">
+                  <option value="hip_largo" selected>Hipotecario largo plazo</option>
+                  <option value="hip_medio">Hipotecario mediano plazo</option>
+                  <option value="auto">Crédito automotriz</option>
+                </select>
+              </label>
+
+              <label id="cr_cat_wrap">
+                <span>Categoría</span>
+                <select id="cr_cat">
+                  <option value="superior" selected>Superior a Mensajero (30%)</option>
+                  <option value="baja">Hasta Mensajero (25%)</option>
+                </select>
+              </label>
+
+              <label id="cr_anio_wrap" class="hide">
+                <span>Año del crédito automotriz</span>
+                <select id="cr_anio">
+                  <option value="1" selected>Año 1 (40%)</option>
+                  <option value="2">Año 2 (39%)</option>
+                  <option value="3">Año 3 (38%)</option>
+                  <option value="4">Año 4 (37%)</option>
+                  <option value="5">Año 5 (36%)</option>
+                </select>
+              </label>
+
+              <label id="cr_liq_wrap">
+                <span>Factor máximo (Hipotecario largo: 75–90 × SMI)</span>
+                <select id="cr_factor">
+                  <option value="75" selected>75× (conservador)</option>
+                  <option value="80">80×</option>
+                  <option value="85">85×</option>
+                  <option value="90">90× (máximo)</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="actions">
+              <button class="primary" id="cr_calc">Calcular</button>
+              <button class="ghost" id="cr_clear">Limpiar</button>
+            </div>
+
+            <div class="result hide" id="cr_res">
+              <div class="row"><div class="k">SMI = (Tabular + Renta) × 1.20</div><div class="v mono" id="cr_smi">$0.00</div></div>
+              <div class="row"><div class="k">Descuento quincenal</div><div class="v mono" id="cr_desc">$0.00</div></div>
+              <div class="row"><div class="k">Plazo</div><div class="v mono" id="cr_plazo">—</div></div>
+              <div class="row"><div class="k">Monto máximo (según CCT)</div><div class="v mono" id="cr_max">$0.00</div></div>
+              <div class="big">Descuento por nómina: <span class="mono" id="cr_big">$0.00</span> / quincena</div>
+            </div>
+
+            <div class="warn hide" id="cr_warn"></div>
+
+            <div class="ok">
+              Hipotecario: descuento quincenal = <b>(SMI × 0.30) / 2</b> (o <b>(SMI × 0.25) / 2</b> si categoría baja). <br/>
+              Mediano: máximo <b>35× SMI</b>, plazo hasta <b>12 años</b>. <br/>
+              Auto: plazo <b>120 quincenas</b>, máximo <b>24 meses del SMI</b>, descuento quincenal = <b>(SMI × %año) / 2</b>.
+            </div>
+          </section>
+
+          <!-- Aguinaldo -->
+          <section id="v-aguinaldo" class="hide">
+            <div class="sectionTitle">
+              <div><b>Anticipo de Aguinaldo y Aguinaldo total</b></div>
+              <small>Cláusula 107 · Libre de impuestos</small>
+            </div>
+
+            <div class="form">
+              <label style="grid-column:1 / -1">
+                <span>Sueldo Nominal Mensual (Sueldo base + Ayuda de Renta) ($)</span>
+                <input id="ag_nom" type="number" min="0" step="0.01" placeholder="Ej. 15000.00">
+              </label>
+
+              <label>
+                <span>¿Solicitó adelanto en Agosto? (opcional)</span>
+                <select id="ag_agosto">
+                  <option value="no" selected>No</option>
+                  <option value="si">Sí</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Mostrar desglose</span>
+                <select id="ag_show">
+                  <option value="si" selected>Sí</option>
+                  <option value="no">No</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="actions">
+              <button class="primary" id="ag_calc">Calcular</button>
+              <button class="ghost" id="ag_clear">Limpiar</button>
+            </div>
+
+            <div class="result hide" id="ag_res">
+              <div class="row"><div class="k">Aguinaldo total anual (3 meses)</div><div class="v mono" id="ag_total">$0.00</div></div>
+
+              <div id="ag_rows" class="hide">
+                <div class="row"><div class="k">Enero (1ra quincena) = 0.5 mes</div><div class="v mono" id="ag_ene">$0.00</div></div>
+                <div class="row"><div class="k">Agosto (opcional) = 1.0 mes</div><div class="v mono" id="ag_ago">$0.00</div></div>
+                <div class="row"><div class="k">Diciembre (saldo)</div><div class="v mono" id="ag_dic">$0.00</div></div>
+              </div>
+
+              <div class="big">Pago de Enero (anticipo): <span class="mono" id="ag_big">$0.00</span></div>
+            </div>
+
+            <div class="warn hide" id="ag_warn"></div>
+
+            <div class="ok">
+              Total = <b>3 meses</b> del Sueldo Nominal. Enero = <b>0.5</b> mes. Agosto (si aplica) = <b>1.0</b> mes.
+              Diciembre = <b>1.5</b> meses (si pidió agosto) o <b>2.5</b> meses (si no pidió).
+            </div>
+          </section>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script>
+  // ===== Helpers =====
+  const $ = (s) => document.querySelector(s);
+  const show = (el, on=true) => el.classList.toggle("hide", !on);
+  const num = (v) => {
+    const x = Number(v);
+    return Number.isFinite(x) ? x : 0;
+  };
+  const money = (n) => Number(n||0).toLocaleString("es-MX", { style:"currency", currency:"MXN" });
+
+  // ===== Navegación =====
+  const buttons = document.querySelectorAll(".btn[data-view]");
+  const views = ["#v-c97","#v-julio","#v-tiempoextra","#v-creditos","#v-aguinaldo"].map(id => $(id));
+  const meta = {
+    "v-c97": ["Anticipo de sueldo (Cláusula 97)", "Monto = SueldoMensual×Meses · Plazo = Meses×10 quincenas · Descuento = Monto/Plazo"],
+    "v-julio": ["2da Quincena de Julio (Fondo de Ahorro)", "(SueldoTabular/30) × 46 × (DíasTrabajados/365) · Libre de impuestos"],
+    "v-tiempoextra": ["Pago de tiempo extra", "Redondeo Cl.33 · Ordinario: 9h/semana doble y excedente triple · Descansos: día completo"],
+    "v-creditos": ["Créditos (Vivienda y Auto)", "SMI=(Tabular+Renta)×1.20 · Descuentos quincenales según CCT"],
+    "v-aguinaldo": ["Anticipo de Aguinaldo y Aguinaldo total", "Total=3 meses · Enero=0.5 · Agosto=1.0 opcional · Diciembre=saldo"]
+  };
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const id = btn.dataset.view;
+      views.forEach(v => show(v, v.id === id));
+      $("#calcTitle").textContent = meta[id][0];
+      $("#calcHint").textContent  = meta[id][1];
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+
+  // ===== Cláusula 97 =====
+  $("#c97_calc").addEventListener("click", () => {
+    const sueldoM = num($("#c97_sueldo").value);
+    const meses = parseInt($("#c97_meses").value, 10);
+    const ya = $("#c97_ya").value;
+    const tres = $("#c97_3meses").value;
+    const asistencia = $("#c97_asistencia").value;
+
+    show($("#c97_warn"), false);
+    show($("#c97_res"), false);
+
+    if(sueldoM <= 0){
+      $("#c97_warn").textContent = "El Sueldo Mensual debe ser mayor a 0.";
+      show($("#c97_warn"), true);
+      return;
+    }
+    if(![1,2,3,4].includes(meses)){
+      $("#c97_warn").textContent = "Meses solicitados debe ser 1, 2, 3 o 4.";
+      show($("#c97_warn"), true);
+      return;
+    }
+
+    const monto = sueldoM * meses;
+    const plazoQ = meses * 10;                 // 10 quincenas por mes
+    const descQ = monto / plazoQ;              // sin intereses
+    const mesesAprox = (plazoQ / 2);
+
+    $("#c97_monto").textContent = money(monto);
+    $("#c97_plazo").textContent = `${plazoQ} quincenas (${mesesAprox} meses aprox.)`;
+    $("#c97_desc").textContent = money(descQ);
+    $("#c97_big").textContent = money(descQ);
+    show($("#c97_res"), true);
+
+    // Advertencias de negocio
+    const warns = [];
+    if(ya === "si"){
+      warns.push("Frecuencia: según la Cláusula 97, este anticipo se solicita 1 vez al año (aunque puede fraccionarse hasta 4 meses).");
+    }
+    if(tres === "si"){
+      warns.push("Restricción de liquidez: si tienes un anticipo vigente equivalente a 3 meses, debes liquidarlo totalmente antes de pedir otro.");
+    }
+    if(asistencia !== "alta"){
+      warns.push("Prioridad: este préstamo prioriza mejores índices de asistencia (esto no cambia el cálculo, solo el orden de atención).");
+    }
+    if(warns.length){
+      $("#c97_warn").innerHTML = warns.map(x => `• ${x}`).join("<br>");
+      show($("#c97_warn"), true);
+    }
+  });
+
+  $("#c97_clear").addEventListener("click", () => {
+    $("#c97_sueldo").value = "";
+    $("#c97_meses").value = "1";
+    $("#c97_ya").value = "no";
+    $("#c97_3meses").value = "no";
+    $("#c97_asistencia").value = "alta";
+    show($("#c97_res"), false);
+    show($("#c97_warn"), false);
+  });
+
+  // ===== Fondo de Ahorro (Julio) =====
+  $("#j_calc").addEventListener("click", () => {
+    const sueldoTab = num($("#j_sueldo_tab").value);
+    const dias = Math.floor(num($("#j_dias").value));
+
+    show($("#j_warn"), false);
+    show($("#j_res"), false);
+
+    if(sueldoTab <= 0){
+      $("#j_warn").textContent = "El Sueldo Tabular Mensual debe ser mayor a 0.";
+      show($("#j_warn"), true);
+      return;
+    }
+    if(dias < 0 || dias > 365){
+      $("#j_warn").textContent = "Días trabajados debe estar entre 0 y 365.";
+      show($("#j_warn"), true);
+      return;
+    }
+
+    const diario = sueldoTab / 30;
+    const prop = dias / 365;
+    const total = diario * 46 * prop;
+
+    $("#j_diario").textContent = money(diario);
+    $("#j_prop").textContent = prop.toFixed(4);
+    $("#j_total").textContent = money(total);
+    show($("#j_res"), true);
+  });
+
+  $("#j_clear").addEventListener("click", () => {
+    $("#j_sueldo_tab").value = "";
+    $("#j_dias").value = "";
+    show($("#j_res"), false);
+    show($("#j_warn"), false);
+  });
+
+  // ===== Tiempo Extra =====
+  function syncTiempoExtraUI(){
+    const tipo = $("#te_tipo").value;
+    const ordinario = (tipo === "ordinario");
+    show($("#te_min_wrap"), ordinario);
+    show($("#te_acum_wrap"), ordinario);
+
+    // reset resultado
+    show($("#te_res"), false);
+    show($("#te_warn"), false);
+  }
+  $("#te_tipo").addEventListener("change", syncTiempoExtraUI);
+  syncTiempoExtraUI();
+
+  $("#te_calc").addEventListener("click", () => {
+    const sueldoM = num($("#te_sueldo_m").value);
+    const horasJ = num($("#te_h_jornada").value) || 8;
+    const tipo = $("#te_tipo").value;
+
+    show($("#te_warn"), false);
+    show($("#te_res"), false);
+
+    if(sueldoM <= 0){
+      $("#te_warn").textContent = "El sueldo mensual debe ser mayor a 0.";
+      show($("#te_warn"), true);
+      return;
+    }
+    if(horasJ <= 0){
+      $("#te_warn").textContent = "Horas por jornada inválidas.";
+      show($("#te_warn"), true);
+      return;
+    }
+
+    const salarioDiario = sueldoM / 30;
+    const salarioHora = salarioDiario / horasJ;
+
+    $("#te_diario").textContent = money(salarioDiario);
+    $("#te_hora").textContent = money(salarioHora);
+
+    let total = 0;
+
+    // Limpia secciones
+    show($("#te_ordinario_rows"), false);
+    show($("#te_descanso_rows"), false);
+
+    if(tipo === "ordinario"){
+      const minutos = Math.floor(num($("#te_min").value));
+      const acum = num($("#te_acum").value);
+
+      if(minutos < 0){
+        $("#te_warn").textContent = "Minutos extra no pueden ser negativos.";
+        show($("#te_warn"), true);
+        return;
+      }
+      if(acum < 0){
+        $("#te_warn").textContent = "Horas acumuladas no pueden ser negativas.";
+        show($("#te_warn"), true);
+        return;
+      }
+
+      // Redondeo Cláusula 33 (según tu regla)
+      // <30 => 0.5h ; 30-59 => 1.0h ; 0 => 0
+      let horasEvento = 0;
+      if(minutos === 0) horasEvento = 0;
+      else if(minutos < 30) horasEvento = 0.5;
+      else if(minutos < 60) horasEvento = 1.0;
+      else {
+        // Si llegaran > 60, convertimos a horas por tramos de 60 y aplicamos redondeo al residuo
+        const full = Math.floor(minutos / 60);
+        const rem = minutos % 60;
+        let extra = 0;
+        if(rem === 0) extra = 0;
+        else if(rem < 30) extra = 0.5;
+        else extra = 1.0;
+        horasEvento = full + extra;
+      }
+
+      // Regla: primeras 9h/semana al doble, excedente al triple
+      // Determina cuántas horas del EVENTO caen dentro de las primeras 9 (considerando acumuladas previas)
+      const dentroDoble = Math.max(0, Math.min(9, acum + horasEvento) - acum);
+      const dentroTriple = Math.max(0, horasEvento - dentroDoble);
+
+      const pagoDoble = dentroDoble * salarioHora * 2;
+      const pagoTriple = dentroTriple * salarioHora * 3;
+
+      total = pagoDoble + pagoTriple;
+
+      $("#te_h_pag").textContent = horasEvento.toFixed(1);
+      $("#te_h_dob").textContent = dentroDoble.toFixed(1);
+      $("#te_h_tri").textContent = dentroTriple.toFixed(1);
+      $("#te_p_dob").textContent = money(pagoDoble);
+      $("#te_p_tri").textContent = money(pagoTriple);
+
+      show($("#te_ordinario_rows"), true);
+
+      // Aviso si excede 9h/semana
+      if(acum + horasEvento > 9){
+        $("#te_warn").textContent = "Aviso: Con este evento, se exceden 9 horas extra en la semana. El excedente se pagó al triple.";
+        show($("#te_warn"), true);
+      }
+
+    } else {
+      // Descanso / festivo: pago por día completo
+      let factor = 3;
+      if(tipo === "ambos") factor = 4;
+      total = salarioDiario * factor;
+      $("#te_p_dia").textContent = money(total);
+      show($("#te_descanso_rows"), true);
+    }
+
+    $("#te_total").textContent = money(total);
+    show($("#te_res"), true);
+  });
+
+  $("#te_clear").addEventListener("click", () => {
+    $("#te_sueldo_m").value = "";
+    $("#te_h_jornada").value = "8";
+    $("#te_tipo").value = "ordinario";
+    $("#te_min").value = 0;
+    $("#te_acum").value = 0;
+    show($("#te_res"), false);
+    show($("#te_warn"), false);
+    syncTiempoExtraUI();
+  });
+
+  // ===== Créditos =====
+  function syncCreditosUI(){
+    const tipo = $("#cr_tipo").value;
+    const isAuto = (tipo === "auto");
+    show($("#cr_anio_wrap"), isAuto);
+    show($("#cr_cat_wrap"), !isAuto);
+    show($("#cr_liq_wrap"), (tipo === "hip_largo"));
+    show($("#cr_res"), false);
+    show($("#cr_warn"), false);
+  }
+  $("#cr_tipo").addEventListener("change", syncCreditosUI);
+  syncCreditosUI();
+
+  $("#cr_calc").addEventListener("click", () => {
+    const tab = num($("#cr_tab").value);
+    const renta = num($("#cr_renta").value);
+    const tipo = $("#cr_tipo").value;
+
+    show($("#cr_warn"), false);
+    show($("#cr_res"), false);
+
+    if(tab < 0 || renta < 0){
+      $("#cr_warn").textContent = "Tabular y Ayuda de Renta no pueden ser negativos.";
+      show($("#cr_warn"), true);
+      return;
+    }
+    if((tab + renta) <= 0){
+      $("#cr_warn").textContent = "Debes capturar al menos Tabular o Ayuda de Renta (suma > 0).";
+      show($("#cr_warn"), true);
+      return;
+    }
+
+    const smi = (tab + renta) * 1.20; // SMI exacto
+    let descQ = 0;
+    let plazo = "—";
+    let maxMonto = 0;
+
+    if(tipo === "hip_largo"){
+      const cat = $("#cr_cat").value; // superior=30%, baja=25%
+      const pct = (cat === "baja") ? 0.25 : 0.30;
+      descQ = (smi * pct) / 2; // quincenal
+      plazo = "Hasta 30 años";
+      const factor = num($("#cr_factor").value) || 75;
+      // Según tu nota: 75 a 90 veces el SMI (dependiendo liquidez)
+      maxMonto = smi * factor;
+
+    } else if(tipo === "hip_medio"){
+      const cat = $("#cr_cat").value;
+      const pct = (cat === "baja") ? 0.25 : 0.30;
+      descQ = (smi * pct) / 2;
+      plazo = "Hasta 12 años";
+      maxMonto = smi * 35;
+
+    } else { // auto
+      const anio = parseInt($("#cr_anio").value, 10);
+      const pctMap = {1:0.40,2:0.39,3:0.38,4:0.37,5:0.36};
+      const pct = pctMap[anio] ?? 0.40;
+      descQ = (smi * pct) / 2;
+      plazo = "120 quincenas (5 años)";
+      maxMonto = smi * 24; // 24 meses del SMI
+    }
+
+    $("#cr_smi").textContent = money(smi);
+    $("#cr_desc").textContent = money(descQ);
+    $("#cr_plazo").textContent = plazo;
+    $("#cr_max").textContent = money(maxMonto);
+    $("#cr_big").textContent = money(descQ);
+    show($("#cr_res"), true);
+  });
+
+  $("#cr_clear").addEventListener("click", () => {
+    $("#cr_tab").value = "";
+    $("#cr_renta").value = "";
+    $("#cr_tipo").value = "hip_largo";
+    $("#cr_cat").value = "superior";
+    $("#cr_anio").value = "1";
+    $("#cr_factor").value = "75";
+    show($("#cr_res"), false);
+    show($("#cr_warn"), false);
+    syncCreditosUI();
+  });
+
+  // ===== Aguinaldo =====
+  $("#ag_calc").addEventListener("click", () => {
+    const nominal = num($("#ag_nom").value);
+    const agosto = $("#ag_agosto").value;
+    const showRows = $("#ag_show").value === "si";
+
+    show($("#ag_warn"), false);
+    show($("#ag_res"), false);
+
+    if(nominal <= 0){
+      $("#ag_warn").textContent = "El Sueldo Nominal Mensual debe ser mayor a 0.";
+      show($("#ag_warn"), true);
+      return;
+    }
+
+    const total = nominal * 3;
+    const enero = nominal / 2;                 // 0.5 mes
+    const ago = (agosto === "si") ? nominal : 0;
+    const dic = (agosto === "si") ? (nominal * 1.5) : (nominal * 2.5);
+
+    $("#ag_total").textContent = money(total);
+    $("#ag_ene").textContent = money(enero);
+    $("#ag_ago").textContent = money(ago);
+    $("#ag_dic").textContent = money(dic);
+
+    $("#ag_big").textContent = money(enero);
+
+    show($("#ag_rows"), showRows);
+    show($("#ag_res"), true);
+  });
+
+  $("#ag_clear").addEventListener("click", () => {
+    $("#ag_nom").value = "";
+    $("#ag_agosto").value = "no";
+    $("#ag_show").value = "si";
+    show($("#ag_res"), false);
+    show($("#ag_warn"), false);
+  });
+</script>
+</body>
+</html>
