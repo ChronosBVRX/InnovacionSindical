@@ -6,84 +6,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Plataforma Sindical CG</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <link rel="icon" href="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" />
 
   <style>
     :root {
-      /* --- PALETA DE COLORES STRICTA --- */
-      --bg-body: #1b2e45;
-      --bg-body-end: #152336;
-      --panel: #2e4f77;
+      /* --- PALETA PROYECTO AZUL MODERNIZADA --- */
+      --bg-deep: #0f172a;       /* Azul nocturno profundo */
+      --bg-gradient: radial-gradient(circle at 50% 0%, #1e3a8a 0%, #0f172a 60%);
+      
+      --glass-surface: rgba(30, 41, 59, 0.65);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-highlight: rgba(255, 255, 255, 0.03);
 
-      --primary: #4da1a8;
-      --primary-light: #7ad1d6;
+      --primary: #06b6d4;       /* Cian eléctrico */
+      --primary-glow: #06b6d480;
+      --accent: #3b82f6;        /* Azul real */
 
-      --text-main: #f0fdfa;
-      --text-muted: #bce9eb;
-
-      --ring: rgba(77, 161, 168, .35);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
 
       /* --- VARIABLES DE SISTEMA --- */
-      --topbar: 56px;
-      --boot-ms: 5200ms;
-
+      --topbar: 64px;
+      --boot-ms: 4500ms;
+      --radius: 16px;
+      
       /* Escalas responsivas */
-      --tile-min: 150px;
-      --tile-icon: 58px;
-      --tile-title: 16px;
-      --tile-desc: 12px;
-
-      --app-ic: 36px;
-      --mark: 28px;
-      --logo: 104px;
+      --tile-min: 160px;
+      --tile-icon: 64px;
+      --logo: 110px;
     }
 
-    @media (min-width: 960px) {
-      :root {
-        --tile-min: 190px;
-        --tile-icon: 72px;
-        --tile-title: 18px;
-        --tile-desc: 13px;
-
-        --app-ic: 44px;
-        --mark: 34px;
-        --logo: 120px;
-      }
-    }
-
-    html,
-    body {
+    html, body {
       height: 100%;
       margin: 0;
       overflow: hidden;
       overscroll-behavior: none;
-      background-color: var(--bg-body);
+      background-color: var(--bg-deep);
       color: var(--text-main);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Fondo general con degradado sutil */
-    .grid-bg {
+    /* Fondo ambiental */
+    .ambient-bg {
       position: fixed;
       inset: 0;
-      pointer-events: none;
-      background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%);
       z-index: -1;
+      background: var(--bg-gradient);
     }
-
-    /* Patrón sutil encima del fondo */
-    .grid-bg::before {
-      content: "";
+    
+    /* Orbes de luz decorativos */
+    .ambient-bg::before {
+      content: '';
       position: absolute;
-      inset: 0;
-      opacity: .08;
-      background-image:
-        linear-gradient(to right, var(--primary) 1px, transparent 1px),
-        linear-gradient(to bottom, var(--primary) 1px, transparent 1px);
-      background-size: 40px 40px;
+      top: -20%;
+      right: -10%;
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.15), transparent 70%);
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.6;
+      animation: float 10s ease-in-out infinite alternate;
     }
 
-    /* --- TOPBAR --- */
+    /* --- TOPBAR GLASS --- */
     .topbar {
       position: fixed;
       inset: 0 0 auto 0;
@@ -91,306 +82,299 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px;
-      background: rgba(46, 79, 119, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--ring);
+      padding: 0 24px;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
       z-index: 30;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     }
 
     .mark {
-      display: grid;
-      place-items: center;
-      width: var(--mark);
-      height: var(--mark);
-      border-radius: 8px;
-      background: rgba(77, 161, 168, .15);
-      border: 1px solid var(--ring);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--glass-border);
       overflow: hidden;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
     }
-
-    .mark img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .mark img { width: 100%; height: 100%; object-fit: cover; }
 
     .title {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      color: var(--text-main);
-      letter-spacing: .5px;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.01em;
     }
-
-    .title span {
-      color: var(--primary-light);
-    }
-
-    .title small {
-      color: var(--text-muted);
-      opacity: .8;
-      font-weight: 400;
-      margin-left: 4px;
-    }
+    .title span { color: var(--primary); }
 
     .clock {
       font-size: 13px;
       color: var(--text-muted);
-      font-feature-settings: "tnum";
+      font-weight: 500;
+      background: rgba(255,255,255,0.05);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
     }
 
-    /* --- CAPAS Y CONTENEDORES --- */
+    /* --- CAPAS --- */
     .layer {
       position: fixed;
-      left: 0;
-      right: 0;
+      inset: 0;
       top: var(--topbar);
-      bottom: 0;
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
     }
 
     .wrap {
-      padding: 24px 20px;
-      max-width: 1200px;
+      padding: 32px 24px;
+      max-width: 1280px;
       margin: 0 auto;
     }
 
+    /* --- HEADER DE MARCA --- */
     .brand {
       display: flex;
-      gap: 16px;
+      flex-wrap: wrap;
+      gap: 20px;
       align-items: flex-end;
       justify-content: space-between;
-      margin-bottom: 24px;
-      border-bottom: 1px solid var(--ring);
-      padding-bottom: 20px;
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--glass-border);
     }
 
     .brand h1 {
       margin: 0;
-      font-size: 26px;
+      font-size: 32px;
       font-weight: 700;
-      color: var(--text-main);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
     }
 
-    .brand .text-gradient {
-      background: linear-gradient(to right, var(--primary), var(--primary-light));
+    .text-gradient {
+      background: linear-gradient(135deg, #fff 30%, var(--primary) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .brand p {
-      margin: 6px 0 0;
+      margin: 8px 0 0;
       color: var(--text-muted);
-      font-size: 14px;
-      max-width: 640px;
+      font-size: 15px;
     }
 
     .badge {
-      border: 1px solid var(--ring);
-      background: rgba(77, 161, 168, .12);
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 11px;
-      color: var(--primary-light);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      color: var(--primary);
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      font-weight: 600;
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.1);
     }
 
     /* --- TILES (TARJETAS) --- */
     .tiles {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    @media(min-width:640px) {
-      .tiles {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    @media(min-width:960px) {
-      .tiles {
-        grid-template-columns: repeat(4, 1fr);
-      }
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 24px;
     }
 
     .tile {
+      position: relative;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       min-height: var(--tile-min);
-      padding: 20px;
+      padding: 24px;
       cursor: pointer;
       text-align: left;
-      background: rgba(46, 79, 119, 0.4);
-      border: 1px solid var(--ring);
-      border-radius: 12px;
-      transition: all 0.3s ease;
+      
+      /* Glass Effect */
+      background: var(--glass-surface);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      
       color: inherit;
       font: inherit;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      overflow: hidden;
+    }
+
+    /* Highlight superior */
+    .tile::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--glass-highlight) 0%, transparent 100%);
+      pointer-events: none;
     }
 
     .tile:hover {
-      background: var(--panel);
-      border-color: var(--primary);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      transform: translateY(-2px);
+      transform: translateY(-5px) scale(1.02);
+      border-color: rgba(6, 182, 212, 0.3);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 
+                  0 0 20px rgba(6, 182, 212, 0.1);
+      background: rgba(30, 41, 59, 0.85);
     }
 
-    .icon {
-      width: var(--tile-icon);
-      height: var(--tile-icon);
-      border-radius: 12px;
+    .icon-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
       display: grid;
       place-items: center;
-      background: rgba(77, 161, 168, .15);
-      border: 1px solid var(--ring);
-      color: var(--primary-light);
-      font-size: calc(var(--tile-icon) * .45);
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid var(--glass-border);
+      font-size: 26px;
+      transition: 0.3s;
+    }
+
+    .tile:hover .icon-box {
+      background: var(--primary);
+      color: #0f172a;
+      box-shadow: 0 0 20px var(--primary-glow);
+      border-color: transparent;
+    }
+
+    .tile-content {
+      margin-top: 20px;
     }
 
     .tile h3 {
-      margin: 0 0 6px;
-      font-size: var(--tile-title);
-      color: var(--text-main);
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: #fff;
       font-weight: 600;
     }
 
     .tile p {
       margin: 0;
       color: var(--text-muted);
-      font-size: var(--tile-desc);
-      line-height: 1.4;
+      font-size: 13px;
+      line-height: 1.5;
     }
 
-    .tile.ghost {
-      visibility: hidden;
-      pointer-events: none;
+    /* Animación de entrada escalonada */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .tile-enter {
+      animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      opacity: 0;
     }
 
     /* --- APP VIEW --- */
     .app-wrap {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 10px 16px;
+      padding: 16px 24px;
       height: 100%;
       display: flex;
       flex-direction: column;
+      box-sizing: border-box;
     }
 
     .app-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin: 6px 0 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--ring);
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--glass-border);
+      background: transparent;
     }
 
-    .app-meta {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
+    .app-meta { display: flex; align-items: center; gap: 16px; }
+    
     .app-ic {
-      width: var(--app-ic);
-      height: var(--app-ic);
-      border-radius: 10px;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
       display: grid;
       place-items: center;
-      background: rgba(77, 161, 168, .2);
-      border: 1px solid var(--ring);
-      font-size: calc(var(--app-ic)*.52);
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      font-size: 24px;
     }
 
-    .app-title {
-      margin: 0;
-      font-size: 18px;
-      color: var(--text-main);
-      font-weight: 600;
-    }
-
-    .app-desc {
-      margin: 2px 0 0;
-      font-size: 12px;
-      color: var(--text-muted);
-    }
+    .app-title { margin: 0; font-size: 20px; font-weight: 600; color: #fff; }
+    .app-desc { margin: 2px 0 0; font-size: 13px; color: var(--text-muted); }
 
     .btn {
-      background: transparent;
-      border: 1px solid var(--ring);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--glass-border);
       color: var(--primary);
-      padding: 6px 14px;
-      border-radius: 6px;
+      padding: 8px 18px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
       transition: all 0.2s;
     }
 
     .btn:hover {
-      background: rgba(77, 161, 168, .15);
-      color: var(--primary-light);
+      background: rgba(6, 182, 212, 0.15);
       border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+      color: #fff;
     }
 
     .app-body {
       position: relative;
       flex: 1;
       min-height: 0;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: var(--radius);
+      border: 1px solid var(--glass-border);
+      overflow: hidden;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
     }
 
     .iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border-radius: 8px;
-      border: 1px solid var(--ring);
-      background: rgba(21, 35, 54, 0.6);
+      width: 100%; height: 100%; border: none;
+      background: #fff; /* Muchos iframes necesitan fondo blanco */
     }
 
-    #app-internal {
-      position: absolute;
-      inset: 0;
-      overflow: auto;
-      padding: 0;
-    }
+    #app-internal { position: absolute; inset: 0; overflow: auto; }
 
-    .hide {
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .35s ease;
-    }
+    .hide { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+    .show { opacity: 1; transition: opacity 0.4s ease; }
 
-    .show {
-      opacity: 1;
-      transition: opacity .35s ease;
-    }
-
-    /* --- BOOT SCREEN --- */
+    /* --- BOOT SCREEN (MODERNO) --- */
     .boot {
       position: fixed;
       inset: 0;
       display: grid;
       place-items: center;
       z-index: 50;
-      background: radial-gradient(circle at 50% 30%, #2e4f77 0%, #1b2e45 60%, #152336 100%);
+      background: #0f172a;
+      transition: opacity 0.8s ease;
     }
 
-    .boot .halo {
+    .boot-bg {
       position: absolute;
-      width: 44vmin;
-      height: 44vmin;
-      border-radius: 50%;
-      filter: blur(80px);
-      background: radial-gradient(circle, rgba(77, 161, 168, 0.3), transparent 70%);
-      animation: pulse 4s ease-in-out infinite;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, #1e3a8a 0%, #0f172a 70%);
+      opacity: 0.6;
     }
 
     .boot-card {
@@ -398,130 +382,109 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
       z-index: 2;
+      width: 300px;
     }
 
-    .logo {
-      width: var(--logo);
-      height: var(--logo);
-      border-radius: 20px;
-      background: linear-gradient(135deg, rgba(46, 79, 119, .5), rgba(27, 46, 69, .8));
-      border: 1px solid var(--ring);
+    .logo-glow {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      border-radius: 30px;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 1), rgba(15, 23, 42, 1));
+      border: 1px solid rgba(255,255,255,0.1);
       display: grid;
       place-items: center;
-      box-shadow: 0 0 30px rgba(77, 161, 168, .15);
+      box-shadow: 0 0 50px rgba(6, 182, 212, 0.15);
+      margin-bottom: 24px;
       overflow: hidden;
     }
-
-    .logo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .logo-glow img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .logo-glow::after {
+      content:''; position:absolute; inset:0;
+      border-radius: 30px;
+      box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
     }
 
     .boot h1 {
-      margin: 10px 0 0;
-      color: var(--text-main);
-      font-size: 28px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    .boot p {
       margin: 0;
-      color: var(--primary);
-      opacity: .9;
-      font-size: 13px;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 600;
       letter-spacing: 2px;
       text-transform: uppercase;
     }
 
-    .bar {
-      margin-top: 20px;
-      height: 6px;
-      width: 280px;
-      max-width: 80vw;
-      border-radius: 999px;
-      background: rgba(27, 46, 69, 0.5);
-      border: 1px solid var(--ring);
+    .boot p {
+      margin: 4px 0 0;
+      color: var(--primary);
+      font-size: 12px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    .loader-line {
+      margin-top: 30px;
+      width: 100%;
+      height: 2px;
+      background: rgba(255,255,255,0.1);
+      position: relative;
       overflow: hidden;
+      border-radius: 2px;
     }
 
-    .bar span {
-      display: block;
-      height: 100%;
-      width: 30%;
-      background: linear-gradient(90deg, var(--primary), var(--primary-light));
-      border-radius: 99px;
-      box-shadow: 0 0 10px var(--primary);
-      animation: load var(--boot-ms) ease-in-out infinite;
-    }
-
-    .skip {
-      margin-top: 16px;
-      color: var(--text-muted);
-      font-size: 11px;
-      cursor: pointer;
-      padding: 8px;
-      opacity: 0.7;
-      transition: opacity 0.3s;
-    }
-
-    .skip:hover {
-      opacity: 1;
-      color: var(--primary-light);
+    .loader-line::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 40%;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      transform: translateX(-100%);
+      animation: loadLine 2s ease-in-out infinite;
     }
 
     #boot-tips {
-      margin-top: 8px;
-      font-size: 12px;
+      margin-top: 12px;
+      font-size: 11px;
       color: var(--text-muted);
-      font-style: italic;
+      height: 15px;
     }
 
-    @keyframes load {
-      0% {
-        transform: translateX(-150%);
-      }
-
-      100% {
-        transform: translateX(350%);
-      }
+    @keyframes loadLine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(350%); }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px) scale(1); }
+      100% { transform: translateY(20px) scale(1.05); }
     }
 
-    @keyframes pulse {
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
 
-      0%,
-      100% {
-        opacity: .5;
-        transform: scale(1);
-      }
-
-      50% {
-        opacity: .9;
-        transform: scale(1.05);
-      }
-    }
   </style>
 </head>
 
 <body>
-  <div class="grid-bg"></div>
+  <div class="ambient-bg"></div>
 
-  <div id="boot" class="boot show" onclick="window.SInOS && SInOS.skipBoot()">
+  <div id="boot" class="boot" onclick="window.SInOS && SInOS.skipBoot()">
+    <div class="boot-bg"></div>
     <div class="boot-card">
-      <div class="halo"></div>
-      <div class="logo">
+      <div class="logo-glow">
         <img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" alt="Logo" />
       </div>
-      <h1>Plataforma Sindical CG</h1>
-      <p>Gestión Inteligente</p>
+      <h1>SNTSS</h1>
+      <p>Sistema Inteligente</p>
 
-      <div class="bar"><span></span></div>
-      <div id="boot-tips">Cargando módulos...</div>
-
-      <div class="skip">Tocar para iniciar</div>
+      <div class="loader-line"></div>
+      <div id="boot-tips">Inicializando protocolos seguros...</div>
     </div>
   </div>
 
@@ -531,21 +494,23 @@
         <img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" alt="" />
       </div>
       <div>
-        <span>Plataforma</span> Sindical CG
+        <span style="color:var(--text-main)">Plataforma</span> <span style="color:var(--primary)">Sindical CG</span>
       </div>
     </div>
-    <div class="clock" id="clock">--:--:--</div>
+    <div class="clock" id="clock">--:--</div>
   </div>
 
-  <main id="home" class="layer show" aria-live="polite">
+  <main id="home" class="layer hide" aria-live="polite">
     <section class="wrap">
       <section class="brand">
         <div>
-          <h1>Bienvenido, <span class="text-gradient">Compañero</span></h1>
-          <p>Panel de Control y Gestión Sindical.</p>
+          <h1>Bienvenido, <span class="text-gradient">Dr. Guerrero</span></h1>
+          <p>Panel de Gestión Estratégica y Comunicación.</p>
         </div>
         <div>
-          <div class="badge">SNTSS Secc. XX</div>
+          <div class="badge">
+             <span style="font-size:14px">💠</span> Proyecto Azul 2026
+          </div>
         </div>
       </section>
 
@@ -563,9 +528,9 @@
             <p class="app-desc" id="app-desc">Descripción</p>
           </div>
         </div>
-        <div style="display:flex;gap:8px;">
+        <div style="display:flex; gap:10px;">
           <button class="btn" onclick="SInOS.goHome()">🏠 Inicio</button>
-          <button class="btn" id="btn-open-new" style="display:none">🔗 Abrir</button>
+          <button class="btn" id="btn-open-new" style="display:none">🔗 Externo</button>
           <button class="btn" onclick="SInOS.closeApp()">✖ Cerrar</button>
         </div>
       </div>
@@ -595,26 +560,27 @@
   </script>
 
   <script>
+    /* DATOS DE LOS MÓDULOS */
     const APPS = [
       {
         id: 'trascendencia',
         title: 'TrascendencIA',
-        desc: 'Asistente Virtual Sindical.',
+        desc: 'Asistente Virtual con IA Sindical.',
         icon: '🤖',
         href: 'https://trascendencia-sindical-7t85.onrender.com/',
         quick: true
       },
       {
         id: 'noticias',
-        title: 'Noticias',
-        desc: 'Comunicados oficiales en tiempo real.',
+        title: 'Noticias Oficiales',
+        desc: 'Comunicados en tiempo real.',
         icon: '📰',
         type: 'internal'
       },
       {
         id: 'agenda',
         title: 'Red Sindical',
-        desc: 'Agenda y eventos de la vida sindical.',
+        desc: 'Agenda y eventos políticos.',
         icon: '📅',
         href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html',
         quick: true
@@ -622,15 +588,15 @@
       {
         id: 'denuncias',
         title: 'Gestor de Escritos',
-        desc: 'Redacción asistida para denuncias.',
-        icon: '📝',
+        desc: 'Redacción jurídica asistida.',
+        icon: '⚖️',
         href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias',
         quick: true
       },
       {
         id: 'directorio',
         title: 'Directorio',
-        desc: 'Contactos clave y delegados.',
+        desc: 'Contactos clave Secc. XX.',
         icon: '📞',
         iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio',
         quick: true
@@ -638,21 +604,18 @@
       {
         id: 'miniapp',
         title: 'WhatsApp Bot',
-        desc: 'Automatización y respuestas rápidas.',
+        desc: 'Automatización de respuestas.',
         icon: '💬',
-        href: 'https://wa.me/XXXXXXXXXXX'
+        href: 'https://wa.me/521XXXXXXXXXX' 
       },
-
-      /* ✅ AQUÍ QUEDÓ INTEGRADO TU IFRAME */
       {
         id: 'prestaciones',
         title: 'Prestaciones',
-        desc: 'Cálculo de vacaciones y estímulos.',
+        desc: 'Calculadora de vacaciones y bonos.',
         icon: '📊',
         iframe: 'prestaciones.html',
         quick: true
       },
-
       {
         id: 'ajustes',
         title: 'Configuración',
@@ -664,6 +627,7 @@
   </script>
 
   <script>
+    /* LÓGICA DEL SISTEMA (SInOS) */
     const SInOS = {
       BOOT_MS: 3000,
       bootEl: null, homeEl: null, appEl: null, appTitle: null, appDesc: null, appIc: null,
@@ -683,33 +647,43 @@
 
           this.renderTiles();
 
-          const FIRST_KEY = 'sinos:bootedOnce';
+          // Lógica de primer arranque vs recarga
+          const FIRST_KEY = 'sinos:bootedV2';
           const qs = new URLSearchParams(location.search);
-          const forceReset = qs.get('boot') === 'reset';
-          if (forceReset) { try { localStorage.removeItem(FIRST_KEY); } catch { } }
+          if (qs.get('boot') === 'reset') localStorage.removeItem(FIRST_KEY);
 
-          let firstTime = false;
-          try { firstTime = !localStorage.getItem(FIRST_KEY); } catch { }
+          let firstTime = !localStorage.getItem(FIRST_KEY);
+          this.BOOT_MS = firstTime ? 3800 : 1200;
 
-          this.BOOT_MS = firstTime ? 3500 : 1500;
-          document.documentElement.style.setProperty('--boot-ms', this.BOOT_MS + 'ms');
-
+          // Mensajes de carga aleatorios más "tech"
           (function () {
-            const tips = ['Conectando a base de datos segura...', 'Cargando perfil de usuario...', 'Sincronizando módulos...', 'Plataforma Sindical CG lista.'];
-            let i = 0; setInterval(() => {
-              const el = document.getElementById('boot-tips');
-              if (el) { i = (i + 1) % tips.length; el.textContent = tips[i]; }
-            }, 900);
+            const tips = [
+              'Encriptando conexión...', 
+              'Cargando perfil: C. Guerrero...', 
+              'Sincronizando Secc. XX...', 
+              'Sistema Listo.'
+            ];
+            let i = 0; 
+            const el = document.getElementById('boot-tips');
+            if(el) {
+              const interval = setInterval(() => {
+                el.style.opacity = 0.5;
+                setTimeout(()=>{ 
+                   i = (i + 1) % tips.length; 
+                   el.textContent = tips[i]; 
+                   el.style.opacity = 1; 
+                }, 200);
+              }, 900);
+              setTimeout(()=> clearInterval(interval), 4000);
+            }
           })();
 
-          const _hide = this.hideBoot.bind(this);
-          this.hideBoot = () => { try { localStorage.setItem(FIRST_KEY, '1'); } catch { }; _hide(); };
           setTimeout(() => this.hideBoot(), this.BOOT_MS);
 
           this.tickClock(); setInterval(() => this.tickClock(), 1000);
           document.addEventListener('keydown', (e) => { if (e.key === 'Escape') this.goHome(); });
-
           window.addEventListener('resize', () => this.renderTiles());
+
         } catch (err) { console.error('Init:', err); this.forceShowUI(); }
       },
 
@@ -717,36 +691,49 @@
         const el = document.getElementById('clock');
         if (el) el.textContent = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
       },
-      hideBoot() { this.bootEl?.classList.add('hide'); this.bootEl?.classList.remove('show'); },
+
+      hideBoot() { 
+        try { localStorage.setItem('sinos:bootedV2', '1'); } catch { }
+        if(this.bootEl) {
+          this.bootEl.style.opacity = '0';
+          this.bootEl.style.pointerEvents = 'none';
+        }
+        if(this.homeEl) {
+          this.homeEl.classList.remove('hide');
+          this.homeEl.classList.add('show');
+          // Activar animaciones de entrada
+          const tiles = document.querySelectorAll('.tile');
+          tiles.forEach((t, i) => {
+            t.style.animationDelay = `${i * 0.05}s`;
+            t.classList.add('tile-enter');
+          });
+        }
+      },
+
       skipBoot() { this.hideBoot(); },
-      forceShowUI() { this.hideBoot(); this.homeEl?.classList.add('show'); this.homeEl?.classList.remove('hide'); },
+      forceShowUI() { this.hideBoot(); },
 
       renderTiles() {
         const wrap = document.getElementById('tiles');
-        wrap.innerHTML = '';
-        const visible = APPS;
+        // Solo re-renderizar si está vacío para no romper animaciones
+        if(wrap.innerHTML !== '') return; 
 
-        visible.forEach(a => {
-          const b = document.createElement('button');
+        APPS.forEach(a => {
+          const b = document.createElement('div'); // Cambiado a div para mejor control de layout
           b.className = 'tile';
           b.onclick = () => (a.href && !a.iframe && a.type !== 'internal') ? location.assign(a.href) : this.openApp(a.id);
 
           b.innerHTML = `
-            <div style="display:flex;gap:14px;align-items:center;width:100%">
-              <div class="icon">${a.icon || '🧩'}</div>
-              <div><h3>${a.title}</h3></div>
+            <div style="display:flex; justify-content:space-between; align-items:start; width:100%">
+              <div class="icon-box">${a.icon || '💠'}</div>
+              ${a.quick ? '<div style="width:6px; height:6px; background:var(--primary); border-radius:50%;"></div>' : ''}
             </div>
-            <p>${a.desc || ''}</p>`;
+            <div class="tile-content">
+              <h3>${a.title}</h3>
+              <p>${a.desc || 'Acceso al módulo'}</p>
+            </div>`;
           wrap.appendChild(b);
         });
-
-        const cols = (innerWidth >= 960) ? 4 : (innerWidth >= 640 ? 3 : 2);
-        const missing = (cols - (visible.length % cols)) % cols;
-        for (let i = 0; i < missing; i++) {
-          const ghost = document.createElement('div');
-          ghost.className = 'tile ghost';
-          wrap.appendChild(ghost);
-        }
       },
 
       openApp(id) {
@@ -780,7 +767,7 @@
         this.appInternal.style.display = 'block';
         const root = this.appInternal;
         root.innerHTML = `
-          <div id="fb-news-wrap" style="width:100%; padding:10px; display:flex; justify-content:center;">
+          <div id="fb-news-wrap" style="width:100%; padding:20px; display:flex; justify-content:center;">
             <div class="fb-page"
               data-href="https://www.facebook.com/profile.php?id=100063446307036"
               data-tabs="timeline" data-width="500" data-height=""
@@ -790,7 +777,7 @@
           </div>`;
         const pageDiv = root.querySelector('.fb-page');
         const fit = () => {
-          const available = Math.min(500, Math.max(280, Math.floor(root.clientWidth - 20)));
+          const available = Math.min(600, Math.max(280, Math.floor(root.clientWidth - 40)));
           pageDiv.setAttribute('data-width', String(available));
           if (window.FB && FB.XFBML) FB.XFBML.parse(root);
         };
@@ -802,6 +789,7 @@
       },
 
       closeApp() { this.goHome(); },
+      
       goHome() {
         if (this._cleanupNoticias) { try { this._cleanupNoticias(); } catch { } this._cleanupNoticias = null; }
         this.appEl.classList.remove('show'); this.appEl.classList.add('hide');
@@ -813,16 +801,5 @@
     window.SInOS = SInOS;
     document.addEventListener('DOMContentLoaded', () => SInOS.init());
   </script>
-
-  <script>
-    setTimeout(() => {
-      const b = document.getElementById('boot');
-      if (b && getComputedStyle(b).opacity !== '0') {
-        b.style.opacity = '0'; b.style.pointerEvents = 'none';
-        document.getElementById('home').classList.add('show');
-      }
-    }, 8000);
-  </script>
 </body>
-
 </html>
