@@ -475,7 +475,7 @@
   <main>
     <nav>
       <button class="tab active" data-tab="perfil">👤 Perfil</button>
-      <button class="tab" data-tab="miembros">👥 Miembros</button>
+      <button class="tab" data-tab="miembros" id="tabMiembros">👥 Miembros</button>
       <button class="tab" data-tab="calendario">📅 Calendario</button>
       <button class="tab" data-tab="reservas">🗓️ Reservas</button>
       <button class="tab" data-tab="foro">🗣️ Foro</button>
@@ -611,7 +611,7 @@
 
     <section id="miembros" class="content">
       <div class="card">
-        <h2>👥 Directorio de Miembros</h2>
+        <h2>👥 Directorio de Miembros (Solo Admin)</h2>
         <div class="row" style="margin-top:6px">
           <input id="qMembers" placeholder="Buscar por nombre, adscripción o servicios" style="min-width:260px">
           <button class="subtle-btn" id="btnRefreshMembers">Actualizar</button>
@@ -682,8 +682,6 @@
           style="width:100%;min-height:650px;border:0;border-radius:12px;margin-top:12px" loading="lazy"></iframe>
       </div>
     </section>
-
-    <!-- ✅ SECCIÓN "verificacion" ELIMINADA (ahora está integrada en Perfil) -->
 
     <section id="personaliza" class="content">
       <div class="card">
@@ -839,6 +837,11 @@
             return;
           }
 
+          if (id === 'miembros' && !IS_ADMIN) {
+            alert('Solo administradores pueden ver el directorio.');
+            return;
+          }
+
           document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
           document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
 
@@ -849,7 +852,6 @@
 
           if (id === 'miembros') renderMembers();
           if (id === 'foro') loadPostsDeb();
-          // ✅ verificación ya no es pestaña; se carga dentro de Perfil
         });
       });
 
@@ -888,15 +890,15 @@
       }
 
       CURRENT_USER = session.user;
-      IS_ADMIN = (CURRENT_USER.app_metadata?.role === 'admin');
-
-      if (IS_ADMIN) $("tabScanner").style.removeProperty('display');
+      IS_ADMIN = false; // se define desde profiles.role en loadProfile()
 
       // 2) cargar datos
       await loadProfile();
       initPerfilExtras();
 
-      await loadMembers(true);
+      // Members/presence: solo admins verán la pestaña y podrán cargar listado completo
+      if (IS_ADMIN) await loadMembers(true);
+
       initPresence();
       initForum();
 
@@ -906,7 +908,6 @@
       // 3) tabs hash
       const wanted = (location.hash || '#perfil').slice(1);
 
-      // si alguien trae hash viejo #verificacion, lo mandamos a perfil
       if (wanted === 'verificacion') {
         (document.querySelector('.tab[data-tab="perfil"]'))?.click();
         return;
@@ -915,6 +916,8 @@
       if (wanted === 'scanner') {
         if (IS_ADMIN) window.location.replace(SCANNER_REDIRECT_URL);
         else (document.querySelector('.tab[data-tab="perfil"]'))?.click();
+      } else if (wanted === 'miembros' && !IS_ADMIN) {
+        (document.querySelector('.tab[data-tab="perfil"]'))?.click();
       } else {
         (document.querySelector(`.tab[data-tab="${wanted}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click();
       }
@@ -969,11 +972,22 @@
 
         const { data: prof, error } = await supabaseClient
           .from('profiles')
-          .select('display_name, avatar_url, categoria, adscripcion, bio, cumple, telefono, telefono_publico, servicios')
+          .select('display_name, avatar_url, categoria, adscripcion, bio, cumple, telefono, telefono_publico, servicios, role')
           .eq('user_id', CURRENT_USER.id)
           .maybeSingle();
 
         if (error) diag("Error leyendo tabla 'profiles'. (Probable RLS / policy)", error);
+
+        // ✅ Admin y visibilidad de pestañas desde profiles.role (no app_metadata)
+        const myRole = (prof?.role || 'miembro');
+        IS_ADMIN = (myRole === 'admin');
+
+        // Mostrar/ocultar pestañas segun rol
+        const tabMiembros = document.getElementById("tabMiembros");
+        if (tabMiembros) tabMiembros.style.display = IS_ADMIN ? "" : "none";
+
+        if (IS_ADMIN) $("tabScanner").style.removeProperty('display');
+        else $("tabScanner").style.display = "none";
 
         const telRaw = prof?.telefono || CURRENT_USER.user_metadata?.telefono;
         const telPublicFlag = (prof?.telefono_publico ?? CURRENT_USER.user_metadata?.telefono_publico) === true;
@@ -1031,7 +1045,7 @@
       }
     }
 
-    /* ====== Guardar perfil ====== */
+    /* ====== Guardar perfil (propio) ====== */
     async function onSaveProfile(e) {
       e.preventDefault();
       $("status").textContent = "Guardando…";
@@ -1056,7 +1070,7 @@
         };
         if (avatar_url) updates.avatar_url = avatar_url;
 
-        // 1) auth metadata
+        // 1) auth metadata (solo para datos del propio usuario)
         const { error: authErr } = await supabaseClient.auth.updateUser({ data: updates });
         if (authErr) {
           diag("Error en auth.updateUser (metadata).", authErr);
@@ -1095,8 +1109,9 @@
       }
     }
 
-    /* ====== Miembros ====== */
+    /* ====== Miembros (solo admin) ====== */
     async function loadMembers(force = false) {
+      if (!IS_ADMIN) return;
       if (!force && MEMBERS_CACHE.length) return;
 
       const wrap = $("membersList");
@@ -1104,7 +1119,7 @@
 
       const { data, error } = await supabaseClient
         .from('profiles')
-        .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, telefono, telefono_publico, servicios')
+        .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, telefono, telefono_publico, servicios, role')
         .order('last_seen', { ascending: false })
         .limit(1000);
 
@@ -1121,6 +1136,7 @@
     function renderMembers() {
       const wrap = $("membersList");
       if (!wrap) return;
+      if (!IS_ADMIN) { wrap.innerHTML = '<div class="meta">Solo administradores pueden ver este listado.</div>'; return; }
 
       const q = ($("qMembers")?.value || "").trim().toLowerCase();
       const onlyOnline = $("chkOnlineOnly")?.checked;
@@ -1163,21 +1179,127 @@
           ? (serviciosText.length > 100 ? serviciosText.slice(0, 97) + '…' : serviciosText)
           : '';
 
+        const role = (p.role || 'miembro');
+        const roleLabel = role === 'bolsa_trabajo' ? 'bolsa de trabajo' : (role === 'escalafon' ? 'escalafón' : role);
+
         card.innerHTML = `
           <div class="row" style="align-items:flex-start">
             <div class="avatar" style="width:64px;height:64px">
               ${p.avatar_url ? `<img src="${p.avatar_url}">` : (p.display_name || '?')[0]?.toUpperCase()}
             </div>
-            <div style="flex:1;min-width:200px">
-              <div style="font-weight:700">${escapeHtml(p.display_name || '—')}</div>
+
+            <div style="flex:1;min-width:220px">
+              <div class="row" style="justify-content:space-between;gap:10px;align-items:center">
+                <div style="font-weight:800">${escapeHtml(p.display_name || '—')}</div>
+                <span class="pill">🛡️ ${escapeHtml(roleLabel)}</span>
+              </div>
+
               <div class="meta">${escapeHtml(p.categoria || '—')} • ${escapeHtml(p.adscripcion || '—')}</div>
               <div class="meta" style="margin-top:4px">📱 ${escapeHtml(telDisplay)}</div>
               ${serviciosShort ? `<div class="meta" style="margin-top:4px">🤝 ${escapeHtml(serviciosShort)}</div>` : ''}
+
+              <div class="row" style="margin-top:10px;gap:10px;align-items:center;justify-content:space-between">
+                <span class="pill">${dot}</span>
+                <button class="subtle-btn btn-edit-member" data-uid="${p.user_id}">✏️ Editar</button>
+              </div>
+
+              <div class="edit-member-box" data-uid="${p.user_id}" style="display:none;margin-top:10px">
+                <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
+                  <label class="meta">Rol</label>
+                  <select class="m-role">
+                    <option value="miembro" ${role==='miembro'?'selected':''}>miembro</option>
+                    <option value="bolsa_trabajo" ${role==='bolsa_trabajo'?'selected':''}>bolsa de trabajo</option>
+                    <option value="escalafon" ${role==='escalafon'?'selected':''}>escalafón</option>
+                    <option value="admin" ${role==='admin'?'selected':''}>admin</option>
+                  </select>
+                </div>
+
+                <div class="row" style="margin-top:8px;gap:10px;flex-wrap:wrap">
+                  <input class="m-name" placeholder="Nombre" value="${escapeHtml(p.display_name||'')}">
+                  <input class="m-cat" placeholder="Categoría" value="${escapeHtml(p.categoria||'')}">
+                  <input class="m-ads" placeholder="Adscripción" value="${escapeHtml(p.adscripcion||'')}">
+                </div>
+
+                <div class="row" style="margin-top:8px;gap:10px;flex-wrap:wrap">
+                  <input class="m-tel" placeholder="Teléfono" value="${escapeHtml(p.telefono||'')}">
+                  <label class="row" style="gap:8px">
+                    <input type="checkbox" class="m-telpub" ${p.telefono_publico ? 'checked':''}>
+                    <span class="meta">Teléfono público</span>
+                  </label>
+                </div>
+
+                <div style="margin-top:8px;display:grid;gap:8px">
+                  <textarea class="m-serv" placeholder="Servicios / habilidades">${escapeHtml(p.servicios||'')}</textarea>
+                </div>
+
+                <div class="row" style="margin-top:10px;gap:10px;flex-wrap:wrap">
+                  <button class="btn btn-save-member" data-uid="${p.user_id}">💾 Guardar</button>
+                  <button class="subtle-btn btn-cancel-member" data-uid="${p.user_id}">Cancelar</button>
+                  <span class="meta m-status" style="margin-left:auto"></span>
+                </div>
+              </div>
             </div>
-            <span class="pill">${dot}</span>
           </div>
         `;
         wrap.appendChild(card);
+      });
+
+      // Listeners (solo admin)
+      wrap.querySelectorAll('.btn-edit-member').forEach(b => {
+        b.onclick = (e) => {
+          e.preventDefault();
+          const uid = b.dataset.uid;
+          const box = wrap.querySelector(`.edit-member-box[data-uid="${uid}"]`);
+          if (box) box.style.display = (box.style.display === 'none' ? 'block' : 'none');
+        };
+      });
+
+      wrap.querySelectorAll('.btn-cancel-member').forEach(b => {
+        b.onclick = (e) => {
+          e.preventDefault();
+          const uid = b.dataset.uid;
+          const box = wrap.querySelector(`.edit-member-box[data-uid="${uid}"]`);
+          if (box) box.style.display = 'none';
+        };
+      });
+
+      wrap.querySelectorAll('.btn-save-member').forEach(b => {
+        b.onclick = async (e) => {
+          e.preventDefault();
+          const uid = b.dataset.uid;
+          const box = wrap.querySelector(`.edit-member-box[data-uid="${uid}"]`);
+          if (!box) return;
+
+          const statusEl = box.querySelector('.m-status');
+          statusEl.textContent = 'Guardando…';
+
+          const updates = {
+            display_name: nz(box.querySelector('.m-name')?.value),
+            categoria: nz(box.querySelector('.m-cat')?.value),
+            adscripcion: nz(box.querySelector('.m-ads')?.value),
+            telefono: nz(box.querySelector('.m-tel')?.value),
+            telefono_publico: !!box.querySelector('.m-telpub')?.checked,
+            servicios: nz(box.querySelector('.m-serv')?.value),
+            role: box.querySelector('.m-role')?.value || 'miembro',
+            last_seen: new Date().toISOString()
+          };
+
+          Object.keys(updates).forEach(k => { if (updates[k] === undefined) delete updates[k]; });
+
+          const { error } = await supabaseClient
+            .from('profiles')
+            .update(updates)
+            .eq('user_id', uid);
+
+          if (error) {
+            diag("Error admin editando miembro (profiles.update).", error);
+            statusEl.textContent = '❌ No se pudo guardar.';
+            return;
+          }
+
+          statusEl.textContent = '✅ Guardado';
+          await loadMembers(true);
+        };
       });
     }
 
@@ -1188,7 +1310,7 @@
 
         ch.on('presence', { event: 'sync' }, () => {
           ONLINE_SET = new Set(Object.keys(ch.presenceState()));
-          try { renderMembers(); } catch { }
+          try { if (IS_ADMIN) renderMembers(); } catch { }
         });
 
         ch.subscribe(async (status) => {
@@ -1507,7 +1629,7 @@
     }
 
     async function initVerification() {
-      if (!$("rsvpBox") || !$("eventBox")) return; // por seguridad
+      if (!$("rsvpBox") || !$("eventBox")) return;
 
       $("rsvpBox").style.display = CURRENT_USER ? 'block' : 'none';
       $("rsvpStatus").textContent = '';
