@@ -1,195 +1,438 @@
-<!doctype html>
-<html lang="es" dir="ltr">
+<!DOCTYPE html>
+<html lang="es">
 
 <head>
-  <!doctype html>
-  <html lang="es" dir="ltr">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Directorio – SInOS</title>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Directorio – SInOS | Innovación Sindical</title>
-    <meta name="description" content="Directorio actualizado del Comité Ejecutivo Seccional y órganos auxiliares." />
-    <link rel="stylesheet" href="theme.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <style>
+    :root {
+      /* --- PALETA SInOS --- */
+      --bg-body: #1b2e45;
+      --bg-body-end: #152336;
+      --panel-base: 46, 79, 119;
+
+      --primary: #4da1a8;
+      --primary-light: #7ad1d6;
+      --primary-dark: #3b8288;
+
+      --text-main: #f0fdfa;
+      --text-muted: #bce9eb;
+
+      --ring: rgba(77, 161, 168, .35);
+      --radius: 12px;
+
+      /* Glassmorphism */
+      --glass-bg: rgba(46, 79, 119, 0.35);
+      --glass-border: rgba(77, 161, 168, 0.25);
+      --glass-highlight: rgba(255, 255, 255, 0.05);
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100vh;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Fondo ambiental */
+    .ambient-bg {
+      position: fixed; inset: 0; z-index: -1;
+      background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%);
+    }
+    .ambient-bg::before {
+      content: ""; position: absolute; inset: 0; opacity: .06;
+      background-image: linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* --- LAYOUT --- */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 80px 20px 40px; /* Padding top para la barra fija */
+    }
+
+    /* --- TOPBAR --- */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px;
+      background: rgba(27, 46, 69, 0.85);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--ring);
+      z-index: 100;
+    }
+
+    .nav-btn {
+      background: transparent; border: none;
+      color: var(--primary-light); font-size: 24px;
+      cursor: pointer; display: flex; align-items: center;
+      padding: 8px; border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .nav-btn:hover { background: rgba(77, 161, 168, 0.15); }
+
+    .page-title {
+      font-size: 16px; font-weight: 600; color: var(--text-main);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* --- CONTROLES DE FILTRO --- */
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+      background: var(--glass-bg);
+      padding: 16px; border-radius: var(--radius);
+      border: 1px solid var(--ring);
+    }
+
+    @media(min-width: 600px) {
+      .controls { grid-template-columns: 2fr 1fr 1fr; }
+    }
+
+    .input-group { position: relative; display: flex; align-items: center; }
+    
+    .input-icon {
+      position: absolute; left: 12px;
+      color: var(--primary); font-size: 18px; pointer-events: none;
+    }
+
+    .form-control {
+      width: 100%;
+      background: rgba(21, 35, 54, 0.6);
+      border: 1px solid var(--ring);
+      color: var(--text-main);
+      padding: 10px 12px 10px 38px; /* Espacio para icono */
+      border-radius: 8px;
+      font-family: inherit; font-size: 14px;
+      outline: none; transition: all 0.2s;
+    }
+    
+    .select-control { padding-left: 12px; } /* Selects sin icono */
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(77, 161, 168, 0.2);
+    }
+    .form-control::placeholder { color: var(--text-muted); opacity: 0.6; }
+
+    /* --- GRID DE RESULTADOS --- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    /* --- TARJETA DE CONTACTO --- */
+    .card {
+      position: relative;
+      background: var(--glass-bg);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex; flex-direction: column; gap: 8px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+      background: rgba(var(--panel-base), 0.5);
+    }
+
+    /* Etiqueta de Categoría (Top Right) */
+    .tag-cat {
+      position: absolute; top: 16px; right: 16px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      color: var(--primary-light); opacity: 0.7;
+      border: 1px solid var(--ring); padding: 2px 6px; border-radius: 4px;
+    }
+
+    .card-role {
+      font-size: 12px; color: var(--primary);
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 2px; padding-right: 20px;
+    }
+
+    .card-name {
+      font-size: 16px; font-weight: 700; color: #fff;
+      line-height: 1.3;
+    }
+    
+    .vacant-name { color: var(--text-muted); font-style: italic; opacity: 0.6; }
+
+    /* Zona de Teléfonos */
+    .phones-list {
+      margin-top: 12px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+
+    .phone-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(0,0,0,0.2);
+      padding: 6px 6px 6px 12px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+    }
+
+    .phone-row:hover { border-color: var(--ring); }
+
+    .phone-number {
+      font-family: 'Inter', monospace; font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .actions { display: flex; gap: 6px; }
+
+    /* Botones de acción */
+    .btn-action {
+      border: none; border-radius: 6px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      height: 32px; width: 32px;
+      transition: all 0.2s;
+    }
+
+    .btn-call {
+      background: rgba(77, 161, 168, 0.2); color: var(--primary-light);
+    }
+    .btn-call:hover { background: var(--primary); color: #fff; }
+
+    .btn-copy {
+      background: transparent; color: var(--text-muted);
+      border: 1px solid var(--ring);
+    }
+    .btn-copy:hover { color: #fff; border-color: var(--text-muted); }
+
+    /* Estado vacío */
+    .empty-state {
+      text-align: center; padding: 40px;
+      color: var(--text-muted); font-style: italic;
+      grid-column: 1 / -1;
+    }
+
+    /* Tooltip simple para copiado */
+    .tooltip-active { color: #4ade80 !important; border-color: #4ade80 !important; }
+
+  </style>
+</head>
+
+<body>
+  <div class="ambient-bg"></div>
+
+  <header class="topbar">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button class="nav-btn" onclick="history.back()" title="Regresar">
+        <i class="ph-bold ph-arrow-left"></i>
+      </button>
+      <div class="page-title">
+        <i class="ph-duotone ph-address-book"></i> Directorio Seccional
+      </div>
     </div>
-    <p>SInOS – Comité Ejecutivo Seccional y órganos auxiliares (actualizado)</p>
-    </header>
+  </header>
 
-    <section class="controls" aria-label="Controles de filtrado y búsqueda">
-      <input id="q" class="input" type="search" placeholder="Buscar por nombre, cargo o área…" autocomplete="off" />
-      <select id="cat" class="select" aria-label="Filtrar por categoría">
-        <option value="__all__">Todas las categorías</option>
+  <main class="container">
+    
+    <section class="controls">
+      <div class="input-group">
+        <i class="ph-bold ph-magnifying-glass input-icon"></i>
+        <input id="q" class="form-control" type="search" placeholder="Buscar nombre, cargo..." autocomplete="off" />
+      </div>
+      
+      <select id="cat" class="form-control select-control">
+        <option value="__all__">Todas las áreas</option>
         <option value="Secretarías">Secretarías</option>
         <option value="Comisiones">Comisiones</option>
         <option value="Subcomisiones">Subcomisiones</option>
       </select>
-      <select id="sort" class="select" aria-label="Ordenar">
-        <option value="name-asc">Ordenar: Nombre (A–Z)</option>
-        <option value="name-desc">Ordenar: Nombre (Z–A)</option>
-        <option value="area-asc">Ordenar: Área (A–Z)</option>
+      
+      <select id="sort" class="form-control select-control">
+        <option value="area-asc">Orden: Cargo</option>
+        <option value="name-asc">Orden: A - Z</option>
+        <option value="name-desc">Orden: Z - A</option>
       </select>
     </section>
 
-    <section id="results" class="grid" role="list" aria-label="Resultados del directorio"></section>
-    <div id="empty" class="empty" hidden>No se encontraron coincidencias. Ajusta tu búsqueda o filtros.</div>
-
-    <footer>
-      <span>Tip: toca un número para llamar o usa “Copiar”.</span>
-    </footer>
+    <section id="results" class="grid"></section>
+    
+    <div id="empty" class="empty-state" hidden>
+      <i class="ph-duotone ph-ghost" style="font-size:32px; display:block; margin:0 auto 10px;"></i>
+      No se encontraron coincidencias.
     </div>
 
-    <script>
-      // === Datos 2025 actualizados (fuente oficial del PDF)
-      // Categorías: Secretarías, Comisiones, Subcomisiones
-      const DATA = [
-        // ===== Secretarías =====
-        { n: "Amin Uriel Morales Sánchez", r: "Secretario del Interior y Propaganda", a: "Secretarías", p: ["4431170131"] },
-        { n: "Arturo Ochoa Huácuz", r: "Secretario de Conflictos", a: "Secretarías", p: ["4434338099"] },
-        { n: "Carlos Alberto Guerrero Rascón", r: "Secretario de Trabajo", a: "Secretarías", p: ["4432161426"] },
-        { n: "Azucena Herrera Martínez", r: "Secretario Tesorero", a: "Secretarías", p: ["4434092036"] },
-        { n: "Ignacio Agustín Orozco Pérez", r: "Secretario del Exterior", a: "Secretarías", p: ["4431113945"] },
-        { n: "Laura Ramírez Huitzacua", r: "Secretario de Previsión Social", a: "Secretarías", p: ["4521360480"] },
-        { n: "Gabriela Durán Negrete", r: "Secretaria de Acción Femenil", a: "Secretarías", p: ["4431707957"] },
-        { n: "Horacio Peña Alfaro", r: "Secretario de Asuntos Técnicos", a: "Secretarías", p: ["4433692053"] },
-        { n: "César Augusto Contreras Flores", r: "Secretario de Actas y Acuerdos", a: "Secretarías", p: ["4435714140"] },
-        { n: "Yolanda Morelos Palomares", r: "Secretario de Prensa", a: "Secretarías", p: ["5612247437"] },
-        { n: "Luz Nayelly Esquivel Martínez", r: "Secretario de Puestos Periféricos", a: "Secretarías", p: ["4432244711"] },
-        { n: "Cecilio Vanegas Villalobos", r: "Secretario de Admisión y Cambios", a: "Secretarías", p: ["4436864553"] },
-        { n: "América Hilda Reyes Reyes", r: "Secretario de Capacitación y Adiestramiento", a: "Secretarías", p: ["4433884114"] },
-        { n: "Carlos Mojica Rodríguez", r: "Secretario de Calidad y Modernización", a: "Secretarías", p: ["4431970073"] },
+  </main>
 
-        // ===== Comisiones =====
-        { n: "José Francisco Ruiz Domínguez", r: "Presidente – Comisión de Honor y Justicia", a: "Comisiones", p: ["4432219389"] },
-        { n: "Irene Guadalupe Velázquez Ochoa", r: "1er. Secretario – Comisión de Honor y Justicia", a: "Comisiones", p: ["3515005115"] },
-        { n: "VACANTE", r: "2do. Secretario – Comisión de Honor y Justicia", a: "Comisiones", p: [] },
+  <script>
+    // === Datos Oficiales 2025 ===
+    const DATA = [
+      // ===== Secretarías =====
+      { n: "Amin Uriel Morales Sánchez", r: "Secretario del Interior y Propaganda", a: "Secretarías", p: ["4431170131"] },
+      { n: "Arturo Ochoa Huácuz", r: "Secretario de Conflictos", a: "Secretarías", p: ["4434338099"] },
+      { n: "Carlos Alberto Guerrero Rascón", r: "Secretario de Trabajo", a: "Secretarías", p: ["4432161426"] },
+      { n: "Azucena Herrera Martínez", r: "Secretario Tesorero", a: "Secretarías", p: ["4434092036"] },
+      { n: "Ignacio Agustín Orozco Pérez", r: "Secretario del Exterior", a: "Secretarías", p: ["4431113945"] },
+      { n: "Laura Ramírez Huitzacua", r: "Secretario de Previsión Social", a: "Secretarías", p: ["4521360480"] },
+      { n: "Gabriela Durán Negrete", r: "Secretaria de Acción Femenil", a: "Secretarías", p: ["4431707957"] },
+      { n: "Horacio Peña Alfaro", r: "Secretario de Asuntos Técnicos", a: "Secretarías", p: ["4433692053"] },
+      { n: "César Augusto Contreras Flores", r: "Secretario de Actas y Acuerdos", a: "Secretarías", p: ["4435714140"] },
+      { n: "Yolanda Morelos Palomares", r: "Secretario de Prensa", a: "Secretarías", p: ["5612247437"] },
+      { n: "Luz Nayelly Esquivel Martínez", r: "Secretario de Puestos Periféricos", a: "Secretarías", p: ["4432244711"] },
+      { n: "Cecilio Vanegas Villalobos", r: "Secretario de Admisión y Cambios", a: "Secretarías", p: ["4436864553"] },
+      { n: "América Hilda Reyes Reyes", r: "Secretario de Capacitación y Adiestramiento", a: "Secretarías", p: ["4433884114"] },
+      { n: "Carlos Mojica Rodríguez", r: "Secretario de Calidad y Modernización", a: "Secretarías", p: ["4431970073"] },
 
-        { n: "Fabiola Farías Ambriz", r: "Presidente – Comisión de Hacienda", a: "Comisiones", p: ["4432260054"] },
-        { n: "María Guadalupe Chávez León", r: "1er. Secretario – Comisión de Hacienda", a: "Comisiones", p: ["7531372842"] },
-        { n: "María del Rocío Vera Padilla", r: "2do. Secretario – Comisión de Hacienda", a: "Comisiones", p: ["7531101489"] },
+      // ===== Comisiones =====
+      { n: "José Francisco Ruiz Domínguez", r: "Pte. Honor y Justicia", a: "Comisiones", p: ["4432219389"] },
+      { n: "Irene Guadalupe Velázquez Ochoa", r: "1er. Srio. Honor y Justicia", a: "Comisiones", p: ["3515005115"] },
+      { n: "VACANTE", r: "2do. Srio. Honor y Justicia", a: "Comisiones", p: [] },
+      { n: "Fabiola Farías Ambriz", r: "Pte. Hacienda", a: "Comisiones", p: ["4432260054"] },
+      { n: "María Guadalupe Chávez León", r: "1er. Srio. Hacienda", a: "Comisiones", p: ["7531372842"] },
+      { n: "María del Rocío Vera Padilla", r: "2do. Srio. Hacienda", a: "Comisiones", p: ["7531101489"] },
+      { n: "VACANTE", r: "Pte. Vigilancia", a: "Comisiones", p: [] },
+      { n: "Eduardo Bolaños Vázquez", r: "1er. Srio. Vigilancia", a: "Comisiones", p: ["5628504227"] },
+      { n: "Oscar Emerson Solís Gómez", r: "2do. Srio. Vigilancia", a: "Comisiones", p: ["7151432381"] },
+      { n: "Reyes Ortiz Roberto Carlos", r: "Pte. Deportes", a: "Comisiones", p: ["4431402564"] },
+      { n: "Ricardo Pérez Guzmán", r: "1er. Srio. Deportes", a: "Comisiones", p: ["3511092381"] },
+      { n: "Omar Bello Pineda", r: "2do. Srio. Deportes", a: "Comisiones", p: ["7531059473"] },
+      { n: "Gerardo Ordaz Salazar", r: "Pte. Seg. Social", a: "Comisiones", p: ["3321063345"] },
+      { n: "Iván Adalid Hurtado Tafolla", r: "1er. Srio. Seg. Social", a: "Comisiones", p: ["4521547921"] },
+      { n: "Marco Antonio Velázquez Núñez", r: "2do. Srio. Seg. Social", a: "Comisiones", p: ["3515130984"] },
+      { n: "Irving Cruz Guerrero Castro", r: "Pte. Acción Política", a: "Comisiones", p: ["4432214635"] },
+      { n: "Lucía Martínez Sandoval", r: "1er. Srio. Acción Política", a: "Comisiones", p: ["4521141446"] },
+      { n: "Néstor Norberto Sánchez Alonso", r: "2do. Srio. Acción Política", a: "Comisiones", p: ["4521122746"] },
+      { n: "Luis Fernando García Cervantes", r: "Comisión de Revisión de Plantilla", a: "Comisiones", p: ["4431611676"] },
 
-        { n: "VACANTE", r: "Presidente – Comisión de Vigilancia", a: "Comisiones", p: [] },
-        { n: "Eduardo Bolaños Vázquez", r: "1er. Secretario – Comisión de Vigilancia", a: "Comisiones", p: ["5628504227"] },
-        { n: "Oscar Emerson Solís Gómez", r: "2do. Secretario – Comisión de Vigilancia", a: "Comisiones", p: ["7151432381"] },
+      // ===== Subcomisiones =====
+      { n: "Jorge Héctor Zaragoza Palacios", r: "Subcom. Mixta de Becas", a: "Subcomisiones", p: ["4432027953"] },
+      { n: "Uriel Tapia Pérez", r: "Subcom. Mixta Bolsa de Trabajo", a: "Subcomisiones", p: ["4436966907"] },
+      { n: "Cándido Mora Alcauter", r: "Subcom. Mixta Puestos Confianza “B”", a: "Subcomisiones", p: ["4438399098"] },
+      { n: "Juan Onofre Báez", r: "Subcom. Mixta Capacitación", a: "Subcomisiones", p: ["4433570725", "4434426018"] },
+      { n: "Araceli Barajas Flores", r: "Aux. Subcom. Capacitación", a: "Subcomisiones", p: ["3511075379"] },
+      { n: "Betsabé Hernández Flores", r: "Subcom. Mixta Seg. e Higiene", a: "Subcomisiones", p: ["4431586796"] },
+      { n: "Ruiz Aguilar Carmen Lizeth", r: "Aux. Subcom. Seg. e Higiene", a: "Subcomisiones", p: ["4434973554"] },
+      { n: "Sergio Ortiz Martínez", r: "Aux. Subcom. Seg. e Higiene", a: "Subcomisiones", p: ["3315845837"] },
+      { n: "Juan Carlos Servín Juárez", r: "Subcom. Mixta Disciplinaria", a: "Subcomisiones", p: ["4431360280"] },
+      { n: "Hilda Ontiveros Cuéllar", r: "Subcom. Mixta Escalafón", a: "Subcomisiones", p: ["4434245283"] },
+      { n: "VACANTE", r: "Subcom. Mixta Protección al Salario", a: "Subcomisiones", p: [] },
+      { n: "José Antonio Carrillo Bejarano", r: "Subcom. Mixta Pasajes", a: "Subcomisiones", p: ["4431390301"] },
+      { n: "Julio César García Salgado", r: "Subcom. Mixta Ropa de Trabajo", a: "Subcomisiones", p: ["4434092778"] },
+      { n: "Gilberto Herrejón González", r: "Subcom. Mixta Cambios de Rama", a: "Subcomisiones", p: ["4432416481"] },
+      { n: "Humberto Guerrero Linares", r: "Subcom. Mixta Tiendas", a: "Subcomisiones", p: ["4431398483"] },
+      { n: "Maricela Navarrete Mora", r: "Subcom. Mixta Jubilaciones", a: "Subcomisiones", p: ["4431220909"] },
+    ];
 
-        { n: "Reyes Ortiz Roberto Carlos", r: "Presidente – Comisión de Deportes", a: "Comisiones", p: ["4431402564"] },
-        { n: "Ricardo Pérez Guzmán", r: "1er. Secretario – Comisión de Deportes", a: "Comisiones", p: ["3511092381"] },
-        { n: "Omar Bello Pineda", r: "2do. Secretario – Comisión de Deportes", a: "Comisiones", p: ["7531059473"] },
+    const $results = document.getElementById('results');
+    const $empty = document.getElementById('empty');
+    const $q = document.getElementById('q');
+    const $cat = document.getElementById('cat');
+    const $sort = document.getElementById('sort');
 
-        { n: "Gerardo Ordaz Salazar", r: "Presidente – Comisión de Fomento a la Seguridad Social", a: "Comisiones", p: ["3321063345"] },
-        { n: "Iván Adalid Hurtado Tafolla", r: "1er. Secretario – Comisión de Fomento a la Seguridad Social", a: "Comisiones", p: ["4521547921"] },
-        { n: "Marco Antonio Velázquez Núñez", r: "2do. Secretario – Comisión de Fomento a la Seguridad Social", a: "Comisiones", p: ["3515130984"] },
+    function telFmt(num) {
+      const s = (num || "").replace(/\D/g, "");
+      if (s.length === 10) return `${s.slice(0, 3)} ${s.slice(3, 6)} ${s.slice(6)}`;
+      return num;
+    }
 
-        { n: "Irving Cruz Guerrero Castro", r: "Presidente – Comisión de Acción Política", a: "Comisiones", p: ["4432214635"] },
-        { n: "Lucía Martínez Sandoval", r: "1er. Secretario – Comisión de Acción Política", a: "Comisiones", p: ["4521141446"] },
-        { n: "Néstor Norberto Sánchez Alonso", r: "2do. Secretario – Comisión de Acción Política", a: "Comisiones", p: ["4521122746"] },
+    function render(list) {
+      $results.innerHTML = '';
+      if (!list.length) { $empty.hidden = false; return; }
+      $empty.hidden = true;
 
-        { n: "Luis Fernando García Cervantes", r: "Comisión de Revisión de Plantilla", a: "Comisiones", p: ["4431611676"] },
-
-        // ===== Subcomisiones / Representaciones =====
-        { n: "Jorge Héctor Zaragoza Palacios", r: "Representante ante la Subcomisión Mixta de Becas", a: "Subcomisiones", p: ["4432027953"] },
-        { n: "Uriel Tapia Pérez", r: "Representante ante la Subcomisión Mixta de Bolsa de Trabajo", a: "Subcomisiones", p: ["4436966907"] },
-        { n: "Cándido Mora Alcauter", r: "Representante ante la Subcomisión Mixta de Calif. y Selec. de Puestos de Confianza “B”", a: "Subcomisiones", p: ["4438399098"] },
-        { n: "Juan Onofre Báez", r: "Representante ante la Subcomisión Mixta de Capacitación y Adiestramiento", a: "Subcomisiones", p: ["4433570725", "4434426018"] },
-        { n: "Araceli Barajas Flores", r: "Auxiliar ante la Subcomisión Mixta de Capacitación y Adiestramiento", a: "Subcomisiones", p: ["3511075379"] },
-        { n: "Betsabé Hernández Flores", r: "Representante ante la Subcomisión Mixta de Seguridad e Higiene", a: "Subcomisiones", p: ["4431586796"] },
-        { n: "Ruiz Aguilar Carmen Lizeth", r: "Auxiliar ante la Subcomisión Mixta de Seguridad e Higiene", a: "Subcomisiones", p: ["4434973554"] },
-        { n: "Sergio Ortiz Martínez", r: "Auxiliar ante la Subcomisión Mixta de Seguridad e Higiene", a: "Subcomisiones", p: ["3315845837"] },
-        { n: "Juan Carlos Servín Juárez", r: "Representante ante la Subcomisión Mixta Disciplinaria", a: "Subcomisiones", p: ["4431360280"] },
-        { n: "Hilda Ontiveros Cuéllar", r: "Representante ante la Subcomisión Mixta de Escalafón", a: "Subcomisiones", p: ["4434245283"] },
-        { n: "VACANTE", r: "Representante ante la Subcomisión Mixta Paritaria de Protección al Salario", a: "Subcomisiones", p: [] },
-        { n: "José Antonio Carrillo Bejarano", r: "Representante ante la Subcomisión Mixta de Pasajes", a: "Subcomisiones", p: ["4431390301"] },
-        { n: "Julio César García Salgado", r: "Representante ante la Subcomisión Mixta de Ropa de Trabajo y Uniformes", a: "Subcomisiones", p: ["4434092778"] },
-        { n: "Gilberto Herrejón González", r: "Representante ante la Subcomisión Mixta de Selección de Recursos Humanos para Cambios de Rama", a: "Subcomisiones", p: ["4432416481"] },
-        { n: "Humberto Guerrero Linares", r: "Representante ante la Subcomisión Mixta de Tiendas", a: "Subcomisiones", p: ["4431398483"] },
-        { n: "Maricela Navarrete Mora", r: "Representante ante la Subcomisión Mixta de Jubilaciones y Pensiones", a: "Subcomisiones", p: ["4431220909"] },
-      ];
-
-      const $results = document.getElementById('results');
-      const $empty = document.getElementById('empty');
-      const $q = document.getElementById('q');
-      const $cat = document.getElementById('cat');
-      const $sort = document.getElementById('sort');
-
-      function telFmt(num) {
-        const s = (num || "").replace(/\D/g, "");
-        if (s.length === 10) return `(${s.slice(0, 3)}) ${s.slice(3, 6)} ${s.slice(6)}`;
-        return num;
-      }
-
-      function phonePills(nums) {
-        if (!nums || !nums.length) return `<span class="vacant" title="Sin teléfono">Sin teléfono</span>`;
-        return nums.map(n => `
-        <span class="pill" title="Llamar a ${n}">
-          <span class="dot" aria-hidden="true"></span>
-          <a href="tel:${n}" aria-label="Llamar">${telFmt(n)}</a>
-        </span>
-      `).join('');
-      }
-
-      function render(list) {
-        $results.innerHTML = '';
-        if (!list.length) { $empty.hidden = false; return; }
-        $empty.hidden = true;
-        for (const item of list) {
-          const isVacant = item.n.toUpperCase?.().includes('VACANTE');
-          const card = document.createElement('article');
-          card.className = 'card'; card.setAttribute('role', 'listitem');
-          card.innerHTML = `
-          <div class="role">${item.a}</div>
-          <div class="name">${isVacant ? `<span class="vacant">VACANTE</span>` : item.n}</div>
-          <p class="area">${item.r}</p>
-          <div class="phones">${phonePills(item.p)}</div>
-          <div class="actions">
-            ${(item.p || []).map(n => `<button class="btn" data-copy="${n}">Copiar</button>`).join('')}
-          </div>
-        `;
-          $results.appendChild(card);
+      for (const item of list) {
+        const isVacant = item.n.toUpperCase?.().includes('VACANTE');
+        
+        // Crear Tarjeta
+        const card = document.createElement('article');
+        card.className = 'card';
+        
+        // HTML interno de la tarjeta
+        let phonesHtml = '';
+        if(item.p && item.p.length > 0) {
+          phonesHtml = item.p.map(n => `
+            <div class="phone-row">
+              <span class="phone-number">${telFmt(n)}</span>
+              <div class="actions">
+                <a href="tel:${n}" class="btn-action btn-call" title="Llamar">
+                  <i class="ph-bold ph-phone"></i>
+                </a>
+                <button class="btn-action btn-copy" data-copy="${n}" title="Copiar">
+                  <i class="ph-bold ph-copy"></i>
+                </button>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          phonesHtml = '<div style="font-size:12px; color:var(--text-muted); opacity:0.5; font-style:italic">Sin contacto directo</div>';
         }
-        // bind copy
-        $results.querySelectorAll('button[data-copy]').forEach(b => {
-          b.onclick = async () => {
-            try {
-              await navigator.clipboard.writeText(b.dataset.copy);
-              b.textContent = "Copiado ✓";
-              setTimeout(() => b.textContent = "Copiar", 1400);
-            } catch { alert("No se pudo copiar"); }
-          };
-        });
+
+        card.innerHTML = `
+          <div class="tag-cat">${item.a}</div>
+          <div class="card-role">${item.r}</div>
+          <div class="card-name ${isVacant ? 'vacant-name' : ''}">${item.n}</div>
+          <div class="phones-list">${phonesHtml}</div>
+        `;
+        $results.appendChild(card);
       }
 
-      function apply() {
-        const term = $q.value.trim().toLowerCase();
-        const cat = $cat.value;
-        const srt = $sort.value;
-        let out = DATA.filter(x => {
-          const matchesText = !term || [x.n, x.r, x.a].join(' ').toLowerCase().includes(term);
-          const matchesCat = (cat === '__all__') || x.a === cat;
-          return matchesText && matchesCat;
-        });
-        out.sort((a, b) => {
-          if (srt === "name-asc") return a.n.localeCompare(b.n, 'es');
-          if (srt === "name-desc") return b.n.localeCompare(a.n, 'es');
-          if (srt === "area-asc") {
-            const k = (z) => `${z.a} ${z.n}`;
-            return k(a).localeCompare(k(b), 'es');
-          }
-          return 0;
-        });
-        render(out);
-      }
+      // Activar botones de copiar
+      $results.querySelectorAll('button[data-copy]').forEach(b => {
+        b.onclick = async () => {
+          try {
+            await navigator.clipboard.writeText(b.dataset.copy);
+            const originalIcon = b.innerHTML;
+            b.innerHTML = '<i class="ph-bold ph-check"></i>';
+            b.classList.add('tooltip-active');
+            setTimeout(() => {
+              b.innerHTML = originalIcon;
+              b.classList.remove('tooltip-active');
+            }, 1500);
+          } catch { alert("Error al copiar"); }
+        };
+      });
+    }
 
-      // Inputs
-      $q.addEventListener('input', apply);
-      $cat.addEventListener('change', apply);
-      $sort.addEventListener('change', apply);
+    function apply() {
+      const term = $q.value.trim().toLowerCase();
+      const cat = $cat.value;
+      const srt = $sort.value;
 
-      // Inicial
-      apply();
+      let out = DATA.filter(x => {
+        const matchesText = !term || [x.n, x.r, x.a].join(' ').toLowerCase().includes(term);
+        const matchesCat = (cat === '__all__') || x.a === cat;
+        return matchesText && matchesCat;
+      });
 
-      // Navigation
-      document.getElementById("btnBack")?.addEventListener("click", () => history.back());
-      document.getElementById("btnHome")?.addEventListener("click", () => location.href = "index.html");
-    </script>
-    </body>
+      out.sort((a, b) => {
+        if (srt === "name-asc") return a.n.localeCompare(b.n, 'es');
+        if (srt === "name-desc") return b.n.localeCompare(a.n, 'es');
+        if (srt === "area-asc") {
+          // Ordenar primero por área, luego por jerarquía implícita (opcional)
+          return a.r.localeCompare(b.r, 'es');
+        }
+        return 0;
+      });
 
-  </html>
+      render(out);
+    }
+
+    $q.addEventListener('input', apply);
+    $cat.addEventListener('change', apply);
+    $sort.addEventListener('change', apply);
+
+    // Inicializar
+    apply();
+  </script>
+</body>
+</html>
