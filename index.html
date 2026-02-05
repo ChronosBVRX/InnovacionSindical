@@ -15,7 +15,6 @@
 
   <style>
     :root {
-      /* --- PALETA ORIGINAL PROYECTO AZUL --- */
       --bg-body: #1b2e45;
       --bg-body-end: #152336;
       --panel-base: 46, 79, 119;
@@ -24,13 +23,9 @@
       --text-main: #f0fdfa;
       --text-muted: #bce9eb;
       --ring: rgba(77, 161, 168, .35);
-
-      /* --- VARIABLES DE SISTEMA --- */
       --topbar: 64px;
       --radius: 16px;
       --glass-bg: rgba(var(--panel-base), 0.35);
-      --glass-border: rgba(77, 161, 168, 0.2);
-      --glass-highlight: rgba(255, 255, 255, 0.05);
     }
 
     html, body {
@@ -62,13 +57,11 @@
     }
 
     .boot-content { text-align: center; position: relative; width: 100%; max-width: 400px; }
-
     .logo-boot {
       width: 100px; height: 100px; margin: 0 auto 24px;
       border-radius: 22px; background: rgba(var(--panel-base), 0.5);
       border: 1px solid var(--ring); overflow: hidden;
       box-shadow: 0 0 30px rgba(77, 161, 168, 0.2);
-      animation: logoReveal 1s ease-out forwards;
     }
     .logo-boot img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -93,7 +86,6 @@
     .boot .bar span {
       display: block; height: 100%; width: 0%;
       background: linear-gradient(90deg, var(--primary), var(--primary-light));
-      box-shadow: 0 0 10px var(--primary);
       animation: fillProgress 4s ease-in-out forwards;
     }
 
@@ -112,10 +104,8 @@
       overflow: hidden; display: grid; place-items: center;
     }
     .mark img { width: 100%; height: 100%; object-fit: cover; }
-
     .title { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 16px; }
     .title span { color: var(--primary-light); }
-
     .clock {
       font-size: 13px; color: var(--text-muted);
       background: rgba(var(--panel-base), 0.4);
@@ -131,13 +121,11 @@
       justify-content: space-between; margin-bottom: 32px; padding-bottom: 20px;
       border-bottom: 1px solid var(--ring);
     }
-
     .brand h1 { margin: 0; font-size: 28px; font-weight: 700; color: var(--text-main); }
     .text-gradient {
       background: linear-gradient(to right, var(--primary-light), var(--text-main));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-
     .badge {
       background: rgba(77, 161, 168, .15); border: 1px solid var(--ring);
       color: var(--primary-light); padding: 6px 14px; border-radius: 8px;
@@ -145,21 +133,17 @@
     }
 
     .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-
     .tile {
       position: relative; display: flex; flex-direction: column; min-height: 180px;
       padding: 24px; cursor: pointer; background: var(--glass-bg);
       backdrop-filter: blur(8px); border: 1px solid var(--ring); border-radius: var(--radius);
       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); overflow: hidden;
     }
-
     .tile:hover {
       transform: translateY(-4px); border-color: var(--primary);
       background: rgba(var(--panel-base), 0.6); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
     }
-
     .tile-icon-integrated { font-size: 48px; color: var(--primary-light); margin-bottom: 16px; }
-
     .badge-ia {
       position: absolute; top: 14px; right: 14px;
       background: linear-gradient(135deg, var(--primary), var(--primary-light));
@@ -170,18 +154,26 @@
     /* --- APP VIEW --- */
     .app-wrap { max-width: 1200px; margin: 0 auto; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; }
     .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--ring); padding-bottom: 16px;}
-    .app-body { flex: 1; background: rgba(21, 35, 54, 0.6); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative;}
+    .app-body { flex: 1; background: rgba(21, 35, 54, 0.4); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative;}
     .iframe { width: 100%; height: 100%; border: none; }
     .hide { opacity: 0; pointer-events: none; }
     
-    /* ESTILOS ESPECIFICOS FACEBOOK FEED */
+    /* --- MEJORA: FACEBOOK FEED FULL WIDTH --- */
     .fb-feed-container {
-      display: flex; justify-content: center; padding: 20px; 
-      height: 100%; overflow-y: auto; background: rgba(0,0,0,0.1);
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: block; /* Cambio de flex a block para mejor renderizado */
+      background: rgba(0,0,0,0.1);
     }
+    
+    /* Forzamos al plugin a ignorar sus anchos internos fijos */
     .fb-page, .fb-page span, .fb-page iframe {
+      width: 100% !important;
+      min-width: 100% !important;
       border-radius: 12px !important;
-      filter: brightness(0.9) contrast(1.05); /* Mejor integración con modo oscuro */
+      filter: brightness(0.9) contrast(1.05);
     }
 
     .btn {
@@ -190,7 +182,6 @@
       cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px;
     }
 
-    /* ANIMATIONS */
     @keyframes logoReveal { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
     @keyframes slideKeywords {
       0%, 15% { transform: translateY(0); }
@@ -228,15 +219,12 @@
         </div>
       </div>
       <div class="bar"><span></span></div>
-      <div id="boot-tips" style="margin-top:20px; font-size:10px; opacity:0.5; letter-spacing:1px; text-transform:uppercase;">Iniciando Módulos</div>
     </div>
   </div>
 
   <div class="topbar" id="topbar">
     <div class="title">
-      <div class="mark">
-        <img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" alt="" />
-      </div>
+      <div class="mark"><img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" /></div>
       <div><span>Plataforma</span> Sindical CG</div>
     </div>
     <div class="clock" id="clock">--:--</div>
@@ -279,8 +267,8 @@
 
   <script>
     const APPS = [
-      { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-brain', href: 'https://trascendencia-sindical-7t85.onrender.com/', quick: true, ia: true },
-      { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-newspaper-clipping', type: 'internal' },
+      { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-brain', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true },
+      { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-newspaper-clipping' },
       { id: 'agenda', title: 'Red Sindical', desc: 'Agenda y eventos sindicales.', iconClass: 'ph-duotone ph-calendar-dots', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html' },
       { id: 'denuncias', title: 'Gestor de Escritos', desc: 'Redacción asistida por IA.', iconClass: 'ph-duotone ph-signature', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
       { id: 'directorio', title: 'Directorio', desc: 'Contactos y delegados.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
@@ -290,19 +278,13 @@
     const SInOS = {
       init() {
         this.renderTiles();
-        const firstTime = !localStorage.getItem('sinos:bootedV4');
-        const delay = firstTime ? 4500 : 1500;
-
-        setTimeout(() => this.hideBoot(), delay);
+        setTimeout(() => this.hideBoot(), 1500);
         this.tickClock(); setInterval(() => this.tickClock(), 1000);
       },
-
       tickClock() {
         document.getElementById('clock').textContent = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
       },
-
       hideBoot() {
-        localStorage.setItem('sinos:bootedV4', '1');
         document.getElementById('boot').style.opacity = '0';
         setTimeout(() => document.getElementById('boot').style.display = 'none', 800);
         document.getElementById('home').classList.remove('hide');
@@ -311,9 +293,7 @@
           t.classList.add('tile-enter');
         });
       },
-
       skipBoot() { this.hideBoot(); },
-
       renderTiles() {
         const wrap = document.getElementById('tiles');
         APPS.forEach(a => {
@@ -328,13 +308,10 @@
           wrap.appendChild(b);
         });
       },
-
       openApp(id) {
         const app = APPS.find(x => x.id === id);
         document.getElementById('home').classList.add('hide');
-        const appSection = document.getElementById('app');
-        appSection.classList.remove('hide');
-        
+        document.getElementById('app').classList.remove('hide');
         document.getElementById('app-title').textContent = app.title;
         document.getElementById('app-desc').textContent = app.desc;
         document.getElementById('app-ic').innerHTML = `<i class="${app.iconClass}"></i>`;
@@ -343,17 +320,15 @@
         const int = document.getElementById('app-internal');
         
         if (app.id === 'noticias') {
-          // Lógica especial para el SDK de Facebook
           ifr.style.display = 'none';
           int.style.display = 'block';
+          // MEJORA: Eliminamos data-width fijo y usamos data-adapt-container-width
           int.innerHTML = `
-            <div class="fb-feed-container">
+            <div class="fb-feed-container" id="fb-wrapper">
               <div class="fb-page" 
                 data-href="https://www.facebook.com/profile.php?id=100063446307036" 
                 data-tabs="timeline" 
-                data-width="500" 
-                data-height="800" 
-                data-small-header="true" 
+                data-small-header="false" 
                 data-adapt-container-width="true" 
                 data-hide-cover="false" 
                 data-show-facepile="true">
@@ -363,7 +338,6 @@
               </div>
             </div>`;
           
-          // Reinicializar el plugin de Facebook para que se renderice
           if (window.FB) {
             FB.XFBML.parse(int);
           }
@@ -371,18 +345,13 @@
           ifr.style.display = 'block'; ifr.src = app.iframe; int.style.display = 'none';
         } else {
           ifr.style.display = 'none'; int.style.display = 'block';
-          int.innerHTML = `<div style="padding:40px; text-align:center;">Contenido de ${app.title} en desarrollo...</div>`;
+          int.innerHTML = `<div style="padding:40px; text-align:center;">Módulo ${app.title} listo.</div>`;
         }
       },
-
       goHome() {
         document.getElementById('app').classList.add('hide');
         document.getElementById('home').classList.remove('hide');
-        // Limpiar contenido interno al salir para ahorrar memoria
-        document.getElementById('app-internal').innerHTML = '';
-        document.getElementById('app-iframe').src = '';
       },
-
       closeApp() { this.goHome(); }
     };
 
