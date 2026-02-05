@@ -53,7 +53,7 @@
       background-size: 40px 40px;
     }
 
-    /* --- NUEVA INTRO PREMIUM (BOOT SCREEN) --- */
+    /* --- BOOT SCREEN --- */
     .boot {
       position: fixed; inset: 0; display: flex; align-items: center; 
       justify-content: center; flex-direction: column; z-index: 100;
@@ -78,15 +78,8 @@
     }
     .boot h1 span { color: var(--primary-light); text-shadow: 0 0 15px var(--primary); }
 
-    /* Keyword Slider */
-    .keyword-slider {
-      height: 24px; overflow: hidden; margin-top: 15px;
-      position: relative;
-    }
-    .keyword-slider .inner {
-      display: flex; flex-direction: column;
-      animation: slideKeywords 6s infinite;
-    }
+    .keyword-slider { height: 24px; overflow: hidden; margin-top: 15px; position: relative; }
+    .keyword-slider .inner { display: flex; flex-direction: column; animation: slideKeywords 6s infinite; }
     .keyword {
       height: 24px; font-size: 13px; color: var(--primary-light);
       text-transform: uppercase; letter-spacing: 3px; font-weight: 500;
@@ -174,7 +167,30 @@
       border-radius: 999px; text-transform: uppercase;
     }
 
-    /* --- ANIMATIONS --- */
+    /* --- APP VIEW --- */
+    .app-wrap { max-width: 1200px; margin: 0 auto; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; }
+    .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--ring); padding-bottom: 16px;}
+    .app-body { flex: 1; background: rgba(21, 35, 54, 0.6); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative;}
+    .iframe { width: 100%; height: 100%; border: none; }
+    .hide { opacity: 0; pointer-events: none; }
+    
+    /* ESTILOS ESPECIFICOS FACEBOOK FEED */
+    .fb-feed-container {
+      display: flex; justify-content: center; padding: 20px; 
+      height: 100%; overflow-y: auto; background: rgba(0,0,0,0.1);
+    }
+    .fb-page, .fb-page span, .fb-page iframe {
+      border-radius: 12px !important;
+      filter: brightness(0.9) contrast(1.05); /* Mejor integración con modo oscuro */
+    }
+
+    .btn {
+      background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring);
+      color: var(--primary); padding: 8px 18px; border-radius: 8px;
+      cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px;
+    }
+
+    /* ANIMATIONS */
     @keyframes logoReveal { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
     @keyframes slideKeywords {
       0%, 15% { transform: translateY(0); }
@@ -187,24 +203,13 @@
     @keyframes fillProgress { to { width: 100%; } }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .tile-enter { animation: fadeUp 0.5s ease forwards; opacity: 0; }
-
-    /* --- APP VIEW --- */
-    .app-wrap { max-width: 1200px; margin: 0 auto; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; }
-    .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--ring); padding-bottom: 16px;}
-    .app-body { flex: 1; background: rgba(21, 35, 54, 0.6); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative;}
-    .iframe { width: 100%; height: 100%; border: none; }
-    .hide { opacity: 0; pointer-events: none; }
-    .show { opacity: 1; transition: opacity 0.4s ease; }
-    
-    .btn {
-      background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring);
-      color: var(--primary); padding: 8px 18px; border-radius: 8px;
-      cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px;
-    }
   </style>
 </head>
 
 <body>
+  <div id="fb-root"></div>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v24.0"></script>
+
   <div class="ambient-bg"></div>
 
   <div id="boot" class="boot" onclick="SInOS.skipBoot()">
@@ -327,7 +332,9 @@
       openApp(id) {
         const app = APPS.find(x => x.id === id);
         document.getElementById('home').classList.add('hide');
-        document.getElementById('app').classList.remove('hide');
+        const appSection = document.getElementById('app');
+        appSection.classList.remove('hide');
+        
         document.getElementById('app-title').textContent = app.title;
         document.getElementById('app-desc').textContent = app.desc;
         document.getElementById('app-ic').innerHTML = `<i class="${app.iconClass}"></i>`;
@@ -335,17 +342,45 @@
         const ifr = document.getElementById('app-iframe');
         const int = document.getElementById('app-internal');
         
-        if (app.iframe) {
+        if (app.id === 'noticias') {
+          // Lógica especial para el SDK de Facebook
+          ifr.style.display = 'none';
+          int.style.display = 'block';
+          int.innerHTML = `
+            <div class="fb-feed-container">
+              <div class="fb-page" 
+                data-href="https://www.facebook.com/profile.php?id=100063446307036" 
+                data-tabs="timeline" 
+                data-width="500" 
+                data-height="800" 
+                data-small-header="true" 
+                data-adapt-container-width="true" 
+                data-hide-cover="false" 
+                data-show-facepile="true">
+                <blockquote cite="https://www.facebook.com/profile.php?id=100063446307036" class="fb-xfbml-parse-ignore">
+                  <a href="https://www.facebook.com/profile.php?id=100063446307036">Cargando noticias...</a>
+                </blockquote>
+              </div>
+            </div>`;
+          
+          // Reinicializar el plugin de Facebook para que se renderice
+          if (window.FB) {
+            FB.XFBML.parse(int);
+          }
+        } else if (app.iframe) {
           ifr.style.display = 'block'; ifr.src = app.iframe; int.style.display = 'none';
         } else {
           ifr.style.display = 'none'; int.style.display = 'block';
-          int.innerHTML = `<div style="padding:40px; text-align:center;">Cargando contenido interno para ${app.title}...</div>`;
+          int.innerHTML = `<div style="padding:40px; text-align:center;">Contenido de ${app.title} en desarrollo...</div>`;
         }
       },
 
       goHome() {
         document.getElementById('app').classList.add('hide');
         document.getElementById('home').classList.remove('hide');
+        // Limpiar contenido interno al salir para ahorrar memoria
+        document.getElementById('app-internal').innerHTML = '';
+        document.getElementById('app-iframe').src = '';
       },
 
       closeApp() { this.goHome(); }
