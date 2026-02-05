@@ -115,13 +115,6 @@
     }
     .tile:hover { transform: translateY(-4px); border-color: var(--primary); background: rgba(var(--panel-base), 0.6); }
     .tile-icon-integrated { font-size: 48px; color: var(--primary-light); margin-bottom: 16px; }
-    
-    .badge-ia {
-      position: absolute; top: 14px; right: 14px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: #0b1f2a; font-size: 10px; font-weight: 800; padding: 5px 10px;
-      border-radius: 999px; text-transform: uppercase;
-    }
 
     /* --- APP VIEW --- */
     .app-wrap { max-width: 1200px; margin: 0 auto; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; }
@@ -136,6 +129,7 @@
       background: rgba(0,0,0,0.1); display: block;
     }
     
+    /* Forzamos que el iframe de Facebook use el 100% real del panel */
     .fb-page, .fb-page span, .fb-page iframe {
       width: 100% !important;
       min-width: 100% !important;
@@ -183,7 +177,7 @@
       <section class="brand">
         <div>
           <h1>Bienvenido, <span class="text-gradient">Compañero</span></h1>
-          <p>Panel de Control y Gestión Sindical.</p>
+          <p>Noticias y Gestión Sindical.</p>
         </div>
         <div class="badge">SNTSS Secc. XX</div>
       </section>
@@ -214,14 +208,11 @@
   </section>
 
   <script>
-    // LISTA COMPLETA DE SECCIONES RESTAURADA
     const APPS = [
-      { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-brain', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-newspaper-clipping' },
-      { id: 'agenda', title: 'Red Sindical', desc: 'Agenda y eventos sindicales.', iconClass: 'ph-duotone ph-calendar-dots', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html' },
-      { id: 'denuncias', title: 'Gestor de Escritos', desc: 'Redacción asistida por IA.', iconClass: 'ph-duotone ph-signature', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
-      { id: 'directorio', title: 'Directorio', desc: 'Contactos y delegados.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
-      { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de derechos.', iconClass: 'ph-duotone ph-calculator', iframe: 'prestaciones.html' }
+      { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-brain', href: 'https://trascendencia-sindical-7t85.onrender.com/' },
+      { id: 'agenda', title: 'Red Sindical', desc: 'Agenda y eventos.', iconClass: 'ph-duotone ph-calendar-dots', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html' },
+      { id: 'directorio', title: 'Directorio', desc: 'Contactos y delegados.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' }
     ];
 
     const SInOS = {
@@ -244,19 +235,15 @@
       skipBoot() { this.hideBoot(); },
       renderTiles() {
         const wrap = document.getElementById('tiles');
-        wrap.innerHTML = '';
         APPS.forEach(a => {
           const b = document.createElement('div');
           b.className = 'tile';
           b.onclick = () => (a.href && !a.iframe) ? window.open(a.href, '_blank') : this.openApp(a.id);
-          b.innerHTML = `
-            ${a.ia ? '<div class="badge-ia">IA</div>' : ''}
-            <i class="${a.iconClass} tile-icon-integrated"></i>
-            <h3>${a.title}</h3>
-            <p>${a.desc}</p>`;
+          b.innerHTML = `<i class="${a.iconClass} tile-icon-integrated"></i><h3>${a.title}</h3><p>${a.desc}</p>`;
           wrap.appendChild(b);
         });
       },
+      // MÉTODO PARA RE-RENDERIZAR FACEBOOK AL CAMBIAR TAMAÑO
       setupResizeHandler() {
         let timeout;
         window.addEventListener('resize', () => {
@@ -266,7 +253,7 @@
                 document.getElementById('app-title').textContent === 'Noticias') {
               this.renderFacebook();
             }
-          }, 400);
+          }, 500); // Espera a que termine de redimensionar
         });
       },
       renderFacebook() {
@@ -304,14 +291,13 @@
           ifr.style.display = 'block'; ifr.src = app.iframe; int.style.display = 'none';
         } else {
           ifr.style.display = 'none'; int.style.display = 'block';
-          int.innerHTML = `<div style="padding:40px; text-align:center;">Módulo ${app.title} en carga interna...</div>`;
+          int.innerHTML = `<div style="padding:40px; text-align:center;">Módulo en desarrollo.</div>`;
         }
       },
       goHome() {
         document.getElementById('app').classList.add('hide');
         document.getElementById('home').classList.remove('hide');
-      },
-      closeApp() { this.goHome(); }
+      }
     };
     document.addEventListener('DOMContentLoaded', () => SInOS.init());
   </script>
