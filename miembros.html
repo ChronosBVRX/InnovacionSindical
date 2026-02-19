@@ -459,6 +459,55 @@
       font-size: 12px;
       white-space: pre-wrap;
     }
+
+    /* ESTILOS NUEVOS PARA ESCALAFÓN */
+    .escalafon-promo {
+      margin-top: 16px;
+      padding: 12px;
+      border: 1px dashed var(--sky);
+      border-radius: 12px;
+      background: rgba(122, 209, 214, 0.05);
+    }
+
+    .blur-box {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .blur-text {
+      filter: blur(5px);
+      user-select: none;
+      font-size: 13px;
+    }
+
+    .promo-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(27, 46, 69, 0.85);
+      text-align: center;
+      padding: 5px;
+    }
+
+    .promo-overlay p {
+      font-weight: 700;
+      font-size: 13px;
+      color: #fff;
+      line-height: 1.3;
+    }
+
+    .promo-overlay span {
+      color: var(--sky);
+    }
   </style>
 </head>
 
@@ -481,7 +530,6 @@
       <button class="tab" data-tab="foro">🗣️ Foro</button>
       <button class="tab" data-tab="videollamadas">📞 Videollamadas</button>
       <button class="tab" data-tab="biblioteca">📚 Biblioteca</button>
-      <!-- ✅ Verificación QUITADA del menú (ahora está integrada en Perfil) -->
       <button class="tab" data-tab="scanner" id="tabScanner" style="display:none">🔎 Scanner</button>
       <button class="tab" data-tab="personaliza">⚙️ Personaliza tu perfil</button>
     </nav>
@@ -508,6 +556,21 @@
                   <p><strong>Adscripción:</strong> <span id="pfAdscripcion">—</span></p>
                   <p style="margin-top:8px"><strong>Servicios / habilidades:</strong></p>
                   <p id="pfServicios" class="muted">—</p>
+
+                  <div class="escalafon-promo">
+                    <p class="meta"><strong>Estatus de Trámites y Escalafón:</strong></p>
+                    <p class="meta" style="font-size: 11px; margin-bottom: 4px;">Si tienes cambio de rama, ampliación de jornada, cambio de adscripción o turno, aquí aparecerá tu lugar:</p>
+                    <div class="blur-box">
+                      <div class="blur-text">
+                        Lugar en escalafón: #12 de 145 solicitudes<br>
+                        Trámite: Cambio de adscripción - HGR1<br>
+                        Estatus: En revisión por subcomisión
+                      </div>
+                      <div class="promo-overlay">
+                        <p>A partir del 16 de abril, <br><span>vota por la planilla azul</span> <br>para hacerlo realidad</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -542,7 +605,6 @@
               <div id="miniTopList" style="margin-top:10px;display:grid;gap:8px"></div>
             </div>
 
-            <!-- ✅ INTEGRADO EN PERFIL: Próximo QR de verificación -->
             <div class="card" id="perfilQRCard" style="margin-top:12px; background:#233b5c; animation:fadeInSmall .2s ease">
               <h3>✅ Próximo QR de verificación</h3>
               <p class="muted" style="margin-top:6px">
@@ -577,8 +639,7 @@
                 </div>
               </div>
             </div>
-            <!-- /QR -->
-          </div>
+            </div>
 
           <aside class="perfil-extra">
             <div class="perfil-extra-card">
@@ -1878,6 +1939,7 @@
     async function loadMiniTopPerfil() {
       const meta = document.getElementById('miniTopMeta');
       const box = document.getElementById('miniTopList');
+      if (!meta || !box) return;
       meta.textContent = 'Cargando…'; box.innerHTML = '';
 
       const currentSeason = seasonOf(new Date());
