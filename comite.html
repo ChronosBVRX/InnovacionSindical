@@ -4,181 +4,221 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Nuevo Comité Seccional – Planilla Azul</title>
+  <title>Planilla Azul – Nuestro Equipo</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <style>
     :root {
-      /* --- PALETA SInOS --- */
-      --bg-body: #1b2e45;
-      --bg-body-end: #152336;
-      --panel-base: 46, 79, 119;
-      --primary: #4da1a8;
-      --primary-light: #7ad1d6;
-      --primary-dark: #3b8288;
-      --text-main: #f0fdfa;
-      --text-muted: #bce9eb;
-      --ring: rgba(77, 161, 168, .35);
-      --radius: 12px;
+      /* --- PALETA PLANILLA AZUL / SInOS --- */
+      --bg-body: #111d2b;
+      --bg-body-end: #0a141d;
+      --panel-base: 27, 46, 69;
+      
+      --primary: #3b82f6; /* Azul más vibrante para campaña */
+      --primary-light: #60a5fa;
+      --primary-cyan: #4da1a8;
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --ring: rgba(59, 130, 246, 0.35);
+      --radius: 16px;
 
       /* Glassmorphism */
-      --glass-bg: rgba(46, 79, 119, 0.35);
-      --glass-border: rgba(77, 161, 168, 0.25);
+      --glass-bg: rgba(27, 46, 69, 0.4);
+      --glass-border: rgba(96, 165, 250, 0.2);
     }
 
     html, body {
-      margin: 0;
-      min-height: 100vh;
-      background-color: var(--bg-body);
-      color: var(--text-main);
-      font-family: 'Inter', sans-serif;
-      -webkit-font-smoothing: antialiased;
+      margin: 0; min-height: 100vh;
+      background-color: var(--bg-body); color: var(--text-main);
+      font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased;
     }
 
-    /* Fondo ambiental */
+    /* Fondo ambiental premium */
     .ambient-bg {
       position: fixed; inset: 0; z-index: -1;
-      background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%);
+      background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 60%),
+                  linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%);
     }
     .ambient-bg::before {
-      content: ""; position: absolute; inset: 0; opacity: .06;
-      background-image: linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px);
-      background-size: 40px 40px;
+      content: ""; position: absolute; inset: 0; opacity: 0.04;
+      background-image: linear-gradient(to right, var(--primary-light) 1px, transparent 1px), linear-gradient(to bottom, var(--primary-light) 1px, transparent 1px);
+      background-size: 30px 30px;
     }
 
     .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 80px 20px 40px;
+      max-width: 1200px; margin: 0 auto; padding: 70px 20px 60px;
     }
 
     /* --- TOPBAR --- */
     .topbar {
-      position: fixed; top: 0; left: 0; right: 0;
-      height: 60px;
+      position: fixed; top: 0; left: 0; right: 0; height: 60px;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 20px;
-      background: rgba(27, 46, 69, 0.85);
+      padding: 0 20px; background: rgba(17, 29, 43, 0.85);
       backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--ring);
-      z-index: 100;
+      border-bottom: 1px solid var(--glass-border); z-index: 100;
     }
 
     .nav-btn {
-      background: transparent; border: none;
-      color: var(--primary-light); font-size: 24px;
-      cursor: pointer; display: flex; align-items: center;
-      padding: 8px; border-radius: 8px;
+      background: transparent; border: none; color: var(--primary-light); font-size: 24px;
+      cursor: pointer; display: flex; align-items: center; padding: 8px; border-radius: 8px;
       transition: background 0.2s;
     }
-    .nav-btn:hover { background: rgba(77, 161, 168, 0.15); }
+    .nav-btn:hover { background: rgba(59, 130, 246, 0.15); }
 
-    .page-title {
-      font-size: 16px; font-weight: 600; color: var(--text-main);
-      display: flex; align-items: center; gap: 8px;
+    .badge-campana {
+      background: linear-gradient(135deg, var(--primary), #2563eb);
+      color: white; font-size: 11px; font-weight: 700; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 999px; letter-spacing: 1px;
+    }
+
+    /* --- HERO CAMPAÑA --- */
+    .hero {
+      text-align: center; padding: 40px 0 30px;
+      animation: fadeUp 0.8s ease forwards;
+    }
+    .hero h1 {
+      font-size: 36px; font-weight: 800; margin: 0 0 10px 0;
+      background: linear-gradient(to right, #60a5fa, #f8fafc);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .hero p {
+      font-size: 16px; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.5;
+    }
+    
+    @media(max-width: 600px) { .hero h1 { font-size: 28px; } }
+
+    /* --- CONTROLES DE BÚSQUEDA --- */
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+      margin-bottom: 40px;
+    }
+    .input-group {
+      position: relative; flex: 1; min-width: 250px; max-width: 400px;
+    }
+    .input-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--primary-light); font-size: 18px; pointer-events: none;
+    }
+    .form-control {
+      width: 100%; background: var(--glass-bg); border: 1px solid var(--glass-border);
+      color: var(--text-main); padding: 12px 14px 12px 40px; border-radius: 12px;
+      font-family: inherit; font-size: 14px; outline: none; transition: all 0.3s;
+      box-sizing: border-box; backdrop-filter: blur(8px);
+    }
+    .form-control:focus {
+      border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+    .form-control::placeholder { color: var(--text-muted); opacity: 0.7; }
+    
+    .select-control {
+      padding-left: 14px; flex: 0 1 auto; min-width: 200px;
     }
 
     /* --- ENCABEZADOS DE SECCIÓN --- */
     .section-title {
-      width: 100%;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--primary-light);
-      margin: 30px 0 15px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--glass-border);
-      grid-column: 1 / -1;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      width: 100%; font-size: 18px; font-weight: 800; color: var(--text-main);
+      margin: 40px 0 20px; padding-bottom: 10px;
+      border-bottom: 2px solid rgba(255,255,255,0.05); grid-column: 1 / -1;
+      display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 2px;
+    }
+    .section-title::before {
+      content: ''; display: block; width: 12px; height: 12px;
+      background: var(--primary); border-radius: 50%;
+      box-shadow: 0 0 10px var(--primary);
     }
 
-    /* --- GRID EN MOSAICO --- */
+    /* --- GRID Y TARJETAS --- */
     .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 24px;
     }
 
-    /* --- TARJETA DE PERFIL --- */
     .card {
-      position: relative;
-      background: var(--glass-bg);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius);
-      padding: 20px;
-      display: flex; flex-direction: column; align-items: center; text-align: center;
-      transition: transform 0.2s, border-color 0.2s, background 0.2s;
-      cursor: pointer;
-      overflow: hidden;
+      position: relative; background: var(--glass-bg); backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border); border-radius: var(--radius);
+      padding: 24px; display: flex; flex-direction: column; align-items: center; text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; overflow: hidden;
+    }
+
+    /* Brillo superior decorativo */
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      opacity: 0; transition: opacity 0.3s;
     }
 
     .card:hover {
-      transform: translateY(-3px);
-      border-color: var(--primary);
-      background: rgba(var(--panel-base), 0.5);
+      transform: translateY(-5px); border-color: var(--primary-light);
+      background: rgba(30, 58, 138, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.1);
     }
+    .card:hover::before { opacity: 1; }
 
     .tag-area {
-      position: absolute; top: 12px; right: 12px;
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      color: var(--primary-light); opacity: 0.7;
-      border: 1px solid var(--ring); padding: 2px 6px; border-radius: 4px;
+      position: absolute; top: 16px; right: 16px; font-size: 10px; font-weight: 800;
+      text-transform: uppercase; color: var(--text-main); background: rgba(255,255,255,0.1);
+      padding: 4px 8px; border-radius: 6px;
     }
 
     .card-photo {
-      width: 90px; height: 90px;
-      border-radius: 50%;
-      background: rgba(21, 35, 54, 0.6);
-      border: 2px solid var(--primary);
+      width: 100px; height: 100px; border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+      border: 2px solid var(--primary-light);
       display: flex; align-items: center; justify-content: center;
-      margin-bottom: 12px; margin-top: 10px;
-      overflow: hidden;
+      margin: 15px 0; overflow: hidden; box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
     }
     .card-photo img { width: 100%; height: 100%; object-fit: cover; }
-    .card-photo i { font-size: 40px; color: var(--text-muted); opacity: 0.5; }
+    .card-photo i { font-size: 40px; color: var(--primary-light); opacity: 0.6; }
 
     .card-role {
-      font-size: 13px; color: var(--primary-light);
-      font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-      margin-bottom: 8px; line-height: 1.3;
+      font-size: 14px; color: var(--primary-light); font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; line-height: 1.3;
     }
 
     .card-name {
-      font-size: 18px; font-weight: 700; color: #fff;
-      line-height: 1.2; margin-bottom: 4px;
+      font-size: 19px; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 6px;
     }
-    .vacant-text { color: var(--text-muted); font-style: italic; opacity: 0.6; font-weight: 400; }
+    .vacant-text { color: var(--text-muted); font-style: italic; opacity: 0.5; font-weight: 500; }
 
     .card-details {
-      font-size: 12px; color: var(--text-muted);
-      display: flex; flex-direction: column; gap: 4px;
-      margin-bottom: 12px;
+      font-size: 13px; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px;
     }
-    .card-details span { display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .card-details span { display: flex; align-items: center; justify-content: center; gap: 6px; }
 
-    .expand-icon {
-      margin-top: auto; color: var(--primary); font-size: 20px;
-      transition: transform 0.3s ease;
+    .action-text {
+      margin-top: auto; font-size: 12px; font-weight: 600; color: var(--primary);
+      display: flex; align-items: center; gap: 6px; background: rgba(59, 130, 246, 0.1);
+      padding: 6px 12px; border-radius: 20px; transition: all 0.3s;
     }
+    .card:hover .action-text { background: var(--primary); color: white; }
+    .action-text i { transition: transform 0.3s; }
 
     /* --- DESCRIPCIÓN ACORDEÓN --- */
     .card-description {
-      max-height: 0; opacity: 0; overflow: hidden;
-      transition: all 0.3s ease; font-size: 12px;
-      color: var(--text-muted); line-height: 1.5; text-align: left;
-      border-top: 1px solid transparent; margin-top: 0; padding-top: 0;
+      max-height: 0; opacity: 0; overflow: hidden; transition: all 0.4s ease;
+      font-size: 13px; color: var(--text-muted); line-height: 1.6; text-align: left;
+      margin-top: 0; padding-top: 0; border-top: 1px solid transparent; width: 100%;
     }
 
     .card.active .card-description {
-      max-height: 250px; opacity: 1; border-top-color: var(--glass-border);
-      margin-top: 12px; padding-top: 12px;
+      max-height: 300px; opacity: 1; margin-top: 16px; padding-top: 16px;
+      border-top-color: var(--glass-border);
     }
-    .card.active .expand-icon { transform: rotate(180deg); }
+    .card.active .action-text i { transform: rotate(180deg); }
 
+    /* Empty State */
+    .empty-state {
+      grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-muted);
+    }
+    .empty-state i { font-size: 48px; margin-bottom: 15px; opacity: 0.5; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 
@@ -190,18 +230,37 @@
       <button class="nav-btn" onclick="history.back()" title="Regresar">
         <i class="ph-bold ph-arrow-left"></i>
       </button>
-      <div class="page-title">
-        <i class="ph-duotone ph-users-three"></i> Planilla Azul - Estructura Seccional
+      <div class="badge-campana">
+        <i class="ph-bold ph-check-circle" style="margin-right: 4px;"></i> Proyecto Azul
       </div>
     </div>
   </header>
 
   <main class="container">
+    
+    <section class="hero">
+      <h1>Conoce a tu Nuevo Comité</h1>
+      <p>Un equipo transparente y preparado para defender los derechos de la Sección XX Michoacán. Selecciona una cartera para verificar sus funciones.</p>
+    </section>
+
+    <section class="controls">
+      <div class="input-group">
+        <i class="ph-bold ph-magnifying-glass input-icon"></i>
+        <input id="searchInput" class="form-control" type="text" placeholder="Buscar cartera, función o nombre..." autocomplete="off">
+      </div>
+      <select id="areaFilter" class="form-control select-control">
+        <option value="Todas">Toda la Estructura</option>
+        <option value="Secretarios">Comité Ejecutivo (Secretarios)</option>
+        <option value="Comisiones">Comisiones Seccionales</option>
+        <option value="Subcomisiones Mixtas">Representantes Subcomisiones</option>
+      </select>
+    </section>
+
     <div id="results" class="grid"></div>
   </main>
 
   <script>
-    // === Datos Estructurados según organigrama Sección XX ===
+    // === Datos Estructurados (Estatutos SNTSS Sección XX) ===
     const DATA = [
       // --- SECRETARÍAS ---
       { area: "Secretarios", cartera: "Secretaría General", nombre: "", foto: "", categoria: "", unidad: "", desc: "Representar legal y socialmente al Sindicato en la Sección, presidir asambleas y vigilar el estricto cumplimiento de los Estatutos y del Contrato Colectivo de Trabajo." },
@@ -225,23 +284,18 @@
       { area: "Comisiones", cartera: "Presidente de Honor y Justicia", nombre: "", foto: "", categoria: "", unidad: "", desc: "Conocer, investigar y dictaminar sobre faltas de los miembros, velando por el mantenimiento de la dignidad y el honor de la Agrupación." },
       { area: "Comisiones", cartera: "1er. Secretario de Honor y Justicia", nombre: "", foto: "", categoria: "", unidad: "", desc: "Asistir a la presidencia en la investigación de faltas y en la formulación de dictámenes conforme a los Estatutos." },
       { area: "Comisiones", cartera: "2do. Secretario de Honor y Justicia", nombre: "", foto: "", categoria: "", unidad: "", desc: "Colaborar en el desahogo de diligencias y en el estudio de los expedientes turnados a la Comisión." },
-
       { area: "Comisiones", cartera: "Presidente de Vigilancia", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar que los funcionarios cumplan sus obligaciones estatutarias, fiscalizar operaciones económicas e intervenir en diferencias internas." },
       { area: "Comisiones", cartera: "1er. Secretario de Vigilancia", nombre: "", foto: "", categoria: "", unidad: "", desc: "Apoyar en la revisión de correspondencia y en la vigilancia del cumplimiento de los acuerdos de Asambleas." },
       { area: "Comisiones", cartera: "2do. Secretario de Vigilancia", nombre: "", foto: "", categoria: "", unidad: "", desc: "Colaborar en la supervisión de las funciones sindicales y en los procesos de conciliación entre agremiados." },
-
-      { area: "Comisiones", cartera: "Presidente de Fomento a la Seguridad Social", nombre: "", foto: "", categoria: "", unidad: "", desc: "Promover la inclusión de trabajadores no cubiertos por la Ley del Seguro Social y mantener relaciones con órganos superiores." },
-      { area: "Comisiones", cartera: "1er. Secretario de Fomento a la Seguridad Social", nombre: "", foto: "", categoria: "", unidad: "", desc: "Apoyar en la interlocución con autoridades para impulsar el respeto y la expansión de la Seguridad Social." },
-      { area: "Comisiones", cartera: "2do. Secretario de Fomento a la Seguridad Social", nombre: "", foto: "", categoria: "", unidad: "", desc: "Colaborar en el análisis y promoción de reformas o acciones que beneficien la cobertura del Instituto." },
-
+      { area: "Comisiones", cartera: "Presidente de Fomento a la Seg. Social", nombre: "", foto: "", categoria: "", unidad: "", desc: "Promover la inclusión de trabajadores no cubiertos por la Ley del Seguro Social y mantener relaciones con órganos superiores." },
+      { area: "Comisiones", cartera: "1er. Srio. de Fomento a la Seg. Social", nombre: "", foto: "", categoria: "", unidad: "", desc: "Apoyar en la interlocución con autoridades para impulsar el respeto y la expansión de la Seguridad Social." },
+      { area: "Comisiones", cartera: "2do. Srio. de Fomento a la Seg. Social", nombre: "", foto: "", categoria: "", unidad: "", desc: "Colaborar en el análisis y promoción de reformas o acciones que beneficien la cobertura del Instituto." },
       { area: "Comisiones", cartera: "Presidente de Hacienda", nombre: "", foto: "", categoria: "", unidad: "", desc: "Inspeccionar la administración de fondos, fiscalizar bienes del Sindicato y autorizar informes financieros del Secretario Tesorero." },
       { area: "Comisiones", cartera: "1er. Secretario de Hacienda", nombre: "", foto: "", categoria: "", unidad: "", desc: "Asistir en la inspección contable y en la revisión de erogaciones e inversiones del Sindicato." },
       { area: "Comisiones", cartera: "2do. Secretario de Hacienda", nombre: "", foto: "", categoria: "", unidad: "", desc: "Coadyuvar en la revisión de los cortes de caja y documentación financiera presentada por la Tesorería." },
-
       { area: "Comisiones", cartera: "Presidente de Deportes", nombre: "", foto: "", categoria: "", unidad: "", desc: "Fomentar el desarrollo físico de los miembros, elaborando proyectos deportivos y celebrando torneos y competencias." },
       { area: "Comisiones", cartera: "1er. Secretario de Deportes", nombre: "", foto: "", categoria: "", unidad: "", desc: "Asistir en la logística de eventos deportivos y en la preparación de contingentes para festivales." },
       { area: "Comisiones", cartera: "2do. Secretario de Deportes", nombre: "", foto: "", categoria: "", unidad: "", desc: "Colaborar en la promoción de actividades atléticas y en la organización de los equipos representativos." },
-
       { area: "Comisiones", cartera: "Presidente de Acción Política", nombre: "", foto: "", categoria: "", unidad: "", desc: "Encauzar la orientación política del Sindicato, organizando grupos de trabajadores para la defensa de las conquistas de la Seguridad Social." },
       { area: "Comisiones", cartera: "1er. Secretario de Acción Política", nombre: "", foto: "", categoria: "", unidad: "", desc: "Asistir en la planeación y vinculación con autoridades en los distintos niveles de gobierno." },
       { area: "Comisiones", cartera: "2do. Secretario de Acción Política", nombre: "", foto: "", categoria: "", unidad: "", desc: "Colaborar en las campañas de concientización y en las actividades político-electorales del Sindicato." },
@@ -251,7 +305,7 @@
       { area: "Subcomisiones Mixtas", cartera: "Rep. Bolsa de Trabajo", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar la correcta aplicación del reglamento en el registro e ingreso de nuevos candidatos institucionales." },
       { area: "Subcomisiones Mixtas", cartera: "Rep. Puestos de Confianza 'B'", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar y regular las condiciones y asignaciones de los trabajadores que ocupan puestos de confianza B." },
       { area: "Subcomisiones Mixtas", cartera: "Rep. Capacitación y Adiestramiento", nombre: "", foto: "", categoria: "", unidad: "", desc: "Supervisar bilateralmente el desarrollo y aplicación de los programas y cursos de capacitación continua." },
-      { area: "Subcomisiones Mixtas", cartera: "Auxiliar Capacitación y Adiestramiento", nombre: "", foto: "", categoria: "", unidad: "", desc: "Asistir en la supervisión, logística e impartición de los programas de capacitación en la sección." },
+      { area: "Subcomisiones Mixtas", cartera: "Aux. Capacitación y Adiestramiento", nombre: "", foto: "", categoria: "", unidad: "", desc: "Asistir en la supervisión, logística e impartición de los programas de capacitación en la sección." },
       { area: "Subcomisiones Mixtas", cartera: "Rep. Seguridad e Higiene", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar el estricto cumplimiento de las normas de prevención de riesgos, salud en el trabajo e instalaciones seguras." },
       { area: "Subcomisiones Mixtas", cartera: "Auxiliar Seguridad e Higiene (1)", nombre: "", foto: "", categoria: "", unidad: "", desc: "Apoyar en los recorridos, labores de inspección y dictámenes de cumplimiento normativo de seguridad e higiene." },
       { area: "Subcomisiones Mixtas", cartera: "Auxiliar Seguridad e Higiene (2)", nombre: "", foto: "", categoria: "", unidad: "", desc: "Apoyar en los recorridos, labores de inspección y dictámenes de cumplimiento normativo de seguridad e higiene." },
@@ -260,21 +314,34 @@
       { area: "Subcomisiones Mixtas", cartera: "Rep. Paritaria de Protección al Salario", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar las incidencias en nómina y proteger el salario de los trabajadores contra descuentos indebidos o errores." },
       { area: "Subcomisiones Mixtas", cartera: "Rep. Pasajes", nombre: "", foto: "", categoria: "", unidad: "", desc: "Supervisar la correcta asignación, trámite y pago de pasajes y viáticos a los trabajadores con derecho." },
       { area: "Subcomisiones Mixtas", cartera: "Rep. Ropa de Trabajo y Uniformes", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar la calidad, dotación completa y entrega oportuna de los uniformes y ropa de trabajo reglamentaria." },
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Selec. Recursos Humanos para Cambios de Rama", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar la transparencia en los procesos de selección y evaluación técnica para cambios de rama institucional." },
+      { area: "Subcomisiones Mixtas", cartera: "Rep. Selec. Recursos Humanos - Cambios de Rama", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar la transparencia en los procesos de selección y evaluación técnica para cambios de rama institucional." },
       { area: "Subcomisiones Mixtas", cartera: "Rep. Tiendas", nombre: "", foto: "", categoria: "", unidad: "", desc: "Supervisar el correcto funcionamiento, precios justos y abastecimiento de las tiendas del SNTSS/IMSS." },
       { area: "Subcomisiones Mixtas", cartera: "Rep. Jubilaciones y Pensiones", nombre: "", foto: "", categoria: "", unidad: "", desc: "Asistir y guiar a los trabajadores en el trámite oportuno y vigilancia de sus procesos y resoluciones jubilatorias." },
       { area: "Subcomisiones Mixtas", cartera: "Rep. Revisión de Plantillas", nombre: "", foto: "", categoria: "", unidad: "", desc: "Analizar, negociar y vigilar la adecuada cobertura de las plantillas de personal en todos los centros de trabajo." }
     ];
 
     const $results = document.getElementById('results');
+    const $search = document.getElementById('searchInput');
+    const $area = document.getElementById('areaFilter');
 
     function render(list) {
       $results.innerHTML = '';
+
+      if (list.length === 0) {
+        $results.innerHTML = `
+          <div class="empty-state">
+            <i class="ph-duotone ph-magnifying-glass-minus"></i>
+            <h3>No se encontraron resultados</h3>
+            <p>Intenta con otra palabra clave o selecciona "Toda la Estructura".</p>
+          </div>
+        `;
+        return;
+      }
       
       let currentArea = '';
 
       for (const item of list) {
-        // Separador de Áreas
+        // Generar Título de Sección de forma dinámica
         if (item.area !== currentArea) {
           const header = document.createElement('div');
           header.className = 'section-title';
@@ -283,18 +350,21 @@
           currentArea = item.area;
         }
 
-        const displayName = item.nombre.trim() !== "" ? item.nombre : "Por designar";
+        const displayName = item.nombre.trim() !== "" ? item.nombre : "Candidato por Definir";
         const isVacant = item.nombre.trim() === "";
-        const displayCat = item.categoria.trim() !== "" ? item.categoria : "Categoría pendiente";
-        const displayUnit = item.unidad.trim() !== "" ? item.unidad : "Unidad pendiente";
+        const displayCat = item.categoria.trim() !== "" ? item.categoria : "Pendiente";
+        const displayUnit = item.unidad.trim() !== "" ? item.unidad : "Pendiente";
+        
         const photoHtml = item.foto.trim() !== "" 
-          ? `<img src="${item.foto}" alt="Foto de ${displayName}">` 
+          ? `<img src="${item.foto}" alt="Foto">` 
           : `<i class="ph-duotone ph-user"></i>`;
 
         const card = document.createElement('article');
         card.className = 'card';
+        card.style.animation = `fadeUp 0.5s ease forwards`;
         
         card.innerHTML = `
+          <div class="tag-area">${item.area === 'Subcomisiones Mixtas' ? 'Subcomisión' : item.area.slice(0, -1)}</div>
           <div class="card-photo">${photoHtml}</div>
           <div class="card-role">${item.cartera}</div>
           <div class="card-name ${isVacant ? 'vacant-text' : ''}">${displayName}</div>
@@ -304,10 +374,13 @@
             <span><i class="ph-bold ph-hospital"></i> ${displayUnit}</span>
           </div>
 
-          <i class="ph-bold ph-caret-down expand-icon"></i>
+          <div class="action-text">
+            <span>Verificar Funciones</span>
+            <i class="ph-bold ph-caret-down"></i>
+          </div>
 
           <div class="card-description">
-            <strong>Función:</strong><br>
+            <strong style="color:var(--text-main);">Responsabilidad Estatutaria:</strong><br>
             ${item.desc}
           </div>
         `;
@@ -320,6 +393,28 @@
       }
     }
 
+    // Motor de Búsqueda y Filtrado
+    function applyFilters() {
+      const term = $search.value.trim().toLowerCase();
+      const area = $area.value;
+
+      const filtered = DATA.filter(item => {
+        const matchesText = !term || 
+          item.cartera.toLowerCase().includes(term) || 
+          item.desc.toLowerCase().includes(term) || 
+          item.nombre.toLowerCase().includes(term);
+        const matchesArea = area === "Todas" || item.area === area;
+        
+        return matchesText && matchesArea;
+      });
+
+      render(filtered);
+    }
+
+    $search.addEventListener('input', applyFilters);
+    $area.addEventListener('change', applyFilters);
+
+    // Render inicial
     render(DATA);
   </script>
 </body>
