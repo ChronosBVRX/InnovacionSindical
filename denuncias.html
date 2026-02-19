@@ -66,8 +66,7 @@
   }
 
   input:focus, select:focus, textarea:focus {
-    border-color: var(--primary); box-shadow: 0 0 0 3px var(--focus-ring);
-    background: rgba(30, 41, 59, 0.9); outline: none;
+    border-color: var(--primary); outline: none; background: rgba(30, 41, 59, 0.9);
   }
 
   textarea { min-height: 140px; resize: vertical; grid-column: 1/-1; line-height: 1.6; }
@@ -84,6 +83,7 @@
     border-radius: 50px; padding: 12px 24px; font-size: 14px;
     cursor: pointer; font-weight: 600; transition: all 0.2s ease;
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    text-decoration: none;
   }
 
   .btn.primary {
@@ -91,9 +91,9 @@
     border: none; color: #0f172a; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
   }
 
-  /* ===== MODAL & PREVIEW UNIVERSAL ===== */
+  /* MODAL Y PREVIEW */
   .modal {
-    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95);
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98);
     display: none; align-items: center; justify-content: center; z-index: 1000;
   }
   .modal.show { display: flex; }
@@ -108,14 +108,12 @@
     justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
   }
 
-  /* Contenedor de la hoja con Scroll */
   .modal-b {
     flex: 1; overflow: auto; padding: 40px 20px;
     display: flex; justify-content: center; align-items: flex-start;
     background: #334155;
   }
 
-  /* La Hoja: Siempre mide 816px (Tamaño Carta Real en 96 DPI) */
   .page.carta {
     width: 816px; height: 1056px; background: #fff; color: #111;
     box-shadow: 0 10px 40px rgba(0,0,0,0.5); flex-shrink: 0;
@@ -125,82 +123,126 @@
   .sheet {
     padding: 72px 64px; font-family: "Times New Roman", Times, serif;
     font-size: 12pt; line-height: 1.5; position: relative; height: 100%;
+    color: #000;
   }
 
   .sheet header { text-align: right; font-weight: bold; margin-bottom: 30px; }
-  .sheet .dest { font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
-  .sheet p { text-align: justify; margin-bottom: 15px; }
+  .sheet .dest { font-weight: bold; text-transform: uppercase; }
+  .sheet .cuerpo { text-align: justify; white-space: pre-wrap; margin-top: 20px; }
   .sheet .pie {
-    position: absolute; bottom: 72px; left: 64px; right: 64px;
-    text-align: center; font-weight: bold; border-top: 1px solid #eee; pt: 10px;
+    position: absolute; bottom: 80px; left: 64px; right: 64px;
+    text-align: center; font-weight: bold;
   }
 
   #status {
-    position: fixed; bottom: 20px; right: 20px; background: var(--primary);
-    color: #0f172a; padding: 10px 20px; border-radius: 8px; font-weight: bold;
-    transform: translateY(100px); transition: 0.3s; z-index: 2000;
+    position: fixed; bottom: 20px; right: 20px; background: #1e293b;
+    border-left: 4px solid var(--primary); color: #fff; padding: 12px 20px;
+    border-radius: 8px; transform: translateY(100px); transition: 0.3s; z-index: 2000;
   }
   #status.visible { transform: translateY(0); }
 
-  /* RESPONSIVE MÓVIL */
   @media (max-width: 768px) {
     form { grid-template-columns: 1fr; }
-    .wrap { padding: 15px; }
-    .card { padding: 20px; }
-    
-    /* Escalamos la hoja para que quepa en la pantalla del móvil sin deformarse */
-    .page.carta {
-      transform: scale(0.4); /* Valor base, el JS lo ajustará exacto */
-    }
+    .page.carta { transform: scale(0.4); } /* JS lo ajustará dinámicamente */
+    .modal-h .btn { flex: 1; padding: 8px; font-size: 11px; }
   }
 </style>
 </head>
 
 <body>
   <div class="wrap">
+    <div style="margin-bottom: 20px;">
+      <a class="btn" href="https://chronosbvrx.github.io/InnovacionSindical/">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Regresar al menú
+      </a>
+    </div>
+
     <div class="header-group">
       <h1>Asistente Generador de Escritos</h1>
-      <p class="muted">Formato formal sindical garantizado para PC y Móvil.</p>
+      <p class="muted">Redacta oficios profesionales con IA. Universal para PC y Móvil.</p>
     </div>
 
     <div class="card">
       <form id="fDenuncia">
         <div class="highlight-section">
-          <label>1. ¿A quién va dirigido?</label>
+          <label for="puestoCatalogo">1. ¿A quién va dirigido el escrito?</label>
           <select id="puestoCatalogo" required>
-            <option value="">— Selecciona —</option>
+            <option value="">— Selecciona la Secretaría o Comisión —</option>
             <optgroup label="Secretarías">
               <option value="Secretaría General|Dr. Juan Gerardo García González">Secretaría General</option>
+              <option value="Secretaría del Interior y Propaganda|M.N.F. Amin Uriel Morales Sánchez">Secretaría del Interior y Propaganda</option>
+              <option value="Secretaría de Conflictos|C.E. Arturo Ochoa Huacuz">Secretaría de Conflictos</option>
               <option value="Secretaría del Trabajo|M.N.F. Carlos Alberto Guerrero Rascón">Secretaría del Trabajo</option>
-              </optgroup>
+              <option value="Secretaría de Asuntos al Exterior|M.N.F. Ignacio Agustín Orozco Pérez">Secretaría de Asuntos al Exterior</option>
+              <option value="Tesorería|EST. Azucena Herrera Martínez">Tesorería</option>
+              <option value="Secretaría de Previsión Social|O.T. Laura Ramírez Huitzacua">Secretaría de Previsión Social</option>
+              <option value="Secretaría de Igualdad Sustantiva|M.F. Gabriela Durán Negrete">Secretaría de Igualdad Sustantiva</option>
+              <option value="Secretaría de Asuntos Técnicos|M.N.F. Horacio Peña Alfaro">Secretaría de Asuntos Técnicos</option>
+              <option value="Secretaría de Actas y Acuerdos|M.A. César Augusto Contreras Flores">Secretaría de Actas y Acuerdos</option>
+              <option value="Secretaría de Prensa|A.M. Yolanda Morelos Palomares">Secretaría de Prensa</option>
+              <option value="Secretaría de Puestos Periféricos|M.G. Luz Nayelly Esquivel Martínez">Secretaría de Puestos Periféricos</option>
+              <option value="Secretaría de Admisión y Cambios|J.G.E. Cecilio Vanegas Villalobos">Secretaría de Admisión y Cambios</option>
+              <option value="Secretaría de Capacitación y Adiestramiento|O.P. América Hilda Reyes Reyes">Secretaría de Capacitación y Adiestramiento</option>
+              <option value="Secretaría de Calidad y Modernización|M.N.F. Carlos Mojica Rodríguez">Secretaría de Calidad y Modernización</option>
+            </optgroup>
+            <optgroup label="Comisiones">
+              <option value="Comisión de Honor y Justicia — Presidencia|C.S.T. José Francisco Ruiz Domínguez">Honor y Justicia — Presidencia</option>
+              <option value="Comisión de Hacienda — Presidencia|A.M. Fabiola Farías Ambriz">Hacienda — Presidencia</option>
+              <option value="Comisión de Vigilancia — Presidencia|A.M. Imelda Reyes López">Vigilancia — Presidencia</option>
+            </optgroup>
+            <optgroup label="Subcomisiones Mixtas">
+              <option value="Subcomisión Mixta de Becas — Representación Sindical|M.F. Jorge Héctor Zaragoza Palacios">Becas</option>
+              <option value="Subcomisión Mixta de Bolsa de Trabajo — Representación Sindical|COORD. CONT. Uriel Tapia Pérez">Bolsa de Trabajo</option>
+              <option value="Subcomisión Mixta Disciplinaria — Representación Sindical|Cont. Juan Carlos Servín Juárez">Disciplinaria</option>
+              <option value="Subcomisión Mixta de Escalafón — Representación Sindical|E.G. Hilda Ontiveros Cuellar">Escalafón</option>
+              <option value="Subcomisión Mixta de Jubilaciones y Pensiones — Representación Sindical|E.G.C. Maricela Navarrete Mora">Jubilaciones y Pensiones</option>
+            </optgroup>
           </select>
         </div>
 
         <input type="hidden" id="cargo">
         <div>
-          <label>Nombre del titular</label>
-          <input id="destinatario" readonly placeholder="Automático...">
+          <label>Nombre del titular (Automático)</label>
+          <input id="destinatario" readonly placeholder="Se llena al elegir puesto...">
         </div>
         <div>
-          <label>Fecha</label>
+          <label>Fecha del escrito</label>
           <input id="fecha" type="date">
         </div>
+
+        <div class="grid-full"><hr style="border:0; border-top:1px solid var(--panel-border);"></div>
+
         <div>
           <label>Nombre del trabajador</label>
-          <input id="nombre" required>
+          <input id="nombre" required placeholder="Nombre completo">
         </div>
         <div>
           <label>Matrícula</label>
-          <input id="matricula" required inputmode="numeric">
+          <input id="matricula" required placeholder="Ej. 123456" inputmode="numeric">
+        </div>
+        <div>
+          <label>Categoría</label>
+          <input id="categoria" required placeholder="Ej. Enfermera General A">
+        </div>
+        <div>
+          <label>Adscripción</label>
+          <input id="lugar" placeholder="Ej. HGZ No. XX">
         </div>
         <div class="grid-full">
-          <label>Descripción de los hechos</label>
-          <textarea id="problematica" required placeholder="Escribe aquí los detalles..."></textarea>
+          <label>Ciudad / Municipio</label>
+          <input id="ciudad" placeholder="Ej. Lázaro Cárdenas, Michoacán" required>
         </div>
 
-        <div class="grid-full" style="display: flex; gap: 10px; justify-content: flex-end;">
+        <div class="grid-full">
+          <label>Descripción de los hechos (La IA redactará formalmente)</label>
+          <textarea id="problematica" required placeholder="Explica qué sucedió y qué solicitas..."></textarea>
+        </div>
+
+        <div class="grid-full" style="display: flex; gap: 12px; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
+          <span style="font-size: 12px; color: var(--text-muted);">Formato Carta garantizado.</span>
           <button type="button" class="btn" id="btnPreview">👁️ Vista Previa</button>
-          <button type="submit" class="btn primary">🚀 Generar PDF</button>
+          <button type="submit" class="btn primary">🚀 Generar Documento</button>
         </div>
       </form>
     </div>
@@ -211,17 +253,17 @@
   <div id="modal" class="modal">
     <div class="modal-card">
       <div class="modal-h">
-        <span style="color:white; font-weight:bold;">Vista Previa Profesional</span>
-        <div style="display:flex; gap:5px;">
+        <span style="color:white; font-weight:bold;">Vista Previa del Oficio</span>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" id="btnCopy">📋 Copiar</button>
           <button class="btn" id="btnDownload">⬇️ PDF</button>
           <button class="btn primary" id="btnPrint">🖨️ Imprimir</button>
-          <button class="btn" id="btnClose" style="background:#ef4444; border:none;">✖</button>
+          <button class="btn" id="btnClose" style="color:#ef4444; border-color:rgba(239,68,68,0.3);">✖</button>
         </div>
       </div>
       <div class="modal-b" id="modalBody">
         <div id="page" class="page carta">
-          <div id="sheet" class="sheet">
-            </div>
+          <div id="sheet" class="sheet"></div>
         </div>
       </div>
     </div>
@@ -233,134 +275,170 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const API_BASE = "https://sinos-api.onrender.com";
+      const FORM_KEY = 'sinos_denuncias_v1';
       const $ = s => document.querySelector(s);
-      
-      const showStatus = (msg) => {
+
+      const showStatus = (t) => {
         const s = $('#status');
-        s.textContent = msg;
+        s.textContent = t;
         s.classList.add('visible');
-        setTimeout(() => s.classList.remove('visible'), 3000);
+        setTimeout(() => s.classList.remove('visible'), 4000);
       };
 
-      // Ajuste de escala automático para móviles
+      // Ajuste de escala dinámico para móviles
       const ajustarEscala = () => {
-        const containerWidth = $('#modalBody').clientWidth - 40;
+        const modalB = $('#modalBody');
+        if (!modalB) return;
+        const availableWidth = modalB.clientWidth - 40;
         const sheetWidth = 816;
-        if (window.innerWidth < 850) {
-          const scale = containerWidth / sheetWidth;
-          $('#page').style.transform = `scale(${scale})`;
-          // Compensar el espacio vertical perdido por el escalado
-          $('#page').style.marginBottom = `-${1056 * (1 - scale)}px`;
-        } else {
-          $('#page').style.transform = 'scale(1)';
-          $('#page').style.marginBottom = '0';
-        }
+        const scale = availableWidth < sheetWidth ? availableWidth / sheetWidth : 1;
+        const page = $('#page');
+        page.style.transform = `scale(${scale})`;
+        page.style.marginBottom = availableWidth < sheetWidth ? `-${1056 * (1 - scale)}px` : "0";
       };
 
       window.addEventListener('resize', ajustarEscala);
 
-      // Lógica de llenado automático
+      // Cargar/Guardar datos locales
+      const saveLocal = () => {
+        const d = {
+          puesto: $('#puestoCatalogo').value,
+          dest: $('#destinatario').value,
+          cargo: $('#cargo').value,
+          fecha: $('#fecha').value,
+          nombre: $('#nombre').value,
+          mat: $('#matricula').value,
+          cat: $('#categoria').value,
+          lug: $('#lugar').value,
+          ciu: $('#ciudad').value,
+          prob: $('#problematica').value
+        };
+        localStorage.setItem(FORM_KEY, JSON.stringify(d));
+      };
+
+      const loadLocal = () => {
+        const raw = localStorage.getItem(FORM_KEY);
+        if (!raw) return;
+        const d = JSON.parse(raw);
+        $('#puestoCatalogo').value = d.puesto || '';
+        $('#destinatario').value = d.dest || '';
+        $('#cargo').value = d.cargo || '';
+        $('#fecha').value = d.fecha || new Date().toISOString().slice(0,10);
+        $('#nombre').value = d.nombre || '';
+        $('#matricula').value = d.mat || '';
+        $('#categoria').value = d.cat || '';
+        $('#lugar').value = d.lug || '';
+        $('#ciudad').value = d.ciu || '';
+        $('#problematica').value = d.prob || '';
+      };
+
       $('#puestoCatalogo').addEventListener('change', (e) => {
         const [cargo, nombre] = e.target.value.split('|');
         $('#cargo').value = cargo || '';
         $('#destinatario').value = nombre || '';
+        saveLocal();
       });
 
-      const getDatos = () => ({
-        ciudad: "Lázaro Cárdenas, Michoacán", // Puedes hacerlo campo si gustas
-        fecha: $('#fecha').value || new Date().toISOString().slice(0,10),
-        destinatario: $('#destinatario').value,
-        cargo: $('#cargo').value,
-        nombre: $('#nombre').value,
-        matricula: $('#matricula').value,
-        problematica: $('#problematica').value
-      });
+      $('form').addEventListener('input', saveLocal);
 
-      const buildHTML = (d, cuerpoIA) => {
-        const fechaTxt = new Date(d.fecha).toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
-        return `
-          <header>${d.ciudad}, a ${fechaTxt}</header>
-          <div class="dest">${d.destinatario}</div>
-          <div style="font-weight:bold; margin-bottom:15px;">${d.cargo}</div>
-          <div style="margin-bottom:20px;">Presente.</div>
-          <div class="cuerpo">${cuerpoIA.replace(/\n/g, '<br>')}</div>
-          <div class="pie">
-            ATENTAMENTE<br><br><br>
-            ${d.nombre}<br>
-            Matrícula: ${d.matricula}
-          </div>
-        `;
-      };
-
-      async function llamarIA(d) {
-        showStatus("🧠 Redactando con IA...");
+      async function redactarIA(prob) {
+        showStatus("🧠 Redactando escrito formal...");
         try {
           const res = await fetch(`${API_BASE}/escritor`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              tema: "Denuncia sindical formal",
-              hechos: [d.problematica],
-              extras: "Redacta de forma muy profesional, máximo 3 párrafos.",
+              tema: "Oficio sindical de hechos o denuncia",
+              hechos: [prob],
+              extras: "Tono formal, profesional, máximo 3 párrafos, incluye una despedida de respeto.",
               incluirDespedida: true
             })
           });
           const data = await res.json();
-          return data.cuerpo || "Error al generar contenido.";
+          return data.cuerpo || "No se pudo generar el texto.";
         } catch (e) {
-          return "Por medio de la presente, hago de su conocimiento los siguientes hechos: " + d.problematica;
+          return "Por medio de la presente, expongo ante usted los siguientes hechos: \n\n" + prob;
         }
       }
 
+      const generarContenido = (d, cuerpo) => {
+        const fLarga = new Date(d.fecha + 'T12:00:00').toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
+        return `
+          <header>${d.ciudad}, a ${fLarga}</header>
+          <div class="dest">${d.destinatario}</div>
+          <div style="font-weight:bold; margin-bottom:5px;">${d.cargo}</div>
+          <div>Presente.</div>
+          <div class="cuerpo">${cuerpo}</div>
+          <div class="pie">
+            ATENTAMENTE<br><br><br><br>
+            ${d.nombre}<br>
+            Matrícula: ${d.matricula}<br>
+            ${d.categoria}<br>
+            ${d.lugar}
+          </div>
+        `;
+      };
+
       $('#btnPreview').addEventListener('click', async () => {
-        const d = getDatos();
-        if(!d.problematica || !d.destinatario) return alert("Llena los campos básicos");
-        
-        const cuerpo = await llamarIA(d);
-        $('#sheet').innerHTML = buildHTML(d, cuerpo);
+        if (!$('form').checkValidity()) return alert("Por favor completa los campos obligatorios.");
+        const d = {
+          ciudad: $('#ciudad').value,
+          fecha: $('#fecha').value,
+          destinatario: $('#destinatario').value,
+          cargo: $('#cargo').value,
+          nombre: $('#nombre').value,
+          matricula: $('#matricula').value,
+          categoria: $('#categoria').value,
+          lugar: $('#lugar').value
+        };
+        const cuerpoIA = await redactarIA($('#problematica').value);
+        $('#sheet').innerHTML = generarContenido(d, cuerpoIA);
         $('#modal').classList.add('show');
         ajustarEscala();
       });
 
       $('#btnClose').addEventListener('click', () => $('#modal').classList.remove('show'));
 
-      // GENERACIÓN DE PDF PROFESIONAL (Cámara Oscura)
-      async function descargarPDF() {
-        showStatus("📄 Preparando PDF...");
+      async function crearPDF() {
+        showStatus("📄 Generando PDF...");
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ unit: 'pt', format: 'letter' });
         
-        // Creamos un clon oculto pero con tamaño real de PC para asegurar calidad
-        const printArea = $('#sheet').cloneNode(true);
-        printArea.style.width = "816px";
-        printArea.style.padding = "72px 64px";
-        printArea.style.background = "white";
-        printArea.style.position = "absolute";
-        printArea.style.left = "-9999px";
-        printArea.style.top = "0";
-        document.body.appendChild(printArea);
+        // Clon para renderizado limpio
+        const clone = $('#sheet').cloneNode(true);
+        clone.style.width = "816px";
+        clone.style.padding = "72px 64px";
+        clone.style.background = "white";
+        clone.style.position = "absolute";
+        clone.style.left = "-9999px";
+        document.body.appendChild(clone);
 
-        await doc.html(printArea, {
-          x: 0, y: 0,
-          width: 612, // Ancho en puntos de una hoja carta
-          windowWidth: 816 // Ancho virtual para el renderizado
+        await doc.html(clone, {
+          x: 0, y: 0, width: 612, windowWidth: 816
         });
 
-        doc.save(`Escrito_${$('#matricula').value}.pdf`);
-        document.body.removeChild(printArea);
-        showStatus("✅ ¡Descargado!");
+        doc.save(`Oficio_${$('#matricula').value}.pdf`);
+        document.body.removeChild(clone);
+        showStatus("✅ Descargado.");
       }
 
-      $('#btnDownload').addEventListener('click', descargarPDF);
-      $('#fDenuncia').addEventListener('submit', (e) => {
-        e.preventDefault();
-        descargarPDF();
+      $('#btnDownload').addEventListener('click', crearPDF);
+      $('#fDenuncia').addEventListener('submit', (e) => { e.preventDefault(); crearPDF(); });
+
+      $('#btnPrint').addEventListener('click', () => {
+        const originalTitle = document.title;
+        document.title = "Oficio_Sindical";
+        window.print();
+        document.title = originalTitle;
       });
 
-      $('#btnPrint').addEventListener('click', () => window.print());
-      
-      // Fecha por defecto
-      $('#fecha').value = new Date().toISOString().slice(0,10);
+      $('#btnCopy').addEventListener('click', () => {
+        navigator.clipboard.writeText($('#sheet').innerText);
+        showStatus("📋 Copiado al portapapeles.");
+      });
+
+      loadLocal();
+      if (!$('#fecha').value) $('#fecha').value = new Date().toISOString().slice(0,10);
     });
   </script>
 </body>
