@@ -81,7 +81,6 @@
     /* --- TILES (BOTONES) --- */
     .tiles { 
       display: grid; 
-      /* Por defecto (PC) usa auto-fill */
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
       gap: 20px; 
     }
@@ -93,6 +92,20 @@
     }
     .tile:hover { transform: translateY(-4px); border-color: var(--primary); background: rgba(var(--panel-base), 0.6); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25); }
     
+    /* ESTILO DESTACADO (RED SINDICAL) */
+    .tile.featured {
+      grid-column: span 2;
+      background: linear-gradient(135deg, rgba(77, 161, 168, 0.25), rgba(var(--panel-base), 0.5));
+      border: 1px solid var(--primary);
+      box-shadow: 0 0 20px rgba(77, 161, 168, 0.1);
+    }
+    .tile.featured:hover {
+        border-color: var(--primary-light);
+        box-shadow: 0 0 30px rgba(77, 161, 168, 0.3);
+    }
+    .tile.featured h3 { font-size: 22px; color: var(--primary-light); }
+    .tile.featured p { font-size: 14px; opacity: 0.9; max-width: 400px; }
+
     .tile-icon-integrated { font-size: 48px; color: var(--primary-light); margin-bottom: 16px; transition: transform 0.3s ease; }
     .tile:hover .tile-icon-integrated { transform: scale(1.1); color: var(--text-main); }
 
@@ -101,41 +114,32 @@
       color: #0b1f2a; font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 999px; text-transform: uppercase;
     }
 
-    /* --- MEDIA QUERY: MÓVIL (Compactar botones) --- */
+    /* --- MEDIA QUERY: MÓVIL --- */
     @media (max-width: 768px) {
-      .wrap { padding: 20px 16px; } /* Menos margen lateral */
+      .wrap { padding: 20px 16px; }
       .brand { margin-bottom: 20px; gap: 10px; }
       .brand h1 { font-size: 22px; }
       
       .tiles {
-        /* FORZAR 2 COLUMNAS EN MÓVIL */
         grid-template-columns: 1fr 1fr; 
         gap: 12px;
       }
       
-      .tile {
-        min-height: 120px; /* Tarjeta más bajita */
-        padding: 16px;     /* Menos relleno interno */
-      }
+      .tile { min-height: 120px; padding: 16px; }
+      .tile.featured { grid-column: span 2; min-height: 150px; }
       
-      .tile-icon-integrated {
-        font-size: 32px;   /* Icono más pequeño */
-        margin-bottom: 10px;
-      }
-      
+      .tile-icon-integrated { font-size: 32px; margin-bottom: 10px; }
       .tile h3 { font-size: 15px; margin: 0 0 4px 0; }
+      .tile.featured h3 { font-size: 18px; }
       .tile p { font-size: 11px; line-height: 1.3; }
       
-      .badge-ia {
-        top: 8px; right: 8px; padding: 3px 6px; font-size: 8px; /* Badge IA más discreto */
-      }
+      .badge-ia { top: 8px; right: 8px; padding: 3px 6px; font-size: 8px; }
     }
 
     /* --- APP VIEW --- */
     .app-wrap { max-width: 1200px; margin: 0 auto; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; }
     .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--ring); padding-bottom: 16px; }
     
-    /* Ajuste cabecera app en móvil */
     @media (max-width: 768px) {
       .app-wrap { padding: 12px; }
       .app-head { flex-direction: column; align-items: flex-start; gap: 12px; }
@@ -147,7 +151,6 @@
     .iframe { width: 100%; height: 100%; border: none; }
     .hide { display: none; }
 
-    /* --- FACEBOOK ADAPTATIVO --- */
     .fb-feed-container { width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; background: rgba(0,0,0,0.1); }
     .fb-page, .fb-page span, .fb-page iframe { width: 100% !important; min-width: 100% !important; border-radius: 12px !important; filter: brightness(0.9) contrast(1.1); }
 
@@ -227,7 +230,14 @@
     const APPS = [
       { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-brain', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-newspaper-clipping' },
-      { id: 'agenda', title: 'Red Sindical', desc: 'Agenda y eventos sindicales.', iconClass: 'ph-duotone ph-calendar-dots', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html' },
+      { 
+        id: 'agenda', 
+        title: 'Red Sindical', 
+        desc: 'Consulta tu lugar, ve la agenda, eventos sindicales, biblioteca y más...', 
+        iconClass: 'ph-duotone ph-users-four', 
+        href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html',
+        featured: true 
+      },
       { id: 'denuncias', title: 'Gestor de Escritos', desc: 'Redacción asistida por IA.', iconClass: 'ph-duotone ph-signature', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
       { id: 'directorio', title: 'Directorio', desc: 'Contactos y delegados.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
       { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de derechos.', iconClass: 'ph-duotone ph-calculator', iframe: 'prestaciones.html' }
@@ -253,7 +263,7 @@
         const wrap = document.getElementById('tiles');
         APPS.forEach(a => {
           const b = document.createElement('div');
-          b.className = 'tile';
+          b.className = `tile ${a.featured ? 'featured' : ''}`;
           b.onclick = () => (a.href && !a.iframe) ? window.open(a.href, '_blank') : this.openApp(a.id);
           b.innerHTML = `${a.ia ? '<div class="badge-ia"><i class="ph-bold ph-sparkle"></i> IA</div>' : ''}<i class="${a.iconClass} tile-icon-integrated"></i><h3>${a.title}</h3><p>${a.desc}</p>`;
           wrap.appendChild(b);
