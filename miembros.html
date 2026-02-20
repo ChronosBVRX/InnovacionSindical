@@ -1259,31 +1259,32 @@
 
     /* ====== Miembros (solo admin) ====== */
     async function loadMembers(force = false) {
-      if (!IS_ADMIN) return;
-      if (!force && MEMBERS_CACHE.length) return;
+  if (!IS_ADMIN) return;
+  if (!force && MEMBERS_CACHE.length) return;
 
-      const wrap = $("membersList");
-      if (wrap) wrap.innerHTML = '<div class="meta">Cargando miembros…</div>';
+  const wrap = $("membersList");
+  if (wrap) wrap.innerHTML = '<div class="meta">Cargando miembros…</div>';
 
-      const { data, error } = await supabaseClient
-        .from('profiles')
-        .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, telefono, telefono_publico, servicios, role, matricula')
-        .order('last_seen', { ascending: false })
-        .limit(1000);
+  const { data, error } = await supabaseClient
+    .from('profiles')
+    .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, telefono, telefono_publico, servicios, role, matricula')
+    .order('last_seen', { ascending: false })
+    .limit(1000);
 
-      if (error) {
-        diag("Error cargando lista de miembros desde 'profiles'. (Probable RLS/policy)", error);
-        if (wrap) wrap.innerHTML = '<div class="meta">❌ No se pudieron cargar los miembros. Revisa el recuadro de diagnóstico y consola.</div>';
-        return;
-      }
+  if (error) {
+    diag("Error cargando lista de miembros desde 'profiles'. (Probable RLS/policy)", error);
+    if (wrap) wrap.innerHTML = '<div class="meta">❌ No se pudieron cargar los miembros. Revisa diagnóstico y consola.</div>';
+    return;
+  }
 
-      MEMBERS_CACHE = data || [];
-      renderMembers();
-    }
+  MEMBERS_CACHE = data || [];
+  renderMembers();
+}
 
 function renderMembers() {
   const wrap = $("membersList");
   if (!wrap) return;
+
   if (!IS_ADMIN) {
     wrap.innerHTML = '<div class="meta">Solo administradores pueden ver este listado.</div>';
     return;
@@ -1291,6 +1292,7 @@ function renderMembers() {
 
   const q = ($("qMembers")?.value || "").trim().toLowerCase();
   const onlyOnline = $("chkOnlineOnly")?.checked;
+
   let list = MEMBERS_CACHE.slice();
 
   if (q) {
@@ -1298,12 +1300,14 @@ function renderMembers() {
       (p.display_name || '').toLowerCase().includes(q) ||
       (p.adscripcion || '').toLowerCase().includes(q) ||
       (p.categoria || '').toLowerCase().includes(q) ||
-      (p.servicios || '').toLowerCase().includes(q)
+      (p.servicios || '').toLowerCase().includes(q) ||
+      String(p.matricula || '').toLowerCase().includes(q)
     );
   }
 
   if (onlyOnline) list = list.filter(p => ONLINE_SET.has(p.user_id));
 
+  // online primero
   const online = [];
   const offline = [];
   list.forEach(p => (ONLINE_SET.has(p.user_id) ? online : offline).push(p));
@@ -1325,11 +1329,12 @@ function renderMembers() {
     const telDisplay = !tel ? 'Sin teléfono' : (telPublic ? tel : 'No visible');
     const serviciosText = (p.servicios || '').trim();
     const role = p.role || 'miembro';
+    const matricula = (p.matricula || '').toString().trim();
 
     card.innerHTML = `
       <div class="row" style="align-items:flex-start">
         <div class="avatar" style="width:64px;height:64px">
-          ${p.avatar_url ? `<img src="${p.avatar_url}">` : (p.display_name || '?')[0]?.toUpperCase()}
+          ${p.avatar_url ? `<img src="${p.avatar_url}">` : (escapeHtml(p.display_name || '?')[0] || '?').toUpperCase()}
         </div>
 
         <div style="flex:1;min-width:220px">
@@ -1339,6 +1344,7 @@ function renderMembers() {
           </div>
 
           <div class="meta">${escapeHtml(p.categoria || '—')} • ${escapeHtml(p.adscripcion || '—')}</div>
+          <div class="meta" style="margin-top:4px">🪪 Matrícula: ${matricula ? escapeHtml(matricula) : '—'}</div>
           <div class="meta" style="margin-top:4px">📱 ${escapeHtml(telDisplay)}</div>
           ${serviciosText ? `<div class="meta" style="margin-top:4px">🤝 ${escapeHtml(serviciosText)}</div>` : ''}
 
@@ -1358,6 +1364,10 @@ function renderMembers() {
 
             <div class="row" style="margin-top:8px;gap:10px;flex-wrap:wrap">
               <input class="m-name" placeholder="Nombre" value="${escapeHtml(p.display_name || '')}">
+              <input class="m-mat" placeholder="Matrícula" value="${escapeHtml(matricula)}" inputmode="numeric">
+            </div>
+
+            <div class="row" style="margin-top:8px;gap:10px;flex-wrap:wrap">
               <input class="m-cat" placeholder="Categoría" value="${escapeHtml(p.categoria || '')}">
               <input class="m-ads" placeholder="Adscripción" value="${escapeHtml(p.adscripcion || '')}">
             </div>
@@ -1406,51 +1416,52 @@ function renderMembers() {
       if (box) box.style.display = 'none';
     };
   });
+
+  // Guardar edición (admin)
+  wrap.querySelectorAll('.btn-save-member').forEach(b => {
+    b.onclick = async (e) => {
+      e.preventDefault();
+      const uid = b.dataset.uid;
+      const box = wrap.querySelector(`.edit-member-box[data-uid="${uid}"]`);
+      if (!box) return;
+
+      const statusEl = box.querySelector('.m-status');
+      statusEl.textContent = 'Guardando…';
+
+      const mat = nz(box.querySelector('.m-mat')?.value);
+      const matricula = mat ? String(mat).replace(/\s+/g, '') : null;
+
+      const updates = {
+        display_name: nz(box.querySelector('.m-name')?.value),
+        matricula, // ✅
+        categoria: nz(box.querySelector('.m-cat')?.value),
+        adscripcion: nz(box.querySelector('.m-ads')?.value),
+        telefono: nz(box.querySelector('.m-tel')?.value),
+        telefono_publico: !!box.querySelector('.m-telpub')?.checked,
+        servicios: nz(box.querySelector('.m-serv')?.value),
+        role: box.querySelector('.m-role')?.value || 'miembro',
+        last_seen: new Date().toISOString()
+      };
+
+      // limpia undefined
+      Object.keys(updates).forEach(k => { if (updates[k] === undefined) delete updates[k]; });
+
+      const { error } = await supabaseClient
+        .from('profiles')
+        .update(updates)
+        .eq('user_id', uid);
+
+      if (error) {
+        diag("Error admin editando miembro (profiles.update).", error);
+        statusEl.textContent = '❌ No se pudo guardar.';
+        return;
+      }
+
+      statusEl.textContent = '✅ Guardado';
+      await loadMembers(true);
+    };
+  });
 }
-
-      wrap.querySelectorAll('.btn-save-member').forEach(b => {
-        b.onclick = async (e) => {
-          e.preventDefault();
-          const uid = b.dataset.uid;
-          const box = wrap.querySelector(\`.edit-member-box[data-uid="\${uid}"]\`);
-          if (!box) return;
-
-          const statusEl = box.querySelector('.m-status');
-          statusEl.textContent = 'Guardando…';
-
-          const mat = nz(box.querySelector('.m-mat')?.value);
-          const matricula = mat ? String(mat).replace(/\s+/g, '') : null;
-
-          const updates = {
-            display_name: nz(box.querySelector('.m-name')?.value),
-            matricula, // ✅ NUEVO
-            categoria: nz(box.querySelector('.m-cat')?.value),
-            adscripcion: nz(box.querySelector('.m-ads')?.value),
-            telefono: nz(box.querySelector('.m-tel')?.value),
-            telefono_publico: !!box.querySelector('.m-telpub')?.checked,
-            servicios: nz(box.querySelector('.m-serv')?.value),
-            role: box.querySelector('.m-role')?.value || 'miembro',
-            last_seen: new Date().toISOString()
-          };
-
-          Object.keys(updates).forEach(k => { if (updates[k] === undefined) delete updates[k]; });
-
-          const { error } = await supabaseClient
-            .from('profiles')
-            .update(updates)
-            .eq('user_id', uid);
-
-          if (error) {
-            diag("Error admin editando miembro (profiles.update).", error);
-            statusEl.textContent = '❌ No se pudo guardar.';
-            return;
-          }
-
-          statusEl.textContent = '✅ Guardado';
-          await loadMembers(true);
-        };
-      });
-    }
 
     /* ====== Presencia ====== */
     function initPresence() {
