@@ -646,23 +646,27 @@
       alert("Te enviamos un correo con instrucciones para restablecer tu contraseña.");
     });
 
-    /* SIGNUP (matrícula obligatoria + se guarda en profiles) */
+    /* SIGNUP */
     fSignup.addEventListener('submit', async (e)=>{
       e.preventDefault();
       suErr.textContent = '';
 
+      // ✅ Perfil
       const display_name = $('#suName').value.trim();
       const matricula    = ($('#suMatricula').value || '').trim();
-      const phone        = $('#suPhone').value.trim();
-      const birthdate    = $('#suBirth').value;
+
+      // ✅ INTEGRADO: variables EXACTAS como pediste
+      const telefono     = $('#suPhone').value.trim();
+      const cumple       = $('#suBirth').value; // yyyy-mm-dd
       const categoria    = $('#suCategoria').value.trim();
       const adscripcion  = $('#suAdscripcion').value;
 
+      // ✅ Auth
       const email        = $('#suEmail').value.trim();
       const password     = $('#suPass').value;
 
-      if (!display_name || !matricula || !phone || !birthdate || !categoria || !adscripcion){
-        suErr.textContent = 'Completa todos los campos del perfil.';
+      if (!display_name || !matricula || !telefono || !cumple || !categoria || !adscripcion || !email || !password){
+        suErr.textContent = 'Completa todos los campos.';
         return;
       }
 
@@ -679,11 +683,12 @@
         return;
       }
 
+      // ✅ INTEGRADO: signUp con metadata EXACTA como pediste
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { display_name, phone, birthdate, categoria, adscripcion } // metadata (opcional)
+          data: { display_name, telefono, cumple, categoria, adscripcion }
         }
       });
 
@@ -692,7 +697,7 @@
         return;
       }
 
-      // Guardar matrícula en profiles (la fila ya debería existir por tu lógica actual)
+      // Guardar datos en profiles
       const userId = data?.user?.id;
       if (userId){
         const { error: upErr } = await supabase
@@ -701,8 +706,8 @@
             display_name,
             categoria,
             adscripcion,
-            telefono: phone,
-            cumple: birthdate,
+            telefono,
+            cumple,
             matricula
           })
           .eq('user_id', userId);
@@ -712,7 +717,7 @@
           if (msg.includes('duplicate') || msg.includes('unique')){
             suErr.textContent = "Esa matrícula ya está registrada. Si es tu cuenta, intenta recuperar tu contraseña.";
           } else {
-            suErr.textContent = "Cuenta creada, pero no se pudo guardar la matrícula: " + (upErr.message || "");
+            suErr.textContent = "Cuenta creada, pero no se pudo guardar el perfil: " + (upErr.message || "");
           }
           return;
         }
@@ -720,7 +725,6 @@
 
       alert('¡Cuenta creada! Revisa tu correo para confirmar la dirección. Luego inicia sesión.');
       showLogin();
-      // Si quieres, pre-llenamos matrícula en login
       $('#liUser').value = matricula;
     });
 
