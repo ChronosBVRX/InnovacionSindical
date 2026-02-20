@@ -244,13 +244,15 @@
         featured: true 
       },
       { id: 'denuncias', title: 'Gestor de Escritos', desc: 'Redacción asistida por IA.', iconClass: 'ph-duotone ph-signature', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
-      
-      // --- NUEVO BOTÓN AGREGADO ---
       { id: 'comite', title: 'Comité Seccional', desc: 'Conoce al nuevo equipo de la Planilla Azul.', iconClass: 'ph-duotone ph-users-three', iframe: 'comite.html' },
-      // ----------------------------
-      
       { id: 'directorio', title: 'Directorio', desc: 'Contactos y delegados.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
-      { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de derechos.', iconClass: 'ph-duotone ph-calculator', iframe: 'prestaciones.html' }
+      { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de derechos.', iconClass: 'ph-duotone ph-calculator', iframe: 'prestaciones.html' },
+      
+      // --- NUEVOS BOTONES IMSS ---
+      // Nota: Si el IMSS bloquea el iframe por seguridad, cambia "iframe:" por "href:"
+      { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga tus comprobantes de pago.', iconClass: 'ph-duotone ph-identification-card', iframe: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/' },
+      { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Accede a tu cuenta institucional.', iconClass: 'ph-duotone ph-user-circle', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login' }
+      // ---------------------------
     ];
 
     const SInOS = {
