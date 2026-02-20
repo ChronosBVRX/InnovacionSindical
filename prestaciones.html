@@ -3,97 +3,101 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tus Prestaciones IMSS - Calculadoras Fáciles</title>
+  <title>Plataforma Sindical CG — Calculadoras CCT</title>
   <style>
     :root {
-      --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --primary: #0ea5e9; 
-      --primary-dark: #0284c7;
-      --text-main: #334155;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --concept-bg: #dbeafe;
-      --concept-text: #1e40af;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --bg: #0f172a;         /* Fondo muy oscuro */
+      --card: #1e293b;       /* Fondo de tarjetas */
+      --input: #334155;      /* Fondo inputs */
+      --txt: #f1f5f9;        /* Texto principal */
+      --muted: #94a3b8;      /* Texto secundario */
+      --primary: #2dd4bf;    /* Color principal (Teal) */
+      --primary-dark: #14b8a6; /* Teal oscuro para hover */
+      --accent: #facc15;     /* Amarillo para notas */
+      --danger: #fb7185;     /* Rojo suave */
+      --border: rgba(255, 255, 255, 0.1);
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+      
+      /* Colores para Conceptos y UX */
+      --cpto-bg: rgba(45, 212, 191, 0.15);
+      --cpto-danger-bg: rgba(251, 113, 133, 0.15);
+      --warning-bg: rgba(250, 204, 21, 0.05);
+      --warning-border: rgba(250, 204, 21, 0.3);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; padding: 20px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background: var(--bg); color: var(--txt); min-height: 100vh; padding: 20px; line-height: 1.6; }
     .container { max-width: 1000px; margin: 0 auto; }
 
-    /* Encabezado */
-    header { background: var(--card-bg); padding: 30px; border-radius: 16px; box-shadow: var(--shadow); margin-bottom: 24px; text-align: center; border-top: 6px solid var(--primary); }
-    h1 { font-size: 2rem; font-weight: 800; color: #0f172a; margin-bottom: 10px; }
-    p.subtitle { color: var(--text-muted); font-size: 1.1rem; max-width: 650px; margin: 0 auto;}
+    /* HEADER */
+    header { background: var(--card); padding: 24px; border-radius: 16px; border-bottom: 4px solid var(--primary); margin-bottom: 24px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 15px; }
+    .logo { background: var(--primary); color: #0f172a; width: 56px; height: 56px; border-radius: 12px; display: grid; place-items: center; font-weight: 900; font-size: 24px; }
+    h1 { font-size: 1.5rem; font-weight: 700; color: var(--txt); }
+    .subtitle { font-size: 0.95rem; color: var(--muted); margin-top: 4px;}
 
-    /* Buscador Global */
-    .global-search { background: var(--card-bg); padding: 24px; border-radius: 16px; box-shadow: var(--shadow); margin-bottom: 24px; border: 1px solid var(--border); }
-    .global-search label { display: block; font-weight: 700; margin-bottom: 12px; font-size: 1.1rem; color: #0f172a;}
+    /* BUSCADOR GLOBAL */
+    .global-search { background: var(--card); padding: 24px; border-radius: 16px; box-shadow: var(--shadow); margin-bottom: 24px; border: 1px solid var(--border); }
+    .global-search label { display: block; font-weight: 600; margin-bottom: 12px; font-size: 1.05rem; color: var(--primary);}
     .autocomplete-wrapper { position: relative; }
-    input[type="text"], input[type="number"], select { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 1rem; outline: none; transition: border-color 0.2s; background-color: #f8fafc; color: var(--text-main);}
-    input:focus, select:focus { border-color: var(--primary); background-color: #fff;}
+    input[type="text"], input[type="number"], select { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 1rem; outline: none; transition: border-color 0.2s; background-color: var(--input); color: var(--txt);}
+    input:focus, select:focus { border-color: var(--primary); }
     
-    .autocomplete-items { position: absolute; border: 1px solid var(--border); border-top: none; z-index: 99; top: 100%; left: 0; right: 0; max-height: 250px; overflow-y: auto; background: var(--card-bg); border-radius: 0 0 10px 10px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-    .autocomplete-items div { padding: 14px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 0.95rem;}
-    .autocomplete-items div:hover { background-color: #f1f5f9; color: var(--primary-dark); font-weight: 600;}
+    .autocomplete-items { position: absolute; border: 1px solid var(--border); border-top: none; z-index: 99; top: 100%; left: 0; right: 0; max-height: 250px; overflow-y: auto; background: var(--card); border-radius: 0 0 10px 10px; box-shadow: var(--shadow); margin-top: 4px;}
+    .autocomplete-items div { padding: 14px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center;}
+    .autocomplete-items div:hover { background-color: rgba(45, 212, 191, 0.1); color: var(--txt); }
     
-    .user-data-bar { display: none; margin-top: 20px; padding: 16px; background: #f0f9ff; border-radius: 10px; border-left: 5px solid var(--primary); font-size: 0.95rem; align-items: center;}
+    .user-data-bar { display: none; margin-top: 20px; padding: 16px; background: rgba(0,0,0,0.2); border-radius: 10px; border-left: 4px solid var(--primary); font-size: 0.95rem; align-items: center; border: 1px solid var(--border);}
     .user-data-bar.active { display: flex; gap: 24px; flex-wrap: wrap; }
-    .user-data-bar span { font-weight: 700; color: var(--primary-dark); font-size: 1.05rem;}
-    .user-data-bar .hint { font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 2px;}
+    .user-data-bar span { font-weight: 700; color: var(--txt); font-size: 1.05rem;}
+    .user-data-bar .hint { font-size: 0.8rem; color: var(--muted); display: block; margin-top: 4px;}
 
-    /* Layout Principal */
-    .layout { display: grid; grid-template-columns: 280px 1fr; gap: 24px; }
+    /* LAYOUT: SIDEBAR + CONTENT */
+    .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; }
     @media (max-width: 768px) { .layout { grid-template-columns: 1fr; } }
 
-    /* Menú Lateral */
-    .menu { display: flex; flex-direction: column; gap: 10px; }
-    .menu-btn { background: var(--card-bg); border: 2px solid transparent; color: var(--text-main); padding: 16px 20px; border-radius: 12px; text-align: left; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .menu-btn:hover { background: #f8fafc; border-color: #cbd5e1; transform: translateX(4px); }
-    .menu-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.3); transform: translateX(8px);}
+    /* MENU LATERAL */
+    .menu { display: flex; flex-direction: column; gap: 8px; }
+    .menu-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 14px 16px; border-radius: 12px; text-align: left; cursor: pointer; transition: all 0.2s; font-size: 0.95rem; }
+    .menu-btn:hover { background: rgba(255,255,255,0.05); color: var(--txt); }
+    .menu-btn.active { background: var(--primary); color: #0f172a; font-weight: 700; box-shadow: 0 0 15px rgba(45, 212, 191, 0.3); border-color: var(--primary); }
 
-    /* Paneles de Calculadoras */
-    .panel { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: var(--shadow); display: none; animation: slideUp 0.3s ease; border: 1px solid var(--border);}
+    /* PANELES DE CALCULADORA */
+    .panel { background: var(--card); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); display: none; animation: fadeIn 0.3s ease; }
     .panel.active { display: block; }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
-    .panel h2 { color: #0f172a; margin-bottom: 12px; font-size: 1.6rem; font-weight: 800;}
-    .panel p.desc { color: var(--text-muted); margin-bottom: 24px; font-size: 1.05rem; line-height: 1.5; }
+    .panel h2 { color: var(--primary); margin-bottom: 12px; font-size: 1.5rem; font-weight: 700;}
+    .panel p.desc { color: var(--muted); margin-bottom: 24px; font-size: 1rem; line-height: 1.5; }
 
-    /* Formularios */
+    /* FORMULARIOS */
     .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; color: #1e293b;}
-    .btn-calc { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px; transition: background 0.2s, transform 0.1s; box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.2);}
-    .btn-calc:hover { background: var(--primary-dark); }
+    .form-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; color: var(--txt);}
+    .btn-calc { width: 100%; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #0f172a; border: none; padding: 14px; border-radius: 10px; font-size: 1.05rem; font-weight: 800; cursor: pointer; margin-top: 10px; transition: transform 0.1s; }
     .btn-calc:active { transform: scale(0.98); }
 
-    /* Resultados */
-    .result-card { margin-top: 30px; background: #f8fafc; border: 2px solid var(--border); border-radius: 12px; padding: 20px; display: none; }
+    /* RESULTADOS */
+    .result-card { margin-top: 24px; background: rgba(0,0,0,0.3); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: none; padding: 0 16px;}
     .result-card.active { display: block; }
-    .result-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px dashed #cbd5e1; }
+    .result-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
     .result-row:last-child { border-bottom: none; }
-    .result-label { font-size: 1rem; color: var(--text-main); font-weight: 500;}
-    .result-value { font-size: 1.25rem; font-weight: 800; color: #0f172a; }
+    .result-label { font-size: 0.95rem; color: var(--muted); }
+    .result-value { font-family: monospace; font-size: 1.2rem; font-weight: 700; color: var(--txt); text-align: right;}
     
-    .concept-tag { background: var(--concept-bg); color: var(--concept-text); padding: 4px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; margin-left: 10px; display: inline-flex; align-items: center; border: 1px solid #bfdbfe;}
-    .concept-tag.deduction { background: #fee2e2; color: #991b1b; border-color: #fecaca;}
+    .cpto-tag { background: var(--cpto-bg); color: var(--primary); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; margin-left: 8px; display: inline-flex; align-items: center; border: 1px solid rgba(45, 212, 191, 0.3);}
+    .cpto-tag.desc { background: var(--cpto-danger-bg); color: var(--danger); border-color: rgba(251, 113, 133, 0.3);}
 
-    /* Tablas */
-    table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 20px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
-    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { background: #f1f5f9; font-weight: 700; color: #334155; font-size: 0.95rem;}
-    td { background: white; font-size: 1rem;}
-    tr:last-child td { border-bottom: none; }
+    /* TABLAS */
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.95rem; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: rgba(255,255,255,0.05); font-weight: 600; color: var(--txt); }
 
-    /* Sustento Legal */
-    .legal-basis { background: #f1f5f9; color: var(--text-muted); font-size: 0.85rem; padding: 12px 16px; border-radius: 8px; margin-top: 24px; border-left: 3px solid #cbd5e1; display: flex; align-items: flex-start; gap: 8px; }
-    .legal-basis strong { color: #475569; }
+    /* SUSTENTO LEGAL Y DISCLAIMER */
+    .legal-basis { background: rgba(255,255,255,0.03); color: var(--muted); font-size: 0.85rem; padding: 12px 16px; border-radius: 8px; margin-top: 24px; border-left: 3px solid var(--input); }
+    .legal-basis strong { color: var(--txt); }
 
-    /* Disclaimer Liquidez */
-    .disclaimer-box { background: #fffbeb; border: 1px solid #fde68a; border-left: 5px solid #f59e0b; padding: 16px; border-radius: 8px; margin-top: 20px; }
-    .disclaimer-box p { color: #92400e; font-size: 0.95rem; margin: 0; line-height: 1.5; }
-    .disclaimer-box strong { color: #b45309; }
+    .disclaimer-box { background: var(--warning-bg); border: 1px solid var(--warning-border); border-left: 4px solid var(--accent); padding: 16px; border-radius: 8px; margin-top: 24px; }
+    .disclaimer-box p { color: #fde047; font-size: 0.9rem; margin: 0; line-height: 1.5; }
+    .disclaimer-box strong { color: var(--accent); }
 
   </style>
 </head>
@@ -101,27 +105,30 @@
 
 <div class="container">
   <header>
-    <h1>Tus Prestaciones, Más Claras</h1>
-    <p class="subtitle">Herramientas sencillas para conocer exactamente cuánto te toca, sin enredos ni palabras complicadas.</p>
+    <div class="logo">CG</div>
+    <div>
+      <h1>Calculadoras de Prestaciones SNTSS</h1>
+      <div class="subtitle">Herramientas basadas en tu CCT. Fáciles, rápidas y transparentes.</div>
+    </div>
   </header>
 
   <div class="global-search">
     <label for="buscador">👋 ¡Hola! Para empezar, selecciona tu categoría:</label>
     <div class="autocomplete-wrapper">
-      <input type="text" id="buscador" placeholder="Escribe aquí tu puesto (Ej. Enfermera, Médico, Auxiliar...)" autocomplete="off">
+      <input type="text" id="buscador" placeholder="Escribe aquí tu puesto (Ej. Enfermera General, Médico, Auxiliar...)" autocomplete="off">
     </div>
     
     <div id="user-data" class="user-data-bar">
-      <div>Categoría:<br><span id="ud-cat">-</span></div>
-      <div>Jornada:<br><span id="ud-jor">-</span> <span style="font-size:0.9rem; font-weight:normal;">hrs</span></div>
-      <div>Sueldo Tabular (Cpto. 02):<br><span id="ud-tab">$0.00</span></div>
+      <div><span style="color:var(--muted); font-weight:normal; font-size:0.85rem;">Categoría</span><br><span id="ud-cat">-</span></div>
+      <div><span style="color:var(--muted); font-weight:normal; font-size:0.85rem;">Jornada</span><br><span id="ud-jor">-</span> <span style="font-size:0.85rem; font-weight:normal;">hrs</span></div>
+      <div><span style="color:var(--muted); font-weight:normal; font-size:0.85rem;">Tabular (Cpto 02)</span><br><span id="ud-tab" style="color:var(--primary);">$0.00</span></div>
       <div>
-        Ayuda de Renta (Cpto. 011):<br>
+        <span style="color:var(--muted); font-weight:normal; font-size:0.85rem;">Ayuda de Renta (Cpto 011)</span><br>
         <div style="display:flex; align-items:center;">
           <span style="font-weight:normal; margin-right:4px;">$</span>
-          <input type="number" id="ud-renta" value="0" style="width: 120px; padding: 8px; font-weight: bold; color: var(--primary-dark); border-color: #cbd5e1; background: white;" onchange="updateRentaGlobal()">
+          <input type="number" id="ud-renta" value="0" style="width: 100px; padding: 8px; font-weight: bold; font-family:monospace; font-size:1.1rem; background: var(--bg); border: 1px solid var(--border);" onchange="updateRentaGlobal()">
         </div>
-        <span class="hint">Modifícalo si conoces el dato exacto.</span>
+        <span class="hint">Modifícalo si conoces el dato exacto de tu tarjetón.</span>
       </div>
     </div>
   </div>
@@ -141,7 +148,7 @@
       
       <div id="p-anticipo" class="panel active">
         <h2>Anticipo de Sueldo</h2>
-        <p class="desc">Descubre cuánto puedes pedir de adelanto de tu sueldo para salir de un apuro y en cuánto te quedará el descuento a la quincena. ¡Recuerda que es con cero intereses!</p>
+        <p class="desc">Descubre cuánto puedes pedir de adelanto de tu sueldo para salir de un apuro y en cuánto te quedará el descuento a la quincena. ¡Cero intereses!</p>
         
         <div class="form-group">
           <label>¿Cuántos meses necesitas que te adelanten?</label>
@@ -157,15 +164,15 @@
         <div id="res_anticipo" class="result-card">
           <div class="result-row">
             <span class="result-label">Te depositarían máximo:</span>
-            <span class="result-value" id="ant_monto" style="color: var(--primary-dark);">$0.00</span>
+            <span class="result-value" id="ant_monto" style="color: var(--primary);">$0.00</span>
           </div>
           <div class="result-row">
             <span class="result-label">Terminarías de pagarlo en:</span>
-            <span class="result-value" id="ant_plazo" style="color: var(--text-main); font-weight:600;">0 Quincenas</span>
+            <span class="result-value" id="ant_plazo">0 Quincenas</span>
           </div>
           <div class="result-row">
-            <span class="result-label">Tu descuento quincenal fijo sería: <span class="concept-tag deduction">Deducción Temporal</span></span>
-            <span class="result-value" style="color: #dc2626;" id="ant_desc">-$0.00</span>
+            <span class="result-label">Tu descuento quincenal fijo sería: <span class="cpto-tag desc">Deducción Temporal</span></span>
+            <span class="result-value" style="color: var(--danger);" id="ant_desc">-$0.00</span>
           </div>
         </div>
 
@@ -181,18 +188,18 @@
         <div class="form-group">
           <label>¿Cuántos días laboraste en el último año? (De julio a julio)</label>
           <input type="number" id="aho_dias" value="365" max="365">
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px;">Por lo general son los 365 días. Solo bájale si tuviste faltas o licencias sin goce de sueldo.</p>
+          <p style="font-size: 0.8rem; color: var(--muted); margin-top: 6px;">Por lo general son los 365 días. Solo bájale si tuviste faltas o licencias sin goce de sueldo.</p>
         </div>
         <button class="btn-calc" onclick="calcAhorro()">Calcular mi fondo</button>
 
         <div id="res_ahorro" class="result-card">
           <div class="result-row">
             <span class="result-label">Días proporcionales que lograste generar:</span>
-            <span class="result-value" id="aho_dias_res" style="font-weight: 600; color: var(--text-main);">0 días</span>
+            <span class="result-value" id="aho_dias_res">0 días</span>
           </div>
-          <div class="result-row" style="background: #f0fdf4; padding: 16px; border-radius: 8px; margin-top: 10px; border: 1px solid #bbf7d0;">
-            <span class="result-label" style="color: #166534; font-weight: 700;">Total a recibir (Libre de impuestos): <span class="concept-tag" style="background: #86efac; color: #14532d; border:none;">Concepto 055</span></span>
-            <span class="result-value" id="aho_total" style="color: #166534; font-size: 1.5rem;">$0.00</span>
+          <div class="result-row" style="background: rgba(45, 212, 191, 0.1);">
+            <span class="result-label" style="color: var(--primary); font-weight: 700;">Total a recibir (Libre de impuestos): <span class="cpto-tag" style="background: var(--primary); color: #000;">Concepto 055</span></span>
+            <span class="result-value" id="aho_total" style="color: var(--primary); font-size: 1.5rem;">$0.00</span>
           </div>
         </div>
 
@@ -222,11 +229,11 @@
         <div id="res_extra" class="result-card">
           <div class="result-row">
             <span class="result-label">Tu hora de sueldo base vale:</span>
-            <span class="result-value" id="ext_base" style="font-weight: 600; color: var(--text-muted);">$0.00</span>
+            <span class="result-value" id="ext_base" style="font-size: 1rem; color: var(--muted);">$0.00</span>
           </div>
           <div class="result-row">
-            <span class="result-label" style="font-weight: 700;">Total a recibir en efectivo: <span class="concept-tag">Concepto 037</span></span>
-            <span class="result-value" id="ext_total" style="color: var(--primary-dark);">$0.00</span>
+            <span class="result-label" style="font-weight: 700;">Total a recibir en efectivo: <span class="cpto-tag">Concepto 037</span></span>
+            <span class="result-value" id="ext_total" style="color: var(--primary);">$0.00</span>
           </div>
         </div>
 
@@ -251,16 +258,16 @@
         <div id="res_hipo_largo" class="result-card">
           <div class="result-row">
             <span class="result-label">Tu Monto Máximo Ideal sería:</span>
-            <span class="result-value" id="hl_max" style="color: var(--primary-dark);">$0.00</span>
+            <span class="result-value" id="hl_max" style="color: var(--primary);">$0.00</span>
           </div>
           <div class="result-row">
-            <span class="result-label">Tu descuento quincenal (Fijo por 30 años): <span class="concept-tag deduction">Concepto 130</span></span>
-            <span class="result-value" style="color: #dc2626;" id="hl_desc">-$0.00</span>
+            <span class="result-label">Tu descuento quincenal (Fijo por 30 años): <span class="cpto-tag desc">Concepto 130</span></span>
+            <span class="result-value" style="color: var(--danger);" id="hl_desc">-$0.00</span>
           </div>
         </div>
 
         <div class="disclaimer-box">
-          <p>💡 <strong>Nota sobre tu Liquidez:</strong> Los montos mostrados son el máximo al que tienes derecho por tu categoría. Para que el IMSS te autorice estas cantidades exactas, revisarán tu Tarjetón de Pago para asegurarse de que, después de cobrarte este nuevo préstamo, te siga quedando dinero suficiente para tus gastos básicos (al menos 15 días de salario mínimo libre). Si tienes muchos descuentos activos, podrían pedirte que liquides los menores antes de darte uno nuevo.</p>
+          <p>💡 <strong>Nota sobre tu Liquidez:</strong> Los montos mostrados son el máximo ideal al que tienes derecho. Para que el IMSS te autorice estas cantidades exactas, revisarán tu Tarjetón de Pago para asegurarse de que, después de cobrarte este nuevo préstamo, te siga quedando dinero suficiente para tus gastos básicos (al menos 15 días de salario mínimo libre). Si tienes muchos descuentos, podrían pedirte que liquides los menores antes.</p>
         </div>
 
         <div class="legal-basis">
@@ -277,16 +284,16 @@
         <div id="res_hipo_medio" class="result-card">
           <div class="result-row">
             <span class="result-label">Tu Monto Máximo Ideal (35 meses):</span>
-            <span class="result-value" id="hm_max" style="color: var(--primary-dark);">$0.00</span>
+            <span class="result-value" id="hm_max" style="color: var(--primary);">$0.00</span>
           </div>
           <div class="result-row">
-            <span class="result-label">Tu descuento quincenal (Fijo por 12 años): <span class="concept-tag deduction">Concepto 136</span></span>
-            <span class="result-value" style="color: #dc2626;" id="hm_desc">-$0.00</span>
+            <span class="result-label">Tu descuento quincenal (Fijo por 12 años): <span class="cpto-tag desc">Concepto 136</span></span>
+            <span class="result-value" style="color: var(--danger);" id="hm_desc">-$0.00</span>
           </div>
         </div>
 
         <div class="disclaimer-box">
-          <p>💡 <strong>Nota sobre tu Liquidez:</strong> Los montos mostrados son el máximo al que tienes derecho por tu categoría. Para que el IMSS te autorice estas cantidades exactas, revisarán tu Tarjetón de Pago para asegurarse de que, después de cobrarte este nuevo préstamo, te siga quedando dinero suficiente para tus gastos básicos (al menos 15 días de salario mínimo libre). Si tienes muchos descuentos activos, podrían pedirte que liquides los menores antes de darte uno nuevo.</p>
+          <p>💡 <strong>Nota sobre tu Liquidez:</strong> Los montos mostrados son el máximo ideal al que tienes derecho. Para que el IMSS te autorice estas cantidades exactas, revisarán tu Tarjetón de Pago para asegurarse de que, después de cobrarte este nuevo préstamo, te siga quedando dinero suficiente para tus gastos básicos (al menos 15 días de salario mínimo libre). Si tienes muchos descuentos, podrían pedirte que liquides los menores antes.</p>
         </div>
 
         <div class="legal-basis">
@@ -301,25 +308,25 @@
         <button class="btn-calc" onclick="calcAuto()">Simular mi Crédito Automotriz</button>
 
         <div id="res_auto" class="result-card">
-          <div class="result-row" style="background: #e0f2fe; padding: 16px; border-radius: 8px; border: 1px solid #bae6fd;">
-            <span class="result-label" style="font-weight: 700; color: #0369a1;">Monto Máximo Ideal para tu auto:</span>
-            <span class="result-value" id="au_max" style="color: #0284c7; font-size: 1.5rem;">$0.00</span>
+          <div class="result-row" style="background: rgba(45, 212, 191, 0.1); padding: 16px; border-bottom: none;">
+            <span class="result-label" style="font-weight: 700; color: var(--txt);">Monto Máximo Ideal para tu auto:</span>
+            <span class="result-value" id="au_max" style="color: var(--primary); font-size: 1.5rem;">$0.00</span>
           </div>
-          <div style="margin-top: 24px;">
-            <p style="font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 8px;">Así iría bajando tu descuento por año: <span class="concept-tag deduction">Concepto 134</span></p>
+          <div style="padding: 16px;">
+            <p style="font-size: 0.95rem; color: var(--muted); margin-bottom: 8px;">Así iría bajando tu descuento por año: <span class="cpto-tag desc">Concepto 134</span></p>
             <table>
-              <tr><th>Año de pago</th><th>Descuento Quincenal</th></tr>
-              <tr><td>Año 1</td><td id="au_y1" style="color: #dc2626; font-weight: bold;">$0.00</td></tr>
-              <tr><td>Año 2</td><td id="au_y2" style="color: #dc2626; font-weight: bold;">$0.00</td></tr>
-              <tr><td>Año 3</td><td id="au_y3" style="color: #dc2626; font-weight: bold;">$0.00</td></tr>
-              <tr><td>Año 4</td><td id="au_y4" style="color: #dc2626; font-weight: bold;">$0.00</td></tr>
-              <tr><td>Año 5</td><td id="au_y5" style="color: #dc2626; font-weight: bold;">$0.00</td></tr>
+              <tr><th>Año de pago</th><th style="text-align: right;">Descuento Quincenal</th></tr>
+              <tr><td>Año 1</td><td id="au_y1" style="color: var(--danger); font-weight: bold; text-align: right; font-family: monospace;">$0.00</td></tr>
+              <tr><td>Año 2</td><td id="au_y2" style="color: var(--danger); font-weight: bold; text-align: right; font-family: monospace;">$0.00</td></tr>
+              <tr><td>Año 3</td><td id="au_y3" style="color: var(--danger); font-weight: bold; text-align: right; font-family: monospace;">$0.00</td></tr>
+              <tr><td>Año 4</td><td id="au_y4" style="color: var(--danger); font-weight: bold; text-align: right; font-family: monospace;">$0.00</td></tr>
+              <tr><td>Año 5</td><td id="au_y5" style="color: var(--danger); font-weight: bold; text-align: right; font-family: monospace;">$0.00</td></tr>
             </table>
           </div>
         </div>
 
         <div class="disclaimer-box">
-          <p>💡 <strong>Nota sobre tu Liquidez:</strong> Los montos mostrados son el máximo al que tienes derecho por tu categoría. Para que el IMSS te autorice estas cantidades exactas, revisarán tu Tarjetón de Pago para asegurarse de que, después de cobrarte este nuevo préstamo, te siga quedando dinero suficiente para tus gastos básicos (al menos 15 días de salario mínimo libre). Si tienes muchos descuentos activos, podrían pedirte que liquides los menores antes de darte uno nuevo.</p>
+          <p>💡 <strong>Nota sobre tu Liquidez:</strong> Los montos mostrados son el máximo ideal al que tienes derecho. Para que el IMSS te autorice estas cantidades exactas, revisarán tu Tarjetón de Pago para asegurarse de que, después de cobrarte este nuevo préstamo, te siga quedando dinero suficiente para tus gastos básicos (al menos 15 días de salario mínimo libre). Si tienes muchos descuentos, podrían pedirte que liquides los menores antes.</p>
         </div>
 
         <div class="legal-basis">
@@ -328,7 +335,7 @@
       </div>
 
       <div id="p-aguinaldo" class="panel">
-        <h2>Aguinaldo</h2>
+        <h2>Aguinaldo y Anticipos</h2>
         <p class="desc">El aguinaldo total equivale a 3 meses de sueldo. Conoce tus adelantos y el saldo libre de impuestos que recibirás en diciembre.</p>
         
         <div class="form-group">
@@ -341,21 +348,21 @@
         <button class="btn-calc" onclick="calcAguinaldo()">Calcular mi Aguinaldo</button>
 
         <div id="res_aguinaldo" class="result-card">
-          <div class="result-row" style="background: #f1f5f9; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
-            <span class="result-label" style="font-weight: 700;">Lo que valen tus 3 meses completos:</span>
-            <span class="result-value" id="ag_total" style="color: var(--text-muted);">$0.00</span>
+          <div class="result-row" style="background: rgba(255,255,255,0.03); padding: 12px 16px; margin-bottom: 8px;">
+            <span class="result-label" style="font-weight: 700; color: var(--txt);">Tus 3 meses completos valen:</span>
+            <span class="result-value" id="ag_total" style="color: var(--muted); font-size:1.1rem;">$0.00</span>
           </div>
-          <div class="result-row">
-            <span class="result-label">Lo que te adelantaron en Enero: <span class="concept-tag">Cpto. 047</span></span>
-            <span class="result-value" id="ag_enero" style="color: var(--text-muted);">$0.00</span>
+          <div class="result-row" style="padding: 12px 16px;">
+            <span class="result-label">Lo que te adelantaron en Enero: <span class="cpto-tag">Cpto 047</span></span>
+            <span class="result-value" id="ag_enero" style="color: var(--muted); font-size:1.1rem;">$0.00</span>
           </div>
-          <div class="result-row" id="row_agosto" style="display: none;">
+          <div class="result-row" id="row_agosto" style="display: none; padding: 12px 16px;">
             <span class="result-label">Lo que te adelantaron en Agosto:</span>
-            <span class="result-value" id="ag_ago_val" style="color: var(--text-muted);">$0.00</span>
+            <span class="result-value" id="ag_ago_val" style="color: var(--muted); font-size:1.1rem;">$0.00</span>
           </div>
-          <div class="result-row" style="background: #f0fdf4; padding: 16px; border-radius: 8px; margin-top: 16px; border: 1px solid #bbf7d0;">
-            <span class="result-label" style="color: #166534; font-weight: 800;">Saldo a recibir en Diciembre: <span class="concept-tag" style="background: #86efac; color: #14532d; border:none;">Cpto. 049</span></span>
-            <span class="result-value" id="ag_dic" style="color: #166534; font-size: 1.5rem;">$0.00</span>
+          <div class="result-row" style="background: rgba(45, 212, 191, 0.1); padding: 16px;">
+            <span class="result-label" style="color: var(--primary); font-weight: 800;">Saldo a recibir en Diciembre: <span class="cpto-tag" style="background: var(--primary); color: #000;">Cpto 049</span></span>
+            <span class="result-value" id="ag_dic" style="color: var(--primary); font-size: 1.5rem;">$0.00</span>
           </div>
         </div>
 
@@ -369,28 +376,20 @@
 </div>
 
 <script>
-  // Utilidades y Variables
+  // -------------------------------------------------------------
+  // UTILIDADES Y VARIABLES
+  // -------------------------------------------------------------
   const money = n => n.toLocaleString('es-MX', {style:'currency', currency:'MXN'});
-  let userData = { tabular: 0, jornada: 0, renta: 0, categoria: '' };
+  let userData = { tabular: 0, jornada: 8, renta: 0, categoria: '' };
   
-  // Base de datos (Muestra representativa)
-  const sueldosDB = [
-    {"cat": "Médico Familiar", "jor": 8.0, "sm": 12844.2},
-    {"cat": "Médico General", "jor": 8.0, "sm": 9751.8},
-    {"cat": "Enfermera Especialista", "jor": 8.0, "sm": 8415.48},
-    {"cat": "Enfermera General", "jor": 8.0, "sm": 7381.12},
-    {"cat": "Mensajero", "jor": 8.0, "sm": 4868.04},
-    {"cat": "Mensajero", "jor": 6.5, "sm": 3955.4},
-    {"cat": "Auxiliar Universal de Oficinas", "jor": 8.0, "sm": 5841.44},
-    {"cat": "Auxiliar Universal de Oficinas", "jor": 6.5, "sm": 4746.16},
-    {"cat": "Chofer", "jor": 8.0, "sm": 5738.04},
-    {"cat": "Intendente", "jor": 8.0, "sm": 6565.76},
-    {"cat": "Cajero A", "jor": 8.0, "sm": 7656.68},
-    {"cat": "Asistente Médica", "jor": 8.0, "sm": 6108.68},
-    {"cat": "Trabajadora Social", "jor": 8.0, "sm": 7258.16}
-  ];
+  // -------------------------------------------------------------
+  // BASE DE DATOS COMPLETA (Extraída de tu Excel original)
+  // -------------------------------------------------------------
+  const sueldosDB = [{"cat": "Pasante de Abogado", "jor": "6.5", "sm": 5097.96}, {"cat": "Abogado", "jor": "6.5", "sm": 9125.04}, {"cat": "Abogado", "jor": "8.0", "sm": 11230.64}, {"cat": "Auxiliar Técnico de Actuariado Social", "jor": "6.5", "sm": 7553.14}, {"cat": "Oficial Técnico de Actuariado Social", "jor": "6.5", "sm": 8345.36}, {"cat": "Técnico de Actuariado Social", "jor": "6.5", "sm": 8932.24}, {"cat": "Actuario Social Matemático", "jor": "6.5", "sm": 9581.5}, {"cat": "Auxiliar de Servicios Administrativos", "jor": "6.5", "sm": 3302.5}, {"cat": "Auxiliar de Servicios Administrativos", "jor": "8.0", "sm": 4064.76}, {"cat": "Ayudante de Cajero B", "jor": "8.0", "sm": 5022.12}, {"cat": "Ayudante de Cajero A", "jor": "8.0", "sm": 5330.68}, {"cat": "Cajero D", "jor": "6.5", "sm": 5351.94}, {"cat": "Cajero D", "jor": "8.0", "sm": 6587.36}, {"cat": "Cajero C", "jor": "8.0", "sm": 6999.44}, {"cat": "Cajero B", "jor": "6.5", "sm": 6084.36}, {"cat": "Cajero A", "jor": "8.0", "sm": 7656.68}, {"cat": "Contador", "jor": "6.5", "sm": 9125.04}, {"cat": "Contador", "jor": "8.0", "sm": 11230.64}, {"cat": "Contador Auditor", "jor": "6.5", "sm": 9125.04}, {"cat": "Contador Auditor", "jor": "8.0", "sm": 11230.64}, {"cat": "Pasante de Economista", "jor": "8.0", "sm": 5876.44}, {"cat": "Economista", "jor": "6.5", "sm": 9125.04}, {"cat": "Economista", "jor": "8.0", "sm": 11230.64}, {"cat": "Sociólogo", "jor": "6.5", "sm": 9125.04}, {"cat": "Redactor B", "jor": "6.5", "sm": 4583.28}, {"cat": "Mensajero", "jor": "6.5", "sm": 3955.4}, {"cat": "Mensajero", "jor": "8.0", "sm": 4868.04}, {"cat": "Auxiliar Universal de Oficinas", "jor": "6.5", "sm": 4746.16}, {"cat": "Auxiliar Universal de Oficinas", "jor": "8.0", "sm": 5841.44}, {"cat": "Auxiliar de Soporte Técnico en Informática", "jor": "8.0", "sm": 8340.48}, {"cat": "Oficial de Soporte Técnico en Informática", "jor": "8.0", "sm": 10242.12}, {"cat": "Coordinador de Soporte Técnico en Informática", "jor": "8.0", "sm": 11266.48}, {"cat": "Oficial de Tesorería", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Tesorería", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Tesorería", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Tesorería", "jor": "8.0", "sm": 11266.48}, {"cat": "Oficial de Servicios Técnicos", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Servicios Técnicos", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Servicios Técnicos", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Servicios Técnicos", "jor": "8.0", "sm": 11266.48}, {"cat": "Oficial de Servicios Administrativos", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Servicios Administrativos", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Servicios Administrativos", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Servicios Administrativos", "jor": "8.0", "sm": 11266.48}, {"cat": "Oficial de Personal", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Personal", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Personal", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Personal", "jor": "8.0", "sm": 11266.48}, {"cat": "Oficial de Estadística", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Estadística", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Estadística", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Estadística", "jor": "8.0", "sm": 11266.48}, {"cat": "Oficial de Procesamiento de Datos", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Procesamiento de Datos", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Procesamiento de Datos", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Procesamiento de Datos", "jor": "8.0", "sm": 11266.48}, {"cat": "Oficial de Contabilidad", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Contabilidad", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Contabilidad", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Contabilidad", "jor": "8.0", "sm": 11266.48}, {"cat": "Jefe de Oficina A", "jor": "8.0", "sm": 11266.48}, {"cat": "Jefe Técnico de Cobranzas y Adeudos", "jor": "8.0", "sm": 11266.48}, {"cat": "Médico General", "jor": "8.0", "sm": 9751.8}, {"cat": "Médico Familiar", "jor": "8.0", "sm": 12844.2}, {"cat": "Médico No Familiar", "jor": "8.0", "sm": 12844.2}, {"cat": "Cirujano Máxilo Facial", "jor": "8.0", "sm": 12844.2}, {"cat": "Estomatólogo", "jor": "8.0", "sm": 11924.12}, {"cat": "Ortopedista", "jor": "8.0", "sm": 7875.28}, {"cat": "Partera", "jor": "6.5", "sm": 6837.68}, {"cat": "Partera", "jor": "8.0", "sm": 8415.48}, {"cat": "Jefe de Parteras", "jor": "6.5", "sm": 7350.52}, {"cat": "Jefe de Parteras", "jor": "8.0", "sm": 9046.64}, {"cat": "Veterinario", "jor": "6.5", "sm": 9125.04}, {"cat": "Veterinario", "jor": "8.0", "sm": 11230.64}, {"cat": "Auxiliar de Enfermería General", "jor": "8.0", "sm": 6108.68}, {"cat": "Auxiliar de Enfermería en Salud Pública", "jor": "8.0", "sm": 6108.68}, {"cat": "Enfermera General", "jor": "8.0", "sm": 7381.12}, {"cat": "Enfermera General Clínica (EGC)", "jor": "8.0", "sm": 7898.3}, {"cat": "Enfermera Especialista", "jor": "8.0", "sm": 8415.48}, {"cat": "Enfermera Jefe de Piso", "jor": "8.0", "sm": 10242.12}, {"cat": "Asistente Médica", "jor": "6.5", "sm": 4963.16}, {"cat": "Asistente Médica", "jor": "8.0", "sm": 6108.68}, {"cat": "Coordinadora de Asistentes Médicas", "jor": "8.0", "sm": 6767.2}, {"cat": "Trabajadora Social", "jor": "6.5", "sm": 5897.4}, {"cat": "Trabajadora Social", "jor": "8.0", "sm": 7258.16}, {"cat": "Trabajador Social Clínico", "jor": "8.0", "sm": 8274.84}, {"cat": "Auxiliar de Trabajo Social", "jor": "6.5", "sm": 4667.16}, {"cat": "Auxiliar de Trabajo Social", "jor": "8.0", "sm": 5744.26}, {"cat": "Nutricionista Dietista", "jor": "6.5", "sm": 5897.4}, {"cat": "Nutricionista Dietista", "jor": "8.0", "sm": 7258.16}, {"cat": "Especialista en Nutrición y Dietética", "jor": "8.0", "sm": 8415.48}, {"cat": "Nutriólogo Clínico Especializado", "jor": "8.0", "sm": 10242.12}, {"cat": "Auxiliar de Técnico en Servicios de Dietología", "jor": "6.5", "sm": 5160.52}, {"cat": "Auxiliar de Técnico en Servicios de Dietología", "jor": "8.0", "sm": 6351.46}, {"cat": "Auxiliar de Administración en Unidad Médica (Polivalente)", "jor": "6.5", "sm": 4808.42}, {"cat": "Auxiliar de Administración en Unidad Médica (Polivalente)", "jor": "8.0", "sm": 5917.9}, {"cat": "Auxiliar de Enfermería en Unidad Médica (Polivalente)", "jor": "6.5", "sm": 4924.46}, {"cat": "Auxiliar de Enfermería en Unidad Médica (Polivalente)", "jor": "8.0", "sm": 6060.88}, {"cat": "Técnico Radiólogo", "jor": "6.0", "sm": 5906.46}, {"cat": "Técnico Radiólogo", "jor": "8.0", "sm": 7875.28}, {"cat": "Radioterapeuta", "jor": "6.0", "sm": 5906.46}, {"cat": "Radioterapeuta", "jor": "8.0", "sm": 7875.28}, {"cat": "Laboratorista", "jor": "6.0", "sm": 6212.9}, {"cat": "Laboratorista", "jor": "8.0", "sm": 8283.66}, {"cat": "Auxiliar de Laboratorio", "jor": "6.0", "sm": 4732.06}, {"cat": "Auxiliar de Laboratorio", "jor": "8.0", "sm": 6309.58}, {"cat": "Químico Clínico", "jor": "8.0", "sm": 11230.64}, {"cat": "Químico Clínico Jefe de Sección", "jor": "8.0", "sm": 11793.36}, {"cat": "Citotecnólogo", "jor": "8.0", "sm": 7875.28}, {"cat": "Histotecnólogo", "jor": "6.0", "sm": 5906.46}, {"cat": "Histotecnólogo", "jor": "8.0", "sm": 7875.28}, {"cat": "Inhaloterapeuta", "jor": "6.0", "sm": 5906.46}, {"cat": "Inhaloterapeuta", "jor": "6.5", "sm": 6398.64}, {"cat": "Inhaloterapeuta", "jor": "8.0", "sm": 7875.28}, {"cat": "Electrocardiografista", "jor": "8.0", "sm": 7279.54}, {"cat": "Fonoaudiólogo", "jor": "6.0", "sm": 5906.46}, {"cat": "Fonoaudiólogo", "jor": "8.0", "sm": 7875.28}, {"cat": "Optometrista", "jor": "6.0", "sm": 5906.46}, {"cat": "Optometrista", "jor": "8.0", "sm": 7875.28}, {"cat": "Psicólogo", "jor": "8.0", "sm": 11230.64}, {"cat": "Psicólogo Clínico", "jor": "6.0", "sm": 8422.92}, {"cat": "Psicólogo Clínico", "jor": "8.0", "sm": 11230.64}, {"cat": "Psicómetra", "jor": "6.0", "sm": 5906.46}, {"cat": "Psicómetra", "jor": "8.0", "sm": 7875.28}, {"cat": "Técnico en Anestesia", "jor": "6.0", "sm": 6497.8}, {"cat": "Técnico en Anestesia", "jor": "8.0", "sm": 8663.78}, {"cat": "Técnico en Manejo de Aparatos de Electrodiagnóstico", "jor": "6.0", "sm": 5459.64}, {"cat": "Técnico en Manejo de Aparatos de Electrodiagnóstico", "jor": "8.0", "sm": 7279.54}, {"cat": "Técnico en Medicina Nuclear", "jor": "8.0", "sm": 7875.28}, {"cat": "Terapista Físico", "jor": "6.0", "sm": 5906.46}, {"cat": "Terapista Físico", "jor": "8.0", "sm": 7875.28}, {"cat": "Terapista Ocupacional", "jor": "6.0", "sm": 5906.46}, {"cat": "Terapista Ocupacional", "jor": "8.0", "sm": 7875.28}, {"cat": "Técnico Polivalente", "jor": "8.0", "sm": 5744.26}, {"cat": "Técnico Electricista", "jor": "8.0", "sm": 6090.42}, {"cat": "Técnico Electrónico", "jor": "8.0", "sm": 6090.42}, {"cat": "Técnico Mecánico", "jor": "8.0", "sm": 6090.42}, {"cat": "Técnico Plomero", "jor": "8.0", "sm": 6090.42}, {"cat": "Técnico A en Aire Acondicionado y Refrigeración", "jor": "8.0", "sm": 6727.66}, {"cat": "Técnico A en Equipos Médicos", "jor": "8.0", "sm": 6727.66}, {"cat": "Técnico A en Fluidos y Energéticos", "jor": "8.0", "sm": 6727.66}, {"cat": "Técnico A en Plantas de Lavado", "jor": "8.0", "sm": 6727.66}, {"cat": "Técnico A en Telecomunicaciones", "jor": "8.0", "sm": 6727.66}, {"cat": "Técnico B en Equipos Médicos", "jor": "8.0", "sm": 7500.94}, {"cat": "Técnico B en Fluidos y Energéticos", "jor": "8.0", "sm": 7500.94}, {"cat": "Técnico B en Plantas de Lavado", "jor": "8.0", "sm": 7500.94}, {"cat": "Técnico B en Telecomunicaciones", "jor": "8.0", "sm": 7500.94}, {"cat": "Técnico en Equipos Reciprocantes", "jor": "8.0", "sm": 7500.94}, {"cat": "Técnico en Electrónica Médica y Laboratorio", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico C en Fluidos y Energéticos", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico C en Plantas de Lavado", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico C en Telecomunicaciones", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico en Mecánica, Fluidos y Especialidades", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico en Equipos de Absorción", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico en Equipos Helicoidal", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico en Equipos de Rayos X", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico en Equipos Turbocentrífugo", "jor": "8.0", "sm": 8441.62}, {"cat": "Especialista en Equipos de Especialidades", "jor": "8.0", "sm": 9591.02}, {"cat": "Especialista en Equipos de Laboratorio", "jor": "8.0", "sm": 9591.02}, {"cat": "Especialista en Equipos de Mecánica y Fluidos", "jor": "8.0", "sm": 9591.02}, {"cat": "Especialista en Equipos de Aire Acondicionado y Refrig.", "jor": "8.0", "sm": 9591.02}, {"cat": "Especialista en Plantas de Lavado", "jor": "8.0", "sm": 9591.02}, {"cat": "Especialista en Equipos de Electrónica Médica", "jor": "8.0", "sm": 9591.02}, {"cat": "Especialista en Equipos de Rayos X", "jor": "8.0", "sm": 9591.02}, {"cat": "Especialista en Fluidos y Energéticos", "jor": "8.0", "sm": 9591.02}, {"cat": "Arquitecto", "jor": "8.0", "sm": 11230.64}, {"cat": "Dibujante de Construcción", "jor": "6.5", "sm": 5831.5}, {"cat": "Dibujante de Construcción", "jor": "8.0", "sm": 7177.18}, {"cat": "Dibujante de Estadística y Publicidad C", "jor": "6.5", "sm": 4175.98}, {"cat": "Dibujante de Estadística y Publicidad B", "jor": "8.0", "sm": 5461.8}, {"cat": "Dibujante de Estadística y Publicidad A", "jor": "6.5", "sm": 5831.5}, {"cat": "Dibujante de Estadística y Publicidad A", "jor": "8.0", "sm": 7177.18}, {"cat": "Dibujante de Ingeniería y Arquitectura", "jor": "6.5", "sm": 5831.5}, {"cat": "Dibujante de Ingeniería y Arquitectura", "jor": "8.0", "sm": 7177.18}, {"cat": "Auxiliar de Almacén", "jor": "6.5", "sm": 4746.16}, {"cat": "Auxiliar de Almacén", "jor": "8.0", "sm": 5841.44}, {"cat": "Oficial de Almacén", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Almacén", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Almacén", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Almacén", "jor": "8.0", "sm": 11266.48}, {"cat": "Auxiliar de Servicios de Intendencia", "jor": "6.5", "sm": 3961.3}, {"cat": "Auxiliar de Servicios de Intendencia", "jor": "8.0", "sm": 4875.46}, {"cat": "Ayudante de Servicios de Intendencia", "jor": "8.0", "sm": 5648.58}, {"cat": "Oficial de Servicios de Intendencia", "jor": "8.0", "sm": 6098.68}, {"cat": "Intendente", "jor": "8.0", "sm": 6565.76}, {"cat": "Auxiliar de Limpieza e Higiene (Médicas y No Médicas)", "jor": "8.0", "sm": 4875.46}, {"cat": "Ayudante de Limpieza e Higiene (Médicas y No Médicas)", "jor": "8.0", "sm": 5648.58}, {"cat": "Auxiliar de Limpieza y Cocina en Unidad Médica", "jor": "6.5", "sm": 3990.86}, {"cat": "Auxiliar de Limpieza y Cocina en Unidad Médica", "jor": "8.0", "sm": 4911.82}, {"cat": "Auxiliar de Servicios Generales en Unidad Médica", "jor": "6.5", "sm": 4742.96}, {"cat": "Auxiliar de Servicios Generales en Unidad Médica", "jor": "8.0", "sm": 5837.3}, {"cat": "Operador de Servicios de Lavandería", "jor": "6.5", "sm": 4571.8}, {"cat": "Operador de Servicios de Lavandería", "jor": "8.0", "sm": 5626.62}, {"cat": "Oficial de Servicios de Lavandería", "jor": "6.5", "sm": 4935.84}, {"cat": "Oficial de Servicios de Lavandería", "jor": "8.0", "sm": 6074.84}, {"cat": "Manejador de Alimentos", "jor": "6.5", "sm": 3961.3}, {"cat": "Manejador de Alimentos", "jor": "8.0", "sm": 4875.46}, {"cat": "Cocinero Técnico 2", "jor": "6.5", "sm": 4589.44}, {"cat": "Cocinero Técnico 2", "jor": "8.0", "sm": 5648.58}, {"cat": "Cocinero Técnico 1", "jor": "6.5", "sm": 4955.02}, {"cat": "Cocinero Técnico 1", "jor": "8.0", "sm": 6098.68}, {"cat": "Chofer", "jor": "6.5", "sm": 4662.28}, {"cat": "Chofer", "jor": "8.0", "sm": 5738.04}, {"cat": "Motociclista", "jor": "6.5", "sm": 4662.28}, {"cat": "Motociclista", "jor": "8.0", "sm": 5738.04}, {"cat": "Controlador de Vehículos", "jor": "6.5", "sm": 5937.82}, {"cat": "Controlador de Vehículos", "jor": "8.0", "sm": 7308.0}, {"cat": "Enfermera para el Traslado de Pacientes de Urgencia", "jor": "8.0", "sm": 7381.12}, {"cat": "Enfermera para Traslado de Pacientes Terapia Intensiva", "jor": "8.0", "sm": 8415.48}, {"cat": "Técnico Operador Transporte Pacientes de Urgencia", "jor": "8.0", "sm": 7193.64}, {"cat": "Técnico Operador Transporte Pacientes Terapia Intens.", "jor": "8.0", "sm": 7783.54}, {"cat": "Médico para el Traslado de Pacientes de Urgencia", "jor": "8.0", "sm": 12844.2}, {"cat": "Médico para Traslado de Pacientes Terapia Intensiva", "jor": "8.0", "sm": 12844.2}, {"cat": "Camillero Vehículos Serv. Ord. y Prog. (D.F. y Valle)", "jor": "8.0", "sm": 5748.92}, {"cat": "Operador de Vehículos Serv. Ord. y Prog. (D.F. y Valle)", "jor": "8.0", "sm": 6766.56}, {"cat": "Operador de Ambulancias (Foráneo)", "jor": "6.5", "sm": 4998.14}, {"cat": "Operador de Ambulancias (Foráneo)", "jor": "8.0", "sm": 6151.64}, {"cat": "Controlador Vehículos Serv. Ord. y Prog.", "jor": "6.5", "sm": 5937.82}, {"cat": "Controlador Vehículos Serv. Ord. y Prog.", "jor": "8.0", "sm": 7308.0}, {"cat": "Camillero de Unidades Hospitalarias", "jor": "8.0", "sm": 5748.92}, {"cat": "Elevadorista", "jor": "6.5", "sm": 4154.86}, {"cat": "Elevadorista", "jor": "8.0", "sm": 5113.92}, {"cat": "Ayudante de Autopsia", "jor": "6.5", "sm": 5326.04}, {"cat": "Ayudante de Autopsia", "jor": "8.0", "sm": 6555.1}, {"cat": "Auxiliar de Farmacia", "jor": "6.5", "sm": 5220.34}, {"cat": "Auxiliar de Farmacia", "jor": "8.0", "sm": 6424.6}, {"cat": "Ayudante de Farmacia", "jor": "8.0", "sm": 7180.26}, {"cat": "Oficial de Farmacia", "jor": "8.0", "sm": 8329.04}, {"cat": "Coordinador de Farmacia", "jor": "8.0", "sm": 9800.3}, {"cat": "Guardavidas", "jor": "6.5", "sm": 4571.8}, {"cat": "Heliografista", "jor": "8.0", "sm": 6673.96}, {"cat": "Técnico de Microfotografía", "jor": "8.0", "sm": 7875.28}, {"cat": "Machetero", "jor": "6.5", "sm": 4071.5}, {"cat": "Machetero", "jor": "8.0", "sm": 5011.44}, {"cat": "Masajista", "jor": "6.5", "sm": 3908.44}, {"cat": "Multilitista", "jor": "6.5", "sm": 5209.52}, {"cat": "Multilitista", "jor": "8.0", "sm": 6411.42}, {"cat": "Operador de Equipo A (Intercom. Neumática)", "jor": "6.5", "sm": 6442.26}, {"cat": "Operador de Máquinas de Revelado Automático", "jor": "8.0", "sm": 5626.62}, {"cat": "Peluquero", "jor": "8.0", "sm": 4963.88}, {"cat": "Preparador de mezclas", "jor": "8.0", "sm": 11230.64}, {"cat": "Operador Telefónico A", "jor": "6.5", "sm": 4667.16}, {"cat": "Operador Telefónico A", "jor": "8.0", "sm": 5744.26}, {"cat": "Operador Telefónico B", "jor": "8.0", "sm": 6678.82}, {"cat": "Operador Telefónico C", "jor": "8.0", "sm": 7844.5}, {"cat": "Coordinador de Operadores Telefónicos", "jor": "8.0", "sm": 9308.32}, {"cat": "Operador General en Tiendas", "jor": "8.0", "sm": 5841.44}, {"cat": "Jefe de Línea en Tiendas", "jor": "8.0", "sm": 6226.66}, {"cat": "Auxiliar de Velatorio", "jor": "8.0", "sm": 4880.0}, {"cat": "Operador de Velatorio", "jor": "8.0", "sm": 5738.04}, {"cat": "Ayudante de Embalsamamiento", "jor": "8.0", "sm": 6136.0}, {"cat": "Yesista", "jor": "8.0", "sm": 5744.26}, {"cat": "Cuidador de Animales", "jor": "8.0", "sm": 5626.62}, {"cat": "Técnico de Bibliotecas", "jor": "6.5", "sm": 5589.56}, {"cat": "Técnico de Bibliotecas", "jor": "8.0", "sm": 6879.38}, {"cat": "Asistente de Bibliotecario", "jor": "6.5", "sm": 7396.12}, {"cat": "Asistente de Bibliotecario", "jor": "8.0", "sm": 9103.14}, {"cat": "Bibliotecario", "jor": "6.5", "sm": 9125.04}, {"cat": "Bibliotecario", "jor": "8.0", "sm": 11230.64}, {"cat": "Biólogo", "jor": "8.0", "sm": 11230.64}, {"cat": "Auxiliar de Administración de C.V.", "jor": "8.0", "sm": 5744.26}, {"cat": "Auxiliar de Atención Médica de C.V.", "jor": "8.0", "sm": 5697.86}, {"cat": "Auxiliar de Hospedaje de C.V.", "jor": "8.0", "sm": 5787.78}, {"cat": "Auxiliar de Operación Contable de C.V.", "jor": "8.0", "sm": 6678.82}, {"cat": "Lavandero en Centros Vacacionales", "jor": "8.0", "sm": 5626.62}, {"cat": "Operador de Seguridad en Albercas de C.V.", "jor": "8.0", "sm": 5626.62}, {"cat": "Operador de Servicios Internos de C.V.", "jor": "8.0", "sm": 4875.46}, {"cat": "Operador de Vehículos de C.V.", "jor": "8.0", "sm": 5738.04}, {"cat": "Planchador en Centros Vacacionales", "jor": "8.0", "sm": 5626.62}, {"cat": "Vigilante de Centros Vacacionales", "jor": "8.0", "sm": 4875.46}, {"cat": "Educadora", "jor": "6.0", "sm": 5469.06}, {"cat": "Educadora", "jor": "6.5", "sm": 5924.68}, {"cat": "Educadora", "jor": "8.0", "sm": 7291.94}, {"cat": "Oficial de Puericultura", "jor": "6.5", "sm": 4667.16}, {"cat": "Oficial de Puericultura", "jor": "8.0", "sm": 5744.26}, {"cat": "Técnico de Puericultura", "jor": "8.0", "sm": 6230.44}, {"cat": "Orientador", "jor": "6.5", "sm": 6557.9}, {"cat": "Orientador", "jor": "8.0", "sm": 8071.42}, {"cat": "Orientador de Actividades Familiares", "jor": "20.0", "sm": 4116.02}, {"cat": "Orientador Actividades Artísticas (Clásica/Moderna)", "jor": "20.0", "sm": 3531.36}, {"cat": "Orientador Actividades Artísticas (Danza Regional)", "jor": "20.0", "sm": 3767.66}, {"cat": "Orientador Actividades Artísticas (Maestro Música)", "jor": "20.0", "sm": 3531.36}, {"cat": "Orientador Actividades Artísticas (Arte Dramático)", "jor": "20.0", "sm": 3874.68}, {"cat": "Orientador de Educación Física", "jor": "20.0", "sm": 4154.68}, {"cat": "Orientador de Iniciación Cultural", "jor": "20.0", "sm": 3531.36}, {"cat": "Orientador Técnico Médico", "jor": "20.0", "sm": 5820.22}, {"cat": "Auxiliar de Orientador Técnico Médico", "jor": "6.5", "sm": 4054.16}, {"cat": "Pianista", "jor": "1.5", "sm": 3291.18}, {"cat": "Profesor de Educación Física A", "jor": "4.0", "sm": 4127.42}, {"cat": "Profesor de Educación Física A", "jor": "6.0", "sm": 5332.22}, {"cat": "Profesor de Educación Física A", "jor": "8.0", "sm": 7109.82}, {"cat": "Profesor de Educación Física B", "jor": "4.0", "sm": 4604.38}, {"cat": "Profesor de Educación Física B", "jor": "6.0", "sm": 6047.7}, {"cat": "Profesor de Educación Física B", "jor": "8.0", "sm": 8063.58}, {"cat": "Profesor de Educación Física C", "jor": "4.0", "sm": 5182.08}, {"cat": "Profesor de Educación Física C", "jor": "6.0", "sm": 6914.4}, {"cat": "Profesor de Educación Física C", "jor": "8.0", "sm": 9219.34}, {"cat": "Promotor de Estomatología", "jor": "8.0", "sm": 11230.64}, {"cat": "Promotor de Salud Comunitaria", "jor": "8.0", "sm": 7068.14}, {"cat": "Aux. de Administración (Esquema Modificado y Campo)", "jor": "8.0", "sm": 5917.9}, {"cat": "Aux. de Atención Médica (Esquema Modificado y Campo)", "jor": "8.0", "sm": 6108.68}, {"cat": "Auxiliar de Laboratorio (Esquema Modificado y Campo)", "jor": "8.0", "sm": 6309.58}, {"cat": "Aux. Servicios Generales (Esquema Modificado y Campo)", "jor": "8.0", "sm": 4990.68}, {"cat": "Estomatólogo (Esquema Modificado y Campo)", "jor": "6.0", "sm": 8869.12}, {"cat": "Operador Serv. Radiodiagnóstico (Esq. Mod. y Campo)", "jor": "8.0", "sm": 6309.58}, {"cat": "Auxiliar de Administración (Unidad Médica de Campo)", "jor": "8.0", "sm": 5917.9}, {"cat": "Auxiliar de Área Médica (Unidad Médica de Campo)", "jor": "8.0", "sm": 6108.68}, {"cat": "Aux. de Servicios Generales (Unidad Médica de Campo)", "jor": "8.0", "sm": 4990.68}, {"cat": "Estomatólogo en Unidad Médica de Campo", "jor": "8.0", "sm": 7748.32}, {"cat": "Operador de Mantenimiento (Unidad Médica de Campo)", "jor": "8.0", "sm": 4990.68}, {"cat": "Operador Servicios Auxiliares Laboratorio (U.M. Campo)", "jor": "8.0", "sm": 6309.58}, {"cat": "Operador Servicios Auxiliares Rayos X (U.M. Campo)", "jor": "8.0", "sm": 6309.58}, {"cat": "Auxiliar de Administración en H.R.", "jor": "8.0", "sm": 5917.9}, {"cat": "Auxiliar de Área Médica en H.R.", "jor": "8.0", "sm": 6108.68}, {"cat": "Auxiliar de Enfermería General en H.R.", "jor": "8.0", "sm": 6108.68}, {"cat": "Auxiliar de Enfermería General en U.M.R.", "jor": "8.0", "sm": 6108.68}, {"cat": "Auxiliar de Servicios Generales en H.R.", "jor": "8.0", "sm": 4990.68}, {"cat": "Citotecnólogo en H.R.", "jor": "8.0", "sm": 7337.54}, {"cat": "Enfermera Especialista Quirúrgica H.R.", "jor": "8.0", "sm": 8415.48}, {"cat": "Enfermera General en H.R.", "jor": "8.0", "sm": 7310.08}, {"cat": "Enfermera General Clínica en Unidad del Programa", "jor": "8.0", "sm": 7898.3}, {"cat": "Estomatólogo en H.R.", "jor": "8.0", "sm": 11924.12}, {"cat": "Laboratorista en H.R.", "jor": "8.0", "sm": 8349.78}, {"cat": "Médico General en U.M.C.", "jor": "8.0", "sm": 9751.8}, {"cat": "Médico No Familiar H.R.", "jor": "8.0", "sm": 12844.2}, {"cat": "Nutricionista Dietista en H.R.", "jor": "8.0", "sm": 7310.08}, {"cat": "Oficial de Conservación en H.R.", "jor": "8.0", "sm": 5709.56}, {"cat": "Operador de Mantenimiento en H.R.", "jor": "8.0", "sm": 5709.56}, {"cat": "Operador de Serv. Auxiliares (Laboratorio) en H.R.", "jor": "8.0", "sm": 6309.58}, {"cat": "Operador de Serv. Auxiliares (Radiodiagnóstico) en H.R.", "jor": "8.0", "sm": 6309.58}, {"cat": "Trabajadora Social en H.R.", "jor": "8.0", "sm": 7310.08}, {"cat": "Residente (R1)", "jor": "", "sm": 2810.74}, {"cat": "Residente (R2)", "jor": "", "sm": 3042.46}, {"cat": "Residente (R3)", "jor": "", "sm": 3119.54}, {"cat": "Residente (R4)", "jor": "", "sm": 3197.52}, {"cat": "Residente (R5)", "jor": "", "sm": 3293.5}, {"cat": "Residente (R6)", "jor": "", "sm": 3392.26}, {"cat": "Residente (R7)", "jor": "", "sm": 3494.16}, {"cat": "Residente (R8)", "jor": "", "sm": 3598.82}];
 
-  // Buscador
+  // -------------------------------------------------------------
+  // BUSCADOR Y AUTOCOMPLETE
+  // -------------------------------------------------------------
   const searchInput = document.getElementById('buscador');
   searchInput.addEventListener('input', function() {
     closeLists();
@@ -400,11 +399,11 @@
     a.setAttribute("class", "autocomplete-items");
     this.parentNode.appendChild(a);
     
-    let matches = sueldosDB.filter(i => i.cat.toLowerCase().includes(this.value.toLowerCase())).slice(0, 10);
+    let matches = sueldosDB.filter(i => i.cat.toLowerCase().includes(this.value.toLowerCase())).slice(0, 15);
     
     matches.forEach(item => {
       let b = document.createElement("DIV");
-      b.innerHTML = `<strong>${item.cat}</strong> <span style="color:var(--text-muted); font-size:0.85rem;">(${item.jor} hrs)</span> - <span style="color:var(--primary-dark); font-weight:bold;">${money(item.sm)}</span>`;
+      b.innerHTML = `<div><strong>${item.cat}</strong> <span style="color:var(--muted); font-size:0.85rem;">(${item.jor} hrs)</span></div><div style="color:var(--primary); font-weight:bold;">${money(item.sm)}</div>`;
       b.addEventListener("click", function() {
         seleccionarPuesto(item);
         closeLists();
@@ -419,16 +418,19 @@
   }
   document.addEventListener("click", e => closeLists());
 
-  // Llenado de Datos
+  // -------------------------------------------------------------
+  // LLENADO DE DATOS
+  // -------------------------------------------------------------
   function seleccionarPuesto(item) {
     searchInput.value = `${item.cat} (${item.jor} hrs)`;
     userData.tabular = item.sm;
-    userData.jornada = item.jor;
+    // Algunos residentes tienen jor="", asignamos 8 por default para matemáticas
+    userData.jornada = parseFloat(item.jor) || 8; 
     userData.categoria = item.cat;
     userData.renta = parseFloat(document.getElementById('ud-renta').value) || 0;
 
     document.getElementById('ud-cat').innerText = item.cat;
-    document.getElementById('ud-jor').innerText = item.jor;
+    document.getElementById('ud-jor').innerText = item.jor || '-';
     document.getElementById('ud-tab').innerText = money(item.sm);
     
     document.getElementById('user-data').classList.add('active');
@@ -438,7 +440,9 @@
     userData.renta = parseFloat(document.getElementById('ud-renta').value) || 0;
   }
 
-  // Navegación
+  // -------------------------------------------------------------
+  // NAVEGACIÓN
+  // -------------------------------------------------------------
   function openPanel(panelId, btn) {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
@@ -455,7 +459,9 @@
     return true;
   }
 
-  // 1. Anticipo
+  // -------------------------------------------------------------
+  // 1. ANTICIPO
+  // -------------------------------------------------------------
   function calcAnticipo() {
     if (!validarDatos()) return;
     const sueldo = userData.tabular + userData.renta;
@@ -471,7 +477,9 @@
     document.getElementById('res_anticipo').classList.add('active');
   }
 
-  // 2. Fondo Ahorro
+  // -------------------------------------------------------------
+  // 2. FONDO AHORRO
+  // -------------------------------------------------------------
   function calcAhorro() {
     if (!validarDatos()) return;
     const diasLab = parseFloat(document.getElementById('aho_dias').value) || 0;
@@ -485,7 +493,9 @@
     document.getElementById('res_ahorro').classList.add('active');
   }
 
-  // 3. Tiempo Extra
+  // -------------------------------------------------------------
+  // 3. TIEMPO EXTRA
+  // -------------------------------------------------------------
   function calcExtra() {
     if (!validarDatos()) return;
     const horas = parseFloat(document.getElementById('ext_horas').value) || 0;
@@ -499,12 +509,17 @@
     document.getElementById('res_extra').classList.add('active');
   }
 
-  // Regla Hipotecaria
+  // -------------------------------------------------------------
+  // REGLA HIPOTECARIA Y AUTO
+  // -------------------------------------------------------------
   function getPorcentajeHipotecario() {
+    // Si el sueldo es menor o igual al Mensajero 8.0hrs ($4868.04), es 25%, sino 30%
     return userData.tabular <= 4868.04 ? 0.25 : 0.30;
   }
 
-  // 4. Hipotecario Largo
+  // -------------------------------------------------------------
+  // 4. HIPOTECARIO LARGO
+  // -------------------------------------------------------------
   function calcHipoLargo() {
     if (!validarDatos()) return;
     const liq = parseInt(document.getElementById('hl_liq').value); 
@@ -519,7 +534,9 @@
     document.getElementById('res_hipo_largo').classList.add('active');
   }
 
-  // 5. Hipotecario Medio
+  // -------------------------------------------------------------
+  // 5. HIPOTECARIO MEDIO
+  // -------------------------------------------------------------
   function calcHipoMedio() {
     if (!validarDatos()) return;
     
@@ -533,7 +550,9 @@
     document.getElementById('res_hipo_medio').classList.add('active');
   }
 
-  // 6. Auto
+  // -------------------------------------------------------------
+  // 6. AUTO
+  // -------------------------------------------------------------
   function calcAuto() {
     if (!validarDatos()) return;
     
@@ -550,7 +569,9 @@
     document.getElementById('res_auto').classList.add('active');
   }
 
-  // 7. Aguinaldo
+  // -------------------------------------------------------------
+  // 7. AGUINALDO
+  // -------------------------------------------------------------
   function calcAguinaldo() {
     if (!validarDatos()) return;
     const pideAgosto = document.getElementById('ag_agosto').value === 'si';
