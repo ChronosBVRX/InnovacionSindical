@@ -184,13 +184,20 @@
       <!-- LOGIN -->
       <form id="fLogin" class="grid" autocomplete="on">
         <div class="grid-1">
-          <label for="liEmail">Correo</label>
-          <input id="liEmail" type="email" placeholder="tu@correo.com" required>
+          <label for="liUser">Matrícula</label>
+          <input id="liUser"
+                 inputmode="numeric"
+                 autocomplete="username"
+                 placeholder="Escribe tu matrícula"
+                 required>
+          <div class="hint">Ingresa tu matrícula para iniciar sesión.</div>
         </div>
+
         <div class="grid-1">
           <label for="liPass">Contraseña</label>
           <input id="liPass" type="password" placeholder="••••••••" required>
         </div>
+
         <div class="grid-1 row">
           <button class="btn primary" type="submit">Entrar</button>
           <span class="hint">¿Nuevo? cambia a “Crear cuenta”.</span>
@@ -208,6 +215,17 @@
         <div>
           <label for="suName">Nombre para mostrar</label>
           <input id="suName" placeholder="Ej. Ana Gómez" required>
+        </div>
+
+        <div>
+          <label for="suMatricula">Matrícula</label>
+          <input id="suMatricula"
+                 inputmode="numeric"
+                 autocomplete="off"
+                 placeholder="Ej. 12345678"
+                 pattern="^[0-9]{4,12}$"
+                 required>
+          <div class="hint">Solo números (4 a 12 dígitos).</div>
         </div>
 
         <div>
@@ -565,31 +583,56 @@
       if (!catList.contains(e.target) && e.target !== catInput) closeCat();
     });
 
-    /* LOGIN */
+    /* LOGIN (por matrícula) */
     fLogin.addEventListener('submit', async (e)=>{
       e.preventDefault();
       liErr.textContent = '';
-      const email = $('#liEmail').value.trim();
+
+      const matricula = ($('#liUser').value || '').trim();
       const password = $('#liPass').value;
+
+      if (!matricula || !password){
+        liErr.textContent = 'Escribe tu matrícula y contraseña.';
+        return;
+      }
+
+      // Validación simple (ajústala si tu matrícula tiene otro formato)
+      if (!/^[0-9]{4,12}$/.test(matricula)){
+        liErr.textContent = 'La matrícula debe contener solo números (4 a 12 dígitos).';
+        return;
+      }
+
+      // Resolver email por matrícula usando RPC en Supabase
+      const { data: email, error: rpcErr } = await supabase.rpc('get_email_by_matricula', {
+        p_matricula: matricula
+      });
+
+      if (rpcErr){
+        liErr.textContent = 'No se pudo validar la matrícula. Intenta de nuevo.';
+        return;
+      }
+
+      if (!email){
+        liErr.textContent = 'Matrícula no encontrada. Si ya tienes cuenta, entra por correo o registra tu matrícula en tu perfil.';
+        return;
+      }
 
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error){
         liErr.textContent = 'Error: ' + (error.message || 'No se pudo iniciar sesión');
         return;
       }
+
       location.href = REDIRECT_AFTER_LOGIN;
     });
 
-    /* OLVIDÉ CONTRASEÑA */
+    /* OLVIDÉ CONTRASEÑA (pide correo porque Supabase envía al email) */
     forgotPass.addEventListener('click', async ()=>{
       liErr.textContent = '';
-      let email = $('#liEmail').value.trim();
 
-      if (!email){
-        email = prompt("Escribe el correo con el que te registraste:");
-        if (!email) return;
-        email = email.trim();
-      }
+      let email = prompt("Escribe el correo con el que te registraste (para enviarte el enlace):");
+      if (!email) return;
+      email = email.trim();
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: RESET_PASSWORD_REDIRECT
@@ -603,12 +646,13 @@
       alert("Te enviamos un correo con instrucciones para restablecer tu contraseña.");
     });
 
-    /* SIGNUP */
+    /* SIGNUP (matrícula obligatoria + se guarda en profiles) */
     fSignup.addEventListener('submit', async (e)=>{
       e.preventDefault();
       suErr.textContent = '';
 
       const display_name = $('#suName').value.trim();
+      const matricula    = ($('#suMatricula').value || '').trim();
       const phone        = $('#suPhone').value.trim();
       const birthdate    = $('#suBirth').value;
       const categoria    = $('#suCategoria').value.trim();
@@ -617,8 +661,14 @@
       const email        = $('#suEmail').value.trim();
       const password     = $('#suPass').value;
 
-      if (!display_name || !phone || !birthdate || !categoria || !adscripcion){
+      if (!display_name || !matricula || !phone || !birthdate || !categoria || !adscripcion){
         suErr.textContent = 'Completa todos los campos del perfil.';
+        return;
+      }
+
+      if (!/^[0-9]{4,12}$/.test(matricula)){
+        suErr.textContent = 'La matrícula debe contener solo números (4 a 12 dígitos).';
+        $('#suMatricula').focus();
         return;
       }
 
@@ -629,11 +679,11 @@
         return;
       }
 
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { display_name, phone, birthdate, categoria, adscripcion }
+          data: { display_name, phone, birthdate, categoria, adscripcion } // metadata (opcional)
         }
       });
 
@@ -642,9 +692,36 @@
         return;
       }
 
+      // Guardar matrícula en profiles (la fila ya debería existir por tu lógica actual)
+      const userId = data?.user?.id;
+      if (userId){
+        const { error: upErr } = await supabase
+          .from('profiles')
+          .update({
+            display_name,
+            categoria,
+            adscripcion,
+            telefono: phone,
+            cumple: birthdate,
+            matricula
+          })
+          .eq('user_id', userId);
+
+        if (upErr){
+          const msg = (upErr.message || '').toLowerCase();
+          if (msg.includes('duplicate') || msg.includes('unique')){
+            suErr.textContent = "Esa matrícula ya está registrada. Si es tu cuenta, intenta recuperar tu contraseña.";
+          } else {
+            suErr.textContent = "Cuenta creada, pero no se pudo guardar la matrícula: " + (upErr.message || "");
+          }
+          return;
+        }
+      }
+
       alert('¡Cuenta creada! Revisa tu correo para confirmar la dirección. Luego inicia sesión.');
       showLogin();
-      $('#liEmail').value = email;
+      // Si quieres, pre-llenamos matrícula en login
+      $('#liUser').value = matricula;
     });
 
   })();
