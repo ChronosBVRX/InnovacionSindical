@@ -156,12 +156,12 @@
      ESTILOS EXCLUSIVOS PARA IMPRESIÓN
      ========================================= */
   @media print {
-    /* 1. Ocultamos el formulario de atrás, el menú del modal y las notificaciones */
+    /* Ocultamos el formulario de atrás, el menú del modal y las notificaciones */
     .wrap, .modal-h, #status {
       display: none !important;
     }
     
-    /* 2. Le quitamos los fondos oscuros y la posición al modal para que la hoja fluya natural */
+    /* Le quitamos los fondos oscuros y la posición al modal para que la hoja fluya natural */
     body, .modal, .modal-card, .modal-b {
       background: transparent !important;
       position: static !important;
@@ -174,7 +174,7 @@
       overflow: visible !important;
     }
 
-    /* 3. Ajustamos la hoja para que tome todo el espacio en papel y no escale extraño */
+    /* Ajustamos la hoja para que tome todo el espacio en papel y no escale extraño */
     .page.carta {
       width: 100% !important;
       height: auto !important;
@@ -184,21 +184,20 @@
     }
 
     .sheet {
-      padding: 2cm !important; /* Margen físico seguro en la impresora */
+      padding: 2cm !important;
       height: auto !important;
     }
 
-    /* 4. Solucionamos la posición de la firma para documentos largos */
+    /* Solucionamos la posición de la firma para documentos largos */
     .sheet .pie {
       position: relative !important;
       bottom: auto !important;
       left: auto !important;
       right: auto !important;
       margin-top: 60px !important;
-      page-break-inside: avoid !important; /* Evita que la firma se divida entre 2 hojas */
+      page-break-inside: avoid !important;
     }
 
-    /* 5. Configuramos tamaño y quitamos márgenes del navegador para usar los de .sheet */
     @page {
       size: letter;
       margin: 0;
@@ -299,7 +298,6 @@
 
         <div class="grid-full" style="display: flex; gap: 12px; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
           <span style="font-size: 12px; color: var(--text-muted);">Formato Carta garantizado.</span>
-          <button type="button" class="btn" id="btnPreview">👁️ Vista Previa</button>
           <button type="submit" class="btn primary" id="btnGenerarPrincipal">🚀 Generar Documento</button>
         </div>
       </form>
@@ -314,9 +312,9 @@
         <span style="color:white; font-weight:bold;">Vista Previa del Oficio</span>
         <div style="display:flex; gap:8px;">
           <button class="btn" id="btnCopy">📋 Copiar</button>
-          <button class="btn" id="btnDownload">⬇️ PDF</button>
+          <button class="btn" id="btnDownload">⬇️ Descargar PDF</button>
           <button class="btn primary" id="btnPrint">🖨️ Imprimir</button>
-          <button class="btn" id="btnClose" style="color:#ef4444; border-color:rgba(239,68,68,0.3);">✖</button>
+          <button class="btn" id="btnClose" style="color:#ef4444; border-color:rgba(239,68,68,0.3);">✖ Cerrar</button>
         </div>
       </div>
       <div class="modal-b" id="modalBody">
@@ -437,39 +435,11 @@
         `;
       };
 
-      $('#btnPreview').addEventListener('click', async () => {
-        if (!$('form').checkValidity()) return alert("Por favor completa los campos obligatorios.");
-        const d = {
-          ciudad: $('#ciudad').value,
-          fecha: $('#fecha').value,
-          destinatario: $('#destinatario').value,
-          cargo: $('#cargo').value,
-          nombre: $('#nombre').value,
-          matricula: $('#matricula').value,
-          categoria: $('#categoria').value,
-          lugar: $('#lugar').value
-        };
-        const btn = $('#btnPreview');
-        const btnText = btn.innerHTML;
-        btn.innerHTML = "⏳ Cargando...";
-        btn.disabled = true;
-
-        const cuerpoIA = await redactarIA($('#problematica').value);
-        $('#sheet').innerHTML = generarContenido(d, cuerpoIA);
-        
-        btn.innerHTML = btnText;
-        btn.disabled = false;
-
-        $('#modal').classList.add('show');
-        ajustarEscala();
-      });
-
       $('#btnClose').addEventListener('click', () => $('#modal').classList.remove('show'));
 
       async function crearPDF(btnElement) {
         showStatus("📄 Generando PDF...");
         
-        // Efecto de carga en el botón
         let originalText = "";
         if (btnElement) {
           originalText = btnElement.innerHTML;
@@ -480,17 +450,15 @@
         const pageEl = $('#page');
         const originalTransform = pageEl.style.transform;
         
-        // Restauramos a escala real para no perder calidad
         pageEl.style.transform = 'scale(1)'; 
         
         try {
           const canvas = await html2canvas(pageEl, {
-            scale: 2, // Alta resolución
+            scale: 2, 
             useCORS: true,
             backgroundColor: '#ffffff'
           });
 
-          // Devolvemos la escala inmediatamente
           pageEl.style.transform = originalTransform;
 
           const { jsPDF } = window.jspdf;
@@ -511,7 +479,6 @@
           showStatus("❌ Error al generar el PDF.");
           pageEl.style.transform = originalTransform; 
         } finally {
-          // Restaurar botón
           if (btnElement) {
             btnElement.innerHTML = originalText;
             btnElement.disabled = false;
@@ -519,20 +486,19 @@
         }
       }
 
-      // Enlaces a los botones pasándoles el propio botón (this/e.target) para el efecto de carga
       $('#btnDownload').addEventListener('click', function() { 
         crearPDF(this); 
       });
 
+      // El botón principal ahora solo redacta y abre el modal
       $('#fDenuncia').addEventListener('submit', async (e) => { 
         e.preventDefault(); 
         
         const btnSubmit = $('#btnGenerarPrincipal');
         const btnText = btnSubmit.innerHTML;
-        btnSubmit.innerHTML = "⏳ Generando...";
+        btnSubmit.innerHTML = "⏳ Generando documento...";
         btnSubmit.disabled = true;
 
-        // Si envían desde el form principal directo, primero hay que redactar para llenar el HTML oculto
         const d = {
           ciudad: $('#ciudad').value,
           fecha: $('#fecha').value,
@@ -546,10 +512,12 @@
         const cuerpoIA = await redactarIA($('#problematica').value);
         $('#sheet').innerHTML = generarContenido(d, cuerpoIA);
 
-        await crearPDF(btnSubmit);
-        
+        // Restaurar botón y mostrar modal
         btnSubmit.innerHTML = btnText;
         btnSubmit.disabled = false;
+
+        $('#modal').classList.add('show');
+        ajustarEscala();
       });
 
       $('#btnPrint').addEventListener('click', () => {
