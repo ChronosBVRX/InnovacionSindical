@@ -259,70 +259,32 @@
     <div id="results" class="grid"></div>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
-    // === Datos Estructurados (Estatutos SNTSS Sección XX) ===
-    const DATA = [
-      // --- SECRETARÍAS ---
-      { area: "Secretarios", cartera: "Secretaría General", nombre: "Carlos Alberto Guerrero Rascon", foto: "https://github.com/ChronosBVRX/InnovacionSindical/blob/main/comite/Carlos%20Guerrero.jpg?raw=true", categoria: "Medico No Familiar (Neurocirujano)", unidad: "HGZ 83", desc: "Representar legal y socialmente al Sindicato en la Sección, presidir asambleas y vigilar el estricto cumplimiento de los Estatutos y del Contrato Colectivo de Trabajo." },
-      { area: "Secretarios", cartera: "Secretaría del Interior y Propaganda", nombre: "", foto: "", categoria: "", unidad: "", desc: "Sustituir al Secretario General, llevar el registro actualizado de los miembros y dirigir las campañas de difusión de las actividades del Sindicato." },
-      { area: "Secretarios", cartera: "Secretaría de Conflictos", nombre: "", foto: "", categoria: "", unidad: "", desc: "Atender, defender y resolver los problemas laborales, contractuales y estatutarios de los agremiados frente al Instituto." },
-      { area: "Secretarios", cartera: "Secretaría de Trabajo", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar el cumplimiento de la jornada laboral, tramitar licencias y atender problemas de trabajo que no entrañen violaciones directas al Contrato." },
-      { area: "Secretarios", cartera: "Secretaría del Exterior", nombre: "", foto: "", categoria: "", unidad: "", desc: "Fomentar las buenas relaciones con otras organizaciones sindicales, propiciando la solidaridad y el intercambio de experiencias institucionales." },
-      { area: "Secretarios", cartera: "Secretaría Tesorero", nombre: "", foto: "", categoria: "", unidad: "", desc: "Administrar con probidad los fondos sindicales, realizar cortes de caja, balances y cubrir los gastos aprobados por la sección." },
-      { area: "Secretarios", cartera: "Secretaría de Previsión Social", nombre: "", foto: "", categoria: "", unidad: "", desc: "Orientar en trámites de riesgos de trabajo, jubilaciones, pensiones y vigilar el otorgamiento del Fondo de Ayuda Sindical por Defunción." },
-      { area: "Secretarios", cartera: "Secretaría de Igualdad Sustantiva", nombre: "", foto: "", categoria: "", unidad: "", desc: "Fomentar la protección de los derechos y la equidad de las y los trabajadores, integrar comisiones afines y coordinar programas de bienestar." },
-      { area: "Secretarios", cartera: "Secretaría de Asuntos Técnicos", nombre: "", foto: "", categoria: "", unidad: "", desc: "Procurar el perfeccionamiento técnico de los miembros, estudiar problemas institucionales y administrar las becas otorgadas por el Instituto." },
-      { area: "Secretarios", cartera: "Secretaría de Actas y Acuerdos", nombre: "", foto: "", categoria: "", unidad: "", desc: "Levantar actas de congresos y asambleas, llevar la estadística general de la agrupación y custodiar el Archivo Central del Sindicato." },
-      { area: "Secretarios", cartera: "Secretaría de Prensa", nombre: "", foto: "", categoria: "", unidad: "", desc: "Tener a su cargo la publicación oficial, difundir los derechos de los trabajadores y mantener informados a los agremiados mediante boletines." },
-      { area: "Secretarios", cartera: "Secretaría de Puestos Periféricos", nombre: "", foto: "", categoria: "", unidad: "", desc: "Atender asuntos, proponer mejoras y mediar en conflictos específicos de los compañeros que prestan sus servicios en Puestos Periféricos." },
-      { area: "Secretarios", cartera: "Secretaría de Admisión y Cambios", nombre: "", foto: "", categoria: "", unidad: "", desc: "Expedir propuestas sindicales de ingreso, firmar nombramientos y vigilar el cumplimiento de los reglamentos de Bolsa de Trabajo y Escalafón." },
-      { area: "Secretarios", cartera: "Secretaría de Capacitación y Adiestramiento", nombre: "", foto: "", categoria: "", unidad: "", desc: "Fomentar programas de capacitación continua, organizar cursos de especialización y supervisar los centros de capacitación sindical." },
-      { area: "Secretarios", cartera: "Secretaría de Calidad y Modernización", nombre: "", foto: "", categoria: "", unidad: "", desc: "Establecer y actualizar indicadores para evaluar la calidad de las acciones de la Institución y estudiar programas de modernización de servicios." },
-      { area: "Secretarios", cartera: "Secretaría de Acción Social", nombre: "", foto: "", categoria: "", unidad: "", desc: "Organizar eventos sociales, culturales y recreativos, diseñando estrategias para fomentar la convivencia y la calidad de la Seguridad Social." },
+    // === Conexión a Supabase ===
+    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // --- COMISIONES ---
-      { area: "Comisiones", cartera: "Presidente de Honor y Justicia", nombre: "", foto: "", categoria: "", unidad: "", desc: "Conocer, investigar y dictaminar sobre faltas de los miembros, velando por el mantenimiento de la dignidad y el honor de la Agrupación." },
-      { area: "Comisiones", cartera: "1er. Secretario de Honor y Justicia", nombre: "", foto: "", categoria: "", unidad: "", desc: "Asistir a la presidencia en la investigación de faltas y en la formulación de dictámenes conforme a los Estatutos." },
-      { area: "Comisiones", cartera: "2do. Secretario de Honor y Justicia", nombre: "", foto: "", categoria: "", unidad: "", desc: "Colaborar en el desahogo de diligencias y en el estudio de los expedientes turnados a la Comisión." },
-      { area: "Comisiones", cartera: "Presidente de Vigilancia", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar que los funcionarios cumplan sus obligaciones estatutarias, fiscalizar operaciones económicas e intervenir en diferencias internas." },
-      { area: "Comisiones", cartera: "1er. Secretario de Vigilancia", nombre: "", foto: "", categoria: "", unidad: "", desc: "Apoyar en la revisión de correspondencia y en la vigilancia del cumplimiento de los acuerdos de Asambleas." },
-      { area: "Comisiones", cartera: "2do. Secretario de Vigilancia", nombre: "", foto: "", categoria: "", unidad: "", desc: "Colaborar en la supervisión de las funciones sindicales y en los procesos de conciliación entre agremiados." },
-      { area: "Comisiones", cartera: "Presidente de Fomento a la Seg. Social", nombre: "", foto: "", categoria: "", unidad: "", desc: "Promover la inclusión de trabajadores no cubiertos por la Ley del Seguro Social y mantener relaciones con órganos superiores." },
-      { area: "Comisiones", cartera: "1er. Srio. de Fomento a la Seg. Social", nombre: "", foto: "", categoria: "", unidad: "", desc: "Apoyar en la interlocución con autoridades para impulsar el respeto y la expansión de la Seguridad Social." },
-      { area: "Comisiones", cartera: "2do. Srio. de Fomento a la Seg. Social", nombre: "", foto: "", categoria: "", unidad: "", desc: "Colaborar en el análisis y promoción de reformas o acciones que beneficien la cobertura del Instituto." },
-      { area: "Comisiones", cartera: "Presidente de Hacienda", nombre: "", foto: "", categoria: "", unidad: "", desc: "Inspeccionar la administración de fondos, fiscalizar bienes del Sindicato y autorizar informes financieros del Secretario Tesorero." },
-      { area: "Comisiones", cartera: "1er. Secretario de Hacienda", nombre: "", foto: "", categoria: "", unidad: "", desc: "Asistir en la inspección contable y en la revisión de erogaciones e inversiones del Sindicato." },
-      { area: "Comisiones", cartera: "2do. Secretario de Hacienda", nombre: "", foto: "", categoria: "", unidad: "", desc: "Coadyuvar en la revisión de los cortes de caja y documentación financiera presentada por la Tesorería." },
-      { area: "Comisiones", cartera: "Presidente de Deportes", nombre: "", foto: "", categoria: "", unidad: "", desc: "Fomentar el desarrollo físico de los miembros, elaborando proyectos deportivos y celebrando torneos y competencias." },
-      { area: "Comisiones", cartera: "1er. Secretario de Deportes", nombre: "", foto: "", categoria: "", unidad: "", desc: "Asistir en la logística de eventos deportivos y en la preparación de contingentes para festivales." },
-      { area: "Comisiones", cartera: "2do. Secretario de Deportes", nombre: "", foto: "", categoria: "", unidad: "", desc: "Colaborar en la promoción de actividades atléticas y en la organización de los equipos representativos." },
-      { area: "Comisiones", cartera: "Presidente de Acción Política", nombre: "", foto: "", categoria: "", unidad: "", desc: "Encauzar la orientación política del Sindicato, organizando grupos de trabajadores para la defensa de las conquistas de la Seguridad Social." },
-      { area: "Comisiones", cartera: "1er. Secretario de Acción Política", nombre: "", foto: "", categoria: "", unidad: "", desc: "Asistir en la planeación y vinculación con autoridades en los distintos niveles de gobierno." },
-      { area: "Comisiones", cartera: "2do. Secretario de Acción Política", nombre: "", foto: "", categoria: "", unidad: "", desc: "Colaborar en las campañas de concientización y en las actividades político-electorales del Sindicato." },
-
-      // --- SUBCOMISIONES MIXTAS ---
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Becas", nombre: "", foto: "", categoria: "", unidad: "", desc: "Participar en la asignación transparente y vigilancia de las becas otorgadas a los trabajadores e hijos." },
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Bolsa de Trabajo", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar la correcta aplicación del reglamento en el registro e ingreso de nuevos candidatos institucionales." },
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Puestos de Confianza 'B'", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar y regular las condiciones y asignaciones de los trabajadores que ocupan puestos de confianza B." },
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Capacitación y Adiestramiento", nombre: "", foto: "", categoria: "", unidad: "", desc: "Supervisar bilateralmente el desarrollo y aplicación de los programas y cursos de capacitación continua." },
-      { area: "Subcomisiones Mixtas", cartera: "Aux. Capacitación y Adiestramiento", nombre: "", foto: "", categoria: "", unidad: "", desc: "Asistir en la supervisión, logística e impartición de los programas de capacitación en la sección." },
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Seguridad e Higiene", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar el estricto cumplimiento de las normas de prevención de riesgos, salud en el trabajo e instalaciones seguras." },
-      { area: "Subcomisiones Mixtas", cartera: "Auxiliar Seguridad e Higiene (1)", nombre: "", foto: "", categoria: "", unidad: "", desc: "Apoyar en los recorridos, labores de inspección y dictámenes de cumplimiento normativo de seguridad e higiene." },
-      { area: "Subcomisiones Mixtas", cartera: "Auxiliar Seguridad e Higiene (2)", nombre: "", foto: "", categoria: "", unidad: "", desc: "Apoyar en los recorridos, labores de inspección y dictámenes de cumplimiento normativo de seguridad e higiene." },
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Disciplinaria", nombre: "", foto: "", categoria: "", unidad: "", desc: "Intervenir y garantizar la justicia laboral en la aplicación de sanciones e investigaciones por parte del Instituto." },
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Escalafón", nombre: "", foto: "", categoria: "", unidad: "", desc: "Supervisar la correcta y justa aplicación de los movimientos escalafonarios respetando los derechos de antigüedad." },
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Paritaria de Protección al Salario", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar las incidencias en nómina y proteger el salario de los trabajadores contra descuentos indebidos o errores." },
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Pasajes", nombre: "", foto: "", categoria: "", unidad: "", desc: "Supervisar la correcta asignación, trámite y pago de pasajes y viáticos a los trabajadores con derecho." },
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Ropa de Trabajo y Uniformes", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar la calidad, dotación completa y entrega oportuna de los uniformes y ropa de trabajo reglamentaria." },
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Selec. Recursos Humanos - Cambios de Rama", nombre: "", foto: "", categoria: "", unidad: "", desc: "Vigilar la transparencia en los procesos de selección y evaluación técnica para cambios de rama institucional." },
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Tiendas", nombre: "", foto: "", categoria: "", unidad: "", desc: "Supervisar el correcto funcionamiento, precios justos y abastecimiento de las tiendas del SNTSS/IMSS." },
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Jubilaciones y Pensiones", nombre: "", foto: "", categoria: "", unidad: "", desc: "Asistir y guiar a los trabajadores en el trámite oportuno y vigilancia de sus procesos y resoluciones jubilatorias." },
-      { area: "Subcomisiones Mixtas", cartera: "Rep. Revisión de Plantillas", nombre: "", foto: "", categoria: "", unidad: "", desc: "Analizar, negociar y vigilar la adecuada cobertura de las plantillas de personal en todos los centros de trabajo." }
-    ];
-
+    let DATA = [];
     const $results = document.getElementById('results');
     const $search = document.getElementById('searchInput');
     const $area = document.getElementById('areaFilter');
+
+    // Cargar desde Supabase
+    async function fetchComite() {
+      $results.innerHTML = '<div class="empty-state"><h3>Cargando estructura...</h3></div>';
+      const { data, error } = await supabase.from('comite').select('*').order('id', { ascending: true });
+      
+      if (!error && data) {
+        DATA = data;
+        render(DATA);
+      } else {
+        $results.innerHTML = '<div class="empty-state"><h3>Error de conexión con el servidor.</h3></div>';
+        console.error("Error al cargar comité:", error);
+      }
+    }
 
     function render(list) {
       $results.innerHTML = '';
@@ -350,13 +312,18 @@
           currentArea = item.area;
         }
 
-        const displayName = item.nombre.trim() !== "" ? item.nombre : "Candidato por Definir";
-        const isVacant = item.nombre.trim() === "";
-        const displayCat = item.categoria.trim() !== "" ? item.categoria : "Pendiente";
-        const displayUnit = item.unidad.trim() !== "" ? item.unidad : "Pendiente";
+        const nombreReal = item.nombre || "";
+        const categoriaReal = item.categoria || "";
+        const unidadReal = item.unidad || "";
+        const fotoReal = item.foto || "";
+
+        const displayName = nombreReal.trim() !== "" ? nombreReal : "Candidato por Definir";
+        const isVacant = nombreReal.trim() === "";
+        const displayCat = categoriaReal.trim() !== "" ? categoriaReal : "Pendiente";
+        const displayUnit = unidadReal.trim() !== "" ? unidadReal : "Pendiente";
         
-        const photoHtml = item.foto.trim() !== "" 
-          ? `<img src="${item.foto}" alt="Foto">` 
+        const photoHtml = fotoReal.trim() !== "" 
+          ? `<img src="${fotoReal}" alt="Foto">` 
           : `<i class="ph-duotone ph-user"></i>`;
 
         const card = document.createElement('article');
@@ -381,7 +348,7 @@
 
           <div class="card-description">
             <strong style="color:var(--text-main);">Responsabilidad Estatutaria:</strong><br>
-            ${item.desc}
+            ${item.desc || 'Funciones no definidas.'}
           </div>
         `;
 
@@ -400,9 +367,9 @@
 
       const filtered = DATA.filter(item => {
         const matchesText = !term || 
-          item.cartera.toLowerCase().includes(term) || 
-          item.desc.toLowerCase().includes(term) || 
-          item.nombre.toLowerCase().includes(term);
+          (item.cartera || '').toLowerCase().includes(term) || 
+          (item.desc || '').toLowerCase().includes(term) || 
+          (item.nombre || '').toLowerCase().includes(term);
         const matchesArea = area === "Todas" || item.area === area;
         
         return matchesText && matchesArea;
@@ -414,8 +381,8 @@
     $search.addEventListener('input', applyFilters);
     $area.addEventListener('change', applyFilters);
 
-    // Render inicial
-    render(DATA);
+    // Iniciar carga al abrir la página
+    fetchComite();
   </script>
 </body>
 </html>
