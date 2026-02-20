@@ -255,7 +255,9 @@
     // === Conexión a Supabase ===
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // AQUÍ ESTABA EL ERROR: Cambiamos de 'supabase' a 'supabaseClient'
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let DATA = [];
     const $results = document.getElementById('results');
@@ -265,7 +267,8 @@
     // Cargar desde Supabase
     async function fetchComite() {
       $results.innerHTML = '<div class="empty-state"><h3>Cargando estructura...</h3></div>';
-      const { data, error } = await supabase.from('comite').select('*').order('id', { ascending: true });
+      // Utilizamos supabaseClient aquí también
+      const { data, error } = await supabaseClient.from('comite').select('*').order('id', { ascending: true });
       
       if (!error && data) {
         DATA = data;
