@@ -953,6 +953,9 @@
       CURRENT_USER = session.user;
       IS_ADMIN = false; // se define desde profiles.role en loadProfile()
 
+      // ✅ PASO 4: asegurar que exista fila en profiles (bootstrap)
+      await ensureProfileRow();
+
       // 2) cargar datos
       await loadProfile();
       initPerfilExtras();
@@ -981,6 +984,73 @@
         (document.querySelector('.tab[data-tab="perfil"]'))?.click();
       } else {
         (document.querySelector(`.tab[data-tab="${wanted}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click();
+      }
+    }
+
+    /* ====== PASO 4 (Bootstrap profiles) ======
+       Si el usuario existe en Auth pero NO tiene fila en profiles,
+       la creamos con sus user_metadata.
+    */
+    async function ensureProfileRow() {
+      if (!CURRENT_USER?.id) return;
+
+      try {
+        const { data: prof, error } = await supabaseClient
+          .from('profiles')
+          .select('user_id')
+          .eq('user_id', CURRENT_USER.id)
+          .maybeSingle();
+
+        // Si hay error, lo reportamos, pero seguimos (podría ser policy)
+        if (error) diag("Error consultando profiles (ensureProfileRow).", error);
+
+        // Ya existe
+        if (prof?.user_id) return;
+
+        // Metadata (compatibilidad: si vienes con phone/birthdate, también lo leemos)
+        const md = CURRENT_USER.user_metadata || {};
+        const display_name = (md.display_name || md.nombre || '').toString().trim() || null;
+
+        const telefono = (md.telefono || md.phone || '').toString().trim() || null;
+
+        // cumple puede venir como 'cumple' o 'birthdate'
+        let cumple = md.cumple || md.birthdate || null;
+        if (cumple) {
+          try {
+            // Acepta YYYY-MM-DD o ISO
+            const d = new Date(String(cumple).length <= 10 ? String(cumple) + "T00:00:00" : String(cumple));
+            cumple = d.toISOString().slice(0, 10);
+          } catch {
+            // si falla, lo dejamos tal cual
+          }
+        }
+
+        const categoria = (md.categoria || '').toString().trim() || null;
+        const adscripcion = (md.adscripcion || '').toString().trim() || null;
+        const avatar_url = (md.avatar_url || null);
+
+        const payload = {
+          user_id: CURRENT_USER.id,
+          display_name,
+          telefono,
+          telefono_publico: (md.telefono_publico === true),
+          cumple,
+          categoria,
+          adscripcion,
+          avatar_url,
+          bio: (md.bio || null),
+          servicios: (md.servicios || null),
+          role: 'miembro',
+          last_seen: new Date().toISOString()
+        };
+
+        const { error: insErr } = await supabaseClient.from('profiles').insert(payload);
+        if (insErr) {
+          // Si falla aquí, casi siempre es RLS: falta policy de INSERT
+          diag("No se pudo CREAR el profile (probable RLS). Crea policy INSERT para auth.uid().", insErr);
+        }
+      } catch (e) {
+        diag("Error inesperado en ensureProfileRow()", e);
       }
     }
 
@@ -1050,11 +1120,13 @@
         if (IS_ADMIN) $("tabScanner").style.removeProperty('display');
         else $("tabScanner").style.display = "none";
 
-        const telRaw = prof?.telefono || CURRENT_USER.user_metadata?.telefono;
-        const telPublicFlag = (prof?.telefono_publico ?? CURRENT_USER.user_metadata?.telefono_publico) === true;
-        const serviciosRaw = (prof?.servicios ?? CURRENT_USER.user_metadata?.servicios) || "";
+        // ✅ Compatibilidad con metadata (por si viene phone/birthdate)
+        const md = CURRENT_USER.user_metadata || {};
+        const telRaw = prof?.telefono || md.telefono || md.phone || null;
+        const telPublicFlag = (prof?.telefono_publico ?? md.telefono_publico) === true;
+        const serviciosRaw = (prof?.servicios ?? md.servicios) || "";
 
-        $("pfName").textContent = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "Sin nombre";
+        $("pfName").textContent = prof?.display_name || md.display_name || "Sin nombre";
         $("pfTelefono").textContent = telRaw || "—";
         if (!telRaw) {
           $("pfTelefonoVis").textContent = "No has capturado un número de teléfono.";
@@ -1064,12 +1136,13 @@
             : "Tu teléfono NO es visible para otros miembros.";
         }
 
-        $("pfCumple").textContent = formatDateISOtoMX(prof?.cumple || CURRENT_USER.user_metadata?.cumple);
-        $("pfCategoria").textContent = (prof?.categoria ?? CURRENT_USER.user_metadata?.categoria) || "—";
-        $("pfAdscripcion").textContent = (prof?.adscripcion ?? CURRENT_USER.user_metadata?.adscripcion) || "—";
+        const cumpleAny = prof?.cumple || md.cumple || md.birthdate || null;
+        $("pfCumple").textContent = formatDateISOtoMX(cumpleAny);
+        $("pfCategoria").textContent = (prof?.categoria ?? md.categoria) || "—";
+        $("pfAdscripcion").textContent = (prof?.adscripcion ?? md.adscripcion) || "—";
         $("pfServicios").textContent = serviciosRaw.trim() || "—";
 
-        const avatar = prof?.avatar_url || CURRENT_USER.user_metadata?.avatar_url;
+        const avatar = prof?.avatar_url || md.avatar_url;
         if (avatar) {
           $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`;
           $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`;
@@ -1080,24 +1153,24 @@
         }
 
         // Prefill form
-        $("fNombre").value = prof?.display_name || CURRENT_USER.user_metadata?.display_name || "";
+        $("fNombre").value = prof?.display_name || md.display_name || "";
         $("fTelefono").value = telRaw || "";
         $("fTelefonoPublico").checked = !!telPublicFlag;
 
         try {
-          const c = (prof?.cumple || CURRENT_USER.user_metadata?.cumple);
+          const c = cumpleAny;
           if (c) {
-            const d = new Date(c.length <= 10 ? c + "T00:00:00" : c);
+            const d = new Date(String(c).length <= 10 ? String(c) + "T00:00:00" : String(c));
             $("fCumple").value = d.toISOString().slice(0, 10);
           }
         } catch { }
 
-        $("fCategoria").value = prof?.categoria || CURRENT_USER.user_metadata?.categoria || "";
-        $("fAdscripcion").value = prof?.adscripcion || CURRENT_USER.user_metadata?.adscripcion || "";
-        $("fBio").value = prof?.bio || CURRENT_USER.user_metadata?.bio || "";
+        $("fCategoria").value = prof?.categoria || md.categoria || "";
+        $("fAdscripcion").value = prof?.adscripcion || md.adscripcion || "";
+        $("fBio").value = prof?.bio || md.bio || "";
         $("fServicios").value = serviciosRaw || "";
 
-        buildNextActionsFromProfile(telRaw, serviciosRaw.trim(), prof?.cumple || CURRENT_USER.user_metadata?.cumple);
+        buildNextActionsFromProfile(telRaw, serviciosRaw.trim(), cumpleAny);
 
         await loadAsistenciaPerfil();
         await loadMiniTopPerfil();
