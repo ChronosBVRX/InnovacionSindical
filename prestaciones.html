@@ -6,18 +6,18 @@
   <title>Plataforma Sindical CG — Calculadoras CCT</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --input: #334155;
-      --txt: #f1f5f9;
-      --muted: #94a3b8;
-      --primary: #2dd4bf;
-      --primary-dark: #14b8a6;
-      --accent: #facc15;
-      --danger: #fb7185;
+      --bg: #0f172a;         
+      --card: #1e293b;       
+      --input: #334155;      
+      --txt: #f1f5f9;        
+      --muted: #94a3b8;      
+      --primary: #2dd4bf;    
+      --primary-dark: #14b8a6; 
+      --accent: #facc15;     
+      --danger: #fb7185;     
       --border: rgba(255, 255, 255, 0.1);
       --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-
+      
       --cpto-bg: rgba(45, 212, 191, 0.15);
       --cpto-danger-bg: rgba(251, 113, 133, 0.15);
       --warning-bg: rgba(250, 204, 21, 0.05);
@@ -38,11 +38,11 @@
     .autocomplete-wrapper { position: relative; }
     input[type="text"], input[type="number"], select { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 1rem; outline: none; transition: border-color 0.2s; background-color: var(--input); color: var(--txt);}
     input:focus, select:focus { border-color: var(--primary); }
-
+    
     .autocomplete-items { position: absolute; border: 1px solid var(--border); border-top: none; z-index: 99; top: 100%; left: 0; right: 0; max-height: 250px; overflow-y: auto; background: var(--card); border-radius: 0 0 10px 10px; box-shadow: var(--shadow); margin-top: 4px;}
     .autocomplete-items div { padding: 14px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center;}
     .autocomplete-items div:hover { background-color: rgba(45, 212, 191, 0.1); color: var(--txt); }
-
+    
     .user-data-bar { display: none; margin-top: 20px; padding: 16px; background: rgba(0,0,0,0.2); border-radius: 10px; border-left: 4px solid var(--primary); font-size: 0.95rem; align-items: center; border: 1px solid var(--border);}
     .user-data-bar.active { display: flex; gap: 24px; flex-wrap: wrap; }
     .user-data-bar span { font-weight: 700; color: var(--txt); font-size: 1.05rem;}
@@ -59,7 +59,7 @@
     .panel { background: var(--card); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); display: none; animation: fadeIn 0.3s ease; }
     .panel.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
+    
     .panel h2 { color: var(--primary); margin-bottom: 12px; font-size: 1.5rem; font-weight: 700;}
     .panel p.desc { color: var(--muted); margin-bottom: 24px; font-size: 1rem; line-height: 1.5; }
 
@@ -74,7 +74,7 @@
     .result-row:last-child { border-bottom: none; }
     .result-label { font-size: 0.95rem; color: var(--muted); }
     .result-value { font-family: monospace; font-size: 1.2rem; font-weight: 700; color: var(--txt); text-align: right;}
-
+    
     .cpto-tag { background: var(--cpto-bg); color: var(--primary); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; margin-left: 8px; display: inline-flex; align-items: center; border: 1px solid rgba(45, 212, 191, 0.3);}
     .cpto-tag.desc { background: var(--cpto-danger-bg); color: var(--danger); border-color: rgba(251, 113, 133, 0.3);}
 
@@ -88,7 +88,6 @@
     .disclaimer-box { background: var(--warning-bg); border: 1px solid var(--warning-border); border-left: 4px solid var(--accent); padding: 16px; border-radius: 8px; margin-top: 24px; }
     .disclaimer-box p { color: #fde047; font-size: 0.9rem; margin: 0; line-height: 1.5; }
     .disclaimer-box strong { color: var(--accent); }
-
   </style>
 </head>
 <body>
@@ -107,7 +106,7 @@
     <div class="autocomplete-wrapper">
       <input type="text" id="buscador" placeholder="Escribe aquí tu puesto (Ej. Enfermera General, Medico, Auxiliar...)" autocomplete="off">
     </div>
-
+    
     <div id="user-data" class="user-data-bar">
       <div>
         <span style="color:var(--muted); font-weight:normal; font-size:0.85rem;">Categoría</span><br>
@@ -118,24 +117,16 @@
         <span id="ud-jor">-</span> <span style="font-size:0.85rem; font-weight:normal;">hrs</span>
       </div>
       <div>
-        <span style="color:var(--muted); font-weight:normal; font-size:0.85rem;">Tabular (Cpto 02) <b>Quincenal</b></span><br>
+        <span style="color:var(--muted); font-weight:normal; font-size:0.85rem;">Tabular <strong style="color:var(--txt)">Quincenal</strong> (Cpto 02)</span><br>
         <span id="ud-tab" style="color:var(--primary);">$0.00</span>
-        <span class="hint">Referencia mensual estimada: <span id="ud-tab-m">$0.00</span></span>
       </div>
-
       <div>
-        <span style="color:var(--muted); font-weight:normal; font-size:0.85rem;">Ayuda de Renta (Cpto 011) <b>Quincenal</b></span><br>
+        <span style="color:var(--muted); font-weight:normal; font-size:0.85rem;">Ayuda de Renta <strong style="color:var(--txt)">Quincenal</strong> (Cpto 011)</span><br>
         <div style="display:flex; align-items:center;">
           <span style="font-weight:normal; margin-right:4px;">$</span>
-          <input type="number" id="ud-renta" value="0" style="width: 120px; padding: 8px; font-weight: bold; font-family:monospace; font-size:1.1rem; background: var(--bg); border: 1px solid var(--border);" onchange="updateRentaGlobal()">
+          <input type="number" id="ud-renta" value="0" style="width: 100px; padding: 8px; font-weight: bold; font-family:monospace; font-size:1.1rem; background: var(--bg); border: 1px solid var(--border);" onchange="updateRentaGlobal()">
         </div>
-        <span class="hint">Déjalo tal cual tu tarjetón (varía por factores que no siempre se capturan aquí). Ref. mensual: <span id="ud-renta-m">$0.00</span></span>
-      </div>
-
-      <div>
-        <span style="color:var(--muted); font-weight:normal; font-size:0.85rem;">Sueldo Base (02+011) <b>Mensual</b></span><br>
-        <span id="ud-sueldo-m" style="color:var(--txt);">$0.00</span>
-        <span class="hint">Se usa internamente para cálculos por “mes”.</span>
+        <span class="hint">Cópialo exacto de tu tarjetón de esta quincena.</span>
       </div>
     </div>
   </div>
@@ -152,11 +143,11 @@
     </nav>
 
     <main>
-
+      
       <div id="p-anticipo" class="panel active">
         <h2>Anticipo de Sueldo</h2>
         <p class="desc">Descubre cuánto puedes pedir de adelanto de tu sueldo para salir de un apuro y en cuánto te quedará el descuento a la quincena. ¡Cero intereses!</p>
-
+        
         <div class="form-group">
           <label>¿Cuántos meses necesitas que te adelanten?</label>
           <select id="ant_meses">
@@ -191,7 +182,7 @@
       <div id="p-ahorro" class="panel">
         <h2>Fondo de Ahorro (La 2da de Julio)</h2>
         <p class="desc">Calcula ese guardadito anual que cae como anillo al dedo en la segunda quincena de julio.</p>
-
+        
         <div class="form-group">
           <label>¿Cuántos días laboraste en el último año? (De julio a julio)</label>
           <input type="number" id="aho_dias" value="365" max="365">
@@ -218,7 +209,7 @@
       <div id="p-extra" class="panel">
         <h2>Pago de Tiempo Extra</h2>
         <p class="desc">Conoce exactamente cuánto te pagarán por esas horas adicionales que te quedaste apoyando en tu servicio.</p>
-
+        
         <div class="form-group">
           <label>¿Cuántas horas extra laboraste en la quincena?</label>
           <input type="number" id="ext_horas" placeholder="Ej. 4">
@@ -252,7 +243,7 @@
       <div id="p-hipo-largo" class="panel">
         <h2>Crédito Hipotecario a Largo Plazo</h2>
         <p class="desc">Mira cuánto te presta el Instituto para comprar, construir o reparar tu casa, y en cuánto te quedaría el descuento a 30 años.</p>
-
+        
         <div class="form-group">
           <label>¿Qué tan libre de deudas está tu tarjetón de pago?</label>
           <select id="hl_liq">
@@ -285,7 +276,7 @@
       <div id="p-hipo-medio" class="panel">
         <h2>Crédito Hipotecario a Mediano Plazo</h2>
         <p class="desc">Una excelente opción si quieres un préstamo para tu vivienda que liquides mucho más rápido (máximo en 12 años).</p>
-
+        
         <button class="btn-calc" onclick="calcHipoMedio()">Simular mi Crédito a 12 años</button>
 
         <div id="res_hipo_medio" class="result-card">
@@ -311,7 +302,7 @@
       <div id="p-auto" class="panel">
         <h2>Crédito de Automóvil</h2>
         <p class="desc">Descubre de cuánto es tu crédito para estrenar auto, pagándolo cómodamente en 5 años (120 quincenas).</p>
-
+        
         <button class="btn-calc" onclick="calcAuto()">Simular mi Crédito Automotriz</button>
 
         <div id="res_auto" class="result-card">
@@ -344,7 +335,7 @@
       <div id="p-aguinaldo" class="panel">
         <h2>Aguinaldo y Anticipos</h2>
         <p class="desc">El aguinaldo total equivale a 3 meses de sueldo. Conoce tus adelantos y el saldo libre de impuestos que recibirás en diciembre.</p>
-
+        
         <div class="form-group">
           <label>¿Pediste que te adelantaran un mes de aguinaldo en Agosto?</label>
           <select id="ag_agosto">
@@ -384,70 +375,52 @@
 
 <script>
   // -------------------------------------------------------------
-  // UTILIDADES Y VARIABLES
+  // UTILIDADES Y VARIABLES INTERNAS
   // -------------------------------------------------------------
   const money = n => n.toLocaleString('es-MX', {style:'currency', currency:'MXN'});
-  const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-  // OJO: tabular y renta se capturan como QUINCENALES (tarjetón)
-  let userData = {
-    tabularQ: 0,   // Concepto 02 (quincenal)
-    rentaQ: 0,     // Concepto 011 (quincenal, editable)
-    jornada: 8,
-    categoria: ''
+  
+  // Guardamos los datos puros para la matemática. 
+  // 'tabular_mensual' es el de la BD. 
+  // 'renta_quincenal' es el que ingresa el usuario en pantalla.
+  let userData = { 
+      tabular_mensual: 0, 
+      renta_quincenal: 0, 
+      jornada: 8, 
+      categoria: '' 
   };
-
-  // Helpers derivados para cálculos por “mes”
-  const sueldoBaseQ = () => (userData.tabularQ + userData.rentaQ);
-  const sueldoBaseM = () => sueldoBaseQ() * 2; // conversión quincenal -> mensual
-  const tabularM = () => userData.tabularQ * 2;
-  const rentaM = () => userData.rentaQ * 2;
-
-  function refreshUserBar() {
-    document.getElementById('ud-tab').innerText = money(userData.tabularQ);
-    document.getElementById('ud-tab-m').innerText = money(tabularM());
-    document.getElementById('ud-renta-m').innerText = money(rentaM());
-    document.getElementById('ud-sueldo-m').innerText = money(sueldoBaseM());
-  }
-
+  
+  // Normalizar acentos para la búsqueda
+  const removeAccents = (str) => {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  };
+  
   // -------------------------------------------------------------
   // BASE DE DATOS COMPLETA 
   // -------------------------------------------------------------
-  const sueldosDB = [{"cat":"Pasante de Abogado","jor":"6.5","sm":5097.96},{"cat":"Abogado","jor":"6.5","sm":9125.04},{"cat":"Abogado","jor":"8.0","sm":11230.64},{"cat":"Auxiliar Técnico de Actuariado Social","jor":"6.5","sm":7553.14},{"cat":"Oficial Técnico de Actuariado Social","jor":"6.5","sm":8345.36},{"cat":"Técnico de Actuariado Social","jor":"6.5","sm":8932.24},{"cat":"Actuario Social Matemático","jor":"6.5","sm":9581.5},{"cat":"Auxiliar de Servicios Administrativos","jor":"6.5","sm":3302.5},{"cat":"Auxiliar de Servicios Administrativos","jor":"8.0","sm":4064.76},{"cat":"Ayudante de Cajero B","jor":"8.0","sm":5022.12},{"cat":"Ayudante de Cajero A","jor":"8.0","sm":5330.68},{"cat":"Cajero D","jor":"6.5","sm":5351.94},{"cat":"Cajero D","jor":"8.0","sm":6587.36},{"cat":"Cajero C","jor":"8.0","sm":6999.44},{"cat":"Cajero B","jor":"6.5","sm":6084.36},{"cat":"Cajero A","jor":"8.0","sm":7656.68},{"cat":"Contador","jor":"6.5","sm":9125.04},{"cat":"Contador","jor":"8.0","sm":11230.64},{"cat":"Contador Auditor","jor":"6.5","sm":9125.04},{"cat":"Contador Auditor","jor":"8.0","sm":11230.64},{"cat":"Pasante de Economista","jor":"8.0","sm":5876.44},{"cat":"Economista","jor":"6.5","sm":9125.04},{"cat":"Economista","jor":"8.0","sm":11230.64},{"cat":"Sociólogo","jor":"6.5","sm":9125.04},{"cat":"Redactor B","jor":"6.5","sm":4583.28},{"cat":"Mensajero","jor":"6.5","sm":3955.4},{"cat":"Mensajero","jor":"8.0","sm":4868.04}
-  /* ... TU DB COMPLETA CONTINÚA AQUÍ EXACTAMENTE IGUAL ...
-     (La recorté en esta vista para no hacer interminable el scroll)
-     Pega aquí toda tu DB completa como la traías originalmente. */
-  ];
+  const sueldosDB = [{"cat": "Pasante de Abogado", "jor": "6.5", "sm": 5097.96}, {"cat": "Abogado", "jor": "6.5", "sm": 9125.04}, {"cat": "Abogado", "jor": "8.0", "sm": 11230.64}, {"cat": "Auxiliar Técnico de Actuariado Social", "jor": "6.5", "sm": 7553.14}, {"cat": "Oficial Técnico de Actuariado Social", "jor": "6.5", "sm": 8345.36}, {"cat": "Técnico de Actuariado Social", "jor": "6.5", "sm": 8932.24}, {"cat": "Actuario Social Matemático", "jor": "6.5", "sm": 9581.5}, {"cat": "Auxiliar de Servicios Administrativos", "jor": "6.5", "sm": 3302.5}, {"cat": "Auxiliar de Servicios Administrativos", "jor": "8.0", "sm": 4064.76}, {"cat": "Ayudante de Cajero B", "jor": "8.0", "sm": 5022.12}, {"cat": "Ayudante de Cajero A", "jor": "8.0", "sm": 5330.68}, {"cat": "Cajero D", "jor": "6.5", "sm": 5351.94}, {"cat": "Cajero D", "jor": "8.0", "sm": 6587.36}, {"cat": "Cajero C", "jor": "8.0", "sm": 6999.44}, {"cat": "Cajero B", "jor": "6.5", "sm": 6084.36}, {"cat": "Cajero A", "jor": "8.0", "sm": 7656.68}, {"cat": "Contador", "jor": "6.5", "sm": 9125.04}, {"cat": "Contador", "jor": "8.0", "sm": 11230.64}, {"cat": "Contador Auditor", "jor": "6.5", "sm": 9125.04}, {"cat": "Contador Auditor", "jor": "8.0", "sm": 11230.64}, {"cat": "Pasante de Economista", "jor": "8.0", "sm": 5876.44}, {"cat": "Economista", "jor": "6.5", "sm": 9125.04}, {"cat": "Economista", "jor": "8.0", "sm": 11230.64}, {"cat": "Sociólogo", "jor": "6.5", "sm": 9125.04}, {"cat": "Redactor B", "jor": "6.5", "sm": 4583.28}, {"cat": "Mensajero", "jor": "6.5", "sm": 3955.4}, {"cat": "Mensajero", "jor": "8.0", "sm": 4868.04}, {"cat": "Auxiliar Universal de Oficinas", "jor": "6.5", "sm": 4746.16}, {"cat": "Auxiliar Universal de Oficinas", "jor": "8.0", "sm": 5841.44}, {"cat": "Auxiliar de Soporte Técnico en Informática", "jor": "8.0", "sm": 8340.48}, {"cat": "Oficial de Soporte Técnico en Informática", "jor": "8.0", "sm": 10242.12}, {"cat": "Coordinador de Soporte Técnico en Informática", "jor": "8.0", "sm": 11266.48}, {"cat": "Oficial de Tesorería", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Tesorería", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Tesorería", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Tesorería", "jor": "8.0", "sm": 11266.48}, {"cat": "Oficial de Servicios Técnicos", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Servicios Técnicos", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Servicios Técnicos", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Servicios Técnicos", "jor": "8.0", "sm": 11266.48}, {"cat": "Oficial de Servicios Administrativos", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Servicios Administrativos", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Servicios Administrativos", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Servicios Administrativos", "jor": "8.0", "sm": 11266.48}, {"cat": "Oficial de Personal", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Personal", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Personal", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Personal", "jor": "8.0", "sm": 11266.48}, {"cat": "Oficial de Estadística", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Estadística", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Estadística", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Estadística", "jor": "8.0", "sm": 11266.48}, {"cat": "Oficial de Procesamiento de Datos", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Procesamiento de Datos", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Procesamiento de Datos", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Procesamiento de Datos", "jor": "8.0", "sm": 11266.48}, {"cat": "Oficial de Contabilidad", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Contabilidad", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Contabilidad", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Contabilidad", "jor": "8.0", "sm": 11266.48}, {"cat": "Jefe de Oficina A", "jor": "8.0", "sm": 11266.48}, {"cat": "Jefe Técnico de Cobranzas y Adeudos", "jor": "8.0", "sm": 11266.48}, {"cat": "Médico General", "jor": "8.0", "sm": 9751.8}, {"cat": "Médico Familiar", "jor": "8.0", "sm": 12844.2}, {"cat": "Médico No Familiar", "jor": "8.0", "sm": 12844.2}, {"cat": "Cirujano Máxilo Facial", "jor": "8.0", "sm": 12844.2}, {"cat": "Estomatólogo", "jor": "8.0", "sm": 11924.12}, {"cat": "Ortopedista", "jor": "8.0", "sm": 7875.28}, {"cat": "Partera", "jor": "6.5", "sm": 6837.68}, {"cat": "Partera", "jor": "8.0", "sm": 8415.48}, {"cat": "Jefe de Parteras", "jor": "6.5", "sm": 7350.52}, {"cat": "Jefe de Parteras", "jor": "8.0", "sm": 9046.64}, {"cat": "Veterinario", "jor": "6.5", "sm": 9125.04}, {"cat": "Veterinario", "jor": "8.0", "sm": 11230.64}, {"cat": "Auxiliar de Enfermería General", "jor": "8.0", "sm": 6108.68}, {"cat": "Auxiliar de Enfermería en Salud Pública", "jor": "8.0", "sm": 6108.68}, {"cat": "Enfermera General", "jor": "8.0", "sm": 7381.12}, {"cat": "Enfermera General Clínica (EGC)", "jor": "8.0", "sm": 7898.3}, {"cat": "Enfermera Especialista", "jor": "8.0", "sm": 8415.48}, {"cat": "Enfermera Jefe de Piso", "jor": "8.0", "sm": 10242.12}, {"cat": "Asistente Médica", "jor": "6.5", "sm": 4963.16}, {"cat": "Asistente Médica", "jor": "8.0", "sm": 6108.68}, {"cat": "Coordinadora de Asistentes Médicas", "jor": "8.0", "sm": 6767.2}, {"cat": "Trabajadora Social", "jor": "6.5", "sm": 5897.4}, {"cat": "Trabajadora Social", "jor": "8.0", "sm": 7258.16}, {"cat": "Trabajador Social Clínico", "jor": "8.0", "sm": 8274.84}, {"cat": "Auxiliar de Trabajo Social", "jor": "6.5", "sm": 4667.16}, {"cat": "Auxiliar de Trabajo Social", "jor": "8.0", "sm": 5744.26}, {"cat": "Nutricionista Dietista", "jor": "6.5", "sm": 5897.4}, {"cat": "Nutricionista Dietista", "jor": "8.0", "sm": 7258.16}, {"cat": "Especialista en Nutrición y Dietética", "jor": "8.0", "sm": 8415.48}, {"cat": "Nutriólogo Clínico Especializado", "jor": "8.0", "sm": 10242.12}, {"cat": "Auxiliar de Técnico en Servicios de Dietología", "jor": "6.5", "sm": 5160.52}, {"cat": "Auxiliar de Técnico en Servicios de Dietología", "jor": "8.0", "sm": 6351.46}, {"cat": "Auxiliar de Administración en Unidad Médica (Polivalente)", "jor": "6.5", "sm": 4808.42}, {"cat": "Auxiliar de Administración en Unidad Médica (Polivalente)", "jor": "8.0", "sm": 5917.9}, {"cat": "Auxiliar de Enfermería en Unidad Médica (Polivalente)", "jor": "6.5", "sm": 4924.46}, {"cat": "Auxiliar de Enfermería en Unidad Médica (Polivalente)", "jor": "8.0", "sm": 6060.88}, {"cat": "Técnico Radiólogo", "jor": "6.0", "sm": 5906.46}, {"cat": "Técnico Radiólogo", "jor": "8.0", "sm": 7875.28}, {"cat": "Radioterapeuta", "jor": "6.0", "sm": 5906.46}, {"cat": "Radioterapeuta", "jor": "8.0", "sm": 7875.28}, {"cat": "Laboratorista", "jor": "6.0", "sm": 6212.9}, {"cat": "Laboratorista", "jor": "8.0", "sm": 8283.66}, {"cat": "Auxiliar de Laboratorio", "jor": "6.0", "sm": 4732.06}, {"cat": "Auxiliar de Laboratorio", "jor": "8.0", "sm": 6309.58}, {"cat": "Químico Clínico", "jor": "8.0", "sm": 11230.64}, {"cat": "Químico Clínico Jefe de Sección", "jor": "8.0", "sm": 11793.36}, {"cat": "Citotecnólogo", "jor": "8.0", "sm": 7875.28}, {"cat": "Histotecnólogo", "jor": "6.0", "sm": 5906.46}, {"cat": "Histotecnólogo", "jor": "8.0", "sm": 7875.28}, {"cat": "Inhaloterapeuta", "jor": "6.0", "sm": 5906.46}, {"cat": "Inhaloterapeuta", "jor": "6.5", "sm": 6398.64}, {"cat": "Inhaloterapeuta", "jor": "8.0", "sm": 7875.28}, {"cat": "Electrocardiografista", "jor": "8.0", "sm": 7279.54}, {"cat": "Fonoaudiólogo", "jor": "6.0", "sm": 5906.46}, {"cat": "Fonoaudiólogo", "jor": "8.0", "sm": 7875.28}, {"cat": "Optometrista", "jor": "6.0", "sm": 5906.46}, {"cat": "Optometrista", "jor": "8.0", "sm": 7875.28}, {"cat": "Psicólogo", "jor": "8.0", "sm": 11230.64}, {"cat": "Psicólogo Clínico", "jor": "6.0", "sm": 8422.92}, {"cat": "Psicólogo Clínico", "jor": "8.0", "sm": 11230.64}, {"cat": "Psicómetra", "jor": "6.0", "sm": 5906.46}, {"cat": "Psicómetra", "jor": "8.0", "sm": 7875.28}, {"cat": "Técnico en Anestesia", "jor": "6.0", "sm": 6497.8}, {"cat": "Técnico en Anestesia", "jor": "8.0", "sm": 8663.78}, {"cat": "Técnico en Manejo de Aparatos de Electrodiagnóstico", "jor": "6.0", "sm": 5459.64}, {"cat": "Técnico en Manejo de Aparatos de Electrodiagnóstico", "jor": "8.0", "sm": 7279.54}, {"cat": "Técnico en Medicina Nuclear", "jor": "8.0", "sm": 7875.28}, {"cat": "Terapista Físico", "jor": "6.0", "sm": 5906.46}, {"cat": "Terapista Físico", "jor": "8.0", "sm": 7875.28}, {"cat": "Terapista Ocupacional", "jor": "6.0", "sm": 5906.46}, {"cat": "Terapista Ocupacional", "jor": "8.0", "sm": 7875.28}, {"cat": "Técnico Polivalente", "jor": "8.0", "sm": 5744.26}, {"cat": "Técnico Electricista", "jor": "8.0", "sm": 6090.42}, {"cat": "Técnico Electrónico", "jor": "8.0", "sm": 6090.42}, {"cat": "Técnico Mecánico", "jor": "8.0", "sm": 6090.42}, {"cat": "Técnico Plomero", "jor": "8.0", "sm": 6090.42}, {"cat": "Técnico A en Aire Acondicionado y Refrigeración", "jor": "8.0", "sm": 6727.66}, {"cat": "Técnico A en Equipos Médicos", "jor": "8.0", "sm": 6727.66}, {"cat": "Técnico A en Fluidos y Energéticos", "jor": "8.0", "sm": 6727.66}, {"cat": "Técnico A en Plantas de Lavado", "jor": "8.0", "sm": 6727.66}, {"cat": "Técnico A en Telecomunicaciones", "jor": "8.0", "sm": 6727.66}, {"cat": "Técnico B en Equipos Médicos", "jor": "8.0", "sm": 7500.94}, {"cat": "Técnico B en Fluidos y Energéticos", "jor": "8.0", "sm": 7500.94}, {"cat": "Técnico B en Plantas de Lavado", "jor": "8.0", "sm": 7500.94}, {"cat": "Técnico B en Telecomunicaciones", "jor": "8.0", "sm": 7500.94}, {"cat": "Técnico en Equipos Reciprocantes", "jor": "8.0", "sm": 7500.94}, {"cat": "Técnico en Electrónica Médica y Laboratorio", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico C en Fluidos y Energéticos", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico C en Plantas de Lavado", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico C en Telecomunicaciones", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico en Mecánica, Fluidos y Especialidades", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico en Equipos de Absorción", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico en Equipos Helicoidal", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico en Equipos de Rayos X", "jor": "8.0", "sm": 8441.62}, {"cat": "Técnico en Equipos Turbocentrífugo", "jor": "8.0", "sm": 8441.62}, {"cat": "Especialista en Equipos de Especialidades", "jor": "8.0", "sm": 9591.02}, {"cat": "Especialista en Equipos de Laboratorio", "jor": "8.0", "sm": 9591.02}, {"cat": "Especialista en Equipos de Mecánica y Fluidos", "jor": "8.0", "sm": 9591.02}, {"cat": "Especialista en Equipos de Aire Acondicionado y Refrig.", "jor": "8.0", "sm": 9591.02}, {"cat": "Especialista en Plantas de Lavado", "jor": "8.0", "sm": 9591.02}, {"cat": "Especialista en Equipos de Electrónica Médica", "jor": "8.0", "sm": 9591.02}, {"cat": "Especialista en Equipos de Rayos X", "jor": "8.0", "sm": 9591.02}, {"cat": "Especialista en Fluidos y Energéticos", "jor": "8.0", "sm": 9591.02}, {"cat": "Arquitecto", "jor": "8.0", "sm": 11230.64}, {"cat": "Dibujante de Construcción", "jor": "6.5", "sm": 5831.5}, {"cat": "Dibujante de Construcción", "jor": "8.0", "sm": 7177.18}, {"cat": "Dibujante de Estadística y Publicidad C", "jor": "6.5", "sm": 4175.98}, {"cat": "Dibujante de Estadística y Publicidad B", "jor": "8.0", "sm": 5461.8}, {"cat": "Dibujante de Estadística y Publicidad A", "jor": "6.5", "sm": 5831.5}, {"cat": "Dibujante de Estadística y Publicidad A", "jor": "8.0", "sm": 7177.18}, {"cat": "Dibujante de Ingeniería y Arquitectura", "jor": "6.5", "sm": 5831.5}, {"cat": "Dibujante de Ingeniería y Arquitectura", "jor": "8.0", "sm": 7177.18}, {"cat": "Auxiliar de Almacén", "jor": "6.5", "sm": 4746.16}, {"cat": "Auxiliar de Almacén", "jor": "8.0", "sm": 5841.44}, {"cat": "Oficial de Almacén", "jor": "8.0", "sm": 7068.14}, {"cat": "Coordinador de Almacén", "jor": "8.0", "sm": 8340.48}, {"cat": "Jefe de Grupo de Almacén", "jor": "8.0", "sm": 10242.12}, {"cat": "Especialista de Almacén", "jor": "8.0", "sm": 11266.48}, {"cat": "Auxiliar de Servicios de Intendencia", "jor": "6.5", "sm": 3961.3}, {"cat": "Auxiliar de Servicios de Intendencia", "jor": "8.0", "sm": 4875.46}, {"cat": "Ayudante de Servicios de Intendencia", "jor": "8.0", "sm": 5648.58}, {"cat": "Oficial de Servicios de Intendencia", "jor": "8.0", "sm": 6098.68}, {"cat": "Intendente", "jor": "8.0", "sm": 6565.76}, {"cat": "Auxiliar de Limpieza e Higiene (Médicas y No Médicas)", "jor": "8.0", "sm": 4875.46}, {"cat": "Ayudante de Limpieza e Higiene (Médicas y No Médicas)", "jor": "8.0", "sm": 5648.58}, {"cat": "Auxiliar de Limpieza y Cocina en Unidad Médica", "jor": "6.5", "sm": 3990.86}, {"cat": "Auxiliar de Limpieza y Cocina en Unidad Médica", "jor": "8.0", "sm": 4911.82}, {"cat": "Auxiliar de Servicios Generales en Unidad Médica", "jor": "6.5", "sm": 4742.96}, {"cat": "Auxiliar de Servicios Generales en Unidad Médica", "jor": "8.0", "sm": 5837.3}, {"cat": "Operador de Servicios de Lavandería", "jor": "6.5", "sm": 4571.8}, {"cat": "Operador de Servicios de Lavandería", "jor": "8.0", "sm": 5626.62}, {"cat": "Oficial de Servicios de Lavandería", "jor": "6.5", "sm": 4935.84}, {"cat": "Oficial de Servicios de Lavandería", "jor": "8.0", "sm": 6074.84}, {"cat": "Manejador de Alimentos", "jor": "6.5", "sm": 3961.3}, {"cat": "Manejador de Alimentos", "jor": "8.0", "sm": 4875.46}, {"cat": "Cocinero Técnico 2", "jor": "6.5", "sm": 4589.44}, {"cat": "Cocinero Técnico 2", "jor": "8.0", "sm": 5648.58}, {"cat": "Cocinero Técnico 1", "jor": "6.5", "sm": 4955.02}, {"cat": "Cocinero Técnico 1", "jor": "8.0", "sm": 6098.68}, {"cat": "Chofer", "jor": "6.5", "sm": 4662.28}, {"cat": "Chofer", "jor": "8.0", "sm": 5738.04}, {"cat": "Motociclista", "jor": "6.5", "sm": 4662.28}, {"cat": "Motociclista", "jor": "8.0", "sm": 5738.04}, {"cat": "Controlador de Vehículos", "jor": "6.5", "sm": 5937.82}, {"cat": "Controlador de Vehículos", "jor": "8.0", "sm": 7308.0}, {"cat": "Enfermera para el Traslado de Pacientes de Urgencia", "jor": "8.0", "sm": 7381.12}, {"cat": "Enfermera para Traslado de Pacientes Terapia Intensiva", "jor": "8.0", "sm": 8415.48}, {"cat": "Técnico Operador Transporte Pacientes de Urgencia", "jor": "8.0", "sm": 7193.64}, {"cat": "Técnico Operador Transporte Pacientes Terapia Intens.", "jor": "8.0", "sm": 7783.54}, {"cat": "Médico para el Traslado de Pacientes de Urgencia", "jor": "8.0", "sm": 12844.2}, {"cat": "Médico para Traslado de Pacientes Terapia Intensiva", "jor": "8.0", "sm": 12844.2}, {"cat": "Camillero Vehículos Serv. Ord. y Prog. (D.F. y Valle)", "jor": "8.0", "sm": 5748.92}, {"cat": "Operador de Vehículos Serv. Ord. y Prog. (D.F. y Valle)", "jor": "8.0", "sm": 6766.56}, {"cat": "Operador de Ambulancias (Foráneo)", "jor": "6.5", "sm": 4998.14}, {"cat": "Operador de Ambulancias (Foráneo)", "jor": "8.0", "sm": 6151.64}, {"cat": "Controlador Vehículos Serv. Ord. y Prog.", "jor": "6.5", "sm": 5937.82}, {"cat": "Controlador Vehículos Serv. Ord. y Prog.", "jor": "8.0", "sm": 7308.0}, {"cat": "Camillero de Unidades Hospitalarias", "jor": "8.0", "sm": 5748.92}, {"cat": "Elevadorista", "jor": "6.5", "sm": 4154.86}, {"cat": "Elevadorista", "jor": "8.0", "sm": 5113.92}, {"cat": "Ayudante de Autopsia", "jor": "6.5", "sm": 5326.04}, {"cat": "Ayudante de Autopsia", "jor": "8.0", "sm": 6555.1}, {"cat": "Auxiliar de Farmacia", "jor": "6.5", "sm": 5220.34}, {"cat": "Auxiliar de Farmacia", "jor": "8.0", "sm": 6424.6}, {"cat": "Ayudante de Farmacia", "jor": "8.0", "sm": 7180.26}, {"cat": "Oficial de Farmacia", "jor": "8.0", "sm": 8329.04}, {"cat": "Coordinador de Farmacia", "jor": "8.0", "sm": 9800.3}, {"cat": "Guardavidas", "jor": "6.5", "sm": 4571.8}, {"cat": "Heliografista", "jor": "8.0", "sm": 6673.96}, {"cat": "Técnico de Microfotografía", "jor": "8.0", "sm": 7875.28}, {"cat": "Machetero", "jor": "6.5", "sm": 4071.5}, {"cat": "Machetero", "jor": "8.0", "sm": 5011.44}, {"cat": "Masajista", "jor": "6.5", "sm": 3908.44}, {"cat": "Multilitista", "jor": "6.5", "sm": 5209.52}, {"cat": "Multilitista", "jor": "8.0", "sm": 6411.42}, {"cat": "Operador de Equipo A (Intercom. Neumática)", "jor": "6.5", "sm": 6442.26}, {"cat": "Operador de Máquinas de Revelado Automático", "jor": "8.0", "sm": 5626.62}, {"cat": "Peluquero", "jor": "8.0", "sm": 4963.88}, {"cat": "Preparador de mezclas", "jor": "8.0", "sm": 11230.64}, {"cat": "Operador Telefónico A", "jor": "6.5", "sm": 4667.16}, {"cat": "Operador Telefónico A", "jor": "8.0", "sm": 5744.26}, {"cat": "Operador Telefónico B", "jor": "8.0", "sm": 6678.82}, {"cat": "Operador Telefónico C", "jor": "8.0", "sm": 7844.5}, {"cat": "Coordinador de Operadores Telefónicos", "jor": "8.0", "sm": 9308.32}, {"cat": "Operador General en Tiendas", "jor": "8.0", "sm": 5841.44}, {"cat": "Jefe de Línea en Tiendas", "jor": "8.0", "sm": 6226.66}, {"cat": "Auxiliar de Velatorio", "jor": "8.0", "sm": 4880.0}, {"cat": "Operador de Velatorio", "jor": "8.0", "sm": 5738.04}, {"cat": "Ayudante de Embalsamamiento", "jor": "8.0", "sm": 6136.0}, {"cat": "Yesista", "jor": "8.0", "sm": 5744.26}, {"cat": "Cuidador de Animales", "jor": "8.0", "sm": 5626.62}, {"cat": "Técnico de Bibliotecas", "jor": "6.5", "sm": 5589.56}, {"cat": "Técnico de Bibliotecas", "jor": "8.0", "sm": 6879.38}, {"cat": "Asistente de Bibliotecario", "jor": "6.5", "sm": 7396.12}, {"cat": "Asistente de Bibliotecario", "jor": "8.0", "sm": 9103.14}, {"cat": "Bibliotecario", "jor": "6.5", "sm": 9125.04}, {"cat": "Bibliotecario", "jor": "8.0", "sm": 11230.64}, {"cat": "Biólogo", "jor": "8.0", "sm": 11230.64}, {"cat": "Auxiliar de Administración de C.V.", "jor": "8.0", "sm": 5744.26}, {"cat": "Auxiliar de Atención Médica de C.V.", "jor": "8.0", "sm": 5697.86}, {"cat": "Auxiliar de Hospedaje de C.V.", "jor": "8.0", "sm": 5787.78}, {"cat": "Auxiliar de Operación Contable de C.V.", "jor": "8.0", "sm": 6678.82}, {"cat": "Lavandero en Centros Vacacionales", "jor": "8.0", "sm": 5626.62}, {"cat": "Operador de Seguridad en Albercas de C.V.", "jor": "8.0", "sm": 5626.62}, {"cat": "Operador de Servicios Internos de C.V.", "jor": "8.0", "sm": 4875.46}, {"cat": "Operador de Vehículos de C.V.", "jor": "8.0", "sm": 5738.04}, {"cat": "Planchador en Centros Vacacionales", "jor": "8.0", "sm": 5626.62}, {"cat": "Vigilante de Centros Vacacionales", "jor": "8.0", "sm": 4875.46}, {"cat": "Educadora", "jor": "6.0", "sm": 5469.06}, {"cat": "Educadora", "jor": "6.5", "sm": 5924.68}, {"cat": "Educadora", "jor": "8.0", "sm": 7291.94}, {"cat": "Oficial de Puericultura", "jor": "6.5", "sm": 4667.16}, {"cat": "Oficial de Puericultura", "jor": "8.0", "sm": 5744.26}, {"cat": "Técnico de Puericultura", "jor": "8.0", "sm": 6230.44}, {"cat": "Orientador", "jor": "6.5", "sm": 6557.9}, {"cat": "Orientador", "jor": "8.0", "sm": 8071.42}, {"cat": "Orientador de Actividades Familiares", "jor": "20.0", "sm": 4116.02}, {"cat": "Orientador Actividades Artísticas (Clásica/Moderna)", "jor": "20.0", "sm": 3531.36}, {"cat": "Orientador Actividades Artísticas (Danza Regional)", "jor": "20.0", "sm": 3767.66}, {"cat": "Orientador Actividades Artísticas (Maestro Música)", "jor": "20.0", "sm": 3531.36}, {"cat": "Orientador Actividades Artísticas (Arte Dramático)", "jor": "20.0", "sm": 3874.68}, {"cat": "Orientador de Educación Física", "jor": "20.0", "sm": 4154.68}, {"cat": "Orientador de Iniciación Cultural", "jor": "20.0", "sm": 3531.36}, {"cat": "Orientador Técnico Médico", "jor": "20.0", "sm": 5820.22}, {"cat": "Auxiliar de Orientador Técnico Médico", "jor": "6.5", "sm": 4054.16}, {"cat": "Pianista", "jor": "1.5", "sm": 3291.18}, {"cat": "Profesor de Educación Física A", "jor": "4.0", "sm": 4127.42}, {"cat": "Profesor de Educación Física A", "jor": "6.0", "sm": 5332.22}, {"cat": "Profesor de Educación Física A", "jor": "8.0", "sm": 7109.82}, {"cat": "Profesor de Educación Física B", "jor": "4.0", "sm": 4604.38}, {"cat": "Profesor de Educación Física B", "jor": "6.0", "sm": 6047.7}, {"cat": "Profesor de Educación Física B", "jor": "8.0", "sm": 8063.58}, {"cat": "Profesor de Educación Física C", "jor": "4.0", "sm": 5182.08}, {"cat": "Profesor de Educación Física C", "jor": "6.0", "sm": 6914.4}, {"cat": "Profesor de Educación Física C", "jor": "8.0", "sm": 9219.34}, {"cat": "Promotor de Estomatología", "jor": "8.0", "sm": 11230.64}, {"cat": "Promotor de Salud Comunitaria", "jor": "8.0", "sm": 7068.14}, {"cat": "Aux. de Administración (Esquema Modificado y Campo)", "jor": "8.0", "sm": 5917.9}, {"cat": "Aux. de Atención Médica (Esquema Modificado y Campo)", "jor": "8.0", "sm": 6108.68}, {"cat": "Auxiliar de Laboratorio (Esquema Modificado y Campo)", "jor": "8.0", "sm": 6309.58}, {"cat": "Aux. Servicios Generales (Esquema Modificado y Campo)", "jor": "8.0", "sm": 4990.68}, {"cat": "Estomatólogo (Esquema Modificado y Campo)", "jor": "6.0", "sm": 8869.12}, {"cat": "Operador Serv. Radiodiagnóstico (Esq. Mod. y Campo)", "jor": "8.0", "sm": 6309.58}, {"cat": "Auxiliar de Administración (Unidad Médica de Campo)", "jor": "8.0", "sm": 5917.9}, {"cat": "Auxiliar de Área Médica (Unidad Médica de Campo)", "jor": "8.0", "sm": 6108.68}, {"cat": "Aux. de Servicios Generales (Unidad Médica de Campo)", "jor": "8.0", "sm": 4990.68}, {"cat": "Estomatólogo en Unidad Médica de Campo", "jor": "8.0", "sm": 7748.32}, {"cat": "Operador de Mantenimiento (Unidad Médica de Campo)", "jor": "8.0", "sm": 4990.68}, {"cat": "Operador Servicios Auxiliares Laboratorio (U.M. Campo)", "jor": "8.0", "sm": 6309.58}, {"cat": "Operador Servicios Auxiliares Rayos X (U.M. Campo)", "jor": "8.0", "sm": 6309.58}, {"cat": "Auxiliar de Administración en H.R.", "jor": "8.0", "sm": 5917.9}, {"cat": "Auxiliar de Área Médica en H.R.", "jor": "8.0", "sm": 6108.68}, {"cat": "Auxiliar de Enfermería General en H.R.", "jor": "8.0", "sm": 6108.68}, {"cat": "Auxiliar de Enfermería General en U.M.R.", "jor": "8.0", "sm": 6108.68}, {"cat": "Auxiliar de Servicios Generales en H.R.", "jor": "8.0", "sm": 4990.68}, {"cat": "Citotecnólogo en H.R.", "jor": "8.0", "sm": 7337.54}, {"cat": "Enfermera Especialista Quirúrgica H.R.", "jor": "8.0", "sm": 8415.48}, {"cat": "Enfermera General en H.R.", "jor": "8.0", "sm": 7310.08}, {"cat": "Enfermera General Clínica en Unidad del Programa", "jor": "8.0", "sm": 7898.3}, {"cat": "Estomatólogo en H.R.", "jor": "8.0", "sm": 11924.12}, {"cat": "Laboratorista en H.R.", "jor": "8.0", "sm": 8349.78}, {"cat": "Médico General en U.M.C.", "jor": "8.0", "sm": 9751.8}, {"cat": "Médico No Familiar H.R.", "jor": "8.0", "sm": 12844.2}, {"cat": "Nutricionista Dietista en H.R.", "jor": "8.0", "sm": 7310.08}, {"cat": "Oficial de Conservación en H.R.", "jor": "8.0", "sm": 5709.56}, {"cat": "Operador de Mantenimiento en H.R.", "jor": "8.0", "sm": 5709.56}, {"cat": "Operador de Serv. Auxiliares (Laboratorio) en H.R.", "jor": "8.0", "sm": 6309.58}, {"cat": "Operador de Serv. Auxiliares (Radiodiagnóstico) en H.R.", "jor": "8.0", "sm": 6309.58}, {"cat": "Trabajadora Social en H.R.", "jor": "8.0", "sm": 7310.08}, {"cat": "Residente (R1)", "jor": "", "sm": 2810.74}, {"cat": "Residente (R2)", "jor": "", "sm": 3042.46}, {"cat": "Residente (R3)", "jor": "", "sm": 3119.54}, {"cat": "Residente (R4)", "jor": "", "sm": 3197.52}, {"cat": "Residente (R5)", "jor": "", "sm": 3293.5}, {"cat": "Residente (R6)", "jor": "", "sm": 3392.26}, {"cat": "Residente (R7)", "jor": "", "sm": 3494.16}, {"cat": "Residente (R8)", "jor": "", "sm": 3598.82}];
 
   // -------------------------------------------------------------
-  // BUSCADOR Y AUTOCOMPLETE A PRUEBA DE ACENTOS
+  // BUSCADOR Y AUTOCOMPLETE (Tolerante a Acentos y Mayúsculas)
   // -------------------------------------------------------------
   const searchInput = document.getElementById('buscador');
   searchInput.addEventListener('input', function() {
     closeLists();
     if (!this.value) return;
-
+    
     let a = document.createElement("DIV");
     a.setAttribute("class", "autocomplete-items");
     this.parentNode.appendChild(a);
-
+    
     let searchVal = removeAccents(this.value.toLowerCase());
-
+    
     let matches = sueldosDB.filter(i => {
-      let catNorm = removeAccents((i.cat || '').toLowerCase());
+      let catNorm = removeAccents(i.cat.toLowerCase());
       return catNorm.includes(searchVal);
     }).slice(0, 15);
-
+    
     matches.forEach(item => {
       let b = document.createElement("DIV");
-      b.innerHTML = `
-        <div>
-          <strong>${item.cat}</strong>
-          <span style="color:var(--muted); font-size:0.85rem;">(${item.jor} hrs)</span>
-        </div>
-        <div style="color:var(--primary); font-weight:bold;">
-          ${money(item.sm)} <span style="color:var(--muted); font-weight:600; font-size:0.75rem;">quincenal</span>
-        </div>`;
+      b.innerHTML = `<div><strong>${item.cat}</strong> <span style="color:var(--muted); font-size:0.85rem;">(${item.jor} hrs)</span></div><div style="color:var(--primary); font-weight:bold;">${money(item.sm / 2)} <span style="font-size:0.7rem; font-weight:normal;">/qna</span></div>`;
       b.addEventListener("click", function() {
         seleccionarPuesto(item);
         closeLists();
@@ -463,39 +436,41 @@
   document.addEventListener("click", e => closeLists());
 
   // -------------------------------------------------------------
-  // LLENADO DE DATOS Y VALIDACIÓN
+  // LLENADO DE DATOS (Manejando Lógica Quincenal vs Mensual)
   // -------------------------------------------------------------
   function seleccionarPuesto(item) {
     searchInput.value = `${item.cat} (${item.jor} hrs)`;
-    userData.tabularQ = Number(item.sm) || 0;     // QUINCENAL
-    userData.jornada = parseFloat(item.jor) || 8; // hrs
-    userData.categoria = item.cat || '';
-
-    updateRentaGlobal(); // respeta lo que el usuario tenga capturado
-
-    document.getElementById('ud-cat').innerText = userData.categoria;
+    
+    // Guardamos el Sueldo Tabular MENSUAL para las matemáticas
+    userData.tabular_mensual = item.sm;
+    userData.jornada = parseFloat(item.jor) || 8; 
+    userData.categoria = item.cat;
+    
+    // Mostramos al usuario su Tabular QUINCENAL (La mitad del mensual)
+    let tabular_quincenal = item.sm / 2;
+    document.getElementById('ud-cat').innerText = item.cat;
     document.getElementById('ud-jor').innerText = item.jor || '-';
-
-    refreshUserBar();
+    document.getElementById('ud-tab').innerText = money(tabular_quincenal);
+    
+    updateRentaGlobal(); // Re-validamos renta si ya había algo escrito
     document.getElementById('user-data').classList.add('active');
   }
 
-  // Validación de seguridad para Ayuda de Renta (QUINCENAL)
+  // Validación de seguridad para Ayuda de Renta (Formato Quincenal)
   function updateRentaGlobal() {
     let inputRenta = document.getElementById('ud-renta');
     let val = parseFloat(inputRenta.value);
-
+    
     if (isNaN(val) || val < 0) {
-      alert("¡Cuidado! El monto de la Ayuda de Renta (Cpto 011) no parece válido. Usa solo números (ej. 500 o 1200.50).");
+      alert("¡Cuidado! El monto de la Ayuda de Renta no parece válido. Por favor ingresa solo números (ej. 500 o 1200.50).");
       inputRenta.value = 0;
-      userData.rentaQ = 0;
-    } else if (val > 15000) {
-      alert("Ese monto parece demasiado alto para el Concepto 011 (quincenal). Verifica tu tarjetón. Si estás seguro, lo puedes dejar así.");
-      userData.rentaQ = val;
+      userData.renta_quincenal = 0;
+    } else if (val > 5000) {
+      alert("Ese monto parece demasiado alto para ser la ayuda de renta de UNA SOLA QUINCENA. Verifica en tu tarjetón que no estés poniendo un monto de otro concepto.");
+      userData.renta_quincenal = val; 
     } else {
-      userData.rentaQ = val;
+      userData.renta_quincenal = val;
     }
-    refreshUserBar();
   }
 
   // -------------------------------------------------------------
@@ -509,7 +484,7 @@
   }
 
   function validarDatos() {
-    if (userData.tabularQ === 0) {
+    if (userData.tabular_mensual === 0) {
       alert("¡Hola! Por favor busca y selecciona primero tu categoría en el buscador de arriba.");
       searchInput.focus();
       return false;
@@ -517,18 +492,21 @@
     return true;
   }
 
+  // Helper: Sueldo Mensual Integrado por Concepto 02 y 011
+  function getSueldoMensualBase() {
+    // Sumamos el tabular mensual + (la renta quincenal multiplicada por 2)
+    return userData.tabular_mensual + (userData.renta_quincenal * 2);
+  }
+
   // -------------------------------------------------------------
   // 1. ANTICIPO
-  // Regla: Sueldo = (02 + 011) pero como el tarjetón lo trae QUINCENAL,
-  // lo convertimos a mensual para multiplicar por “meses”.
   // -------------------------------------------------------------
   function calcAnticipo() {
     if (!validarDatos()) return;
-
-    const sueldoM = sueldoBaseM(); // mensual
+    const sueldo = getSueldoMensualBase();
     const meses = parseInt(document.getElementById('ant_meses').value);
-
-    const monto = sueldoM * meses;
+    
+    const monto = sueldo * meses;
     const plazo = meses * 10;
     const desc = monto / plazo;
 
@@ -539,16 +517,13 @@
   }
 
   // -------------------------------------------------------------
-  // 2. FONDO AHORRO
-  // Salario diario = Tabular (02) / 30
-  // Como 02 es QUINCENAL, usamos TabularMensual/30
+  // 2. FONDO AHORRO (Solo toma en cuenta Cpto 02 - Tabular)
   // -------------------------------------------------------------
   function calcAhorro() {
     if (!validarDatos()) return;
-
     const diasLab = parseFloat(document.getElementById('aho_dias').value) || 0;
-
-    const salarioDiario = tabularM() / 30;
+    
+    const salarioDiario = userData.tabular_mensual / 30;
     const diasPagar = 46 * (diasLab / 365);
     const total = salarioDiario * diasPagar;
 
@@ -559,16 +534,13 @@
 
   // -------------------------------------------------------------
   // 3. TIEMPO EXTRA
-  // Costo por hora = (02+011) / 30 / jornada
-  // Como (02+011) viene QUINCENAL, usamos sueldoMensual/30
   // -------------------------------------------------------------
   function calcExtra() {
     if (!validarDatos()) return;
-
     const horas = parseFloat(document.getElementById('ext_horas').value) || 0;
     const factor = parseInt(document.getElementById('ext_factor').value);
-
-    const costoHora = sueldoBaseM() / 30 / userData.jornada;
+    
+    const costoHora = getSueldoMensualBase() / 30 / userData.jornada;
     const total = costoHora * factor * horas;
 
     document.getElementById('ext_base').innerText = money(costoHora);
@@ -577,25 +549,21 @@
   }
 
   // -------------------------------------------------------------
-  // REGLA HIPOTECARIA Y AUTO (porcentaje por categoría)
-  // Umbral: Mensajero 8.0hrs = $4868.04 (TABULAR QUINCENAL)
+  // REGLA HIPOTECARIA Y AUTO
   // -------------------------------------------------------------
   function getPorcentajeHipotecario() {
-    return userData.tabularQ <= 4868.04 ? 0.25 : 0.30;
+    // Si el sueldo es menor o igual al Mensajero 8.0hrs ($4868.04 MENSUAL), aplica 25%
+    return userData.tabular_mensual <= 4868.04 ? 0.25 : 0.30;
   }
 
   // -------------------------------------------------------------
   // 4. HIPOTECARIO LARGO
-  // SMI = SueldoMensual * 1.20
-  // Monto max = SMI * (75 o 90)
-  // Desc quincenal = (SMI * %)/2
   // -------------------------------------------------------------
   function calcHipoLargo() {
     if (!validarDatos()) return;
-
-    const liq = parseInt(document.getElementById('hl_liq').value);
-
-    const smi = sueldoBaseM() * 1.20;
+    const liq = parseInt(document.getElementById('hl_liq').value); 
+    
+    const smi = getSueldoMensualBase() * 1.20;
     const max = smi * liq;
     const porcentaje = getPorcentajeHipotecario();
     const desc = (smi * porcentaje) / 2;
@@ -607,14 +575,11 @@
 
   // -------------------------------------------------------------
   // 5. HIPOTECARIO MEDIO
-  // SMI = SueldoMensual * 1.20
-  // Monto max = SMI * 35
-  // Desc quincenal = (SMI * %)/2
   // -------------------------------------------------------------
   function calcHipoMedio() {
     if (!validarDatos()) return;
-
-    const smi = sueldoBaseM() * 1.20;
+    
+    const smi = getSueldoMensualBase() * 1.20;
     const max = smi * 35;
     const porcentaje = getPorcentajeHipotecario();
     const desc = (smi * porcentaje) / 2;
@@ -626,14 +591,11 @@
 
   // -------------------------------------------------------------
   // 6. AUTO
-  // SMI = SueldoMensual * 1.20
-  // Monto max = SMI * 24
-  // Descuentos por año: (SMI * factor)/2
   // -------------------------------------------------------------
   function calcAuto() {
     if (!validarDatos()) return;
-
-    const smi = sueldoBaseM() * 1.20;
+    
+    const smi = getSueldoMensualBase() * 1.20;
     const max = smi * 24;
 
     document.getElementById('au_max').innerText = money(max);
@@ -642,39 +604,33 @@
     document.getElementById('au_y3').innerText = "-" + money((smi * 0.38) / 2);
     document.getElementById('au_y4').innerText = "-" + money((smi * 0.37) / 2);
     document.getElementById('au_y5').innerText = "-" + money((smi * 0.36) / 2);
-
+    
     document.getElementById('res_auto').classList.add('active');
   }
 
   // -------------------------------------------------------------
   // 7. AGUINALDO
-  // Base sueldo = (02+011) mensual (porque “3 meses”)
-  // Total = sueldoM * 3
-  // Enero = sueldoM * 0.5
-  // Agosto = sueldoM * 1 (si aplica)
-  // Dic = Total - Enero - Agosto
   // -------------------------------------------------------------
   function calcAguinaldo() {
     if (!validarDatos()) return;
-
     const pideAgosto = document.getElementById('ag_agosto').value === 'si';
-
-    const sueldoM = sueldoBaseM();
-    const total = sueldoM * 3;
-    const enero = sueldoM * 0.5;
-    const agosto = pideAgosto ? (sueldoM * 1) : 0;
+    
+    const sueldo = getSueldoMensualBase();
+    const total = sueldo * 3;
+    const enero = sueldo * 0.5;
+    const agosto = pideAgosto ? (sueldo * 1) : 0;
     const dic = total - enero - agosto;
 
     document.getElementById('ag_total').innerText = money(total);
     document.getElementById('ag_enero').innerText = money(enero);
-
+    
     if (pideAgosto) {
       document.getElementById('row_agosto').style.display = 'flex';
       document.getElementById('ag_ago_val').innerText = money(agosto);
     } else {
       document.getElementById('row_agosto').style.display = 'none';
     }
-
+    
     document.getElementById('ag_dic').innerText = money(dic);
     document.getElementById('res_aguinaldo').classList.add('active');
   }
