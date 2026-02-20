@@ -17,7 +17,7 @@
       --bg-body-end: #0a141d;
       --panel-base: 27, 46, 69;
       
-      --primary: #3b82f6; /* Azul más vibrante para campaña */
+      --primary: #3b82f6;
       --primary-light: #60a5fa;
       --primary-cyan: #4da1a8;
 
@@ -37,7 +37,6 @@
       font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased;
     }
 
-    /* Fondo ambiental premium */
     .ambient-bg {
       position: fixed; inset: 0; z-index: -1;
       background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 60%),
@@ -53,7 +52,6 @@
       max-width: 1200px; margin: 0 auto; padding: 70px 20px 60px;
     }
 
-    /* --- TOPBAR --- */
     .topbar {
       position: fixed; top: 0; left: 0; right: 0; height: 60px;
       display: flex; align-items: center; justify-content: space-between;
@@ -75,7 +73,6 @@
       padding: 4px 10px; border-radius: 999px; letter-spacing: 1px;
     }
 
-    /* --- HERO CAMPAÑA --- */
     .hero {
       text-align: center; padding: 40px 0 30px;
       animation: fadeUp 0.8s ease forwards;
@@ -92,7 +89,6 @@
     
     @media(max-width: 600px) { .hero h1 { font-size: 28px; } }
 
-    /* --- CONTROLES DE BÚSQUEDA --- */
     .controls {
       display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
       margin-bottom: 40px;
@@ -119,7 +115,6 @@
       padding-left: 14px; flex: 0 1 auto; min-width: 200px;
     }
 
-    /* --- ENCABEZADOS DE SECCIÓN --- */
     .section-title {
       width: 100%; font-size: 18px; font-weight: 800; color: var(--text-main);
       margin: 40px 0 20px; padding-bottom: 10px;
@@ -132,7 +127,6 @@
       box-shadow: 0 0 10px var(--primary);
     }
 
-    /* --- GRID Y TARJETAS --- */
     .grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 24px;
     }
@@ -144,7 +138,6 @@
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; overflow: hidden;
     }
 
-    /* Brillo superior decorativo */
     .card::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
       background: linear-gradient(90deg, transparent, var(--primary), transparent);
@@ -196,7 +189,6 @@
     .card:hover .action-text { background: var(--primary); color: white; }
     .action-text i { transition: transform 0.3s; }
 
-    /* --- DESCRIPCIÓN ACORDEÓN --- */
     .card-description {
       max-height: 0; opacity: 0; overflow: hidden; transition: all 0.4s ease;
       font-size: 13px; color: var(--text-muted); line-height: 1.6; text-align: left;
@@ -209,7 +201,6 @@
     }
     .card.active .action-text i { transform: rotate(180deg); }
 
-    /* Empty State */
     .empty-state {
       grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-muted);
     }
@@ -237,7 +228,6 @@
   </header>
 
   <main class="container">
-    
     <section class="hero">
       <h1>Conoce a tu Nuevo Comité</h1>
       <p>Un equipo transparente y preparado para defender los derechos de la Sección XX Michoacán. Selecciona una cartera para verificar sus funciones.</p>
@@ -303,7 +293,6 @@
       let currentArea = '';
 
       for (const item of list) {
-        // Generar Título de Sección de forma dinámica
         if (item.area !== currentArea) {
           const header = document.createElement('div');
           header.className = 'section-title';
@@ -360,7 +349,6 @@
       }
     }
 
-    // Motor de Búsqueda y Filtrado
     function applyFilters() {
       const term = $search.value.trim().toLowerCase();
       const area = $area.value;
@@ -381,7 +369,6 @@
     $search.addEventListener('input', applyFilters);
     $area.addEventListener('change', applyFilters);
 
-    // Iniciar carga al abrir la página
     fetchComite();
   </script>
 </body>
