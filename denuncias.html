@@ -151,6 +151,59 @@
     .page.carta { transform: scale(0.4); } 
     .modal-h .btn { flex: 1; padding: 8px; font-size: 11px; }
   }
+
+  /* =========================================
+     ESTILOS EXCLUSIVOS PARA IMPRESIÓN
+     ========================================= */
+  @media print {
+    /* 1. Ocultamos el formulario de atrás, el menú del modal y las notificaciones */
+    .wrap, .modal-h, #status {
+      display: none !important;
+    }
+    
+    /* 2. Le quitamos los fondos oscuros y la posición al modal para que la hoja fluya natural */
+    body, .modal, .modal-card, .modal-b {
+      background: transparent !important;
+      position: static !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      box-shadow: none !important;
+      display: block !important;
+      width: 100% !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+
+    /* 3. Ajustamos la hoja para que tome todo el espacio en papel y no escale extraño */
+    .page.carta {
+      width: 100% !important;
+      height: auto !important;
+      transform: none !important; 
+      box-shadow: none !important;
+      margin: 0 !important;
+    }
+
+    .sheet {
+      padding: 2cm !important; /* Margen físico seguro en la impresora */
+      height: auto !important;
+    }
+
+    /* 4. Solucionamos la posición de la firma para documentos largos */
+    .sheet .pie {
+      position: relative !important;
+      bottom: auto !important;
+      left: auto !important;
+      right: auto !important;
+      margin-top: 60px !important;
+      page-break-inside: avoid !important; /* Evita que la firma se divida entre 2 hojas */
+    }
+
+    /* 5. Configuramos tamaño y quitamos márgenes del navegador para usar los de .sheet */
+    @page {
+      size: letter;
+      margin: 0;
+    }
+  }
 </style>
 </head>
 
