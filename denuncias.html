@@ -86,6 +86,11 @@
     text-decoration: none;
   }
 
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
   .btn.primary {
     background: linear-gradient(135deg, var(--primary), var(--primary-hover));
     border: none; color: #0f172a; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
@@ -143,7 +148,7 @@
 
   @media (max-width: 768px) {
     form { grid-template-columns: 1fr; }
-    .page.carta { transform: scale(0.4); } /* JS lo ajustará dinámicamente */
+    .page.carta { transform: scale(0.4); } 
     .modal-h .btn { flex: 1; padding: 8px; font-size: 11px; }
   }
 </style>
@@ -242,7 +247,7 @@
         <div class="grid-full" style="display: flex; gap: 12px; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
           <span style="font-size: 12px; color: var(--text-muted);">Formato Carta garantizado.</span>
           <button type="button" class="btn" id="btnPreview">👁️ Vista Previa</button>
-          <button type="submit" class="btn primary">🚀 Generar Documento</button>
+          <button type="submit" class="btn primary" id="btnGenerarPrincipal">🚀 Generar Documento</button>
         </div>
       </form>
     </div>
@@ -391,39 +396,108 @@
           categoria: $('#categoria').value,
           lugar: $('#lugar').value
         };
+        const btn = $('#btnPreview');
+        const btnText = btn.innerHTML;
+        btn.innerHTML = "⏳ Cargando...";
+        btn.disabled = true;
+
         const cuerpoIA = await redactarIA($('#problematica').value);
         $('#sheet').innerHTML = generarContenido(d, cuerpoIA);
+        
+        btn.innerHTML = btnText;
+        btn.disabled = false;
+
         $('#modal').classList.add('show');
         ajustarEscala();
       });
 
       $('#btnClose').addEventListener('click', () => $('#modal').classList.remove('show'));
 
-      async function crearPDF() {
+      async function crearPDF(btnElement) {
         showStatus("📄 Generando PDF...");
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ unit: 'pt', format: 'letter' });
         
-        // Clon para renderizado limpio
-        const clone = $('#sheet').cloneNode(true);
-        clone.style.width = "816px";
-        clone.style.padding = "72px 64px";
-        clone.style.background = "white";
-        clone.style.position = "absolute";
-        clone.style.left = "-9999px";
-        document.body.appendChild(clone);
+        // Efecto de carga en el botón
+        let originalText = "";
+        if (btnElement) {
+          originalText = btnElement.innerHTML;
+          btnElement.innerHTML = "⏳ Procesando...";
+          btnElement.disabled = true;
+        }
+        
+        const pageEl = $('#page');
+        const originalTransform = pageEl.style.transform;
+        
+        // Restauramos a escala real para no perder calidad
+        pageEl.style.transform = 'scale(1)'; 
+        
+        try {
+          const canvas = await html2canvas(pageEl, {
+            scale: 2, // Alta resolución
+            useCORS: true,
+            backgroundColor: '#ffffff'
+          });
 
-        await doc.html(clone, {
-          x: 0, y: 0, width: 612, windowWidth: 816
-        });
+          // Devolvemos la escala inmediatamente
+          pageEl.style.transform = originalTransform;
 
-        doc.save(`Oficio_${$('#matricula').value}.pdf`);
-        document.body.removeChild(clone);
-        showStatus("✅ Descargado.");
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+          
+          const imgData = canvas.toDataURL('image/jpeg', 1.0);
+          const pdfWidth = doc.internal.pageSize.getWidth();
+          const pdfHeight = doc.internal.pageSize.getHeight();
+          
+          doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+          
+          const matricula = $('#matricula').value || 'Generado';
+          doc.save(`Oficio_${matricula}.pdf`);
+          
+          showStatus("✅ Descargado.");
+        } catch (error) {
+          console.error("Error al generar PDF:", error);
+          showStatus("❌ Error al generar el PDF.");
+          pageEl.style.transform = originalTransform; 
+        } finally {
+          // Restaurar botón
+          if (btnElement) {
+            btnElement.innerHTML = originalText;
+            btnElement.disabled = false;
+          }
+        }
       }
 
-      $('#btnDownload').addEventListener('click', crearPDF);
-      $('#fDenuncia').addEventListener('submit', (e) => { e.preventDefault(); crearPDF(); });
+      // Enlaces a los botones pasándoles el propio botón (this/e.target) para el efecto de carga
+      $('#btnDownload').addEventListener('click', function() { 
+        crearPDF(this); 
+      });
+
+      $('#fDenuncia').addEventListener('submit', async (e) => { 
+        e.preventDefault(); 
+        
+        const btnSubmit = $('#btnGenerarPrincipal');
+        const btnText = btnSubmit.innerHTML;
+        btnSubmit.innerHTML = "⏳ Generando...";
+        btnSubmit.disabled = true;
+
+        // Si envían desde el form principal directo, primero hay que redactar para llenar el HTML oculto
+        const d = {
+          ciudad: $('#ciudad').value,
+          fecha: $('#fecha').value,
+          destinatario: $('#destinatario').value,
+          cargo: $('#cargo').value,
+          nombre: $('#nombre').value,
+          matricula: $('#matricula').value,
+          categoria: $('#categoria').value,
+          lugar: $('#lugar').value
+        };
+        const cuerpoIA = await redactarIA($('#problematica').value);
+        $('#sheet').innerHTML = generarContenido(d, cuerpoIA);
+
+        await crearPDF(btnSubmit);
+        
+        btnSubmit.innerHTML = btnText;
+        btnSubmit.disabled = false;
+      });
 
       $('#btnPrint').addEventListener('click', () => {
         const originalTitle = document.title;
