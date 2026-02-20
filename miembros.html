@@ -549,6 +549,10 @@
                 <div class="profile-data">
                   <p><strong>Nombre:</strong> <span id="pfName">Cargando…</span></p>
                   <p><strong>Email:</strong> <span id="pfEmail">—</span></p>
+
+                  <!-- ✅ NUEVO: MATRÍCULA visible en perfil -->
+                  <p><strong>Matrícula:</strong> <span id="pfMatricula">—</span></p>
+
                   <p><strong>Teléfono:</strong> <span id="pfTelefono">—</span></p>
                   <p class="meta" id="pfTelefonoVis" style="margin-top:4px"></p>
                   <p><strong>Cumpleaños:</strong> <span id="pfCumple">—</span></p>
@@ -639,7 +643,7 @@
                 </div>
               </div>
             </div>
-            </div>
+          </div>
 
           <aside class="perfil-extra">
             <div class="perfil-extra-card">
@@ -755,8 +759,13 @@
             <div class="meta">Se previsualiza al seleccionar; se sube al guardar.</div>
           </div>
         </div>
+
         <form id="editForm">
           <label>Nombre completo</label><input id="fNombre" placeholder="Tu nombre completo">
+
+          <!-- ✅ NUEVO: Matrícula editable -->
+          <label>Matrícula</label><input id="fMatricula" placeholder="Ej. 12345678" inputmode="numeric">
+
           <label>Teléfono</label><input id="fTelefono" placeholder="Ej. 5532120000">
           <label style="display:flex;align-items:center;gap:8px;">
             <input type="checkbox" id="fTelefonoPublico">
@@ -1001,28 +1010,24 @@
           .eq('user_id', CURRENT_USER.id)
           .maybeSingle();
 
-        // Si hay error, lo reportamos, pero seguimos (podría ser policy)
         if (error) diag("Error consultando profiles (ensureProfileRow).", error);
 
-        // Ya existe
         if (prof?.user_id) return;
 
-        // Metadata (compatibilidad: si vienes con phone/birthdate, también lo leemos)
         const md = CURRENT_USER.user_metadata || {};
         const display_name = (md.display_name || md.nombre || '').toString().trim() || null;
 
         const telefono = (md.telefono || md.phone || '').toString().trim() || null;
 
-        // cumple puede venir como 'cumple' o 'birthdate'
+        // ✅ NUEVO: matrícula desde metadata (si existe)
+        const matricula = (md.matricula || md.matrícula || '').toString().trim() || null;
+
         let cumple = md.cumple || md.birthdate || null;
         if (cumple) {
           try {
-            // Acepta YYYY-MM-DD o ISO
             const d = new Date(String(cumple).length <= 10 ? String(cumple) + "T00:00:00" : String(cumple));
             cumple = d.toISOString().slice(0, 10);
-          } catch {
-            // si falla, lo dejamos tal cual
-          }
+          } catch { }
         }
 
         const categoria = (md.categoria || '').toString().trim() || null;
@@ -1032,6 +1037,7 @@
         const payload = {
           user_id: CURRENT_USER.id,
           display_name,
+          matricula, // ✅ guardamos en profiles
           telefono,
           telefono_publico: (md.telefono_publico === true),
           cumple,
@@ -1046,7 +1052,6 @@
 
         const { error: insErr } = await supabaseClient.from('profiles').insert(payload);
         if (insErr) {
-          // Si falla aquí, casi siempre es RLS: falta policy de INSERT
           diag("No se pudo CREAR el profile (probable RLS). Crea policy INSERT para auth.uid().", insErr);
         }
       } catch (e) {
@@ -1103,25 +1108,27 @@
 
         const { data: prof, error } = await supabaseClient
           .from('profiles')
-          .select('display_name, avatar_url, categoria, adscripcion, bio, cumple, telefono, telefono_publico, servicios, role')
+          .select('display_name, avatar_url, categoria, adscripcion, bio, cumple, telefono, telefono_publico, servicios, role, matricula')
           .eq('user_id', CURRENT_USER.id)
           .maybeSingle();
 
         if (error) diag("Error leyendo tabla 'profiles'. (Probable RLS / policy)", error);
 
-        // ✅ Admin y visibilidad de pestañas desde profiles.role (no app_metadata)
         const myRole = (prof?.role || 'miembro');
         IS_ADMIN = (myRole === 'admin');
 
-        // Mostrar/ocultar pestañas segun rol
         const tabMiembros = document.getElementById("tabMiembros");
         if (tabMiembros) tabMiembros.style.display = IS_ADMIN ? "" : "none";
 
         if (IS_ADMIN) $("tabScanner").style.removeProperty('display');
         else $("tabScanner").style.display = "none";
 
-        // ✅ Compatibilidad con metadata (por si viene phone/birthdate)
         const md = CURRENT_USER.user_metadata || {};
+
+        // ✅ NUEVO: matrícula (profiles o metadata)
+        const matriculaAny = prof?.matricula ?? md.matricula ?? md.matrícula ?? null;
+        $("pfMatricula").textContent = matriculaAny ? String(matriculaAny) : "—";
+
         const telRaw = prof?.telefono || md.telefono || md.phone || null;
         const telPublicFlag = (prof?.telefono_publico ?? md.telefono_publico) === true;
         const serviciosRaw = (prof?.servicios ?? md.servicios) || "";
@@ -1154,6 +1161,7 @@
 
         // Prefill form
         $("fNombre").value = prof?.display_name || md.display_name || "";
+        $("fMatricula").value = matriculaAny ? String(matriculaAny) : "";
         $("fTelefono").value = telRaw || "";
         $("fTelefonoPublico").checked = !!telPublicFlag;
 
@@ -1170,7 +1178,7 @@
         $("fBio").value = prof?.bio || md.bio || "";
         $("fServicios").value = serviciosRaw || "";
 
-        buildNextActionsFromProfile(telRaw, serviciosRaw.trim(), cumpleAny);
+        buildNextActionsFromProfile(telRaw, serviciosRaw.trim(), cumpleAny, matriculaAny);
 
         await loadAsistenciaPerfil();
         await loadMiniTopPerfil();
@@ -1192,8 +1200,13 @@
         const rawCumple = $("fCumple").value;
         const cumple = nz(rawCumple) ? new Date(rawCumple).toISOString().slice(0, 10) : null;
 
+        // ✅ normalización simple de matrícula
+        const mat = nz($("fMatricula").value);
+        const matricula = mat ? String(mat).replace(/\s+/g, '') : null;
+
         const updates = {
           display_name: nz($("fNombre").value),
+          matricula, // ✅ NUEVO
           telefono: nz($("fTelefono").value),
           telefono_publico: $("fTelefonoPublico").checked,
           cumple,
@@ -1216,6 +1229,7 @@
           user_id: CURRENT_USER.id,
           display_name: updates.display_name,
           avatar_url: updates.avatar_url || CURRENT_USER.user_metadata?.avatar_url || null,
+          matricula: updates.matricula, // ✅ NUEVO
           telefono: updates.telefono,
           telefono_publico: updates.telefono_publico,
           cumple: updates.cumple,
@@ -1253,7 +1267,7 @@
 
       const { data, error } = await supabaseClient
         .from('profiles')
-        .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, telefono, telefono_publico, servicios, role')
+        .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, telefono, telefono_publico, servicios, role, matricula')
         .order('last_seen', { ascending: false })
         .limit(1000);
 
@@ -1281,7 +1295,8 @@
           (p.display_name || '').toLowerCase().includes(q) ||
           (p.adscripcion || '').toLowerCase().includes(q) ||
           (p.categoria || '').toLowerCase().includes(q) ||
-          (p.servicios || '').toLowerCase().includes(q)
+          (p.servicios || '').toLowerCase().includes(q) ||
+          (String(p.matricula || '')).toLowerCase().includes(q)
         );
       }
 
@@ -1316,6 +1331,8 @@
         const role = (p.role || 'miembro');
         const roleLabel = role === 'bolsa_trabajo' ? 'bolsa de trabajo' : (role === 'escalafon' ? 'escalafón' : role);
 
+        const matriculaShow = (p.matricula == null || String(p.matricula).trim() === '') ? '—' : escapeHtml(String(p.matricula));
+
         card.innerHTML = `
           <div class="row" style="align-items:flex-start">
             <div class="avatar" style="width:64px;height:64px">
@@ -1329,6 +1346,7 @@
               </div>
 
               <div class="meta">${escapeHtml(p.categoria || '—')} • ${escapeHtml(p.adscripcion || '—')}</div>
+              <div class="meta" style="margin-top:4px">🪪 Matrícula: ${matriculaShow}</div>
               <div class="meta" style="margin-top:4px">📱 ${escapeHtml(telDisplay)}</div>
               ${serviciosShort ? `<div class="meta" style="margin-top:4px">🤝 ${escapeHtml(serviciosShort)}</div>` : ''}
 
@@ -1350,6 +1368,7 @@
 
                 <div class="row" style="margin-top:8px;gap:10px;flex-wrap:wrap">
                   <input class="m-name" placeholder="Nombre" value="${escapeHtml(p.display_name||'')}">
+                  <input class="m-mat" placeholder="Matrícula" value="${escapeHtml(String(p.matricula||''))}">
                   <input class="m-cat" placeholder="Categoría" value="${escapeHtml(p.categoria||'')}">
                   <input class="m-ads" placeholder="Adscripción" value="${escapeHtml(p.adscripcion||'')}">
                 </div>
@@ -1378,12 +1397,11 @@
         wrap.appendChild(card);
       });
 
-      // Listeners (solo admin)
       wrap.querySelectorAll('.btn-edit-member').forEach(b => {
         b.onclick = (e) => {
           e.preventDefault();
           const uid = b.dataset.uid;
-          const box = wrap.querySelector(`.edit-member-box[data-uid="${uid}"]`);
+          const box = wrap.querySelector(\`.edit-member-box[data-uid="\${uid}"]\`);
           if (box) box.style.display = (box.style.display === 'none' ? 'block' : 'none');
         };
       });
@@ -1392,7 +1410,7 @@
         b.onclick = (e) => {
           e.preventDefault();
           const uid = b.dataset.uid;
-          const box = wrap.querySelector(`.edit-member-box[data-uid="${uid}"]`);
+          const box = wrap.querySelector(\`.edit-member-box[data-uid="\${uid}"]\`);
           if (box) box.style.display = 'none';
         };
       });
@@ -1401,14 +1419,18 @@
         b.onclick = async (e) => {
           e.preventDefault();
           const uid = b.dataset.uid;
-          const box = wrap.querySelector(`.edit-member-box[data-uid="${uid}"]`);
+          const box = wrap.querySelector(\`.edit-member-box[data-uid="\${uid}"]\`);
           if (!box) return;
 
           const statusEl = box.querySelector('.m-status');
           statusEl.textContent = 'Guardando…';
 
+          const mat = nz(box.querySelector('.m-mat')?.value);
+          const matricula = mat ? String(mat).replace(/\s+/g, '') : null;
+
           const updates = {
             display_name: nz(box.querySelector('.m-name')?.value),
+            matricula, // ✅ NUEVO
             categoria: nz(box.querySelector('.m-cat')?.value),
             adscripcion: nz(box.querySelector('.m-ads')?.value),
             telefono: nz(box.querySelector('.m-tel')?.value),
@@ -2094,7 +2116,8 @@
 
     function cambiarFrasePerfil() { aplicarFrasePerfil(); }
 
-    function buildNextActionsFromProfile(tel, servicios, cumple) {
+    // ✅ Actualizado: ahora considera matrícula como “próxima acción”
+    function buildNextActionsFromProfile(tel, servicios, cumple, matricula) {
       const ul = document.getElementById('perfilAccionesList');
       const empty = document.getElementById('perfilAccionesEmpty');
       if (!ul || !empty) return;
@@ -2102,6 +2125,7 @@
       empty.style.display = "none";
 
       const acciones = [];
+      if (!matricula) acciones.push("Agrega tu matrícula para que la plataforma pueda vincularte con trámites y procesos internos.");
       if (!tel) acciones.push("Agrega tu teléfono de contacto para que otros compañeros puedan localizarte cuando se necesite apoyo.");
       if (!servicios) acciones.push("Describe tus servicios o habilidades (por ejemplo: programación, asesoría, formación, difusión, etc.).");
       if (!cumple) acciones.push("Captura tu fecha de cumpleaños para poder considerar reconocimientos y detalles en tu día.");
