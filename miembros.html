@@ -2187,14 +2187,6 @@
       paintPhrase(PHRASES_CACHE[PHRASES_INDEX], PHRASES_CACHE.__sourceLabel || "");
     }
 
-    function startPhraseRotation() {
-      if (PHRASES_TIMER) clearInterval(PHRASES_TIMER);
-      PHRASES_TIMER = setInterval(() => {
-        // rota a la siguiente
-        nextPhrase(1);
-      }, 6000);
-    }
-
     // Botón "Otra frase"
     function cambiarFrasePerfil() {
       // avanza 1 y reinicia el temporizador para que se sienta "responsivo"
