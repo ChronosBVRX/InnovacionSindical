@@ -555,7 +555,6 @@
     <button id="btnLogout">Cerrar sesión</button>
   </header>
 
-  <!-- ✅ HERO / HEADER DE IMAGEN (ultra widescreen) -->
   <section class="page-hero" aria-label="Header de la Plataforma Sindical CG">
     <div class="hero-wrap">
       <img class="hero-img"
@@ -593,7 +592,6 @@
                   <p><strong>Nombre:</strong> <span id="pfName">Cargando…</span></p>
                   <p><strong>Email:</strong> <span id="pfEmail">—</span></p>
 
-                  <!-- ✅ NUEVO: MATRÍCULA visible en perfil -->
                   <p><strong>Matrícula:</strong> <span id="pfMatricula">—</span></p>
 
                   <p><strong>Teléfono:</strong> <span id="pfTelefono">—</span></p>
@@ -2105,95 +2103,6 @@
       }
     }
 
-    /* =======================================================================
-       ✅ FRASES: ahora TODO viene desde SUPABASE (tabla "phrases")
-       - Lee: text, category
-       - Filtra: is_active = true
-       - Ordena: sort_order asc
-       - Rota cada 6s
-       - Botón "Otra frase" avanza 1
-       - Si no hay data o falla, usa fallback local
-    ======================================================================= */
-
-    // 🔁 Fallback local (solo si la BD está vacía o falla)
-    const FRASES_FALLBACK = [
-      { text: "Un solo delegado puede marcar la diferencia, pero un equipo unido transforma la historia.", category: "Trabajo en equipo" },
-      { text: "La juventud no es el futuro del sindicato, es el presente que lo está cambiando.", category: "Juventud" },
-      { text: "El sindicalismo es la voz organizada de quienes no se rinden ante la injusticia.", category: "Sindicalismo" },
-      { text: "Ningún derecho se nos regaló; todos se conquistaron con organización y compañerismo.", category: "Lucha sindical" },
-      { text: "Cuando un trabajador avanza, toda la organización avanza con él.", category: "Trabajo en equipo" },
-      { text: "Ser joven en el sindicato es tener la oportunidad de convertir la inconformidad en propuesta.", category: "Juventud" },
-      { text: "La fuerza de un sindicato está en la confianza entre sus miembros, no solo en sus documentos.", category: "Confianza" },
-      { text: "Organizarse es el primer paso; mantenerse unidos es lo que cambia la realidad.", category: "Unidad" }
-    ];
-
-    let PHRASES_CACHE = [];
-    let PHRASES_INDEX = 0;
-    let PHRASES_TIMER = null;
-
-    async function loadPhrasesFromSupabase() {
-      try {
-        const metaEl = document.getElementById('perfilQuoteMeta');
-        if (metaEl) metaEl.textContent = "Cargando frases desde Supabase…";
-
-        const { data, error } = await supabaseClient
-          .from('phrases')
-          .select('text, category')
-          .eq('is_active', true)
-          .order('sort_order', { ascending: true });
-
-        if (error) {
-          diag("Error leyendo tabla 'phrases' (RLS/policy o tabla no existe).", error);
-          return null;
-        }
-
-        const clean = (data || [])
-          .map(x => ({
-            text: (x?.text || '').toString().trim(),
-            category: (x?.category || '').toString().trim()
-          }))
-          .filter(x => x.text);
-
-        return clean;
-      } catch (e) {
-        diag("Error inesperado cargando frases desde Supabase.", e);
-        return null;
-      }
-    }
-
-    function paintPhrase(item, sourceLabel) {
-      const t = document.getElementById('perfilQuoteText');
-      const tag = document.getElementById('perfilQuoteTag');
-      const metaEl = document.getElementById('perfilQuoteMeta');
-      if (!t || !tag) return;
-
-      const text = item?.text ? String(item.text) : "";
-      const cat = item?.category ? String(item.category) : "";
-
-      t.textContent = text ? `"${text}"` : "—";
-      tag.textContent = cat || "";
-
-      if (metaEl) {
-        metaEl.textContent = sourceLabel ? sourceLabel : "";
-      }
-    }
-
-    function nextPhrase(step = 1) {
-      if (!PHRASES_CACHE.length) {
-        paintPhrase({ text: "No hay frases activas en este momento.", category: "" }, "Sin frases activas");
-        return;
-      }
-      PHRASES_INDEX = (PHRASES_INDEX + step) % PHRASES_CACHE.length;
-      paintPhrase(PHRASES_CACHE[PHRASES_INDEX], PHRASES_CACHE.__sourceLabel || "");
-    }
-
-    // Botón "Otra frase"
-    function cambiarFrasePerfil() {
-      // avanza 1 y reinicia el temporizador para que se sienta "responsivo"
-      nextPhrase(1);
-      startPhraseRotation();
-    }
-
     /* ====== Valor y próximas acciones ====== */
     const VALOR_PERFIL = [
       "Comparte tu perfil con compañeros que puedan apoyarte en tu zona o servicio.",
@@ -2241,36 +2150,74 @@
       });
     }
 
-    // ✅ initPerfilExtras ahora carga frases desde Supabase
+    /* ================================
+       FRASES DINÁMICAS DESDE SUPABASE
+       Aleatorias cada 5 minutos
+    ================================ */
+    let FRASES_DB = [];
+    let LAST_INDEX = -1;
+    let FRASES_INTERVAL = null;
+
+    async function cargarFrasesPerfil() {
+      const { data, error } = await supabaseClient
+        .from('phrases')
+        .select('text, category')
+        .eq('is_active', true);
+
+      if (error) {
+        console.error("Error cargando frases:", error);
+        return;
+      }
+
+      if (!data || !data.length) {
+        document.getElementById('perfilQuoteText').textContent = "No hay frases activas.";
+        document.getElementById('perfilQuoteTag').textContent = "";
+        return;
+      }
+
+      FRASES_DB = data;
+
+      // Mostrar una al cargar
+      mostrarFraseAleatoria();
+
+      // Cambiar cada 5 minutos (300000 ms). Evita acumulaciones limpiando si ya existe.
+      if (FRASES_INTERVAL) clearInterval(FRASES_INTERVAL);
+      FRASES_INTERVAL = setInterval(mostrarFraseAleatoria, 300000);
+    }
+
+    function mostrarFraseAleatoria() {
+      if (!FRASES_DB.length) return;
+
+      let randomIndex;
+
+      // Evita repetir la misma frase consecutiva
+      do {
+        randomIndex = Math.floor(Math.random() * FRASES_DB.length);
+      } while (randomIndex === LAST_INDEX && FRASES_DB.length > 1);
+
+      LAST_INDEX = randomIndex;
+
+      const item = FRASES_DB[randomIndex];
+
+      const texto = document.getElementById('perfilQuoteText');
+      const tag = document.getElementById('perfilQuoteTag');
+
+      if (texto) texto.textContent = `"${item.text}"`;
+      if (tag) tag.textContent = item.category || "";
+    }
+
+    // Botón "Otra frase"
+    function cambiarFrasePerfil() {
+      mostrarFraseAleatoria();
+    }
+
+    // Inicializador general del panel "extras"
     async function initPerfilExtras(forceReload = false) {
       // Valores
       aplicarValorPerfil();
 
-      // Frases
-      if (!forceReload && PHRASES_CACHE.length) {
-        // ya hay cache, solo pinta y arranca rotación
-        PHRASES_CACHE.__sourceLabel = PHRASES_CACHE.__sourceLabel || "Capsulas de conocimiento";
-        paintPhrase(PHRASES_CACHE[PHRASES_INDEX] || PHRASES_CACHE[0], PHRASES_CACHE.__sourceLabel);
-        startPhraseRotation();
-        return;
-      }
-
-      const fromDb = await loadPhrasesFromSupabase();
-
-      if (fromDb && fromDb.length) {
-        PHRASES_CACHE = fromDb;
-        PHRASES_CACHE.__sourceLabel = "Capsulas de conocimiento";
-        PHRASES_INDEX = 0;
-        paintPhrase(PHRASES_CACHE[0], PHRASES_CACHE.__sourceLabel);
-        startPhraseRotation();
-      } else {
-        // fallback
-        PHRASES_CACHE = FRASES_FALLBACK.slice();
-        PHRASES_CACHE.__sourceLabel = "Frases: Fallback local (BD vacía o sin acceso)";
-        PHRASES_INDEX = 0;
-        paintPhrase(PHRASES_CACHE[0], PHRASES_CACHE.__sourceLabel);
-        startPhraseRotation();
-      }
+      // Frases (usando tu nueva función)
+      await cargarFrasesPerfil();
     }
   </script>
 </body>
