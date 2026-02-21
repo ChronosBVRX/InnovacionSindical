@@ -86,8 +86,6 @@
     .hero p {
       font-size: 16px; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.5;
     }
-    
-    @media(max-width: 600px) { .hero h1 { font-size: 28px; } }
 
     .controls {
       display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
@@ -210,6 +208,45 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* --- OPTIMIZACIÓN PARA MÓVILES --- */
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 28px; }
+      
+      /* Ajuste de botones de búsqueda y filtro para celular */
+      .controls {
+        flex-direction: column;
+        padding: 0 10px;
+      }
+      .input-group, .select-control {
+        max-width: 100%;
+        width: 100%;
+      }
+
+      /* Ajuste de tarjetas a 2 columnas */
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+        gap: 12px;
+      }
+
+      .card { padding: 16px 10px; }
+      
+      .tag-area {
+        font-size: 8px; padding: 3px 6px; top: 8px; right: 8px;
+      }
+
+      .card-photo {
+        width: 65px; height: 65px; margin: 10px 0;
+      }
+      .card-photo i { font-size: 28px; }
+
+      .card-role { font-size: 11px; margin-bottom: 4px; }
+      .card-name { font-size: 15px; }
+      .card-details { font-size: 11px; margin-bottom: 12px; }
+      
+      .action-text { font-size: 10px; padding: 5px 10px; }
+      .card-description { font-size: 12px; }
+    }
   </style>
 </head>
 
@@ -256,7 +293,6 @@
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
     
-    // AQUÍ ESTABA EL ERROR: Cambiamos de 'supabase' a 'supabaseClient'
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let DATA = [];
@@ -267,7 +303,6 @@
     // Cargar desde Supabase
     async function fetchComite() {
       $results.innerHTML = '<div class="empty-state"><h3>Cargando estructura...</h3></div>';
-      // Utilizamos supabaseClient aquí también
       const { data, error } = await supabaseClient.from('comite').select('*').order('id', { ascending: true });
       
       if (!error && data) {
