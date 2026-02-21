@@ -697,6 +697,7 @@
               <p id="perfilQuoteText">Cargando frase…</p>
               <small id="perfilQuoteTag"></small>
               <button type="button" class="btn-mini" onclick="cambiarFrasePerfil()">Otra frase</button>
+              <div class="meta" id="perfilQuoteMeta" style="margin-top:6px;"></div>
             </div>
 
             <div class="perfil-extra-card">
@@ -1010,7 +1011,7 @@
 
       // 2) cargar datos
       await loadProfile();
-      initPerfilExtras();
+      initPerfilExtras(); // ✅ aquí ya carga frases desde SUPABASE + valor
 
       // Members/presence: solo admins verán la pestaña y podrán cargar listado completo
       if (IS_ADMIN) await loadMembers(true);
@@ -1289,6 +1290,9 @@
         $("status").textContent = "✅ Cambios guardados.";
         await loadProfile();
         await initVerification();
+
+        // ✅ refrescar frases desde BD (por si cambiaste algo y quieres recargar UI)
+        await initPerfilExtras(true);
       } catch (e) {
         console.error(e);
         $("status").textContent = "❌ Ocurrió un error guardando tu perfil.";
@@ -2101,18 +2105,104 @@
       }
     }
 
-    /* ====== Frases, valor y próximas acciones ====== */
-    const FRASES_PERFIL = [
-      { texto: "Un solo delegado puede marcar la diferencia, pero un equipo unido transforma la historia.", tag: "Trabajo en equipo" },
-      { texto: "La juventud no es el futuro del sindicato, es el presente que lo está cambiando.", tag: "Juventud" },
-      { texto: "El sindicalismo es la voz organizada de quienes no se rinden ante la injusticia.", tag: "Sindicalismo" },
-      { texto: "Ningún derecho se nos regaló; todos se conquistaron con organización y compañerismo.", tag: "Lucha sindical" },
-      { texto: "Cuando un trabajador avanza, toda la organización avanza con él.", tag: "Trabajo en equipo" },
-      { texto: "Ser joven en el sindicato es tener la oportunidad de convertir la inconformidad en propuesta.", tag: "Juventud" },
-      { texto: "La fuerza de un sindicato está en la confianza entre sus miembros, no solo en sus documentos.", tag: "Confianza" },
-      { texto: "Organizarse es el primer paso; mantenerse unidos es lo que cambia la realidad.", tag: "Unidad" }
+    /* =======================================================================
+       ✅ FRASES: ahora TODO viene desde SUPABASE (tabla "phrases")
+       - Lee: text, category
+       - Filtra: is_active = true
+       - Ordena: sort_order asc
+       - Rota cada 6s
+       - Botón "Otra frase" avanza 1
+       - Si no hay data o falla, usa fallback local
+    ======================================================================= */
+
+    // 🔁 Fallback local (solo si la BD está vacía o falla)
+    const FRASES_FALLBACK = [
+      { text: "Un solo delegado puede marcar la diferencia, pero un equipo unido transforma la historia.", category: "Trabajo en equipo" },
+      { text: "La juventud no es el futuro del sindicato, es el presente que lo está cambiando.", category: "Juventud" },
+      { text: "El sindicalismo es la voz organizada de quienes no se rinden ante la injusticia.", category: "Sindicalismo" },
+      { text: "Ningún derecho se nos regaló; todos se conquistaron con organización y compañerismo.", category: "Lucha sindical" },
+      { text: "Cuando un trabajador avanza, toda la organización avanza con él.", category: "Trabajo en equipo" },
+      { text: "Ser joven en el sindicato es tener la oportunidad de convertir la inconformidad en propuesta.", category: "Juventud" },
+      { text: "La fuerza de un sindicato está en la confianza entre sus miembros, no solo en sus documentos.", category: "Confianza" },
+      { text: "Organizarse es el primer paso; mantenerse unidos es lo que cambia la realidad.", category: "Unidad" }
     ];
 
+    let PHRASES_CACHE = [];
+    let PHRASES_INDEX = 0;
+    let PHRASES_TIMER = null;
+
+    async function loadPhrasesFromSupabase() {
+      try {
+        const metaEl = document.getElementById('perfilQuoteMeta');
+        if (metaEl) metaEl.textContent = "Cargando frases desde Supabase…";
+
+        const { data, error } = await supabaseClient
+          .from('phrases')
+          .select('text, category')
+          .eq('is_active', true)
+          .order('sort_order', { ascending: true });
+
+        if (error) {
+          diag("Error leyendo tabla 'phrases' (RLS/policy o tabla no existe).", error);
+          return null;
+        }
+
+        const clean = (data || [])
+          .map(x => ({
+            text: (x?.text || '').toString().trim(),
+            category: (x?.category || '').toString().trim()
+          }))
+          .filter(x => x.text);
+
+        return clean;
+      } catch (e) {
+        diag("Error inesperado cargando frases desde Supabase.", e);
+        return null;
+      }
+    }
+
+    function paintPhrase(item, sourceLabel) {
+      const t = document.getElementById('perfilQuoteText');
+      const tag = document.getElementById('perfilQuoteTag');
+      const metaEl = document.getElementById('perfilQuoteMeta');
+      if (!t || !tag) return;
+
+      const text = item?.text ? String(item.text) : "";
+      const cat = item?.category ? String(item.category) : "";
+
+      t.textContent = text ? `"${text}"` : "—";
+      tag.textContent = cat || "";
+
+      if (metaEl) {
+        metaEl.textContent = sourceLabel ? sourceLabel : "";
+      }
+    }
+
+    function nextPhrase(step = 1) {
+      if (!PHRASES_CACHE.length) {
+        paintPhrase({ text: "No hay frases activas en este momento.", category: "" }, "Sin frases activas");
+        return;
+      }
+      PHRASES_INDEX = (PHRASES_INDEX + step) % PHRASES_CACHE.length;
+      paintPhrase(PHRASES_CACHE[PHRASES_INDEX], PHRASES_CACHE.__sourceLabel || "");
+    }
+
+    function startPhraseRotation() {
+      if (PHRASES_TIMER) clearInterval(PHRASES_TIMER);
+      PHRASES_TIMER = setInterval(() => {
+        // rota a la siguiente
+        nextPhrase(1);
+      }, 6000);
+    }
+
+    // Botón "Otra frase"
+    function cambiarFrasePerfil() {
+      // avanza 1 y reinicia el temporizador para que se sienta "responsivo"
+      nextPhrase(1);
+      startPhraseRotation();
+    }
+
+    /* ====== Valor y próximas acciones ====== */
     const VALOR_PERFIL = [
       "Comparte tu perfil con compañeros que puedan apoyarte en tu zona o servicio.",
       "Registra tus participaciones en asambleas o actividades para que tu liderazgo quede documentado.",
@@ -2121,15 +2211,6 @@
       "Agenda recordatorios para fechas clave: asambleas, informes, cursos de formación y vencimiento de comisiones.",
       "Consulta los lineamientos y el estatuto antes de cada negociación importante."
     ];
-
-    function aplicarFrasePerfil() {
-      const t = document.getElementById('perfilQuoteText');
-      const tag = document.getElementById('perfilQuoteTag');
-      if (!t || !tag) return;
-      const f = FRASES_PERFIL[Math.floor(Math.random() * FRASES_PERFIL.length)];
-      t.textContent = `"${f.texto}"`;
-      tag.textContent = f.tag;
-    }
 
     function aplicarValorPerfil() {
       const ul = document.getElementById('perfilValorList');
@@ -2145,8 +2226,6 @@
         ul.appendChild(li);
       }
     }
-
-    function cambiarFrasePerfil() { aplicarFrasePerfil(); }
 
     function buildNextActionsFromProfile(tel, servicios, cumple, matricula) {
       const ul = document.getElementById('perfilAccionesList');
@@ -2170,9 +2249,36 @@
       });
     }
 
-    function initPerfilExtras() {
-      aplicarFrasePerfil();
+    // ✅ initPerfilExtras ahora carga frases desde Supabase
+    async function initPerfilExtras(forceReload = false) {
+      // Valores
       aplicarValorPerfil();
+
+      // Frases
+      if (!forceReload && PHRASES_CACHE.length) {
+        // ya hay cache, solo pinta y arranca rotación
+        PHRASES_CACHE.__sourceLabel = PHRASES_CACHE.__sourceLabel || "Frases: Supabase";
+        paintPhrase(PHRASES_CACHE[PHRASES_INDEX] || PHRASES_CACHE[0], PHRASES_CACHE.__sourceLabel);
+        startPhraseRotation();
+        return;
+      }
+
+      const fromDb = await loadPhrasesFromSupabase();
+
+      if (fromDb && fromDb.length) {
+        PHRASES_CACHE = fromDb;
+        PHRASES_CACHE.__sourceLabel = "Frases: Supabase";
+        PHRASES_INDEX = 0;
+        paintPhrase(PHRASES_CACHE[0], PHRASES_CACHE.__sourceLabel);
+        startPhraseRotation();
+      } else {
+        // fallback
+        PHRASES_CACHE = FRASES_FALLBACK.slice();
+        PHRASES_CACHE.__sourceLabel = "Frases: Fallback local (BD vacía o sin acceso)";
+        PHRASES_INDEX = 0;
+        paintPhrase(PHRASES_CACHE[0], PHRASES_CACHE.__sourceLabel);
+        startPhraseRotation();
+      }
     }
   </script>
 </body>
