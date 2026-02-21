@@ -2249,7 +2249,7 @@
       // Frases
       if (!forceReload && PHRASES_CACHE.length) {
         // ya hay cache, solo pinta y arranca rotación
-        PHRASES_CACHE.__sourceLabel = PHRASES_CACHE.__sourceLabel || "Frases: Supabase";
+        PHRASES_CACHE.__sourceLabel = PHRASES_CACHE.__sourceLabel || "Capsulas de conocimiento";
         paintPhrase(PHRASES_CACHE[PHRASES_INDEX] || PHRASES_CACHE[0], PHRASES_CACHE.__sourceLabel);
         startPhraseRotation();
         return;
@@ -2259,7 +2259,7 @@
 
       if (fromDb && fromDb.length) {
         PHRASES_CACHE = fromDb;
-        PHRASES_CACHE.__sourceLabel = "Frases: Supabase";
+        PHRASES_CACHE.__sourceLabel = "Capsulas de conocimiento";
         PHRASES_INDEX = 0;
         paintPhrase(PHRASES_CACHE[0], PHRASES_CACHE.__sourceLabel);
         startPhraseRotation();
