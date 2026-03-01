@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Núcleo de Defensa Integral</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <style>
+    :root {
+      --bg-body: #1b2e45; --panel-base: 46, 79, 119;
+      --primary: #4da1a8; --primary-light: #7ad1d6;
+      --text-main: #f0fdfa; --text-muted: #bce9eb;
+      --ring: rgba(77, 161, 168, .35); --radius: 12px;
+    }
+    body { background-color: transparent; color: var(--text-main); font-family: 'Inter', sans-serif; margin: 0; padding: 20px; }
+    .container { max-width: 900px; margin: 0 auto; }
+    .card { background: rgba(var(--panel-base), 0.35); border: 1px solid var(--ring); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; backdrop-filter: blur(8px); }
+    input, select, textarea { width: 100%; padding: 12px; margin-top: 8px; margin-bottom: 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--ring); color: white; border-radius: 8px; font-family: 'Inter', sans-serif; box-sizing: border-box; }
+    input[type="file"] { padding: 8px; background: rgba(var(--primary), 0.1); }
+    .btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #0b1f2a; font-weight: 600; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; }
+    .btn:hover { filter: brightness(1.1); }
+    .hide { display: none; }
+    .header-title { border-bottom: 1px solid var(--ring); padding-bottom: 16px; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <div id="login-view" class="card" style="max-width: 400px; margin: 40px auto; text-align: center;">
+      <i class="ph-duotone ph-shield-check" style="font-size: 64px; color: var(--primary-light);"></i>
+      <h2>Núcleo de Defensa</h2>
+      <p style="color: var(--text-muted); font-size: 14px;">Acceso exclusivo por Centro de Trabajo</p>
+      
+      <div style="text-align: left; margin-top: 24px;">
+        <label>Clave de Delegación</label>
+        <input type="text" id="delegacion_user" placeholder="Ej. HGR1_CHARO">
+        
+        <label>Contraseña</label>
+        <input type="password" id="delegacion_pass" placeholder="••••••••">
+        
+        <button class="btn" onclick="iniciarSesion()">Ingresar al Núcleo <i class="ph-bold ph-sign-in"></i></button>
+      </div>
+    </div>
+
+    <div id="dashboard-view" class="hide">
+      
+      <div class="header-title">
+        <h2 id="nombre_delegacion_activa" style="margin-bottom: 4px;">Cargando...</h2>
+        <p style="margin: 0; color: var(--text-muted); font-size: 14px;">Módulo de Unificación de Criterios (SNTSS Secc. XX)</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+        
+        <div class="card">
+          <h3 style="margin-top: 0;"><i class="ph-duotone ph-upload-simple"></i> Subir Criterio Exitoso</h3>
+          <p style="font-size: 13px; color: var(--text-muted);">Tu resolución pasará a validación por el Control Central.</p>
+          
+          <label>Título del Conflicto</label>
+          <input type="text" id="titulo" placeholder="Ej. Rescisión por supuesta falta...">
+          
+          <label>Categoría</label>
+          <select id="categoria">
+            <option value="Sanciones">Sanciones Administrativas</option>
+            <option value="Permisos">Permisos y Licencias</option>
+            <option value="Riesgos">Riesgos de Trabajo</option>
+            <option value="Derechos">Derechos Contractuales</option>
+          </select>
+          
+          <label>Descripción de la Defensa</label>
+          <textarea id="descripcion" rows="4" placeholder="Detalla los artículos usados..."></textarea>
+          
+          <label>Evidencia Documental (PDF)</label>
+          <input type="file" id="evidencia_pdf" accept="application/pdf">
+          
+          <button class="btn" onclick="subirResolucion()">Enviar a Validación <i class="ph-bold ph-paper-plane-right"></i></button>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top: 0;"><i class="ph-duotone ph-books"></i> Precedentes Oficiales</h3>
+          <p style="font-size: 13px; color: var(--text-muted);">Criterios unificados de otras unidades (Aprobados).</p>
+          
+          <div id="lista_criterios" style="margin-top: 16px; overflow-y: auto; max-height: 500px; padding-right: 8px;">
+            <p style="font-size: 13px; color: var(--text-muted);">Cargando...</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    let delegacionActiva = null;
+
+    async function iniciarSesion() {
+      const user = document.getElementById('delegacion_user').value;
+      const pass = document.getElementById('delegacion_pass').value;
+
+      if(!user || !pass) return alert("Por favor ingresa la clave y contraseña.");
+
+      const { data, error } = await supabase
+        .from('unidades_sindicales')
+        .select('*')
+        .eq('usuario_acceso', user)
+        .eq('password_hash', pass)
+        .single();
+
+      if (error || !data) {
+        alert("Credenciales incorrectas.");
+      } else {
+        delegacionActiva = data;
+        document.getElementById('login-view').classList.add('hide');
+        document.getElementById('dashboard-view').classList.remove('hide');
+        document.getElementById('nombre_delegacion_activa').innerHTML = data.nombre_unidad;
+        cargarPrecedentes();
+      }
+    }
+
+    async function subirResolucion() {
+      const titulo = document.getElementById('titulo').value;
+      const categoria = document.getElementById('categoria').value;
+      const descripcion = document.getElementById('descripcion').value;
+      const archivoInput = document.getElementById('evidencia_pdf');
+
+      if(!titulo || !descripcion || archivoInput.files.length === 0) {
+        return alert("Todos los campos y el PDF son obligatorios.");
+      }
+
+      const file = archivoInput.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${delegacionActiva.id_unidad}_${Date.now()}.${fileExt}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('evidencias_nucleo')
+        .upload(fileName, file);
+
+      if (uploadError) return alert("Error al subir el PDF.");
+
+      const { data: publicUrlData } = supabase.storage
+        .from('evidencias_nucleo')
+        .getPublicUrl(fileName);
+
+      const { error: insertError } = await supabase
+        .from('nucleo_resoluciones')
+        .insert([{
+          id_delegacion: delegacionActiva.id_unidad,
+          nombre_delegacion: delegacionActiva.nombre_unidad,
+          titulo_conflicto: titulo,
+          categoria: categoria,
+          descripcion: descripcion,
+          pdf_url: publicUrlData.publicUrl
+        }]);
+
+      if (insertError) {
+        alert("Error al guardar en base de datos.");
+      } else {
+        alert("¡Criterio enviado a validación!");
+        document.getElementById('titulo').value = '';
+        document.getElementById('descripcion').value = '';
+        archivoInput.value = '';
+      }
+    }
+
+    async function cargarPrecedentes() {
+      const { data, error } = await supabase
+        .from('nucleo_resoluciones')
+        .select('*')
+        .eq('estatus', 'aprobado')
+        .order('fecha_creacion', { ascending: false });
+
+      const lista = document.getElementById('lista_criterios');
+      lista.innerHTML = ''; 
+
+      if (error) return console.error(error);
+      if (data.length === 0) {
+        lista.innerHTML = '<p style="font-size: 13px; color: var(--text-muted);">Aún no hay criterios aprobados.</p>';
+        return;
+      }
+
+      data.forEach(resolucion => {
+        const item = document.createElement('div');
+        item.style = "padding: 12px; border-left: 3px solid var(--primary); background: rgba(0,0,0,0.2); margin-bottom: 12px; border-radius: 4px;";
+        item.innerHTML = `
+          <strong style="color: var(--primary-light);">${resolucion.nombre_delegacion}</strong><br>
+          <span style="font-size: 14px; color: var(--text-main); font-weight: 600;">${resolucion.titulo_conflicto}</span><br>
+          <span style="font-size: 12px; color: var(--text-muted); display: block; margin: 4px 0;">${resolucion.descripcion}</span>
+          <span style="display: inline-block; background: rgba(77,161,168,0.2); color: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-bottom: 8px;">${resolucion.categoria}</span><br>
+          <a href="${resolucion.pdf_url}" target="_blank" style="color: var(--primary); font-size: 12px; text-decoration: none; font-weight: 600;">
+            <i class="ph-bold ph-file-pdf"></i> Ver Documento
+          </a>
+        `;
+        lista.appendChild(item);
+      });
+    }
+  </script>
+</body>
+</html>
