@@ -167,39 +167,39 @@
     /* === BLOQUEO DE RESERVAS === */
     .locked {
       position: relative;
-      overflow: hidden;
     }
     .locked-overlay {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(21, 35, 54, 0.6); /* Fondo semi-transparente oscuro */
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(27, 46, 69, 0.15); /* Fondo casi transparente */
+      backdrop-filter: blur(2px); /* Desenfoque muy ligero para dejar leer el texto */
+      -webkit-backdrop-filter: blur(2px);
       z-index: 50;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 20px;
-      border-radius: 16px; /* Coincide con el borde de la tarjeta */
+      padding-top: 15%; /* Espacio superior */
+      border-radius: 16px; 
     }
     .locked-box {
-      background: var(--panel);
-      border: 2px solid var(--primary);
-      padding: 30px;
+      position: sticky; /* Se mantiene en pantalla al hacer scroll */
+      top: 30%; 
+      background: rgba(30, 50, 80, 0.95);
+      border: 1px solid var(--sky);
+      padding: 20px 30px;
       border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
       animation: fade .5s ease;
       max-width: 90%;
+      text-align: center;
     }
     .locked-box h3 {
-      font-size: 24px;
+      font-size: 20px;
       color: #dcfce7;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
     .locked-box p {
-      font-size: 20px;
+      font-size: 16px;
       color: var(--sky);
       font-weight: 800;
       margin: 0;
@@ -253,7 +253,7 @@
     <div class="card locked">
       <div class="locked-overlay">
         <div class="locked-box">
-          <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
+          <div style="font-size: 40px; margin-bottom: 10px;">🔒</div>
           <h3>A partir del 16 de abril esto será posible</h3>
           <p>¡Vota por la Planilla Azul!</p>
         </div>
@@ -313,7 +313,7 @@
     <div class="card locked">
       <div class="locked-overlay">
         <div class="locked-box">
-          <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
+          <div style="font-size: 40px; margin-bottom: 10px;">🔒</div>
           <h3>A partir del 16 de abril esto será posible</h3>
           <p>¡Vota por la Planilla Azul!</p>
         </div>
