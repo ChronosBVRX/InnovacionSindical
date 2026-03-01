@@ -164,6 +164,47 @@
     .slot small{display:block}
     .two-col{display:grid;gap:12px;grid-template-columns:1.2fr .8fr}
 
+    /* === BLOQUEO DE RESERVAS === */
+    .locked {
+      position: relative;
+      overflow: hidden;
+    }
+    .locked-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(21, 35, 54, 0.6); /* Fondo semi-transparente oscuro */
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      border-radius: 16px; /* Coincide con el borde de la tarjeta */
+    }
+    .locked-box {
+      background: var(--panel);
+      border: 2px solid var(--primary);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      animation: fade .5s ease;
+      max-width: 90%;
+    }
+    .locked-box h3 {
+      font-size: 24px;
+      color: #dcfce7;
+      margin-bottom: 12px;
+    }
+    .locked-box p {
+      font-size: 20px;
+      color: var(--sky);
+      font-weight: 800;
+      margin: 0;
+    }
+
     @media(max-width:980px){
       nav{width:100%;flex-direction:row;position:sticky;top:52px;z-index:9;overflow:auto}
       main{flex-direction:column}
@@ -209,7 +250,15 @@
   </section>
 
   <section id="agenda" class="content">
-    <div class="card">
+    <div class="card locked">
+      <div class="locked-overlay">
+        <div class="locked-box">
+          <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
+          <h3>A partir del 16 de abril esto será posible</h3>
+          <p>¡Vota por la Planilla Azul!</p>
+        </div>
+      </div>
+
       <div class="row" style="justify-content:space-between">
         <div>
           <h2>🗓️ Agenda y disponibilidad</h2>
@@ -261,7 +310,15 @@
   </section>
 
   <section id="mis" class="content">
-    <div class="card">
+    <div class="card locked">
+      <div class="locked-overlay">
+        <div class="locked-box">
+          <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
+          <h3>A partir del 16 de abril esto será posible</h3>
+          <p>¡Vota por la Planilla Azul!</p>
+        </div>
+      </div>
+
       <div class="row" style="justify-content:space-between">
         <div>
           <h2>📌 Mis reservas</h2>
@@ -282,7 +339,6 @@
         <div class="card" style="background:#233b5c;border-radius:14px">
           <div style="font-weight:800">➕ Crear / editar activo</div>
 
-          <!-- ✅ NUEVO: selector para editar activos existentes -->
           <div class="row" style="margin-top:10px;gap:10px;align-items:flex-end;flex-wrap:wrap">
             <div style="flex:1;min-width:240px">
               <label class="meta">Editar activo existente</label>
@@ -426,7 +482,7 @@
   let IS_ADMIN=false;
   let ASSETS=[];
   let SELECTED_ASSET=null;
-  let PENDING_RESERVE=null; // {start_at,end_at}
+  let PENDING_RESERVE=null;
 
   /* ====== DIAG ====== */
   function diag(msg, extra){
@@ -462,7 +518,6 @@
     }catch{ return iso; }
   }
 
-  // Hora coherente (24h) para etiquetas "17:00 – 18:00"
   function fmtHM(iso){
     try{
       return new Intl.DateTimeFormat("es-MX",{hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(iso));
@@ -475,7 +530,6 @@
   }
 
   function combineDateTimeLocal(dateISO, timeHHMM){
-    // local -> ISO UTC
     const d = new Date(`${dateISO}T${timeHHMM}:00`);
     return d.toISOString();
   }
@@ -530,7 +584,6 @@
 
     $("blockForm").addEventListener("submit", createBlock);
 
-    // ✅ NUEVO: cargar activo existente al formulario
     $("btnLoadAsset").addEventListener("click", loadSelectedAssetIntoForm);
     $("btnClearAsset").addEventListener("click", resetAssetForm);
 
@@ -627,7 +680,6 @@
         refreshAgenda();
       });
 
-      // ✅ Opcional: doble click para editar (solo admin)
       if(IS_ADMIN){
         card.addEventListener("dblclick", ()=>{
           document.querySelector('.tab[data-tab="admin"]').click();
@@ -640,7 +692,7 @@
     });
   }
 
-  /* ====== Agenda (CORREGIDA) ====== */
+  /* ====== Agenda ====== */
   async function refreshAgenda(){
     const meta = $("agendaMeta");
     const dateISO = $("datePick").value || todayISO();
@@ -663,7 +715,6 @@
     $("selAssetInfo").textContent = `${a.type||"activo"} • ${a.location||"—"} • Horario ${a.open_time}–${a.close_time}`;
     $("selAssetRule").textContent = a.requires_approval ? "Requiere aprobación" : "Reserva automática";
 
-    // validar maxDaysAhead
     const today = new Date(); today.setHours(0,0,0,0);
     const pick = new Date(`${dateISO}T00:00:00`);
     const diffDays = Math.round((pick - today) / (1000*60*60*24));
@@ -675,7 +726,6 @@
       meta.textContent = `Mostrando disponibilidad para ${dateISO}.`;
     }
 
-    // 🔥 CLAVE: obtener ocupaciones vía RPC para que TODOS vean ocupado
     const { data: busyRows, error: busyErr } = await supabaseClient.rpc("get_busy_slots", {
       p_asset_id: a.id,
       p_day: dateISO
@@ -687,7 +737,6 @@
 
     const busy = (busyRows||[]).map(x => ({ start_at:x.start_at, end_at:x.end_at }));
 
-    // mostrar lista de ocupaciones (sin user_id)
     const busyLines = (busy||[]).length
       ? busy
           .sort((x,y)=> new Date(x.start_at) - new Date(y.start_at))
@@ -696,7 +745,6 @@
 
     $("busyList").textContent = busyLines.join("\n");
 
-    // construir slots
     const slotsWrap = $("slotsWrap");
     slotsWrap.innerHTML = "";
 
@@ -706,7 +754,6 @@
     const startHH = a.open_time?.slice(0,5) || "08:00";
     const endHH = a.close_time?.slice(0,5) || "20:00";
 
-    // generar lista de horas
     const times = [];
     {
       const base = new Date(`${dateISO}T${startHH}:00`);
@@ -727,14 +774,13 @@
     times.forEach(t=>{
       const slotStart = combineDateTimeLocal(dateISO, t);
       const slotEndRaw = addMinutes(slotStart, slotMin);
-      const slotEnd = addMinutes(slotEndRaw, bufMin); // buffer opcional para impedir “pegados”
+      const slotEnd = addMinutes(slotEndRaw, bufMin); 
 
       const isBusy = busy.some(r => overlaps(slotStart, slotEnd, r.start_at, r.end_at));
 
       const el = document.createElement("div");
       el.className = "slot" + (isBusy ? " busy" : "");
 
-      // ✅ Hora coherente: ambos 24h (t y fmtHM(slotEndRaw))
       el.innerHTML = `
         <div>
           <div style="font-weight:800">${t} – ${fmtHM(slotEndRaw)}</div>
@@ -749,7 +795,6 @@
       btn.addEventListener("click", ()=>{
         if(isBusy) return;
 
-        // reglas de anticipación
         const today = new Date(); today.setHours(0,0,0,0);
         const pick = new Date(`${dateISO}T00:00:00`);
         const diffDays = Math.round((pick - today) / (1000*60*60*24));
@@ -762,7 +807,7 @@
           return;
         }
 
-        PENDING_RESERVE = { start_at: slotStart, end_at: slotEndRaw }; // guardo fin real (sin buffer)
+        PENDING_RESERVE = { start_at: slotStart, end_at: slotEndRaw }; 
         $("detailBox").textContent = `Vas a reservar: ${a.name} el ${dateISO} de ${t} a ${fmtHM(slotEndRaw)}.`;
         $("reserveWhen").textContent = `📌 ${fmtDT(slotStart)} – ${fmtDT(slotEndRaw)}`;
         $("reserveStatus").textContent = "";
@@ -936,7 +981,6 @@
     await loadBlocksList();
   }
 
-  // ✅ NUEVO: cargar activo seleccionado en el formulario para editar
   function loadSelectedAssetIntoForm(){
     if(!IS_ADMIN) return;
 
@@ -1041,7 +1085,6 @@
 
     await loadAssets(true);
 
-    // Si existe selector admin, deja seleccionado el activo guardado
     if($("adminAssetPick")){
       $("adminAssetPick").value = saved.id;
     }
