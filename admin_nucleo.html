@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Control Central - Validación</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <style>
+    :root {
+      --bg-body: #1b2e45; --panel-base: 46, 79, 119;
+      --primary: #4da1a8; --primary-light: #7ad1d6;
+      --text-main: #f0fdfa; --text-muted: #bce9eb;
+      --ring: rgba(77, 161, 168, .35); --radius: 12px;
+    }
+    body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; padding: 20px; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .card { background: rgba(var(--panel-base), 0.35); border: 1px solid var(--ring); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; backdrop-filter: blur(8px); }
+    .btn-approve { background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .btn-reject { background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-left: 10px; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div style="text-align: center; border-bottom: 1px solid var(--ring); margin-bottom: 24px; padding-bottom: 16px;">
+      <i class="ph-duotone ph-shield-star" style="font-size: 64px; color: var(--primary-light);"></i>
+      <h1>Control Central</h1>
+      <p style="color: var(--text-muted);">Bandeja de Validación de Criterios (SNTSS Secc. XX)</p>
+    </div>
+
+    <div id="lista_pendientes">
+      <p style="text-align: center; color: var(--text-muted);">Cargando resoluciones pendientes...</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function cargarPendientes() {
+      const { data, error } = await supabase
+        .from('nucleo_resoluciones')
+        .select('*')
+        .eq('estatus', 'pendiente')
+        .order('fecha_creacion', { ascending: false });
+
+      const contenedor = document.getElementById('lista_pendientes');
+      contenedor.innerHTML = '';
+
+      if (error) {
+        contenedor.innerHTML = '<p style="color: #dc3545;">Error al cargar datos.</p>';
+        return;
+      }
+
+      if (data.length === 0) {
+        contenedor.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No hay criterios nuevos por revisar. ¡Todo al día!</p>';
+        return;
+      }
+
+      data.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <h3 style="margin: 0; color: var(--primary-light);">${item.nombre_delegacion}</h3>
+              <p style="margin: 8px 0; font-weight: 600; font-size: 18px;">${item.titulo_conflicto}</p>
+              <p style="margin: 0 0 12px 0; font-size: 14px; color: var(--text-muted);">${item.descripcion}</p>
+              <span style="background: rgba(77,161,168,0.2); padding: 4px 8px; border-radius: 4px; font-size: 12px;">Categoría: ${item.categoria}</span>
+            </div>
+          </div>
+          <div style="margin-top: 20px; border-top: 1px solid var(--ring); padding-top: 16px; display: flex; align-items: center; justify-content: space-between;">
+            <a href="${item.pdf_url}" target="_blank" style="color: var(--primary-light); text-decoration: none; font-weight: bold;">
+              <i class="ph-bold ph-file-pdf"></i> Revisar PDF Original
+            </a>
+            <div>
+              <button class="btn-approve" onclick="actualizarEstatus('${item.id}', 'aprobado')"><i class="ph-bold ph-check"></i> Aprobar</button>
+              <button class="btn-reject" onclick="actualizarEstatus('${item.id}', 'rechazado')"><i class="ph-bold ph-x"></i> Rechazar</button>
+            </div>
+          </div>
+        `;
+        contenedor.appendChild(div);
+      });
+    }
+
+    async function actualizarEstatus(id, nuevoEstatus) {
+      if(!confirm(`¿Marcar este criterio como ${nuevoEstatus.toUpperCase()}?`)) return;
+
+      const { error } = await supabase
+        .from('nucleo_resoluciones')
+        .update({ estatus: nuevoEstatus })
+        .eq('id', id);
+
+      if (error) {
+        alert("Hubo un error al actualizar.");
+      } else {
+        cargarPendientes(); 
+      }
+    }
+
+    cargarPendientes();
+  </script>
+</body>
+</html>
