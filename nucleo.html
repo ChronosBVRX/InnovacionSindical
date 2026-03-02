@@ -95,31 +95,44 @@
   <script>
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // Cambiamos el nombre de la variable a supabaseClient para evitar conflictos
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
     let delegacionActiva = null;
 
     async function iniciarSesion() {
+      console.log("Iniciando intento de sesión...");
       const user = document.getElementById('delegacion_user').value;
       const pass = document.getElementById('delegacion_pass').value;
 
       if(!user || !pass) return alert("Por favor ingresa la clave y contraseña.");
 
-      const { data, error } = await supabase
-        .from('unidades_sindicales')
-        .select('*')
-        .eq('usuario_acceso', user)
-        .eq('password_hash', pass)
-        .single();
+      try {
+        console.log("Consultando a Supabase...");
+        const { data, error } = await supabaseClient
+          .from('unidades_sindicales')
+          .select('*')
+          .eq('usuario_acceso', user)
+          .eq('password_hash', pass)
+          .single();
 
-      if (error || !data) {
-        alert("Credenciales incorrectas.");
-      } else {
-        delegacionActiva = data;
-        document.getElementById('login-view').classList.add('hide');
-        document.getElementById('dashboard-view').classList.remove('hide');
-        document.getElementById('nombre_delegacion_activa').innerHTML = data.nombre_unidad;
-        cargarPrecedentes();
+        if (error) {
+          console.error("Error de Supabase al buscar usuario:", error.message);
+          alert("Credenciales incorrectas o acceso denegado por políticas de Supabase (RLS).");
+          return;
+        }
+
+        if (data) {
+          console.log("¡Usuario encontrado!", data);
+          delegacionActiva = data;
+          document.getElementById('login-view').classList.add('hide');
+          document.getElementById('dashboard-view').classList.remove('hide');
+          document.getElementById('nombre_delegacion_activa').innerHTML = data.nombre_unidad;
+          cargarPrecedentes();
+        }
+      } catch (err) {
+        console.error("Error inesperado en iniciarSesion:", err);
       }
     }
 
@@ -137,67 +150,84 @@
       const fileExt = file.name.split('.').pop();
       const fileName = `${delegacionActiva.id_unidad}_${Date.now()}.${fileExt}`;
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('evidencias_nucleo')
-        .upload(fileName, file);
+      try {
+        const { data: uploadData, error: uploadError } = await supabaseClient.storage
+          .from('evidencias_nucleo')
+          .upload(fileName, file);
 
-      if (uploadError) return alert("Error al subir el PDF.");
+        if (uploadError) {
+          console.error("Error al subir archivo:", uploadError);
+          return alert("Error al subir el PDF.");
+        }
 
-      const { data: publicUrlData } = supabase.storage
-        .from('evidencias_nucleo')
-        .getPublicUrl(fileName);
+        const { data: publicUrlData } = supabaseClient.storage
+          .from('evidencias_nucleo')
+          .getPublicUrl(fileName);
 
-      const { error: insertError } = await supabase
-        .from('nucleo_resoluciones')
-        .insert([{
-          id_delegacion: delegacionActiva.id_unidad,
-          nombre_delegacion: delegacionActiva.nombre_unidad,
-          titulo_conflicto: titulo,
-          categoria: categoria,
-          descripcion: descripcion,
-          pdf_url: publicUrlData.publicUrl
-        }]);
+        const { error: insertError } = await supabaseClient
+          .from('nucleo_resoluciones')
+          .insert([{
+            id_delegacion: delegacionActiva.id_unidad,
+            nombre_delegacion: delegacionActiva.nombre_unidad,
+            titulo_conflicto: titulo,
+            categoria: categoria,
+            descripcion: descripcion,
+            pdf_url: publicUrlData.publicUrl
+          }]);
 
-      if (insertError) {
-        alert("Error al guardar en base de datos.");
-      } else {
-        alert("¡Criterio enviado a validación!");
-        document.getElementById('titulo').value = '';
-        document.getElementById('descripcion').value = '';
-        archivoInput.value = '';
+        if (insertError) {
+          console.error("Error al insertar resolución:", insertError);
+          alert("Error al guardar en base de datos.");
+        } else {
+          alert("¡Criterio enviado a validación!");
+          document.getElementById('titulo').value = '';
+          document.getElementById('descripcion').value = '';
+          archivoInput.value = '';
+        }
+      } catch (err) {
+         console.error("Error inesperado en subirResolucion:", err);
       }
     }
 
     async function cargarPrecedentes() {
-      const { data, error } = await supabase
-        .from('nucleo_resoluciones')
-        .select('*')
-        .eq('estatus', 'aprobado')
-        .order('fecha_creacion', { ascending: false });
+      try {
+        const { data, error } = await supabaseClient
+          .from('nucleo_resoluciones')
+          .select('*')
+          .eq('estatus', 'aprobado')
+          .order('fecha_creacion', { ascending: false });
 
-      const lista = document.getElementById('lista_criterios');
-      lista.innerHTML = ''; 
+        const lista = document.getElementById('lista_criterios');
+        lista.innerHTML = ''; 
 
-      if (error) return console.error(error);
-      if (data.length === 0) {
-        lista.innerHTML = '<p style="font-size: 13px; color: var(--text-muted);">Aún no hay criterios aprobados.</p>';
-        return;
+        if (error) {
+          console.error("Error al cargar precedentes:", error);
+          lista.innerHTML = '<p style="font-size: 13px; color: #ff6b6b;">Error al cargar los datos.</p>';
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          lista.innerHTML = '<p style="font-size: 13px; color: var(--text-muted);">Aún no hay criterios aprobados.</p>';
+          return;
+        }
+
+        data.forEach(resolucion => {
+          const item = document.createElement('div');
+          item.style = "padding: 12px; border-left: 3px solid var(--primary); background: rgba(0,0,0,0.2); margin-bottom: 12px; border-radius: 4px;";
+          item.innerHTML = `
+            <strong style="color: var(--primary-light);">${resolucion.nombre_delegacion}</strong><br>
+            <span style="font-size: 14px; color: var(--text-main); font-weight: 600;">${resolucion.titulo_conflicto}</span><br>
+            <span style="font-size: 12px; color: var(--text-muted); display: block; margin: 4px 0;">${resolucion.descripcion}</span>
+            <span style="display: inline-block; background: rgba(77,161,168,0.2); color: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-bottom: 8px;">${resolucion.categoria}</span><br>
+            <a href="${resolucion.pdf_url}" target="_blank" style="color: var(--primary); font-size: 12px; text-decoration: none; font-weight: 600;">
+              <i class="ph-bold ph-file-pdf"></i> Ver Documento
+            </a>
+          `;
+          lista.appendChild(item);
+        });
+      } catch (err) {
+        console.error("Error inesperado en cargarPrecedentes:", err);
       }
-
-      data.forEach(resolucion => {
-        const item = document.createElement('div');
-        item.style = "padding: 12px; border-left: 3px solid var(--primary); background: rgba(0,0,0,0.2); margin-bottom: 12px; border-radius: 4px;";
-        item.innerHTML = `
-          <strong style="color: var(--primary-light);">${resolucion.nombre_delegacion}</strong><br>
-          <span style="font-size: 14px; color: var(--text-main); font-weight: 600;">${resolucion.titulo_conflicto}</span><br>
-          <span style="font-size: 12px; color: var(--text-muted); display: block; margin: 4px 0;">${resolucion.descripcion}</span>
-          <span style="display: inline-block; background: rgba(77,161,168,0.2); color: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-bottom: 8px;">${resolucion.categoria}</span><br>
-          <a href="${resolucion.pdf_url}" target="_blank" style="color: var(--primary); font-size: 12px; text-decoration: none; font-weight: 600;">
-            <i class="ph-bold ph-file-pdf"></i> Ver Documento
-          </a>
-        `;
-        lista.appendChild(item);
-      });
     }
   </script>
 </body>
