@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Kiosko Digital - SNTSS</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+  <style>
+    /* VARIABLES DE TU PSD */
+    :root {
+      --bg-body: #1b2e45; --bg-body-end: #152336;
+      --panel-base: 46, 79, 119;
+      --primary: #4da1a8; --primary-light: #7ad1d6;
+      --text-main: #f0fdfa; --text-muted: #bce9eb;
+      --ring: rgba(77, 161, 168, .35);
+      --radius: 16px;
+      --glass-bg: rgba(var(--panel-base), 0.35);
+    }
+
+    body {
+      margin: 0; padding: 0; height: 100vh;
+      background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%);
+      color: var(--text-main); font-family: 'Inter', sans-serif;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Fondo con patrón (Igual al index) */
+    body::before {
+      content: ""; position: absolute; inset: 0; opacity: .06; z-index: -1;
+      background-image: linear-gradient(to right, var(--primary) 1px, transparent 1px), 
+                        linear-gradient(to bottom, var(--primary) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .container {
+      width: 100%; max-width: 800px; padding: 40px; text-align: center;
+    }
+
+    /* Contenedor de las "Pantallas" */
+    .view { display: none; animation: fadeIn 0.5s ease forwards; }
+    .view.active { display: block; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    h1 { font-size: 36px; margin-bottom: 10px; font-weight: 700; }
+    p.subtitle { color: var(--text-muted); font-size: 18px; margin-bottom: 40px; }
+
+    /* Botones y Tarjetas */
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    
+    .card-btn {
+      background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--ring);
+      border-radius: var(--radius); padding: 40px 20px; cursor: pointer; transition: all 0.3s ease;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+    }
+    
+    .card-btn:hover {
+      border-color: var(--primary-light); background: rgba(var(--panel-base), 0.6);
+      transform: translateY(-5px); box-shadow: 0 10px 30px rgba(77, 161, 168, 0.2);
+    }
+    
+    .card-btn i { font-size: 64px; color: var(--primary-light); }
+    .card-btn h3 { margin: 0; font-size: 22px; }
+    .card-btn p { margin: 0; font-size: 14px; color: var(--text-muted); }
+
+    /* Área del QR */
+    .qr-box {
+      background: white; padding: 20px; border-radius: var(--radius);
+      display: inline-block; margin: 20px 0; box-shadow: 0 0 40px rgba(77,161,168,0.3);
+    }
+    
+    .session-id { font-family: monospace; font-size: 24px; color: var(--primary-light); letter-spacing: 2px; margin-top: 10px; }
+
+    /* Vista Previa del Documento */
+    .document-preview {
+      width: 100%; max-width: 500px; height: 600px; background: #fff;
+      margin: 0 auto 20px; border-radius: 8px; border: 2px solid var(--ring);
+      object-fit: contain; display: block;
+    }
+
+    .btn-action {
+      background: var(--primary); color: #0b1f2a; border: none; padding: 16px 32px;
+      font-size: 18px; font-weight: 600; border-radius: 8px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 10px; transition: 0.3s;
+    }
+    .btn-action:hover { background: var(--primary-light); transform: scale(1.05); }
+    
+    .btn-secondary { background: transparent; color: var(--text-main); border: 1px solid var(--ring); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+    /* ESTILO PARA IMPRESIÓN (Oculta la interfaz y solo imprime la imagen) */
+    @media print {
+      body * { visibility: hidden; }
+      #doc-image { visibility: visible; position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <div id="view-menu" class="view active">
+      <h1>Kiosko de Recepción Digital</h1>
+      <p class="subtitle">Selecciona el tipo de documento que deseas escanear con tu celular</p>
+      
+      <div class="options-grid">
+        <div class="card-btn" onclick="iniciarSesion('identificacion')">
+          <i class="ph-duotone ph-identification-card"></i>
+          <h3>Identificación (INE/DNI)</h3>
+          <p>Escanea el frente y reverso.<br>Se imprimirá en una sola hoja.</p>
+        </div>
+        
+        <div class="card-btn" onclick="iniciarSesion('documento')">
+          <i class="ph-duotone ph-file-text"></i>
+          <h3>Documento Normal</h3>
+          <p>Escanea un escrito o carta.<br>Página completa.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-qr" class="view">
+      <h1>Conecta tu Celular</h1>
+      <p class="subtitle">Apunta con la cámara de tu celular a este código para iniciar el escáner.</p>
+      
+      <div class="qr-box" id="qrcode"></div>
+      <div>ID de Sesión: <span id="session-display" class="session-id">----</span></div>
+      
+      <br><br>
+      <button class="btn-action btn-secondary" onclick="mostrarVista('view-menu')">
+        <i class="ph-bold ph-arrow-left"></i> Cancelar y Volver
+      </button>
+
+      <br><br><br>
+      <button onclick="simularRecepcion()" style="background:transparent; border:1px dashed #555; color:#555; cursor:pointer;">
+        [Simular que el celular envió el archivo]
+      </button>
+    </div>
+
+    <div id="view-result" class="view">
+      <h1>¡Documento Recibido!</h1>
+      <p class="subtitle">Verifica que sea legible antes de imprimir.</p>
+      
+      <img id="doc-image" class="document-preview" src="" alt="Vista previa del documento">
+      
+      <div style="display: flex; gap: 20px; justify-content: center;">
+        <button class="btn-action" onclick="imprimirDocumento()">
+          <i class="ph-bold ph-printer"></i> Imprimir Ahora
+        </button>
+        <button class="btn-action btn-secondary" onclick="mostrarVista('view-menu')">
+          <i class="ph-bold ph-check-circle"></i> Finalizar
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Variables globales
+    let qrCodeObj = null;
+    let sesionActual = '';
+    const SERVIDOR_URL = 'https://tu-app-en-render.com'; // Cambiaremos esto después
+
+    // 1. Función para cambiar entre pantallas (vistas)
+    function mostrarVista(idVista) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(idVista).classList.add('active');
+    }
+
+    // 2. Función que se ejecuta al darle clic a un botón en el menú
+    function iniciarSesion(tipo) {
+      // Generar un código de 6 letras/números aleatorios
+      sesionActual = Math.random().toString(36).substring(2, 8).toUpperCase();
+      document.getElementById('session-display').innerText = sesionActual;
+
+      // La URL que el celular va a abrir. (En el futuro será algo como tu-render.com/celular.html?sesion=123)
+      const urlParaCelular = `${SERVIDOR_URL}/celular.html?sesion=${sesionActual}&tipo=${tipo}`;
+
+      // Generar el código QR
+      const contenedorQR = document.getElementById('qrcode');
+      contenedorQR.innerHTML = ''; // Limpiar si había uno antes
+      
+      qrCodeObj = new QRCode(contenedorQR, {
+        text: urlParaCelular,
+        width: 250,
+        height: 250,
+        colorDark : "#0b1f2a", // Color oscuro del QR
+        colorLight : "#ffffff", // Fondo del QR
+        correctLevel : QRCode.CorrectLevel.H
+      });
+
+      // Cambiar a la pantalla de espera
+      mostrarVista('view-qr');
+
+      // (AQUÍ IRÁ LA CONEXIÓN DE SOCKET.IO PARA ESPERAR LA RESPUESTA)
+      console.log(`Esperando documentos en la sala: ${sesionActual}`);
+    }
+
+    // 3. Función para imprimir usando las herramientas nativas del navegador
+    function imprimirDocumento() {
+      window.print();
+    }
+
+    // 4. FUNCIÓN DE PRUEBA: Simula que el celular terminó el proceso
+    function simularRecepcion() {
+      // Usamos una imagen de muestra para que veas cómo se vería
+      document.getElementById('doc-image').src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Placeholder_document_icon.svg/400px-Placeholder_document_icon.svg.png';
+      mostrarVista('view-result');
+    }
+  </script>
+
+</body>
+</html>
