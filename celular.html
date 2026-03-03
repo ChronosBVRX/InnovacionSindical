@@ -54,8 +54,9 @@
       display: none; width: 100%; height: 100%;
       position: absolute; top: 0; left: 0; z-index: 10;
       background: #000;
+      justify-content: center; align-items: center;
     }
-    #preview-img { max-width: 100%; display: block; }
+    #preview-img { max-width: 100%; max-height: 100%; display: block; object-fit: contain; }
 
     .overlay {
       position: absolute; inset: 0; z-index: 15;
@@ -164,7 +165,6 @@
     let pasoActual = 1;
     let imagenFrente = null;
     let imagenReverso = null;
-
     let streamActual = null;
 
     // Scanic
@@ -192,7 +192,7 @@
     actualizarTextos();
 
     // =============================
-    // CAMERA
+    // CAMERA & SCANIC INIT
     // =============================
     async function iniciarCamara() {
       try {
@@ -213,49 +213,42 @@
           video.onloadedmetadata = () => res();
         });
 
-        // IMPORTACIÓN DINÁMICA DE SCANIC
+        // IMPORTACIÓN DINÁMICA (Evita el error import.meta)
         if (!scanicScanner) {
           try {
-            console.log("Descargando módulo Scanic...");
             const scanic = await import('https://unpkg.com/scanic/dist/scanic.js');
-            
-            // Instanciamos usando la clase exportada del módulo
             scanicScanner = new scanic.Scanner();
             await scanicScanner.initialize();
-            
-            console.log("✅ Scanic inicializado correctamente (ES Module)");
+            console.log("✅ Scanic listo");
           } catch (err) {
-            console.error("❌ Error al descargar o inicializar el módulo Scanic:", err);
+            console.error("❌ Error de módulo Scanic:", err);
           }
         }
 
         titulo.innerText = "Cámara lista";
         actualizarTextos();
       } catch (err) {
-        console.error(err);
         alert("Error al acceder a la cámara. Revisa permisos.");
         titulo.innerText = "Cámara bloqueada";
-        subtitulo.innerText = "Activa permisos de cámara y recarga.";
       }
     }
     iniciarCamara();
 
     function detenerCamara() {
-      try {
-        if (streamActual) {
-          streamActual.getTracks().forEach(t => t.stop());
-          streamActual = null;
-        }
-      } catch (_) {}
+      if (streamActual) {
+        streamActual.getTracks().forEach(t => t.stop());
+        streamActual = null;
+      }
     }
 
     // =============================
-    // CAPTURE + AUTOSCAN (Scanic) + FALLBACK (Cropper)
+    // CAPTURE + AUTOSCAN + FALLBACK
     // =============================
     function capturarFrame() {
       const canvasFull = document.createElement('canvas');
-      canvasFull.width = video.videoWidth || 1920;
-      canvasFull.height = video.videoHeight || 1080;
+      // CORRECCIÓN: Usar siempre las dimensiones reales del video (respeta el modo vertical)
+      canvasFull.width = video.videoWidth;
+      canvasFull.height = video.videoHeight;
       const ctx = canvasFull.getContext('2d', { willReadFrequently: false });
       ctx.drawImage(video, 0, 0, canvasFull.width, canvasFull.height);
       return canvasFull;
@@ -263,11 +256,12 @@
 
     function abrirVistaPrevia(dataUrl, modo = "auto") {
       autoscanDataUrl = (modo === "auto") ? dataUrl : null;
-
+      
+      // Limpiamos estilos para que no se deforme
+      cropArea.style.display = 'flex';
       previewImg.src = dataUrl;
       video.style.display = 'none';
-      cropArea.style.display = 'block';
-
+      
       btnCapturar.classList.add('hide');
       grupoConfirmar.classList.remove('hide');
 
@@ -282,7 +276,6 @@
 
     function iniciarCropperManual(dataUrl) {
       abrirVistaPrevia(dataUrl, "manual");
-
       const proporcion = (tipoScan === 'identificacion') ? (85 / 54) : NaN;
 
       if (cropper) { cropper.destroy(); cropper = null; }
@@ -298,50 +291,41 @@
 
     async function intentarAutoScan(canvasFull) {
       try {
-        if (!scanicScanner) {
-          console.warn("Scanic no está inicializado. Saltando a manual...");
-          return null;
-        }
+        if (!scanicScanner) return null;
 
         const img = new Image();
         const dataUrl = canvasFull.toDataURL('image/jpeg', 0.95);
 
         await new Promise((res, rej) => {
           img.onload = () => res();
-          img.onerror = () => rej(new Error("Error al cargar la imagen para Scanic"));
+          img.onerror = () => rej(new Error("Error imagen"));
           img.src = dataUrl;
         });
 
         const options = {
           mode: 'extract',
-          maxProcessingDimension: 1000,
-          minArea: 1500,
-          debug: false 
+          maxProcessingDimension: 1200,
+          // CORRECCIÓN: Un área mínima gigante evita que atrape renglones de texto
+          minArea: 50000 
         };
 
         let result = await scanicScanner.scan(img, options);
 
         if (result && result.success && result.output) {
-          console.log("✅ ¡Bordes detectados exitosamente!");
           return result.output.toDataURL('image/jpeg', 0.95);
-        } else {
-          console.log("⚠️ Scanic no detectó bordes claros:", result?.message || "Sin resultados");
-          return null; 
         }
+        return null; 
       } catch (e) {
-        console.error("❌ Error de ejecución en intentarAutoScan:", e);
         return null; 
       }
     }
 
     async function tomarFoto() {
-      setOverlay(true, "Procesando…", "Detectando bordes y enderezando el documento.");
+      setOverlay(true, "Procesando…", "Buscando bordes del documento...");
       btnCapturar.disabled = true;
 
       try {
         const canvasFull = capturarFrame();
-
-        // 1) Intento automático con Scanic
         const extractedDataUrl = await intentarAutoScan(canvasFull);
 
         setOverlay(false);
@@ -352,10 +336,9 @@
           return;
         }
 
-        // 2) Fallback manual
+        // Si falla, pasamos a recorte manual
         iniciarCropperManual(canvasFull.toDataURL('image/jpeg', 1.0));
       } catch (err) {
-        console.error(err);
         setOverlay(false);
         btnCapturar.disabled = false;
         alert("No se pudo procesar la imagen. Intenta de nuevo.");
@@ -364,15 +347,13 @@
 
     function reintentarFoto() {
       autoscanDataUrl = null;
-
       if (cropper) { cropper.destroy(); cropper = null; }
-
+      
       cropArea.style.display = 'none';
       video.style.display = 'block';
 
       btnCapturar.classList.remove('hide');
       grupoConfirmar.classList.add('hide');
-
       actualizarTextos();
     }
 
@@ -388,7 +369,7 @@
           canvas.height = img.height;
           const ctx = canvas.getContext('2d');
 
-          ctx.filter = 'contrast(1.25) saturate(0.9) brightness(1.05)';
+          ctx.filter = 'contrast(1.2) saturate(0.95) brightness(1.05)';
           ctx.drawImage(img, 0, 0);
 
           resolve(canvas.toDataURL('image/jpeg', 0.9));
@@ -403,20 +384,13 @@
       if (autoscanDataUrl) {
         imgFinal = await mejorarComoScanner(autoscanDataUrl);
       } else {
-        if (!cropper) {
-          alert("No hay recorte activo. Toma la foto de nuevo.");
-          return;
-        }
-
+        if (!cropper) return;
         const canvasRecorte = cropper.getCroppedCanvas({
           width: (tipoScan === 'identificacion') ? 1200 : 1400
         });
-
         const dataUrlManual = canvasRecorte.toDataURL('image/jpeg', 0.95);
         imgFinal = await mejorarComoScanner(dataUrlManual);
-
-        cropper.destroy();
-        cropper = null;
+        cropper.destroy(); cropper = null;
       }
 
       if (tipoScan === 'documento') {
@@ -436,16 +410,13 @@
     function procesarYEnviarIdentificacion() {
       titulo.innerText = "Procesando...";
       subtitulo.innerText = "Uniendo documento en una hoja...";
-
       cropArea.style.display = 'none';
       btnCapturar.classList.add('hide');
       grupoConfirmar.classList.add('hide');
 
       const canvasFinal = document.createElement('canvas');
       const ctxFinal = canvasFinal.getContext('2d');
-
-      canvasFinal.width = 1240;
-      canvasFinal.height = 1754;
+      canvasFinal.width = 1240; canvasFinal.height = 1754;
 
       ctxFinal.fillStyle = "white";
       ctxFinal.fillRect(0, 0, canvasFinal.width, canvasFinal.height);
@@ -455,12 +426,9 @@
 
       img1.onload = () => {
         ctxFinal.drawImage(img1, 100, 150, 1040, 650);
-
         img2.onload = () => {
           ctxFinal.drawImage(img2, 100, 900, 1040, 650);
-
-          const documentoA4 = canvasFinal.toDataURL('image/jpeg', 0.85);
-          enviarAlServidor(documentoA4);
+          enviarAlServidor(canvasFinal.toDataURL('image/jpeg', 0.85));
         };
         img2.src = imagenReverso;
       };
@@ -470,40 +438,19 @@
     function enviarAlServidor(imagenBase64) {
       titulo.innerText = "¡Enviado!";
       subtitulo.innerText = "Revisa la pantalla del Kiosko.";
-
-      cropArea.style.display = 'block';
+      cropArea.style.display = 'flex';
       previewImg.src = imagenBase64;
 
-      socket.emit('enviar-documento', {
-        sesion: idSesion,
-        archivo: imagenBase64
-      });
+      socket.emit('enviar-documento', { sesion: idSesion, archivo: imagenBase64 });
 
-      setTimeout(() => {
-        alert("El documento ha sido enviado con éxito. Ya puedes cerrar esta ventana.");
-      }, 500);
+      setTimeout(() => { alert("Enviado con éxito."); }, 500);
     }
 
     function cerrarAppMovil() {
       detenerCamara();
       try { window.close(); } catch (_) {}
-
-      document.body.innerHTML =
-        '<div style="display:flex; height:100vh; align-items:center; justify-content:center; text-align:center; padding:20px;">' +
-        '<div><i class="ph-bold ph-check-circle" style="font-size:64px; color:var(--primary-light);"></i>' +
-        '<h2 style="margin-top:20px;">Escaneo Cancelado</h2>' +
-        '<p style="color:var(--text-muted);">Ya puedes cerrar esta pestaña.</p></div></div>';
+      document.body.innerHTML = '<div style="display:flex; height:100vh; align-items:center; justify-content:center; text-align:center; padding:20px;"><div><i class="ph-bold ph-check-circle" style="font-size:64px; color:var(--primary-light);"></i><h2>Escaneo Cancelado</h2></div></div>';
     }
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        // opcional: detenerCamara();
-      }
-    });
-
-    window.addEventListener('beforeunload', () => {
-      detenerCamara();
-    });
   </script>
 </body>
 </html>
