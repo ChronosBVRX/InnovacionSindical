@@ -2,237 +2,471 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Kiosko Digital - SNTSS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Escáner - Plataforma Sindical</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
   <style>
     :root {
-      --bg-body: #1b2e45; --bg-body-end: #152336;
       --panel-base: 46, 79, 119;
       --primary: #4da1a8; --primary-light: #7ad1d6;
-      --text-main: #f0fdfa; --text-muted: #bce9eb;
+      --text-main: #f0fdfa;
+      --text-muted: rgba(240, 253, 250, 0.65);
       --ring: rgba(77, 161, 168, .35);
-      --radius: 16px;
-      --glass-bg: rgba(var(--panel-base), 0.35);
+      --radius: 12px;
     }
 
     body {
-      margin: 0; padding: 0; height: 100vh;
-      background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%);
-      color: var(--text-main); font-family: 'Inter', sans-serif;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      overflow: hidden;
+      margin: 0; padding: 0; background-color: #0b1f2a; color: var(--text-main);
+      font-family: 'Inter', sans-serif; display: flex; flex-direction: column;
+      height: 100vh; overflow: hidden;
     }
 
-    body::before {
-      content: ""; position: absolute; inset: 0; opacity: .06; z-index: -1;
-      background-image: linear-gradient(to right, var(--primary) 1px, transparent 1px), 
-                        linear-gradient(to bottom, var(--primary) 1px, transparent 1px);
-      background-size: 40px 40px;
+    .topbar {
+      background: rgba(var(--panel-base), 0.9); padding: 16px; text-align: center;
+      border-bottom: 1px solid var(--ring); display: flex; flex-direction: column; gap: 5px;
+      position: relative; z-index: 50;
+    }
+    .topbar h2 { margin: 0; font-size: 18px; font-weight: 600; color: var(--primary-light); }
+    .topbar p { margin: 0; font-size: 14px; color: var(--text-main); }
+
+    .btn-cerrar-app {
+      position: absolute; left: 16px; top: 16px;
+      background: none; border: none; color: var(--text-muted);
+      font-size: 24px; cursor: pointer; padding: 4px;
     }
 
-    .btn-flotante {
-      position: absolute; top: 24px; left: 24px;
-      background: rgba(var(--panel-base), 0.6); backdrop-filter: blur(8px);
-      border: 1px solid var(--ring); color: var(--text-main);
-      padding: 10px 18px; border-radius: 8px; cursor: pointer;
-      display: flex; align-items: center; gap: 8px; font-size: 14px;
-      font-weight: 600; transition: 0.3s; z-index: 50;
+    .camera-container {
+      flex: 1; position: relative; display: flex; justify-content: center; align-items: center;
+      background: #000; overflow: hidden; width: 100%;
     }
-    .btn-flotante:hover { background: rgba(77, 161, 168, 0.2); color: var(--primary-light); }
 
-    .container { width: 100%; max-width: 800px; padding: 40px; text-align: center; }
+    /* Ajuste para que la cámara no engañe con el recorte */
+    video { width: 100%; height: 100%; object-fit: contain; }
 
-    .view { display: none; animation: fadeIn 0.5s ease forwards; }
-    .view.active { display: block; }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-    h1 { font-size: 36px; margin-bottom: 10px; font-weight: 700; }
-    p.subtitle { color: var(--text-muted); font-size: 18px; margin-bottom: 40px; }
-
-    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-    
-    .card-btn {
-      background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--ring);
-      border-radius: var(--radius); padding: 40px 20px; cursor: pointer; transition: all 0.3s ease;
-      display: flex; flex-direction: column; align-items: center; gap: 16px;
+    .img-container {
+      display: none; width: 100%; height: 100%;
+      position: absolute; top: 0; left: 0; z-index: 10;
+      background: #000;
+      justify-content: center; align-items: center;
     }
     
-    .card-btn:hover {
-      border-color: var(--primary-light); background: rgba(var(--panel-base), 0.6);
-      transform: translateY(-5px); box-shadow: 0 10px 30px rgba(77, 161, 168, 0.2);
-    }
-    
-    .card-btn i { font-size: 64px; color: var(--primary-light); }
-    .card-btn h3 { margin: 0; font-size: 22px; }
-    .card-btn p { margin: 0; font-size: 14px; color: var(--text-muted); }
+    #preview-img { max-width: 100%; max-height: 100%; display: block; object-fit: contain; }
 
-    .qr-box {
-      background: white; padding: 20px; border-radius: var(--radius);
-      display: inline-block; margin: 20px 0; box-shadow: 0 0 40px rgba(77,161,168,0.3);
+    .overlay {
+      position: absolute; inset: 0; z-index: 15;
+      display: none;
+      align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(2px);
+      text-align: center;
+      padding: 24px;
     }
-    
-    .session-id { font-family: monospace; font-size: 24px; color: var(--primary-light); letter-spacing: 2px; margin-top: 10px; }
+    .overlay .card {
+      width: min(420px, 92vw);
+      background: rgba(var(--panel-base), 0.85);
+      border: 1px solid var(--ring);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    .overlay .title { font-weight: 700; color: var(--primary-light); margin: 0 0 6px 0; }
+    .overlay .desc { margin: 0; color: var(--text-main); opacity: .9; font-size: 14px; }
 
-    /* Estilo normal para el monitor */
-    .document-preview {
-      width: 100%; max-width: 500px; height: 600px; background: #fff;
-      margin: 0 auto 20px; border-radius: 8px; border: 2px solid var(--ring);
-      object-fit: contain; display: block;
+    .controls {
+      background: rgba(var(--panel-base), 0.9); padding: 24px; text-align: center;
+      border-top: 1px solid var(--ring); z-index: 20;
     }
 
-    .btn-action {
-      background: var(--primary); color: #0b1f2a; border: none; padding: 16px 32px;
-      font-size: 18px; font-weight: 600; border-radius: 8px; cursor: pointer;
-      display: inline-flex; align-items: center; gap: 10px; transition: 0.3s;
+    .btn {
+      background: var(--primary); color: #0b1f2a; border: none; padding: 16px;
+      font-size: 16px; font-weight: 700; border-radius: var(--radius); width: 100%;
+      cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
     }
-    .btn-action:hover { background: var(--primary-light); transform: scale(1.05); }
-    
-    .btn-secondary { background: transparent; color: var(--text-main); border: 1px solid var(--ring); }
-    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+    .btn:active { transform: scale(0.98); }
 
-    /* =========================================
-       NUEVO: REGLAS ESTRICTAS PARA IMPRESIÓN
-       ========================================= */
-    @media print {
-      body * { visibility: hidden !important; }
-      body { background: white !important; }
-      
-      #doc-image { 
-        visibility: visible !important; 
-        position: absolute !important; 
-        left: 0 !important; 
-        top: 0 !important; 
-        
-        /* Forzar tamaño completo de la hoja */
-        width: 100vw !important; 
-        height: 100vh !important; 
-        max-width: none !important; 
-        max-height: none !important;
-        
-        /* Quitar bordes y márgenes del monitor */
-        border: none !important; 
-        margin: 0 !important; 
-        padding: 0 !important; 
-        border-radius: 0 !important;
-        
-        /* Ajustar sin deformar */
-        object-fit: contain !important; 
-      }
-      
-      @page { margin: 0; size: auto; }
-    }
+    .btn-secondary { background: transparent; color: var(--primary-light); border: 1px solid var(--primary-light); margin-top: 12px; }
+    .hide { display: none !important; }
+
+    /* Cropper theme */
+    .cropper-view-box, .cropper-face { border-radius: 4px; }
+    .cropper-line, .cropper-point { background-color: var(--primary-light) !important; }
   </style>
 </head>
+
 <body>
+  <div class="topbar">
+    <button class="btn-cerrar-app" onclick="cerrarAppMovil()">
+      <i class="ph-bold ph-x"></i>
+    </button>
+    <h2 id="instruccion-titulo">Iniciando cámara...</h2>
+    <p id="instruccion-sub">Encuadra y toma la foto</p>
+  </div>
 
-  <button class="btn-flotante" onclick="cerrarKiosko()">
-    <i class="ph-bold ph-arrow-left"></i> Salir del Kiosko
-  </button>
+  <div class="camera-container">
+    <video id="video" autoplay playsinline></video>
 
-  <div class="container">
-    
-    <div id="view-menu" class="view active">
-      <h1>Kiosko de Recepción Digital</h1>
-      <p class="subtitle">Selecciona el tipo de documento que deseas escanear con tu celular</p>
-      
-      <div class="options-grid">
-        <div class="card-btn" onclick="iniciarSesion('identificacion')">
-          <i class="ph-duotone ph-identification-card"></i>
-          <h3>Identificación (INE/DNI)</h3>
-          <p>Escanea el frente y reverso.<br>Se imprimirá en una sola hoja.</p>
-        </div>
-        
-        <div class="card-btn" onclick="iniciarSesion('documento')">
-          <i class="ph-duotone ph-file-text"></i>
-          <h3>Documento Normal</h3>
-          <p>Escanea un escrito o carta.<br>Página completa.</p>
-        </div>
-      </div>
+    <div id="crop-area" class="img-container">
+      <img id="preview-img" src="" alt="Vista previa">
     </div>
 
-    <div id="view-qr" class="view">
-      <h1>Conecta tu Celular</h1>
-      <p class="subtitle">Apunta con la cámara de tu celular a este código para iniciar el escáner.</p>
-      
-      <div class="qr-box" id="qrcode"></div>
-      <div>ID de Sesión: <span id="session-display" class="session-id">----</span></div>
-      
-      <br><br>
-      <button class="btn-action btn-secondary" onclick="mostrarVista('view-menu')">
-        <i class="ph-bold ph-arrow-left"></i> Cancelar y Volver
+    <div id="overlay" class="overlay">
+      <div class="card">
+        <p class="title" id="overlay-title">Procesando…</p>
+        <p class="desc" id="overlay-desc">Detectando bordes y enderezando el documento.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="btn-capturar" class="btn" onclick="tomarFoto()">
+      <i class="ph-bold ph-camera"></i> Tomar Foto
+    </button>
+
+    <div id="grupo-confirmar" class="hide">
+      <button class="btn" onclick="confirmarFoto()">
+        <i class="ph-bold ph-check"></i> Confirmar y Enviar
+      </button>
+      <button class="btn btn-secondary" onclick="reintentarFoto()">
+        <i class="ph-bold ph-arrow-counter-clockwise"></i> Tomar de nuevo
       </button>
     </div>
-
-    <div id="view-result" class="view">
-      <h1>¡Documento Recibido!</h1>
-      <p class="subtitle">Verifica que sea legible antes de imprimir.</p>
-      
-      <img id="doc-image" class="document-preview" src="" alt="Vista previa del documento">
-      
-      <div style="display: flex; gap: 20px; justify-content: center;">
-        <button class="btn-action" onclick="window.print()">
-          <i class="ph-bold ph-printer"></i> Imprimir Ahora
-        </button>
-        <button class="btn-action btn-secondary" onclick="mostrarVista('view-menu')">
-          <i class="ph-bold ph-check-circle"></i> Finalizar
-        </button>
-      </div>
-    </div>
-
   </div>
 
   <script>
-    let qrCodeObj = null;
-    let sesionActual = '';
-    
+    // =============================
+    // CONFIG
+    // =============================
     const API_URL = 'https://sinos-api.onrender.com';
     const socket = io(API_URL);
 
-    socket.on('documento-recibido', (imagenBase64) => {
-      document.getElementById('doc-image').src = imagenBase64;
-      mostrarVista('view-result');
-    });
+    const urlParams = new URLSearchParams(window.location.search);
+    const idSesion = urlParams.get('sesion') || 'TEST';
+    const tipoScan = urlParams.get('tipo') || 'identificacion'; 
 
-    function mostrarVista(idVista) {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.getElementById(idVista).classList.add('active');
+    const video = document.getElementById('video');
+    const cropArea = document.getElementById('crop-area');
+    const previewImg = document.getElementById('preview-img');
+    const btnCapturar = document.getElementById('btn-capturar');
+    const grupoConfirmar = document.getElementById('grupo-confirmar');
+    const titulo = document.getElementById('instruccion-titulo');
+    const subtitulo = document.getElementById('instruccion-sub');
+    const overlay = document.getElementById('overlay');
+    const overlayTitle = document.getElementById('overlay-title');
+    const overlayDesc = document.getElementById('overlay-desc');
+
+    let cropper = null;
+    let pasoActual = 1;
+    let imagenFrente = null;
+    let imagenReverso = null;
+    let streamActual = null;
+
+    // Scanic
+    let scanicScanner = null;
+    let autoscanDataUrl = null; 
+
+    function setOverlay(show, titleText = "Procesando…", descText = "Detectando bordes y enderezando el documento.") {
+      overlayTitle.innerText = titleText;
+      overlayDesc.innerText = descText;
+      overlay.style.display = show ? 'flex' : 'none';
     }
 
-    function iniciarSesion(tipo) {
-      sesionActual = Math.random().toString(36).substring(2, 8).toUpperCase();
-      document.getElementById('session-display').innerText = sesionActual;
+    function actualizarTextos() {
+      if (tipoScan === 'documento') {
+        titulo.innerText = "Escáner de Documento";
+        subtitulo.innerText = "Encuadra el documento completo";
+      } else {
+        titulo.innerText = pasoActual === 1 ? "Paso 1: Frente (INE)" : "Paso 2: Reverso (INE)";
+        subtitulo.innerText = "Encuadra la credencial completa";
+      }
+    }
+    actualizarTextos();
 
-      const baseUrl = window.location.href.split('?')[0].replace('kiosko.html', '');
-      const urlParaCelular = `${baseUrl}celular.html?sesion=${sesionActual}&tipo=${tipo}`;
+    // =============================
+    // CAMERA & SCANIC INIT
+    // =============================
+    async function iniciarCamara() {
+      try {
+        const constraints = {
+          audio: false,
+          video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+          }
+        };
 
-      const contenedorQR = document.getElementById('qrcode');
-      contenedorQR.innerHTML = ''; 
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        streamActual = stream;
+        video.srcObject = stream;
+
+        await new Promise((res) => {
+          video.onloadedmetadata = () => res();
+        });
+
+        // Importación dinámica para Scanic
+        if (!scanicScanner) {
+          try {
+            const scanicModule = await import('https://unpkg.com/scanic/dist/scanic.js');
+            scanicScanner = new scanicModule.Scanner();
+            await scanicScanner.initialize();
+            console.log("✅ Módulo Scanic inicializado correctamente");
+          } catch (err) {
+            console.error("❌ Error al cargar Scanic:", err);
+          }
+        }
+
+        titulo.innerText = "Cámara lista";
+        actualizarTextos();
+      } catch (err) {
+        alert("Error al acceder a la cámara. Revisa permisos.");
+        titulo.innerText = "Cámara bloqueada";
+      }
+    }
+    iniciarCamara();
+
+    function detenerCamara() {
+      if (streamActual) {
+        streamActual.getTracks().forEach(t => t.stop());
+        streamActual = null;
+      }
+    }
+
+    // =============================
+    // CAPTURE + AUTOSCAN + FALLBACK
+    // =============================
+    function capturarFrame() {
+      const canvasFull = document.createElement('canvas');
+      canvasFull.width = video.videoWidth;
+      canvasFull.height = video.videoHeight;
+      const ctx = canvasFull.getContext('2d', { willReadFrequently: false });
+      ctx.drawImage(video, 0, 0, canvasFull.width, canvasFull.height);
+      return canvasFull;
+    }
+
+    function abrirVistaPrevia(dataUrl, modo = "auto") {
+      autoscanDataUrl = (modo === "auto") ? dataUrl : null;
       
-      qrCodeObj = new QRCode(contenedorQR, {
-        text: urlParaCelular,
-        width: 250, height: 250,
-        colorDark : "#0b1f2a", colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.H
-      });
+      cropArea.style.display = 'flex';
+      previewImg.src = dataUrl;
+      video.style.display = 'none';
+      
+      btnCapturar.classList.add('hide');
+      grupoConfirmar.classList.remove('hide');
 
-      mostrarVista('view-qr');
-      socket.emit('crear-sesion', sesionActual);
+      if (modo === "auto") {
+        titulo.innerText = "Documento Detectado";
+        subtitulo.innerText = "Si se ve bien, confirma y envía";
+      } else {
+        titulo.innerText = "Ajustar Recorte";
+        subtitulo.innerText = "Arrastra el cuadro si es necesario";
+      }
     }
 
-    function cerrarKiosko() {
-      window.close();
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 300);
+    function iniciarCropperManual(dataUrl) {
+      abrirVistaPrevia(dataUrl, "manual");
+      const proporcion = (tipoScan === 'identificacion') ? (85 / 54) : NaN;
+
+      if (cropper) { cropper.destroy(); cropper = null; }
+      cropper = new Cropper(previewImg, {
+        aspectRatio: proporcion,
+        viewMode: 1,
+        dragMode: 'move',
+        autoCropArea: 0.92,
+        background: false,
+        guides: true,
+      });
+    }
+
+    async function intentarAutoScan(canvasFull) {
+      try {
+        if (!scanicScanner) return null;
+
+        const img = new Image();
+        const dataUrl = canvasFull.toDataURL('image/jpeg', 0.95);
+
+        await new Promise((res, rej) => {
+          img.onload = () => res();
+          img.onerror = () => rej(new Error("Error imagen"));
+          img.src = dataUrl;
+        });
+
+        const options = {
+          mode: 'extract',
+          maxProcessingDimension: 1200,
+          // Área mínima amplia para que ignore textos
+          minArea: 80000 
+        };
+
+        let result = await scanicScanner.scan(img, options);
+
+        if (result && result.success && result.output) {
+          return result.output.toDataURL('image/jpeg', 0.95);
+        }
+        return null; 
+      } catch (e) {
+        return null; 
+      }
+    }
+
+    async function tomarFoto() {
+      setOverlay(true, "Procesando…", "Buscando bordes del documento...");
+      btnCapturar.disabled = true;
+
+      try {
+        const canvasFull = capturarFrame();
+        const extractedDataUrl = await intentarAutoScan(canvasFull);
+
+        setOverlay(false);
+        btnCapturar.disabled = false;
+
+        if (extractedDataUrl) {
+          abrirVistaPrevia(extractedDataUrl, "auto");
+          return;
+        }
+
+        iniciarCropperManual(canvasFull.toDataURL('image/jpeg', 1.0));
+      } catch (err) {
+        setOverlay(false);
+        btnCapturar.disabled = false;
+        alert("No se pudo procesar la imagen. Intenta de nuevo.");
+      }
+    }
+
+    function reintentarFoto() {
+      autoscanDataUrl = null;
+      if (cropper) { cropper.destroy(); cropper = null; }
+      
+      cropArea.style.display = 'none';
+      video.style.display = 'block';
+
+      btnCapturar.classList.remove('hide');
+      grupoConfirmar.classList.add('hide');
+      actualizarTextos();
+    }
+
+    // =============================
+    // CONFIRM + ENHANCE + SEND
+    // =============================
+    function mejorarComoScanner(inputDataUrl) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+
+          ctx.filter = 'contrast(1.2) saturate(0.95) brightness(1.05)';
+          ctx.drawImage(img, 0, 0);
+
+          resolve(canvas.toDataURL('image/jpeg', 0.9));
+        };
+        img.src = inputDataUrl;
+      });
+    }
+
+    async function confirmarFoto() {
+      let imgFinal = null;
+
+      if (autoscanDataUrl) {
+        imgFinal = await mejorarComoScanner(autoscanDataUrl);
+      } else {
+        if (!cropper) return;
+        const canvasRecorte = cropper.getCroppedCanvas({
+          width: (tipoScan === 'identificacion') ? 1200 : 1400
+        });
+        const dataUrlManual = canvasRecorte.toDataURL('image/jpeg', 0.95);
+        imgFinal = await mejorarComoScanner(dataUrlManual);
+        cropper.destroy(); cropper = null;
+      }
+
+      if (tipoScan === 'documento') {
+        enviarAlServidor(imgFinal);
+      } else {
+        if (pasoActual === 1) {
+          imagenFrente = imgFinal;
+          pasoActual = 2;
+          reintentarFoto();
+        } else {
+          imagenReverso = imgFinal;
+          procesarYEnviarIdentificacion();
+        }
+      }
+    }
+
+    // Nueva función acomodada para impresión en 1 sola hoja A4
+    function procesarYEnviarIdentificacion() {
+      titulo.innerText = "Procesando...";
+      subtitulo.innerText = "Uniendo documento en una hoja...";
+      cropArea.style.display = 'none';
+      btnCapturar.classList.add('hide');
+      grupoConfirmar.classList.add('hide');
+
+      const canvasFinal = document.createElement('canvas');
+      const ctxFinal = canvasFinal.getContext('2d');
+      
+      // Lienzo tamaño A4
+      canvasFinal.width = 1240; 
+      canvasFinal.height = 1754;
+
+      // Fondo completamente blanco
+      ctxFinal.fillStyle = "white";
+      ctxFinal.fillRect(0, 0, canvasFinal.width, canvasFinal.height);
+
+      const img1 = new Image();
+      const img2 = new Image();
+
+      img1.onload = () => {
+        // Dimensiones más proporcionales para evitar salto de página
+        const anchoCredencial = 850;
+        const altoCredencial = 540;
+        
+        // Centramos las credenciales horizontalmente
+        const xPos = (canvasFinal.width - anchoCredencial) / 2; 
+        
+        // Las colocamos más arriba y más juntas
+        const yFrente = 180; 
+        const yReverso = yFrente + altoCredencial + 80;
+
+        // Dibujamos el frente
+        ctxFinal.drawImage(img1, xPos, yFrente, anchoCredencial, altoCredencial);
+        
+        img2.onload = () => {
+          // Dibujamos el reverso
+          ctxFinal.drawImage(img2, xPos, yReverso, anchoCredencial, altoCredencial);
+          
+          // Generamos el Base64 y lo enviamos
+          const documentoA4 = canvasFinal.toDataURL('image/jpeg', 0.85);
+          enviarAlServidor(documentoA4);
+        };
+        img2.src = imagenReverso;
+      };
+      img1.src = imagenFrente;
+    }
+
+    function enviarAlServidor(imagenBase64) {
+      titulo.innerText = "¡Enviado!";
+      subtitulo.innerText = "Revisa la pantalla del Kiosko.";
+      cropArea.style.display = 'flex';
+      previewImg.src = imagenBase64;
+
+      socket.emit('enviar-documento', { sesion: idSesion, archivo: imagenBase64 });
+
+      setTimeout(() => { alert("Enviado con éxito."); }, 500);
+    }
+
+    function cerrarAppMovil() {
+      detenerCamara();
+      try { window.close(); } catch (_) {}
+      document.body.innerHTML = '<div style="display:flex; height:100vh; align-items:center; justify-content:center; text-align:center; padding:20px;"><div><i class="ph-bold ph-check-circle" style="font-size:64px; color:var(--primary-light);"></i><h2>Escaneo Cancelado</h2></div></div>';
     }
   </script>
 </body>
