@@ -78,7 +78,7 @@
     #loading-ia {
       position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
       background: rgba(0,0,0,0.7); padding: 8px 16px; border-radius: 20px;
-      font-size: 12px; color: #fff; z-index: 15;
+      font-size: 12px; color: #fff; z-index: 15; text-align: center;
     }
   </style>
 </head>
@@ -95,7 +95,7 @@
   <div class="camera-container">
     <video id="video" autoplay playsinline></video>
     <div id="guide" class="overlay-guide"></div>
-    <div id="loading-ia">Cargando motor de recorte inteligente...</div>
+    <div id="loading-ia">Cargando motor inteligente...</div>
     <img id="preview-img" alt="Vista previa">
   </div>
 
@@ -138,12 +138,11 @@
     let imagenReverso = null;
     let motorScanner = null;
 
-    // EL "VIGILANTE": Revisa cada 500ms si OpenCV ya se cargó correctamente
+    // Vigilar que OpenCV cargue correctamente
     let intentosCarga = 0;
     const intervalCarga = setInterval(() => {
       intentosCarga++;
       
-      // Verificamos si las librerías existen y si OpenCV inicializó sus módulos (cv.Mat)
       if (typeof cv !== 'undefined' && typeof jscanify !== 'undefined' && cv.Mat) {
         clearInterval(intervalCarga);
         motorScanner = new jscanify();
@@ -161,25 +160,15 @@
           subtitulo.innerText = "Alinea la credencial y captura";
         }
       } 
-      // Si pasan más de 10 segundos (20 intentos), activamos el modo básico de rescate
       else if (intentosCarga > 20) {
         clearInterval(intervalCarga);
-        motorScanner = null; // Seguimos sin motor
+        motorScanner = null;
         
         loadingIa.innerText = "Conexión lenta: Modo Básico Activo";
         setTimeout(() => loadingIa.style.display = 'none', 3000);
         
         btnCapturar.disabled = false;
         btnCapturar.innerHTML = '<i class="ph-bold ph-camera"></i> Capturar Normal';
-        
-        if (tipoScan === 'documento') {
-          guide.style.height = '80%'; 
-          titulo.innerText = "Escáner Básico";
-          subtitulo.innerText = "Toma la foto lo más centrada posible";
-        } else {
-          titulo.innerText = "Paso 1: Frente (INE)";
-          subtitulo.innerText = "Toma la foto de cerca";
-        }
       }
     }, 500);
 
@@ -198,33 +187,50 @@
     iniciarCamara();
 
     function tomarFoto() {
-      titulo.innerText = "Procesando imagen...";
-      subtitulo.innerText = "Espera un momento...";
+      titulo.innerText = "Procesando...";
+      subtitulo.innerText = "Calculando bordes y perspectiva...";
 
       const canvas = document.getElementById('canvas-oculto');
       const ctx = canvas.getContext('2d');
       
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      // OPTIMIZACIÓN: Reducir tamaño de la imagen para que el celular no se bloquee
+      const maxAncho = 1200; 
+      let scale = 1;
+      if (video.videoWidth > maxAncho) {
+        scale = maxAncho / video.videoWidth;
+      }
+      
+      canvas.width = video.videoWidth * scale;
+      canvas.height = video.videoHeight * scale;
+      
+      // Dibujar la foto escalada en el canvas
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
       let resultCanvas = canvas;
+      let exitoRecorte = false;
 
-      // Si el motor inteligente cargó con éxito, intentamos el recorte mágico
+      // Si el motor está listo, intentamos recortar
       if (motorScanner) {
         try {
-          const paperCanvas = motorScanner.extractPaper(canvas, canvas.width, canvas.height);
+          // Definir proporciones esperadas (Horizontal para INE, Vertical para Documento)
+          const anchoSalida = tipoScan === 'identificacion' ? 1000 : 800;
+          const altoSalida = tipoScan === 'identificacion' ? 630 : 1130;
+
+          // Extraer el papel con corrección de perspectiva
+          const paperCanvas = motorScanner.extractPaper(canvas, anchoSalida, altoSalida);
+          
           if (paperCanvas) {
             resultCanvas = paperCanvas;
+            exitoRecorte = true;
           }
         } catch (e) {
-          console.warn("No se encontró un borde claro, usando imagen original.");
+          console.warn("Fallo al calcular los bordes", e);
         }
       }
 
-      // Aplicar filtro de contraste para mejorar la legibilidad del texto
+      // Filtro de contraste tipo CamScanner
       const ctxResult = resultCanvas.getContext('2d');
-      ctxResult.filter = 'contrast(1.3) grayscale(0.2)';
+      ctxResult.filter = 'contrast(1.4) grayscale(0.2)';
       ctxResult.drawImage(resultCanvas, 0, 0);
 
       const base64Image = resultCanvas.toDataURL('image/jpeg', 0.8);
@@ -236,8 +242,16 @@
       btnCapturar.classList.add('hide');
       grupoConfirmar.classList.remove('hide');
 
-      titulo.innerText = "¿El recorte es correcto?";
-      subtitulo.innerText = "Revisa que el texto sea legible.";
+      // Dar retroalimentación al usuario
+      if (exitoRecorte) {
+        titulo.innerText = "¡Recorte Exitoso!";
+        subtitulo.innerText = "¿El documento es legible?";
+        document.getElementById('instruccion-titulo').style.color = '#4da1a8'; // Verde/Azul
+      } else {
+        titulo.innerText = "No se detectaron bordes";
+        subtitulo.innerText = "Pon el documento sobre un fondo oscuro.";
+        document.getElementById('instruccion-titulo').style.color = '#ff6b6b'; // Rojo
+      }
     }
 
     function reintentarFoto() {
@@ -246,11 +260,14 @@
       guide.style.display = 'block';
       btnCapturar.classList.remove('hide');
       grupoConfirmar.classList.add('hide');
+      document.getElementById('instruccion-titulo').style.color = 'var(--primary-light)';
 
       if (tipoScan === 'documento') {
         titulo.innerText = motorScanner ? "Escáner de Documento" : "Escáner Básico";
+        subtitulo.innerText = "Encuadra la hoja y toma la foto";
       } else {
         titulo.innerText = pasoActual === 1 ? "Paso 1: Frente (INE)" : "Paso 2: Reverso (INE)";
+        subtitulo.innerText = "Alinea la credencial y captura";
       }
     }
 
@@ -265,6 +282,7 @@
           pasoActual = 2;
           titulo.innerText = "Paso 2: Reverso (INE)";
           subtitulo.innerText = "Voltea la credencial y encuádrala";
+          document.getElementById('instruccion-titulo').style.color = 'var(--primary-light)';
           reintentarFoto();
         } else {
           imagenReverso = imgData;
