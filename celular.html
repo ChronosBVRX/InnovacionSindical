@@ -9,9 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  
-  <script src="https://docs.opencv.org/4.7.0/opencv.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/colonelparrot/jscanify@master/src/jscanify.min.js"></script>
 
   <style>
     :root {
@@ -48,10 +45,11 @@
     
     video { width: 100%; height: 100%; object-fit: cover; }
 
+    /* EL MOLDE DE CORTE */
     .overlay-guide {
-      position: absolute; border: 2px dashed rgba(77, 161, 168, 0.8);
-      width: 80%; height: 30%; border-radius: 8px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
-      pointer-events: none;
+      position: absolute; border: 2px dashed rgba(77, 161, 168, 0.9);
+      width: 85%; height: 35%; border-radius: 8px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+      pointer-events: none; z-index: 5;
     }
 
     #preview-img {
@@ -70,16 +68,9 @@
       cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
     }
     .btn:active { transform: scale(0.98); }
-    .btn:disabled { background: #555; color: #aaa; cursor: not-allowed; }
     
     .btn-secondary { background: transparent; color: var(--primary-light); border: 1px solid var(--primary-light); margin-top: 12px; }
     .hide { display: none !important; }
-
-    #loading-ia {
-      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-      background: rgba(0,0,0,0.7); padding: 8px 16px; border-radius: 20px;
-      font-size: 12px; color: #fff; z-index: 15; text-align: center;
-    }
   </style>
 </head>
 <body>
@@ -89,19 +80,18 @@
       <i class="ph-bold ph-x"></i>
     </button>
     <h2 id="instruccion-titulo">Iniciando cámara...</h2>
-    <p id="instruccion-sub">Por favor, espera.</p>
+    <p id="instruccion-sub">Alinea el documento en el recuadro</p>
   </div>
 
   <div class="camera-container">
     <video id="video" autoplay playsinline></video>
     <div id="guide" class="overlay-guide"></div>
-    <div id="loading-ia">Cargando motor inteligente...</div>
     <img id="preview-img" alt="Vista previa">
   </div>
 
   <div class="controls">
-    <button id="btn-capturar" class="btn" onclick="tomarFoto()" disabled>
-      <i class="ph-bold ph-spinner ph-spin"></i> Preparando Escáner...
+    <button id="btn-capturar" class="btn" onclick="tomarFoto()">
+      <i class="ph-bold ph-camera"></i> Escanear
     </button>
 
     <div id="grupo-confirmar" class="hide">
@@ -113,8 +103,6 @@
       </button>
     </div>
   </div>
-
-  <canvas id="canvas-oculto" class="hide"></canvas>
 
   <script>
     const API_URL = 'https://sinos-api.onrender.com';
@@ -131,46 +119,19 @@
     const titulo = document.getElementById('instruccion-titulo');
     const subtitulo = document.getElementById('instruccion-sub');
     const guide = document.getElementById('guide');
-    const loadingIa = document.getElementById('loading-ia');
 
     let pasoActual = 1; 
     let imagenFrente = null;
     let imagenReverso = null;
-    let motorScanner = null;
 
-    // Vigilar que OpenCV cargue correctamente
-    let intentosCarga = 0;
-    const intervalCarga = setInterval(() => {
-      intentosCarga++;
-      
-      if (typeof cv !== 'undefined' && typeof jscanify !== 'undefined' && cv.Mat) {
-        clearInterval(intervalCarga);
-        motorScanner = new jscanify();
-        
-        loadingIa.style.display = 'none';
-        btnCapturar.disabled = false;
-        btnCapturar.innerHTML = '<i class="ph-bold ph-camera"></i> Escanear';
-        
-        if (tipoScan === 'documento') {
-          guide.style.height = '80%'; 
-          titulo.innerText = "Escáner de Documento";
-          subtitulo.innerText = "Encuadra la hoja y toma la foto";
-        } else {
-          titulo.innerText = "Paso 1: Frente (INE)";
-          subtitulo.innerText = "Alinea la credencial y captura";
-        }
-      } 
-      else if (intentosCarga > 20) {
-        clearInterval(intervalCarga);
-        motorScanner = null;
-        
-        loadingIa.innerText = "Conexión lenta: Modo Básico Activo";
-        setTimeout(() => loadingIa.style.display = 'none', 3000);
-        
-        btnCapturar.disabled = false;
-        btnCapturar.innerHTML = '<i class="ph-bold ph-camera"></i> Capturar Normal';
-      }
-    }, 500);
+    if (tipoScan === 'documento') {
+      guide.style.height = '80%'; 
+      titulo.innerText = "Escáner de Documento";
+      subtitulo.innerText = "Encuadra la hoja en el recuadro";
+    } else {
+      titulo.innerText = "Paso 1: Frente (INE)";
+      subtitulo.innerText = "Alinea la credencial y captura";
+    }
 
     // Iniciar cámara web
     async function iniciarCamara() {
@@ -186,54 +147,50 @@
     }
     iniciarCamara();
 
+    // FUNCIÓN MATEMÁTICA DE RECORTE EXACTO
     function tomarFoto() {
-      titulo.innerText = "Procesando...";
-      subtitulo.innerText = "Calculando bordes y perspectiva...";
+      // 1. Obtener dimensiones de la pantalla y del video original
+      const vw = video.offsetWidth;
+      const vh = video.offsetHeight;
+      const videoWidth = video.videoWidth;
+      const videoHeight = video.videoHeight;
 
-      const canvas = document.getElementById('canvas-oculto');
-      const ctx = canvas.getContext('2d');
+      // 2. Crear un lienzo del tamaño exacto de la pantalla de tu celular
+      const canvasFull = document.createElement('canvas');
+      canvasFull.width = vw;
+      canvasFull.height = vh;
+      const ctxFull = canvasFull.getContext('2d');
+
+      // 3. Simular el comportamiento "object-fit: cover" para que las coordenadas coincidan
+      const scale = Math.max(vw / videoWidth, vh / videoHeight);
+      const drawW = videoWidth * scale;
+      const drawH = videoHeight * scale;
+      const drawX = (vw - drawW) / 2;
+      const drawY = (vh - drawH) / 2;
+
+      ctxFull.drawImage(video, drawX, drawY, drawW, drawH);
+
+      // 4. Medir exactamente dónde está el recuadro punteado en tu pantalla
+      const guideRect = guide.getBoundingClientRect();
+      const cropX = guideRect.left;
+      const cropY = guideRect.top;
+      const cropW = guideRect.width;
+      const cropH = guideRect.height;
+
+      // 5. Crear el lienzo final y recortar solo esa parte (aumentando resolución x2)
+      const canvasFinal = document.createElement('canvas');
+      canvasFinal.width = cropW * 2; 
+      canvasFinal.height = cropH * 2;
+      const ctxFinal = canvasFinal.getContext('2d');
+
+      // Aplicar filtro de contraste para mejorar las letras (Estilo Escáner)
+      ctxFinal.filter = 'contrast(1.3) grayscale(0.1)';
       
-      // OPTIMIZACIÓN: Reducir tamaño de la imagen para que el celular no se bloquee
-      const maxAncho = 1200; 
-      let scale = 1;
-      if (video.videoWidth > maxAncho) {
-        scale = maxAncho / video.videoWidth;
-      }
-      
-      canvas.width = video.videoWidth * scale;
-      canvas.height = video.videoHeight * scale;
-      
-      // Dibujar la foto escalada en el canvas
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
-      let resultCanvas = canvas;
-      let exitoRecorte = false;
+      // Dibujar la porción extraída
+      ctxFinal.drawImage(canvasFull, cropX, cropY, cropW, cropH, 0, 0, canvasFinal.width, canvasFinal.height);
 
-      // Si el motor está listo, intentamos recortar
-      if (motorScanner) {
-        try {
-          // Definir proporciones esperadas (Horizontal para INE, Vertical para Documento)
-          const anchoSalida = tipoScan === 'identificacion' ? 1000 : 800;
-          const altoSalida = tipoScan === 'identificacion' ? 630 : 1130;
-
-          // Extraer el papel con corrección de perspectiva
-          const paperCanvas = motorScanner.extractPaper(canvas, anchoSalida, altoSalida);
-          
-          if (paperCanvas) {
-            resultCanvas = paperCanvas;
-            exitoRecorte = true;
-          }
-        } catch (e) {
-          console.warn("Fallo al calcular los bordes", e);
-        }
-      }
-
-      // Filtro de contraste tipo CamScanner
-      const ctxResult = resultCanvas.getContext('2d');
-      ctxResult.filter = 'contrast(1.4) grayscale(0.2)';
-      ctxResult.drawImage(resultCanvas, 0, 0);
-
-      const base64Image = resultCanvas.toDataURL('image/jpeg', 0.8);
+      // 6. Mostrar el resultado
+      const base64Image = canvasFinal.toDataURL('image/jpeg', 0.9);
       previewImg.src = base64Image;
       previewImg.style.display = 'block';
       video.style.display = 'none';
@@ -242,16 +199,8 @@
       btnCapturar.classList.add('hide');
       grupoConfirmar.classList.remove('hide');
 
-      // Dar retroalimentación al usuario
-      if (exitoRecorte) {
-        titulo.innerText = "¡Recorte Exitoso!";
-        subtitulo.innerText = "¿El documento es legible?";
-        document.getElementById('instruccion-titulo').style.color = '#4da1a8'; // Verde/Azul
-      } else {
-        titulo.innerText = "No se detectaron bordes";
-        subtitulo.innerText = "Pon el documento sobre un fondo oscuro.";
-        document.getElementById('instruccion-titulo').style.color = '#ff6b6b'; // Rojo
-      }
+      titulo.innerText = "Recorte Final";
+      subtitulo.innerText = "Verifica que el texto sea legible.";
     }
 
     function reintentarFoto() {
@@ -260,11 +209,10 @@
       guide.style.display = 'block';
       btnCapturar.classList.remove('hide');
       grupoConfirmar.classList.add('hide');
-      document.getElementById('instruccion-titulo').style.color = 'var(--primary-light)';
 
       if (tipoScan === 'documento') {
-        titulo.innerText = motorScanner ? "Escáner de Documento" : "Escáner Básico";
-        subtitulo.innerText = "Encuadra la hoja y toma la foto";
+        titulo.innerText = "Escáner de Documento";
+        subtitulo.innerText = "Encuadra la hoja en el recuadro";
       } else {
         titulo.innerText = pasoActual === 1 ? "Paso 1: Frente (INE)" : "Paso 2: Reverso (INE)";
         subtitulo.innerText = "Alinea la credencial y captura";
@@ -281,8 +229,7 @@
           imagenFrente = imgData;
           pasoActual = 2;
           titulo.innerText = "Paso 2: Reverso (INE)";
-          subtitulo.innerText = "Voltea la credencial y encuádrala";
-          document.getElementById('instruccion-titulo').style.color = 'var(--primary-light)';
+          subtitulo.innerText = "Alinea el reverso en el recuadro";
           reintentarFoto();
         } else {
           imagenReverso = imgData;
@@ -333,7 +280,7 @@
       });
       
       setTimeout(() => {
-        alert("El documento ha sido enviado. Ya puedes cerrar esta ventana y mirar el Kiosko.");
+        alert("El documento ha sido enviado. Ya puedes cerrar esta ventana.");
       }, 500);
     }
 
