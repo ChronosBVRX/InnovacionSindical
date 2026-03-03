@@ -9,6 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  
+  <script async src="https://docs.opencv.org/4.8.0/opencv.js" onload="iniciarMotorEscaneo()"></script>
+  <script src="https://cdn.jsdelivr.net/gh/colonelparrot/jscanify@master/src/jscanify.min.js"></script>
 
   <style>
     :root {
@@ -27,12 +30,11 @@
     .topbar {
       background: rgba(var(--panel-base), 0.9); padding: 16px; text-align: center;
       border-bottom: 1px solid var(--ring); display: flex; flex-direction: column; gap: 5px;
-      position: relative; /* Para el botón de la X */
+      position: relative;
     }
     .topbar h2 { margin: 0; font-size: 18px; font-weight: 600; color: var(--primary-light); }
     .topbar p { margin: 0; font-size: 14px; color: var(--text-main); }
 
-    /* BOTÓN PARA CERRAR LA APP EN CELULAR */
     .btn-cerrar-app {
       position: absolute; left: 16px; top: 16px;
       background: none; border: none; color: var(--text-muted);
@@ -68,9 +70,17 @@
       cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
     }
     .btn:active { transform: scale(0.98); }
+    .btn:disabled { background: #555; color: #aaa; cursor: not-allowed; }
     
     .btn-secondary { background: transparent; color: var(--primary-light); border: 1px solid var(--primary-light); margin-top: 12px; }
     .hide { display: none !important; }
+
+    /* Indicador de carga de IA */
+    #loading-ia {
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.7); padding: 8px 16px; border-radius: 20px;
+      font-size: 12px; color: #fff; z-index: 15;
+    }
   </style>
 </head>
 <body>
@@ -79,25 +89,25 @@
     <button class="btn-cerrar-app" onclick="cerrarAppMovil()">
       <i class="ph-bold ph-x"></i>
     </button>
-
-    <h2 id="instruccion-titulo">Cargando Cámara...</h2>
+    <h2 id="instruccion-titulo">Iniciando cámara...</h2>
     <p id="instruccion-sub">Por favor, espera.</p>
   </div>
 
   <div class="camera-container">
     <video id="video" autoplay playsinline></video>
     <div id="guide" class="overlay-guide"></div>
+    <div id="loading-ia">Cargando motor de recorte inteligente...</div>
     <img id="preview-img" alt="Vista previa">
   </div>
 
   <div class="controls">
-    <button id="btn-capturar" class="btn" onclick="tomarFoto()">
-      <i class="ph-bold ph-camera"></i> Capturar
+    <button id="btn-capturar" class="btn" onclick="tomarFoto()" disabled>
+      <i class="ph-bold ph-camera"></i> Esperando Motor IA...
     </button>
 
     <div id="grupo-confirmar" class="hide">
       <button class="btn" onclick="confirmarFoto()">
-        <i class="ph-bold ph-check"></i> Se ve bien, continuar
+        <i class="ph-bold ph-check"></i> Enviar Documento
       </button>
       <button class="btn btn-secondary" onclick="reintentarFoto()">
         <i class="ph-bold ph-arrow-counter-clockwise"></i> Volver a tomar
@@ -122,18 +132,31 @@
     const titulo = document.getElementById('instruccion-titulo');
     const subtitulo = document.getElementById('instruccion-sub');
     const guide = document.getElementById('guide');
+    const loadingIa = document.getElementById('loading-ia');
 
     let pasoActual = 1; 
     let imagenFrente = null;
     let imagenReverso = null;
+    let motorScanner = null; // Aquí guardaremos jScanify
 
-    if (tipoScan === 'documento') {
-      guide.style.height = '80%'; 
-      titulo.innerText = "Escáner de Documento";
-      subtitulo.innerText = "Encuadra toda la hoja en la pantalla";
-    } else {
-      titulo.innerText = "Paso 1: Frente de Identificación";
-      subtitulo.innerText = "Alinea la credencial en el recuadro";
+    // 1. Inicializar el motor de jScanify
+    function iniciarMotorEscaneo() {
+      // OpenCV necesita un momento para inicializarse internamente
+      cv['onRuntimeInitialized'] = () => {
+        motorScanner = new jscanify();
+        loadingIa.style.display = 'none';
+        btnCapturar.disabled = false;
+        btnCapturar.innerHTML = '<i class="ph-bold ph-camera"></i> Escanear';
+        
+        if (tipoScan === 'documento') {
+          guide.style.height = '80%'; 
+          titulo.innerText = "Escáner de Documento";
+          subtitulo.innerText = "Encuadra la hoja y toma la foto";
+        } else {
+          titulo.innerText = "Paso 1: Frente (INE)";
+          subtitulo.innerText = "Alinea la credencial y captura";
+        }
+      };
     }
 
     async function iniciarCamara() {
@@ -143,23 +166,45 @@
         });
         video.srcObject = stream;
       } catch (err) {
-        alert("Error al acceder a la cámara. Asegúrate de dar permisos.");
+        alert("Error al acceder a la cámara.");
         titulo.innerText = "Cámara bloqueada";
       }
     }
     iniciarCamara();
 
+    // 2. Tomar foto y aplicar detección de bordes
     function tomarFoto() {
+      if (!motorScanner) return; // Seguridad extra
+      
+      titulo.innerText = "Procesando recorte...";
+      subtitulo.innerText = "Buscando bordes del documento...";
+
       const canvas = document.getElementById('canvas-oculto');
       const ctx = canvas.getContext('2d');
       
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       
-      ctx.filter = 'contrast(1.2) grayscale(0.2)';
+      // Dibujar la foto original
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
-      const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+      // LA MAGIA DE CAMSCANNER: Extraer el papel detectando los bordes
+      // Si no detecta bien un borde (ej. fondo muy blanco), usa la foto completa
+      let resultCanvas;
+      try {
+        const paperCanvas = motorScanner.extractPaper(canvas, canvas.width, canvas.height);
+        resultCanvas = paperCanvas ? paperCanvas : canvas;
+      } catch (e) {
+        console.error("No se pudo detectar el borde perfecto, usando original", e);
+        resultCanvas = canvas;
+      }
+
+      // Aplicar filtro de contraste para que el texto resalte (Estilo Escáner)
+      const ctxResult = resultCanvas.getContext('2d');
+      ctxResult.filter = 'contrast(1.3) grayscale(0.2)';
+      ctxResult.drawImage(resultCanvas, 0, 0);
+
+      const base64Image = resultCanvas.toDataURL('image/jpeg', 0.8);
       previewImg.src = base64Image;
       previewImg.style.display = 'block';
       video.style.display = 'none';
@@ -167,6 +212,9 @@
 
       btnCapturar.classList.add('hide');
       grupoConfirmar.classList.remove('hide');
+
+      titulo.innerText = "¿El recorte es correcto?";
+      subtitulo.innerText = "Revisa que el texto sea legible.";
     }
 
     function reintentarFoto() {
@@ -175,6 +223,12 @@
       guide.style.display = 'block';
       btnCapturar.classList.remove('hide');
       grupoConfirmar.classList.add('hide');
+
+      if (tipoScan === 'documento') {
+        titulo.innerText = "Escáner de Documento";
+      } else {
+        titulo.innerText = pasoActual === 1 ? "Paso 1: Frente (INE)" : "Paso 2: Reverso (INE)";
+      }
     }
 
     function confirmarFoto() {
@@ -186,7 +240,7 @@
         if (pasoActual === 1) {
           imagenFrente = imgData;
           pasoActual = 2;
-          titulo.innerText = "Paso 2: Reverso de Identificación";
+          titulo.innerText = "Paso 2: Reverso (INE)";
           subtitulo.innerText = "Voltea la credencial y encuádrala";
           reintentarFoto();
         } else {
@@ -196,16 +250,17 @@
       }
     }
 
+    // 3. Unir frente y reverso
     function procesarYEnviarIdentificacion() {
       titulo.innerText = "Procesando...";
-      subtitulo.innerText = "Uniendo documento, no cierres la ventana.";
+      subtitulo.innerText = "Uniendo documento en una hoja...";
       grupoConfirmar.classList.add('hide');
 
       const canvasFinal = document.createElement('canvas');
       const ctxFinal = canvasFinal.getContext('2d');
       
       canvasFinal.width = 1240;
-      canvasFinal.height = 1754;
+      canvasFinal.height = 1754; // Tamaño A4
 
       ctxFinal.fillStyle = "white";
       ctxFinal.fillRect(0, 0, canvasFinal.width, canvasFinal.height);
@@ -242,11 +297,9 @@
       }, 500);
     }
 
-    // LÓGICA PARA CERRAR LA APP EN EL MÓVIL
     function cerrarAppMovil() {
       window.close();
-      // Si el navegador del celular no permite cerrar la pestaña automáticamente, mostramos un mensaje
-      document.body.innerHTML = '<div style="display:flex; height:100vh; align-items:center; justify-content:center; text-align:center; padding:20px;"><div><i class="ph-bold ph-check-circle" style="font-size:64px; color:var(--primary-light);"></i><h2 style="margin-top:20px;">Escaneo Cancelado</h2><p style="color:var(--text-muted);">Ya puedes cerrar esta pestaña y regresar a tu pantalla de inicio.</p></div></div>';
+      document.body.innerHTML = '<div style="display:flex; height:100vh; align-items:center; justify-content:center; text-align:center; padding:20px;"><div><i class="ph-bold ph-check-circle" style="font-size:64px; color:var(--primary-light);"></i><h2 style="margin-top:20px;">Escaneo Cancelado</h2><p style="color:var(--text-muted);">Ya puedes cerrar esta pestaña.</p></div></div>';
     }
   </script>
 </body>
