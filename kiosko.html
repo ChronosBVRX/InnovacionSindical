@@ -38,6 +38,17 @@
       background-size: 40px 40px;
     }
 
+    /* BOTÓN FLOTANTE PARA REGRESAR */
+    .btn-flotante {
+      position: absolute; top: 24px; left: 24px;
+      background: rgba(var(--panel-base), 0.6); backdrop-filter: blur(8px);
+      border: 1px solid var(--ring); color: var(--text-main);
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      display: flex; align-items: center; gap: 8px; font-size: 14px;
+      font-weight: 600; transition: 0.3s; z-index: 50;
+    }
+    .btn-flotante:hover { background: rgba(77, 161, 168, 0.2); color: var(--primary-light); }
+
     .container { width: 100%; max-width: 800px; padding: 40px; text-align: center; }
 
     .view { display: none; animation: fadeIn 0.5s ease forwards; }
@@ -91,10 +102,15 @@
     @media print {
       body * { visibility: hidden; }
       #doc-image { visibility: visible; position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; }
+      .btn-flotante { display: none; } /* Ocultar el botón al imprimir */
     }
   </style>
 </head>
 <body>
+
+  <button class="btn-flotante" onclick="cerrarKiosko()">
+    <i class="ph-bold ph-arrow-left"></i> Salir del Kiosko
+  </button>
 
   <div class="container">
     
@@ -152,11 +168,9 @@
     let qrCodeObj = null;
     let sesionActual = '';
     
-    // Conexión a tu API en Render
     const API_URL = 'https://sinos-api.onrender.com';
     const socket = io(API_URL);
 
-    // Escuchar cuando el celular mande el documento
     socket.on('documento-recibido', (imagenBase64) => {
       document.getElementById('doc-image').src = imagenBase64;
       mostrarVista('view-result');
@@ -171,7 +185,6 @@
       sesionActual = Math.random().toString(36).substring(2, 8).toUpperCase();
       document.getElementById('session-display').innerText = sesionActual;
 
-      // Detecta automáticamente la URL correcta del celular dependiendo de dónde esté alojado este HTML
       const baseUrl = window.location.href.split('?')[0].replace('kiosko.html', '');
       const urlParaCelular = `${baseUrl}celular.html?sesion=${sesionActual}&tipo=${tipo}`;
 
@@ -186,10 +199,17 @@
       });
 
       mostrarVista('view-qr');
-
-      // Avisar al servidor que estamos listos
       socket.emit('crear-sesion', sesionActual);
-      console.log(`Esperando en sala: ${sesionActual} | Conectado a: ${API_URL}`);
+    }
+
+    // LÓGICA PARA SALIR DEL KIOSKO
+    function cerrarKiosko() {
+      // Intenta cerrar la pestaña si se abrió con target="_blank"
+      window.close();
+      // Si el navegador bloquea el cierre, lo redirige forzosamente al inicio
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 300);
     }
   </script>
 </body>
