@@ -10,13 +10,10 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
-  <!-- Cropper (fallback manual) -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
-  <!-- Scanic (auto detección bordes + perspectiva) -->
   <script src="https://unpkg.com/scanic/dist/scanic.js"></script>
-  <!-- CDN oficial mostrado en README de Scanic 1 -->
 
   <style>
     :root {
@@ -151,7 +148,7 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const idSesion = urlParams.get('sesion') || 'TEST';
-    const tipoScan = urlParams.get('tipo') || 'identificacion'; // 'identificacion' o 'documento'
+    const tipoScan = urlParams.get('tipo') || 'identificacion'; 
 
     const video = document.getElementById('video');
     const cropArea = document.getElementById('crop-area');
@@ -174,7 +171,7 @@
 
     // Scanic
     let scanicScanner = null;
-    let autoscanDataUrl = null; // si Scanic logra extraer, guardamos aquí
+    let autoscanDataUrl = null; 
 
     // =============================
     // UI HELPERS
@@ -201,7 +198,6 @@
     // =============================
     async function iniciarCamara() {
       try {
-        // iPhone/Safari: usar "ideal" en facingMode suele ser más compatible
         const constraints = {
           audio: false,
           video: {
@@ -215,15 +211,23 @@
         streamActual = stream;
         video.srcObject = stream;
 
-        // Esperar metadata para tener videoWidth/Height correctos
         await new Promise((res) => {
           video.onloadedmetadata = () => res();
         });
 
-        // Inicializar Scanic Scanner (una vez)
+        // Inicialización corregida de Scanic
         if (window.scanic && window.scanic.Scanner) {
-          scanicScanner = new window.scanic.Scanner();
-          try { await scanicScanner.initialize(); } catch (_) {}
+          if (!scanicScanner) {
+            scanicScanner = new window.scanic.Scanner();
+            try { 
+              await scanicScanner.initialize(); 
+              console.log("✅ Scanic inicializado correctamente");
+            } catch (err) {
+              console.error("❌ Error al inicializar Scanic (¿Problema de red o WASM?):", err);
+            }
+          }
+        } else {
+          console.warn("⚠️ window.scanic.Scanner no está definido. Revisa si el CDN cargó correctamente.");
         }
 
         titulo.innerText = "Cámara lista";
@@ -259,7 +263,6 @@
     }
 
     function abrirVistaPrevia(dataUrl, modo = "auto") {
-      // modo: "auto" (ya viene enderezado) o "manual" (se recorta con cropper)
       autoscanDataUrl = (modo === "auto") ? dataUrl : null;
 
       previewImg.src = dataUrl;
@@ -281,9 +284,6 @@
     function iniciarCropperManual(dataUrl) {
       abrirVistaPrevia(dataUrl, "manual");
 
-      // IMPORTANTE:
-      // Para "documento" NO amarres aspecto fijo (muchos documentos no son carta/vertical)
-      // Para INE sí mantenemos ratio, pero al usuario le queda como guía.
       const proporcion = (tipoScan === 'identificacion') ? (85 / 54) : NaN;
 
       if (cropper) { cropper.destroy(); cropper = null; }
@@ -297,46 +297,42 @@
       });
     }
 
+    // Función de AutoScan corregida
     async function intentarAutoScan(canvasFull) {
-      // Retorna dataUrl si éxito, null si no
       try {
-        if (!window.scanic) return null;
+        if (!scanicScanner) {
+          console.warn("Scanic no está inicializado. Saltando a manual...");
+          return null;
+        }
 
-        // Convertimos a Image para alimentar al scanner (compatible en iOS)
         const img = new Image();
         const dataUrl = canvasFull.toDataURL('image/jpeg', 0.95);
 
         await new Promise((res, rej) => {
           img.onload = () => res();
-          img.onerror = () => rej(new Error("No se pudo cargar la imagen capturada."));
+          img.onerror = () => rej(new Error("Error al cargar la imagen para Scanic"));
           img.src = dataUrl;
         });
 
         const options = {
           mode: 'extract',
-          output: 'dataurl',
-          // Ajustes para móviles: equilibrio entre calidad y velocidad
           maxProcessingDimension: 1000,
-          lowThreshold: 60,
-          highThreshold: 180,
-          minArea: 1500
+          minArea: 1500,
+          debug: false 
         };
 
-        let result = null;
-
-        if (scanicScanner && typeof scanicScanner.scan === 'function') {
-          result = await scanicScanner.scan(img, options);
-        } else if (typeof window.scanic.scanDocument === 'function') {
-          result = await window.scanic.scanDocument(img, options);
-        }
+        let result = await scanicScanner.scan(img, options);
 
         if (result && result.success && result.output) {
-          return result.output; // dataurl
+          console.log("✅ ¡Bordes detectados exitosamente!");
+          return result.output.toDataURL('image/jpeg', 0.95);
+        } else {
+          console.log("⚠️ Scanic no detectó bordes claros:", result?.message || "Sin resultados");
+          return null; 
         }
-        return null;
       } catch (e) {
-        console.warn("AutoScan falló:", e);
-        return null;
+        console.error("❌ Error de ejecución en intentarAutoScan:", e);
+        return null; 
       }
     }
 
@@ -355,13 +351,10 @@
 
         if (extractedDataUrl) {
           abrirVistaPrevia(extractedDataUrl, "auto");
-          // No abrimos cropper: ya viene corregido
           return;
         }
 
-        // 2) Fallback manual (tu comportamiento de siempre, pero mejorado)
-        setOverlay(false);
-        btnCapturar.disabled = false;
+        // 2) Fallback manual
         iniciarCropperManual(canvasFull.toDataURL('image/jpeg', 1.0));
       } catch (err) {
         console.error(err);
@@ -389,10 +382,6 @@
     // CONFIRM + ENHANCE + SEND
     // =============================
     function mejorarComoScanner(inputDataUrl) {
-      // Mejora ligera (rápida) sin OpenCV:
-      // - aumenta contraste
-      // - reduce un poco grises
-      // Nota: esto NO reemplaza umbral adaptativo, pero ayuda para lectura.
       return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
@@ -411,13 +400,11 @@
     }
 
     async function confirmarFoto() {
-      // 1) Si vino de autoscan, usamos esa
       let imgFinal = null;
 
       if (autoscanDataUrl) {
         imgFinal = await mejorarComoScanner(autoscanDataUrl);
       } else {
-        // 2) Si fue manual, sacamos el recorte de Cropper
         if (!cropper) {
           alert("No hay recorte activo. Toma la foto de nuevo.");
           return;
@@ -434,7 +421,6 @@
         cropper = null;
       }
 
-      // Lógica de avance (igual que tu flujo)
       if (tipoScan === 'documento') {
         enviarAlServidor(imgFinal);
       } else {
@@ -449,7 +435,6 @@
       }
     }
 
-    // Unir frente y reverso en A4 (como tu versión, con leve ajuste de calidad)
     function procesarYEnviarIdentificacion() {
       titulo.innerText = "Procesando...";
       subtitulo.innerText = "Uniendo documento en una hoja...";
@@ -461,7 +446,6 @@
       const canvasFinal = document.createElement('canvas');
       const ctxFinal = canvasFinal.getContext('2d');
 
-      // A4 a ~150dpi (1240 x 1754) está bien para kiosk; puedes subir si quieres
       canvasFinal.width = 1240;
       canvasFinal.height = 1754;
 
@@ -472,7 +456,6 @@
       const img2 = new Image();
 
       img1.onload = () => {
-        // Ajustes para que quepan y se vean bien
         ctxFinal.drawImage(img1, 100, 150, 1040, 650);
 
         img2.onload = () => {
@@ -514,7 +497,6 @@
         '<p style="color:var(--text-muted);">Ya puedes cerrar esta pestaña.</p></div></div>';
     }
 
-    // Para evitar cámara colgada al cambiar de pestaña
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
         // opcional: detenerCamara();
