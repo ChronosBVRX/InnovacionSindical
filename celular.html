@@ -12,10 +12,10 @@
 
   <style>
     :root {
-      --bg-body: #1b2e45; --panel-base: 46, 79, 119;
+      --panel-base: 46, 79, 119;
       --primary: #4da1a8; --primary-light: #7ad1d6;
-      --text-main: #f0fdfa; --text-muted: #bce9eb;
-      --ring: rgba(77, 161, 168, .35); --radius: 12px;
+      --text-main: #f0fdfa; --ring: rgba(77, 161, 168, .35); 
+      --radius: 12px;
     }
 
     body {
@@ -24,7 +24,6 @@
       height: 100vh; overflow: hidden;
     }
 
-    /* Barra Superior */
     .topbar {
       background: rgba(var(--panel-base), 0.9); padding: 16px; text-align: center;
       border-bottom: 1px solid var(--ring); display: flex; flex-direction: column; gap: 5px;
@@ -32,30 +31,24 @@
     .topbar h2 { margin: 0; font-size: 18px; font-weight: 600; color: var(--primary-light); }
     .topbar p { margin: 0; font-size: 14px; color: var(--text-main); }
 
-    /* Área de la Cámara */
     .camera-container {
       flex: 1; position: relative; display: flex; justify-content: center; align-items: center;
       background: #000; overflow: hidden;
     }
     
-    video {
-      width: 100%; height: 100%; object-fit: cover;
-    }
+    video { width: 100%; height: 100%; object-fit: cover; }
 
-    /* Guía visual para la tarjeta */
     .overlay-guide {
       position: absolute; border: 2px dashed rgba(77, 161, 168, 0.8);
       width: 80%; height: 30%; border-radius: 8px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
       pointer-events: none;
     }
 
-    /* Previsualización estática */
     #preview-img {
       display: none; width: 100%; height: 100%; object-fit: contain;
       background: #111; position: absolute; top: 0; left: 0; z-index: 10;
     }
 
-    /* Controles Inferiores */
     .controls {
       background: rgba(var(--panel-base), 0.9); padding: 24px; text-align: center;
       border-top: 1px solid var(--ring); z-index: 20;
@@ -69,8 +62,6 @@
     .btn:active { transform: scale(0.98); }
     
     .btn-secondary { background: transparent; color: var(--primary-light); border: 1px solid var(--primary-light); margin-top: 12px; }
-
-    /* Ocultar elementos lógicamente */
     .hide { display: none !important; }
   </style>
 </head>
@@ -105,10 +96,12 @@
   <canvas id="canvas-oculto" class="hide"></canvas>
 
   <script>
-    // --- LÓGICA DE INICIO ---
-    // Obtener variables de la URL (Ej: celular.html?sesion=A1B2C&tipo=identificacion)
+    // Conexión a tu API en Render
+    const API_URL = 'https://sinos-api.onrender.com';
+    const socket = io(API_URL);
+
     const urlParams = new URLSearchParams(window.location.search);
-    const idSesion = urlParams.get('sesion') || 'TEST-001';
+    const idSesion = urlParams.get('sesion') || 'TEST';
     const tipoScan = urlParams.get('tipo') || 'identificacion';
 
     const video = document.getElementById('video');
@@ -119,13 +112,12 @@
     const subtitulo = document.getElementById('instruccion-sub');
     const guide = document.getElementById('guide');
 
-    let pasoActual = 1; // 1: Frente, 2: Reverso
+    let pasoActual = 1; 
     let imagenFrente = null;
     let imagenReverso = null;
 
-    // Ajustar la guía visual según el tipo de documento
     if (tipoScan === 'documento') {
-      guide.style.height = '80%'; // Carta completa
+      guide.style.height = '80%'; 
       titulo.innerText = "Escáner de Documento";
       subtitulo.innerText = "Encuadra toda la hoja en la pantalla";
     } else {
@@ -133,10 +125,8 @@
       subtitulo.innerText = "Alinea la credencial en el recuadro";
     }
 
-    // --- INICIAR CÁMARA ---
     async function iniciarCamara() {
       try {
-        // Pedir la cámara trasera (environment) con buena resolución
         const stream = await navigator.mediaDevices.getUserMedia({ 
           video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } } 
         });
@@ -148,27 +138,22 @@
     }
     iniciarCamara();
 
-    // --- FUNCIONES DE CAPTURA ---
     function tomarFoto() {
       const canvas = document.getElementById('canvas-oculto');
       const ctx = canvas.getContext('2d');
       
-      // Ajustar canvas al tamaño del video real
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       
-      // Dibujar imagen y aplicar filtro tipo "escáner" (aumentar contraste)
       ctx.filter = 'contrast(1.2) grayscale(0.2)';
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
-      // Mostrar previsualización
       const base64Image = canvas.toDataURL('image/jpeg', 0.8);
       previewImg.src = base64Image;
       previewImg.style.display = 'block';
       video.style.display = 'none';
       guide.style.display = 'none';
 
-      // Cambiar botones
       btnCapturar.classList.add('hide');
       grupoConfirmar.classList.remove('hide');
     }
@@ -185,15 +170,11 @@
       const imgData = previewImg.src;
 
       if (tipoScan === 'documento') {
-        // Si es solo un documento, enviamos de inmediato
         enviarAlServidor(imgData);
       } else {
-        // Si es identificación, verificamos en qué paso vamos
         if (pasoActual === 1) {
           imagenFrente = imgData;
           pasoActual = 2;
-          
-          // Preparar UI para el reverso
           titulo.innerText = "Paso 2: Reverso de Identificación";
           subtitulo.innerText = "Voltea la credencial y encuádrala";
           reintentarFoto();
@@ -204,7 +185,6 @@
       }
     }
 
-    // --- UNIR FRENTE Y REVERSO EN UNA HOJA A4 ---
     function procesarYEnviarIdentificacion() {
       titulo.innerText = "Procesando...";
       subtitulo.innerText = "Uniendo documento, no cierres la ventana.";
@@ -213,28 +193,19 @@
       const canvasFinal = document.createElement('canvas');
       const ctxFinal = canvasFinal.getContext('2d');
       
-      // Tamaño A4 estándar a buena resolución (1240x1754 px)
       canvasFinal.width = 1240;
       canvasFinal.height = 1754;
 
-      // Fondo blanco
       ctxFinal.fillStyle = "white";
       ctxFinal.fillRect(0, 0, canvasFinal.width, canvasFinal.height);
 
-      // Cargar imágenes guardadas
       const img1 = new Image();
       const img2 = new Image();
 
       img1.onload = () => {
-        // Dibujar frente en la mitad superior
-        // drawImage(imagen, X, Y, Ancho, Alto)
         ctxFinal.drawImage(img1, 100, 150, 1040, 650);
-        
         img2.onload = () => {
-          // Dibujar reverso en la mitad inferior
           ctxFinal.drawImage(img2, 100, 900, 1040, 650);
-          
-          // Generar la imagen unida
           const documentoA4 = canvasFinal.toDataURL('image/jpeg', 0.8);
           enviarAlServidor(documentoA4);
         };
@@ -243,7 +214,6 @@
       img1.src = imagenFrente;
     }
 
-    // --- CONEXIÓN CON EL SERVIDOR ---
     function enviarAlServidor(imagenBase64) {
       titulo.innerText = "¡Enviado!";
       subtitulo.innerText = "Revisa la pantalla del Kiosko.";
@@ -251,14 +221,14 @@
       btnCapturar.classList.add('hide');
       previewImg.style.display = 'block';
 
-      /* AQUÍ ENTRAREMOS CON SOCKET.IO EN EL SIGUIENTE PASO
-        El código será algo así:
-        socket.emit('documento-escaneado', { sesion: idSesion, archivo: imagenBase64 });
-      */
+      // Enviar a la API mediante Socket.io
+      socket.emit('enviar-documento', { 
+        sesion: idSesion, 
+        archivo: imagenBase64 
+      });
       
-      // Simulación de éxito para el usuario
       setTimeout(() => {
-        alert("El documento ha sido enviado al kiosko correctamente. Ya puedes cerrar esta ventana.");
+        alert("El documento ha sido enviado. Ya puedes cerrar esta ventana y mirar el Kiosko.");
       }, 500);
     }
   </script>
