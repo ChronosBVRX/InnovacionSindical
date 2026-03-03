@@ -27,9 +27,17 @@
     .topbar {
       background: rgba(var(--panel-base), 0.9); padding: 16px; text-align: center;
       border-bottom: 1px solid var(--ring); display: flex; flex-direction: column; gap: 5px;
+      position: relative; /* Para el botón de la X */
     }
     .topbar h2 { margin: 0; font-size: 18px; font-weight: 600; color: var(--primary-light); }
     .topbar p { margin: 0; font-size: 14px; color: var(--text-main); }
+
+    /* BOTÓN PARA CERRAR LA APP EN CELULAR */
+    .btn-cerrar-app {
+      position: absolute; left: 16px; top: 16px;
+      background: none; border: none; color: var(--text-muted);
+      font-size: 24px; cursor: pointer; padding: 4px;
+    }
 
     .camera-container {
       flex: 1; position: relative; display: flex; justify-content: center; align-items: center;
@@ -68,6 +76,10 @@
 <body>
 
   <div class="topbar">
+    <button class="btn-cerrar-app" onclick="cerrarAppMovil()">
+      <i class="ph-bold ph-x"></i>
+    </button>
+
     <h2 id="instruccion-titulo">Cargando Cámara...</h2>
     <p id="instruccion-sub">Por favor, espera.</p>
   </div>
@@ -96,7 +108,6 @@
   <canvas id="canvas-oculto" class="hide"></canvas>
 
   <script>
-    // Conexión a tu API en Render
     const API_URL = 'https://sinos-api.onrender.com';
     const socket = io(API_URL);
 
@@ -221,7 +232,6 @@
       btnCapturar.classList.add('hide');
       previewImg.style.display = 'block';
 
-      // Enviar a la API mediante Socket.io
       socket.emit('enviar-documento', { 
         sesion: idSesion, 
         archivo: imagenBase64 
@@ -230,6 +240,13 @@
       setTimeout(() => {
         alert("El documento ha sido enviado. Ya puedes cerrar esta ventana y mirar el Kiosko.");
       }, 500);
+    }
+
+    // LÓGICA PARA CERRAR LA APP EN EL MÓVIL
+    function cerrarAppMovil() {
+      window.close();
+      // Si el navegador del celular no permite cerrar la pestaña automáticamente, mostramos un mensaje
+      document.body.innerHTML = '<div style="display:flex; height:100vh; align-items:center; justify-content:center; text-align:center; padding:20px;"><div><i class="ph-bold ph-check-circle" style="font-size:64px; color:var(--primary-light);"></i><h2 style="margin-top:20px;">Escaneo Cancelado</h2><p style="color:var(--text-muted);">Ya puedes cerrar esta pestaña y regresar a tu pantalla de inicio.</p></div></div>';
     }
   </script>
 </body>
