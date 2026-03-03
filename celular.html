@@ -13,8 +13,6 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
-  <script src="https://unpkg.com/scanic/dist/scanic.js"></script>
-
   <style>
     :root {
       --panel-base: 46, 79, 119;
@@ -215,19 +213,20 @@
           video.onloadedmetadata = () => res();
         });
 
-        // Inicialización corregida de Scanic
-        if (window.scanic && window.scanic.Scanner) {
-          if (!scanicScanner) {
-            scanicScanner = new window.scanic.Scanner();
-            try { 
-              await scanicScanner.initialize(); 
-              console.log("✅ Scanic inicializado correctamente");
-            } catch (err) {
-              console.error("❌ Error al inicializar Scanic (¿Problema de red o WASM?):", err);
-            }
+        // IMPORTACIÓN DINÁMICA DE SCANIC
+        if (!scanicScanner) {
+          try {
+            console.log("Descargando módulo Scanic...");
+            const scanic = await import('https://unpkg.com/scanic/dist/scanic.js');
+            
+            // Instanciamos usando la clase exportada del módulo
+            scanicScanner = new scanic.Scanner();
+            await scanicScanner.initialize();
+            
+            console.log("✅ Scanic inicializado correctamente (ES Module)");
+          } catch (err) {
+            console.error("❌ Error al descargar o inicializar el módulo Scanic:", err);
           }
-        } else {
-          console.warn("⚠️ window.scanic.Scanner no está definido. Revisa si el CDN cargó correctamente.");
         }
 
         titulo.innerText = "Cámara lista";
@@ -297,7 +296,6 @@
       });
     }
 
-    // Función de AutoScan corregida
     async function intentarAutoScan(canvasFull) {
       try {
         if (!scanicScanner) {
