@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Escáner - Plataforma Sindical</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+  <style>
+    :root {
+      --bg-body: #1b2e45; --panel-base: 46, 79, 119;
+      --primary: #4da1a8; --primary-light: #7ad1d6;
+      --text-main: #f0fdfa; --text-muted: #bce9eb;
+      --ring: rgba(77, 161, 168, .35); --radius: 12px;
+    }
+
+    body {
+      margin: 0; padding: 0; background-color: #0b1f2a; color: var(--text-main);
+      font-family: 'Inter', sans-serif; display: flex; flex-direction: column;
+      height: 100vh; overflow: hidden;
+    }
+
+    /* Barra Superior */
+    .topbar {
+      background: rgba(var(--panel-base), 0.9); padding: 16px; text-align: center;
+      border-bottom: 1px solid var(--ring); display: flex; flex-direction: column; gap: 5px;
+    }
+    .topbar h2 { margin: 0; font-size: 18px; font-weight: 600; color: var(--primary-light); }
+    .topbar p { margin: 0; font-size: 14px; color: var(--text-main); }
+
+    /* Área de la Cámara */
+    .camera-container {
+      flex: 1; position: relative; display: flex; justify-content: center; align-items: center;
+      background: #000; overflow: hidden;
+    }
+    
+    video {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+
+    /* Guía visual para la tarjeta */
+    .overlay-guide {
+      position: absolute; border: 2px dashed rgba(77, 161, 168, 0.8);
+      width: 80%; height: 30%; border-radius: 8px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+    }
+
+    /* Previsualización estática */
+    #preview-img {
+      display: none; width: 100%; height: 100%; object-fit: contain;
+      background: #111; position: absolute; top: 0; left: 0; z-index: 10;
+    }
+
+    /* Controles Inferiores */
+    .controls {
+      background: rgba(var(--panel-base), 0.9); padding: 24px; text-align: center;
+      border-top: 1px solid var(--ring); z-index: 20;
+    }
+
+    .btn {
+      background: var(--primary); color: #0b1f2a; border: none; padding: 16px;
+      font-size: 16px; font-weight: 700; border-radius: var(--radius); width: 100%;
+      cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
+    }
+    .btn:active { transform: scale(0.98); }
+    
+    .btn-secondary { background: transparent; color: var(--primary-light); border: 1px solid var(--primary-light); margin-top: 12px; }
+
+    /* Ocultar elementos lógicamente */
+    .hide { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <h2 id="instruccion-titulo">Cargando Cámara...</h2>
+    <p id="instruccion-sub">Por favor, espera.</p>
+  </div>
+
+  <div class="camera-container">
+    <video id="video" autoplay playsinline></video>
+    <div id="guide" class="overlay-guide"></div>
+    <img id="preview-img" alt="Vista previa">
+  </div>
+
+  <div class="controls">
+    <button id="btn-capturar" class="btn" onclick="tomarFoto()">
+      <i class="ph-bold ph-camera"></i> Capturar
+    </button>
+
+    <div id="grupo-confirmar" class="hide">
+      <button class="btn" onclick="confirmarFoto()">
+        <i class="ph-bold ph-check"></i> Se ve bien, continuar
+      </button>
+      <button class="btn btn-secondary" onclick="reintentarFoto()">
+        <i class="ph-bold ph-arrow-counter-clockwise"></i> Volver a tomar
+      </button>
+    </div>
+  </div>
+
+  <canvas id="canvas-oculto" class="hide"></canvas>
+
+  <script>
+    // --- LÓGICA DE INICIO ---
+    // Obtener variables de la URL (Ej: celular.html?sesion=A1B2C&tipo=identificacion)
+    const urlParams = new URLSearchParams(window.location.search);
+    const idSesion = urlParams.get('sesion') || 'TEST-001';
+    const tipoScan = urlParams.get('tipo') || 'identificacion';
+
+    const video = document.getElementById('video');
+    const previewImg = document.getElementById('preview-img');
+    const btnCapturar = document.getElementById('btn-capturar');
+    const grupoConfirmar = document.getElementById('grupo-confirmar');
+    const titulo = document.getElementById('instruccion-titulo');
+    const subtitulo = document.getElementById('instruccion-sub');
+    const guide = document.getElementById('guide');
+
+    let pasoActual = 1; // 1: Frente, 2: Reverso
+    let imagenFrente = null;
+    let imagenReverso = null;
+
+    // Ajustar la guía visual según el tipo de documento
+    if (tipoScan === 'documento') {
+      guide.style.height = '80%'; // Carta completa
+      titulo.innerText = "Escáner de Documento";
+      subtitulo.innerText = "Encuadra toda la hoja en la pantalla";
+    } else {
+      titulo.innerText = "Paso 1: Frente de Identificación";
+      subtitulo.innerText = "Alinea la credencial en el recuadro";
+    }
+
+    // --- INICIAR CÁMARA ---
+    async function iniciarCamara() {
+      try {
+        // Pedir la cámara trasera (environment) con buena resolución
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } } 
+        });
+        video.srcObject = stream;
+      } catch (err) {
+        alert("Error al acceder a la cámara. Asegúrate de dar permisos.");
+        titulo.innerText = "Cámara bloqueada";
+      }
+    }
+    iniciarCamara();
+
+    // --- FUNCIONES DE CAPTURA ---
+    function tomarFoto() {
+      const canvas = document.getElementById('canvas-oculto');
+      const ctx = canvas.getContext('2d');
+      
+      // Ajustar canvas al tamaño del video real
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      // Dibujar imagen y aplicar filtro tipo "escáner" (aumentar contraste)
+      ctx.filter = 'contrast(1.2) grayscale(0.2)';
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Mostrar previsualización
+      const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+      previewImg.src = base64Image;
+      previewImg.style.display = 'block';
+      video.style.display = 'none';
+      guide.style.display = 'none';
+
+      // Cambiar botones
+      btnCapturar.classList.add('hide');
+      grupoConfirmar.classList.remove('hide');
+    }
+
+    function reintentarFoto() {
+      previewImg.style.display = 'none';
+      video.style.display = 'block';
+      guide.style.display = 'block';
+      btnCapturar.classList.remove('hide');
+      grupoConfirmar.classList.add('hide');
+    }
+
+    function confirmarFoto() {
+      const imgData = previewImg.src;
+
+      if (tipoScan === 'documento') {
+        // Si es solo un documento, enviamos de inmediato
+        enviarAlServidor(imgData);
+      } else {
+        // Si es identificación, verificamos en qué paso vamos
+        if (pasoActual === 1) {
+          imagenFrente = imgData;
+          pasoActual = 2;
+          
+          // Preparar UI para el reverso
+          titulo.innerText = "Paso 2: Reverso de Identificación";
+          subtitulo.innerText = "Voltea la credencial y encuádrala";
+          reintentarFoto();
+        } else {
+          imagenReverso = imgData;
+          procesarYEnviarIdentificacion();
+        }
+      }
+    }
+
+    // --- UNIR FRENTE Y REVERSO EN UNA HOJA A4 ---
+    function procesarYEnviarIdentificacion() {
+      titulo.innerText = "Procesando...";
+      subtitulo.innerText = "Uniendo documento, no cierres la ventana.";
+      grupoConfirmar.classList.add('hide');
+
+      const canvasFinal = document.createElement('canvas');
+      const ctxFinal = canvasFinal.getContext('2d');
+      
+      // Tamaño A4 estándar a buena resolución (1240x1754 px)
+      canvasFinal.width = 1240;
+      canvasFinal.height = 1754;
+
+      // Fondo blanco
+      ctxFinal.fillStyle = "white";
+      ctxFinal.fillRect(0, 0, canvasFinal.width, canvasFinal.height);
+
+      // Cargar imágenes guardadas
+      const img1 = new Image();
+      const img2 = new Image();
+
+      img1.onload = () => {
+        // Dibujar frente en la mitad superior
+        // drawImage(imagen, X, Y, Ancho, Alto)
+        ctxFinal.drawImage(img1, 100, 150, 1040, 650);
+        
+        img2.onload = () => {
+          // Dibujar reverso en la mitad inferior
+          ctxFinal.drawImage(img2, 100, 900, 1040, 650);
+          
+          // Generar la imagen unida
+          const documentoA4 = canvasFinal.toDataURL('image/jpeg', 0.8);
+          enviarAlServidor(documentoA4);
+        };
+        img2.src = imagenReverso;
+      };
+      img1.src = imagenFrente;
+    }
+
+    // --- CONEXIÓN CON EL SERVIDOR ---
+    function enviarAlServidor(imagenBase64) {
+      titulo.innerText = "¡Enviado!";
+      subtitulo.innerText = "Revisa la pantalla del Kiosko.";
+      grupoConfirmar.classList.add('hide');
+      btnCapturar.classList.add('hide');
+      previewImg.style.display = 'block';
+
+      /* AQUÍ ENTRAREMOS CON SOCKET.IO EN EL SIGUIENTE PASO
+        El código será algo así:
+        socket.emit('documento-escaneado', { sesion: idSesion, archivo: imagenBase64 });
+      */
+      
+      // Simulación de éxito para el usuario
+      setTimeout(() => {
+        alert("El documento ha sido enviado al kiosko correctamente. Ya puedes cerrar esta ventana.");
+      }, 500);
+    }
+  </script>
+</body>
+</html>
