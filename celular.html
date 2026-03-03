@@ -48,7 +48,8 @@
       background: #000; overflow: hidden; width: 100%;
     }
 
-    video { width: 100%; height: 100%; object-fit: cover; }
+    /* SOLUCIÓN AL DESFASE: contain asegura que lo que ves en pantalla es exactamente lo que tomará la foto */
+    video { width: 100%; height: 100%; object-fit: contain; }
 
     .img-container {
       display: none; width: 100%; height: 100%;
@@ -56,6 +57,7 @@
       background: #000;
       justify-content: center; align-items: center;
     }
+    
     #preview-img { max-width: 100%; max-height: 100%; display: block; object-fit: contain; }
 
     .overlay {
@@ -156,7 +158,6 @@
     const grupoConfirmar = document.getElementById('grupo-confirmar');
     const titulo = document.getElementById('instruccion-titulo');
     const subtitulo = document.getElementById('instruccion-sub');
-
     const overlay = document.getElementById('overlay');
     const overlayTitle = document.getElementById('overlay-title');
     const overlayDesc = document.getElementById('overlay-desc');
@@ -171,9 +172,6 @@
     let scanicScanner = null;
     let autoscanDataUrl = null; 
 
-    // =============================
-    // UI HELPERS
-    // =============================
     function setOverlay(show, titleText = "Procesando…", descText = "Detectando bordes y enderezando el documento.") {
       overlayTitle.innerText = titleText;
       overlayDesc.innerText = descText;
@@ -200,6 +198,7 @@
           audio: false,
           video: {
             facingMode: { ideal: "environment" },
+            // Pedimos una buena resolución, el CSS se encarga de ajustarlo a la pantalla
             width: { ideal: 1920 },
             height: { ideal: 1080 }
           }
@@ -213,15 +212,15 @@
           video.onloadedmetadata = () => res();
         });
 
-        // IMPORTACIÓN DINÁMICA (Evita el error import.meta)
+        // SOLUCIÓN 1: Importación dinámica para evitar el error import.meta
         if (!scanicScanner) {
           try {
-            const scanic = await import('https://unpkg.com/scanic/dist/scanic.js');
-            scanicScanner = new scanic.Scanner();
+            const scanicModule = await import('https://unpkg.com/scanic/dist/scanic.js');
+            scanicScanner = new scanicModule.Scanner();
             await scanicScanner.initialize();
-            console.log("✅ Scanic listo");
+            console.log("✅ Módulo Scanic inicializado correctamente");
           } catch (err) {
-            console.error("❌ Error de módulo Scanic:", err);
+            console.error("❌ Error al cargar Scanic:", err);
           }
         }
 
@@ -246,7 +245,6 @@
     // =============================
     function capturarFrame() {
       const canvasFull = document.createElement('canvas');
-      // CORRECCIÓN: Usar siempre las dimensiones reales del video (respeta el modo vertical)
       canvasFull.width = video.videoWidth;
       canvasFull.height = video.videoHeight;
       const ctx = canvasFull.getContext('2d', { willReadFrequently: false });
@@ -257,7 +255,6 @@
     function abrirVistaPrevia(dataUrl, modo = "auto") {
       autoscanDataUrl = (modo === "auto") ? dataUrl : null;
       
-      // Limpiamos estilos para que no se deforme
       cropArea.style.display = 'flex';
       previewImg.src = dataUrl;
       video.style.display = 'none';
@@ -305,8 +302,8 @@
         const options = {
           mode: 'extract',
           maxProcessingDimension: 1200,
-          // CORRECCIÓN: Un área mínima gigante evita que atrape renglones de texto
-          minArea: 50000 
+          // SOLUCIÓN 2: Evitamos que detecte renglones de texto elevando el área mínima
+          minArea: 80000 
         };
 
         let result = await scanicScanner.scan(img, options);
@@ -331,12 +328,13 @@
         setOverlay(false);
         btnCapturar.disabled = false;
 
+        // Si detectó bien la credencial
         if (extractedDataUrl) {
           abrirVistaPrevia(extractedDataUrl, "auto");
           return;
         }
 
-        // Si falla, pasamos a recorte manual
+        // Si falló, pasamos a recorte manual pero ahora bien encuadrado
         iniciarCropperManual(canvasFull.toDataURL('image/jpeg', 1.0));
       } catch (err) {
         setOverlay(false);
