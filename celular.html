@@ -10,7 +10,7 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   
-  <script async src="https://docs.opencv.org/4.8.0/opencv.js" onload="iniciarMotorEscaneo()"></script>
+  <script src="https://docs.opencv.org/4.7.0/opencv.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/colonelparrot/jscanify@master/src/jscanify.min.js"></script>
 
   <style>
@@ -75,7 +75,6 @@
     .btn-secondary { background: transparent; color: var(--primary-light); border: 1px solid var(--primary-light); margin-top: 12px; }
     .hide { display: none !important; }
 
-    /* Indicador de carga de IA */
     #loading-ia {
       position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
       background: rgba(0,0,0,0.7); padding: 8px 16px; border-radius: 20px;
@@ -102,7 +101,7 @@
 
   <div class="controls">
     <button id="btn-capturar" class="btn" onclick="tomarFoto()" disabled>
-      <i class="ph-bold ph-camera"></i> Esperando Motor IA...
+      <i class="ph-bold ph-spinner ph-spin"></i> Preparando Escáner...
     </button>
 
     <div id="grupo-confirmar" class="hide">
@@ -137,13 +136,18 @@
     let pasoActual = 1; 
     let imagenFrente = null;
     let imagenReverso = null;
-    let motorScanner = null; // Aquí guardaremos jScanify
+    let motorScanner = null;
 
-    // 1. Inicializar el motor de jScanify
-    function iniciarMotorEscaneo() {
-      // OpenCV necesita un momento para inicializarse internamente
-      cv['onRuntimeInitialized'] = () => {
+    // EL "VIGILANTE": Revisa cada 500ms si OpenCV ya se cargó correctamente
+    let intentosCarga = 0;
+    const intervalCarga = setInterval(() => {
+      intentosCarga++;
+      
+      // Verificamos si las librerías existen y si OpenCV inicializó sus módulos (cv.Mat)
+      if (typeof cv !== 'undefined' && typeof jscanify !== 'undefined' && cv.Mat) {
+        clearInterval(intervalCarga);
         motorScanner = new jscanify();
+        
         loadingIa.style.display = 'none';
         btnCapturar.disabled = false;
         btnCapturar.innerHTML = '<i class="ph-bold ph-camera"></i> Escanear';
@@ -156,9 +160,30 @@
           titulo.innerText = "Paso 1: Frente (INE)";
           subtitulo.innerText = "Alinea la credencial y captura";
         }
-      };
-    }
+      } 
+      // Si pasan más de 10 segundos (20 intentos), activamos el modo básico de rescate
+      else if (intentosCarga > 20) {
+        clearInterval(intervalCarga);
+        motorScanner = null; // Seguimos sin motor
+        
+        loadingIa.innerText = "Conexión lenta: Modo Básico Activo";
+        setTimeout(() => loadingIa.style.display = 'none', 3000);
+        
+        btnCapturar.disabled = false;
+        btnCapturar.innerHTML = '<i class="ph-bold ph-camera"></i> Capturar Normal';
+        
+        if (tipoScan === 'documento') {
+          guide.style.height = '80%'; 
+          titulo.innerText = "Escáner Básico";
+          subtitulo.innerText = "Toma la foto lo más centrada posible";
+        } else {
+          titulo.innerText = "Paso 1: Frente (INE)";
+          subtitulo.innerText = "Toma la foto de cerca";
+        }
+      }
+    }, 500);
 
+    // Iniciar cámara web
     async function iniciarCamara() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -172,34 +197,32 @@
     }
     iniciarCamara();
 
-    // 2. Tomar foto y aplicar detección de bordes
     function tomarFoto() {
-      if (!motorScanner) return; // Seguridad extra
-      
-      titulo.innerText = "Procesando recorte...";
-      subtitulo.innerText = "Buscando bordes del documento...";
+      titulo.innerText = "Procesando imagen...";
+      subtitulo.innerText = "Espera un momento...";
 
       const canvas = document.getElementById('canvas-oculto');
       const ctx = canvas.getContext('2d');
       
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      
-      // Dibujar la foto original
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
-      // LA MAGIA DE CAMSCANNER: Extraer el papel detectando los bordes
-      // Si no detecta bien un borde (ej. fondo muy blanco), usa la foto completa
-      let resultCanvas;
-      try {
-        const paperCanvas = motorScanner.extractPaper(canvas, canvas.width, canvas.height);
-        resultCanvas = paperCanvas ? paperCanvas : canvas;
-      } catch (e) {
-        console.error("No se pudo detectar el borde perfecto, usando original", e);
-        resultCanvas = canvas;
+      let resultCanvas = canvas;
+
+      // Si el motor inteligente cargó con éxito, intentamos el recorte mágico
+      if (motorScanner) {
+        try {
+          const paperCanvas = motorScanner.extractPaper(canvas, canvas.width, canvas.height);
+          if (paperCanvas) {
+            resultCanvas = paperCanvas;
+          }
+        } catch (e) {
+          console.warn("No se encontró un borde claro, usando imagen original.");
+        }
       }
 
-      // Aplicar filtro de contraste para que el texto resalte (Estilo Escáner)
+      // Aplicar filtro de contraste para mejorar la legibilidad del texto
       const ctxResult = resultCanvas.getContext('2d');
       ctxResult.filter = 'contrast(1.3) grayscale(0.2)';
       ctxResult.drawImage(resultCanvas, 0, 0);
@@ -225,7 +248,7 @@
       grupoConfirmar.classList.add('hide');
 
       if (tipoScan === 'documento') {
-        titulo.innerText = "Escáner de Documento";
+        titulo.innerText = motorScanner ? "Escáner de Documento" : "Escáner Básico";
       } else {
         titulo.innerText = pasoActual === 1 ? "Paso 1: Frente (INE)" : "Paso 2: Reverso (INE)";
       }
@@ -250,7 +273,6 @@
       }
     }
 
-    // 3. Unir frente y reverso
     function procesarYEnviarIdentificacion() {
       titulo.innerText = "Procesando...";
       subtitulo.innerText = "Uniendo documento en una hoja...";
@@ -260,7 +282,7 @@
       const ctxFinal = canvasFinal.getContext('2d');
       
       canvasFinal.width = 1240;
-      canvasFinal.height = 1754; // Tamaño A4
+      canvasFinal.height = 1754;
 
       ctxFinal.fillStyle = "white";
       ctxFinal.fillRect(0, 0, canvasFinal.width, canvasFinal.height);
