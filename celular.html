@@ -9,6 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
   <style>
     :root {
@@ -27,7 +30,7 @@
     .topbar {
       background: rgba(var(--panel-base), 0.9); padding: 16px; text-align: center;
       border-bottom: 1px solid var(--ring); display: flex; flex-direction: column; gap: 5px;
-      position: relative;
+      position: relative; z-index: 50;
     }
     .topbar h2 { margin: 0; font-size: 18px; font-weight: 600; color: var(--primary-light); }
     .topbar p { margin: 0; font-size: 14px; color: var(--text-main); }
@@ -40,22 +43,16 @@
 
     .camera-container {
       flex: 1; position: relative; display: flex; justify-content: center; align-items: center;
-      background: #000; overflow: hidden;
+      background: #000; overflow: hidden; width: 100%;
     }
     
     video { width: 100%; height: 100%; object-fit: cover; }
 
-    /* EL MOLDE DE CORTE */
-    .overlay-guide {
-      position: absolute; border: 2px dashed rgba(77, 161, 168, 0.9);
-      width: 85%; height: 35%; border-radius: 8px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
-      pointer-events: none; z-index: 5;
+    /* Contenedor especial para la imagen que se va a recortar */
+    .img-container {
+      display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 10;
     }
-
-    #preview-img {
-      display: none; width: 100%; height: 100%; object-fit: contain;
-      background: #111; position: absolute; top: 0; left: 0; z-index: 10;
-    }
+    #preview-img { max-width: 100%; display: block; }
 
     .controls {
       background: rgba(var(--panel-base), 0.9); padding: 24px; text-align: center;
@@ -71,6 +68,10 @@
     
     .btn-secondary { background: transparent; color: var(--primary-light); border: 1px solid var(--primary-light); margin-top: 12px; }
     .hide { display: none !important; }
+    
+    /* Personalización del color del cropper para que combine con tu PSD */
+    .cropper-view-box, .cropper-face { border-radius: 4px; }
+    .cropper-line, .cropper-point { background-color: var(--primary-light) !important; }
   </style>
 </head>
 <body>
@@ -80,26 +81,28 @@
       <i class="ph-bold ph-x"></i>
     </button>
     <h2 id="instruccion-titulo">Iniciando cámara...</h2>
-    <p id="instruccion-sub">Alinea el documento en el recuadro</p>
+    <p id="instruccion-sub">Encuadra y toma la foto</p>
   </div>
 
   <div class="camera-container">
     <video id="video" autoplay playsinline></video>
-    <div id="guide" class="overlay-guide"></div>
-    <img id="preview-img" alt="Vista previa">
+    
+    <div id="crop-area" class="img-container">
+      <img id="preview-img" src="" alt="Vista previa">
+    </div>
   </div>
 
   <div class="controls">
     <button id="btn-capturar" class="btn" onclick="tomarFoto()">
-      <i class="ph-bold ph-camera"></i> Escanear
+      <i class="ph-bold ph-camera"></i> Tomar Foto
     </button>
 
     <div id="grupo-confirmar" class="hide">
       <button class="btn" onclick="confirmarFoto()">
-        <i class="ph-bold ph-check"></i> Enviar Documento
+        <i class="ph-bold ph-scissors"></i> Confirmar Recorte
       </button>
       <button class="btn btn-secondary" onclick="reintentarFoto()">
-        <i class="ph-bold ph-arrow-counter-clockwise"></i> Volver a tomar
+        <i class="ph-bold ph-arrow-counter-clockwise"></i> Tomar de nuevo
       </button>
     </div>
   </div>
@@ -113,27 +116,31 @@
     const tipoScan = urlParams.get('tipo') || 'identificacion';
 
     const video = document.getElementById('video');
+    const cropArea = document.getElementById('crop-area');
     const previewImg = document.getElementById('preview-img');
     const btnCapturar = document.getElementById('btn-capturar');
     const grupoConfirmar = document.getElementById('grupo-confirmar');
     const titulo = document.getElementById('instruccion-titulo');
     const subtitulo = document.getElementById('instruccion-sub');
-    const guide = document.getElementById('guide');
 
+    let cropper = null;
     let pasoActual = 1; 
     let imagenFrente = null;
     let imagenReverso = null;
 
-    if (tipoScan === 'documento') {
-      guide.style.height = '80%'; 
-      titulo.innerText = "Escáner de Documento";
-      subtitulo.innerText = "Encuadra la hoja en el recuadro";
-    } else {
-      titulo.innerText = "Paso 1: Frente (INE)";
-      subtitulo.innerText = "Alinea la credencial y captura";
+    // Configurar instrucciones iniciales
+    function actualizarTextos() {
+      if (tipoScan === 'documento') {
+        titulo.innerText = "Escáner de Documento";
+        subtitulo.innerText = "Toma la foto y ajusta los bordes";
+      } else {
+        titulo.innerText = pasoActual === 1 ? "Paso 1: Frente (INE)" : "Paso 2: Reverso (INE)";
+        subtitulo.innerText = "Toma la foto y ajusta los bordes";
+      }
     }
+    actualizarTextos();
 
-    // Iniciar cámara web
+    // 1. Iniciar cámara web
     async function iniciarCamara() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -147,100 +154,98 @@
     }
     iniciarCamara();
 
-    // FUNCIÓN MATEMÁTICA DE RECORTE EXACTO
+    // 2. Tomar foto de todo el cuadro original y abrir el editor de recorte
     function tomarFoto() {
-      // 1. Obtener dimensiones de la pantalla y del video original
-      const vw = video.offsetWidth;
-      const vh = video.offsetHeight;
-      const videoWidth = video.videoWidth;
-      const videoHeight = video.videoHeight;
-
-      // 2. Crear un lienzo del tamaño exacto de la pantalla de tu celular
       const canvasFull = document.createElement('canvas');
-      canvasFull.width = vw;
-      canvasFull.height = vh;
+      canvasFull.width = video.videoWidth;
+      canvasFull.height = video.videoHeight;
       const ctxFull = canvasFull.getContext('2d');
+      ctxFull.drawImage(video, 0, 0, canvasFull.width, canvasFull.height);
 
-      // 3. Simular el comportamiento "object-fit: cover" para que las coordenadas coincidan
-      const scale = Math.max(vw / videoWidth, vh / videoHeight);
-      const drawW = videoWidth * scale;
-      const drawH = videoHeight * scale;
-      const drawX = (vw - drawW) / 2;
-      const drawY = (vh - drawH) / 2;
-
-      ctxFull.drawImage(video, drawX, drawY, drawW, drawH);
-
-      // 4. Medir exactamente dónde está el recuadro punteado en tu pantalla
-      const guideRect = guide.getBoundingClientRect();
-      const cropX = guideRect.left;
-      const cropY = guideRect.top;
-      const cropW = guideRect.width;
-      const cropH = guideRect.height;
-
-      // 5. Crear el lienzo final y recortar solo esa parte (aumentando resolución x2)
-      const canvasFinal = document.createElement('canvas');
-      canvasFinal.width = cropW * 2; 
-      canvasFinal.height = cropH * 2;
-      const ctxFinal = canvasFinal.getContext('2d');
-
-      // Aplicar filtro de contraste para mejorar las letras (Estilo Escáner)
-      ctxFinal.filter = 'contrast(1.3) grayscale(0.1)';
-      
-      // Dibujar la porción extraída
-      ctxFinal.drawImage(canvasFull, cropX, cropY, cropW, cropH, 0, 0, canvasFinal.width, canvasFinal.height);
-
-      // 6. Mostrar el resultado
-      const base64Image = canvasFinal.toDataURL('image/jpeg', 0.9);
-      previewImg.src = base64Image;
-      previewImg.style.display = 'block';
+      // Pasar la foto completa al contenedor de recorte
+      previewImg.src = canvasFull.toDataURL('image/jpeg', 1.0);
       video.style.display = 'none';
-      guide.style.display = 'none';
+      cropArea.style.display = 'block';
 
+      // Cambiar botones
       btnCapturar.classList.add('hide');
       grupoConfirmar.classList.remove('hide');
 
-      titulo.innerText = "Recorte Final";
-      subtitulo.innerText = "Verifica que el texto sea legible.";
+      titulo.innerText = "Ajustar Recorte";
+      subtitulo.innerText = "Arrastra las esquinas si es necesario";
+
+      // Inicializar Cropper.js con la proporción adecuada
+      const proporcion = tipoScan === 'identificacion' ? (85 / 54) : (8.5 / 11); // INE horizontal o Carta vertical
+
+      cropper = new Cropper(previewImg, {
+        aspectRatio: proporcion,
+        viewMode: 1,
+        dragMode: 'move',
+        autoCropArea: 0.9, // Qué tan grande aparece el cuadro por defecto
+        background: false,
+        guides: true,
+      });
     }
 
+    // 3. Volver a intentar la foto
     function reintentarFoto() {
-      previewImg.style.display = 'none';
+      if (cropper) { cropper.destroy(); cropper = null; }
+      
+      cropArea.style.display = 'none';
       video.style.display = 'block';
-      guide.style.display = 'block';
+      
       btnCapturar.classList.remove('hide');
       grupoConfirmar.classList.add('hide');
 
-      if (tipoScan === 'documento') {
-        titulo.innerText = "Escáner de Documento";
-        subtitulo.innerText = "Encuadra la hoja en el recuadro";
-      } else {
-        titulo.innerText = pasoActual === 1 ? "Paso 1: Frente (INE)" : "Paso 2: Reverso (INE)";
-        subtitulo.innerText = "Alinea la credencial y captura";
-      }
+      actualizarTextos();
     }
 
+    // 4. Confirmar el recorte y extraer la imagen seleccionada
     function confirmarFoto() {
-      const imgData = previewImg.src;
+      if (!cropper) return;
 
+      // Obtener el recorte con buena calidad
+      const canvasRecorte = cropper.getCroppedCanvas({
+        width: tipoScan === 'identificacion' ? 1000 : 800
+      });
+
+      // Aplicarle el filtro de "CamScanner" (Más contraste, menos grises)
+      const canvasMejorado = document.createElement('canvas');
+      canvasMejorado.width = canvasRecorte.width;
+      canvasMejorado.height = canvasRecorte.height;
+      const ctxMejorado = canvasMejorado.getContext('2d');
+      
+      ctxMejorado.filter = 'contrast(1.3) grayscale(0.1)';
+      ctxMejorado.drawImage(canvasRecorte, 0, 0);
+
+      const imgFinal = canvasMejorado.toDataURL('image/jpeg', 0.9);
+
+      // Destruir el editor
+      cropper.destroy();
+      cropper = null;
+
+      // Lógica de avance
       if (tipoScan === 'documento') {
-        enviarAlServidor(imgData);
+        enviarAlServidor(imgFinal);
       } else {
         if (pasoActual === 1) {
-          imagenFrente = imgData;
+          imagenFrente = imgFinal;
           pasoActual = 2;
-          titulo.innerText = "Paso 2: Reverso (INE)";
-          subtitulo.innerText = "Alinea el reverso en el recuadro";
           reintentarFoto();
         } else {
-          imagenReverso = imgData;
+          imagenReverso = imgFinal;
           procesarYEnviarIdentificacion();
         }
       }
     }
 
+    // 5. Unir frente y reverso en A4 (Igual que antes)
     function procesarYEnviarIdentificacion() {
       titulo.innerText = "Procesando...";
       subtitulo.innerText = "Uniendo documento en una hoja...";
+      
+      cropArea.style.display = 'none';
+      btnCapturar.classList.add('hide');
       grupoConfirmar.classList.add('hide');
 
       const canvasFinal = document.createElement('canvas');
@@ -270,9 +275,9 @@
     function enviarAlServidor(imagenBase64) {
       titulo.innerText = "¡Enviado!";
       subtitulo.innerText = "Revisa la pantalla del Kiosko.";
-      grupoConfirmar.classList.add('hide');
-      btnCapturar.classList.add('hide');
-      previewImg.style.display = 'block';
+      
+      cropArea.style.display = 'block';
+      previewImg.src = imagenBase64; // Mostrar resultado final
 
       socket.emit('enviar-documento', { 
         sesion: idSesion, 
@@ -280,7 +285,7 @@
       });
       
       setTimeout(() => {
-        alert("El documento ha sido enviado. Ya puedes cerrar esta ventana.");
+        alert("El documento ha sido enviado con éxito. Ya puedes cerrar esta ventana.");
       }, 500);
     }
 
