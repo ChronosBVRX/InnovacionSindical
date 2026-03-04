@@ -2,200 +2,527 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Plataforma Sindical CG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Escáner - Plataforma Sindical</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <link rel="icon" href="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" />
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
   <style>
     :root {
-      --bg-body: #1b2e45; --bg-body-end: #152336;
       --panel-base: 46, 79, 119;
       --primary: #4da1a8; --primary-light: #7ad1d6;
-      --text-main: #f0fdfa; --text-muted: #bce9eb;
+      --text-main: #f0fdfa;
+      --text-muted: rgba(240, 253, 250, 0.65);
       --ring: rgba(77, 161, 168, .35);
-      --topbar: 64px; --radius: 16px;
-      --glass-bg: rgba(var(--panel-base), 0.35);
+      --radius: 12px;
     }
-    html, body { height: 100%; margin: 0; overflow: hidden; background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
-    .ambient-bg { position: fixed; inset: 0; z-index: -1; background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%); }
-    .ambient-bg::before { content: ""; position: absolute; inset: 0; opacity: .06; background-image: linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px); background-size: 40px 40px; }
-    .topbar { position: fixed; inset: 0 0 auto 0; height: var(--topbar); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: rgba(var(--panel-base), 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--ring); z-index: 30; }
-    .mark { width: 36px; height: 36px; border-radius: 8px; background: rgba(77, 161, 168, .15); border: 1px solid var(--ring); overflow: hidden; display: grid; place-items: center; }
-    .mark img { width: 100%; height: 100%; object-fit: cover; }
-    .title { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 16px; }
-    .title span { color: var(--primary-light); }
-    .clock { font-size: 13px; color: var(--text-muted); background: rgba(var(--panel-base), 0.4); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--ring); }
-    .layer { position: fixed; inset: 0; top: var(--topbar); overflow-y: auto; }
-    .wrap { padding: 32px 24px; max-width: 1200px; margin: 0 auto; }
-    .brand { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--ring); }
-    .brand h1 { margin: 0; font-size: 28px; font-weight: 700; color: var(--text-main); }
-    .text-gradient { background: linear-gradient(to right, var(--primary-light), var(--text-main)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .badge { background: rgba(77, 161, 168, .15); border: 1px solid var(--ring); color: var(--primary-light); padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
-    .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-    .tile { position: relative; display: flex; flex-direction: column; min-height: 180px; padding: 24px; cursor: pointer; background: var(--glass-bg); backdrop-filter: blur(8px); border: 1px solid var(--ring); border-radius: var(--radius); transition: all 0.3s ease; overflow: hidden; }
-    .tile:hover { transform: translateY(-4px); border-color: var(--primary); background: rgba(var(--panel-base), 0.6); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25); }
-    .tile.featured { background: linear-gradient(145deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.45)); border: 1px solid var(--primary-light); box-shadow: 0 0 15px rgba(77, 161, 168, 0.15); }
-    .tile.featured:hover { border-color: var(--text-main); box-shadow: 0 0 25px rgba(77, 161, 168, 0.3); }
-    .tile-icon-integrated { font-size: 48px; color: var(--primary-light); margin-bottom: 16px; transition: transform 0.3s ease; }
-    .tile:hover .tile-icon-integrated { transform: scale(1.1); color: var(--text-main); }
-    .badge-ia { position: absolute; top: 14px; right: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #0b1f2a; font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 999px; text-transform: uppercase; }
-    @media (max-width: 768px) { .wrap { padding: 20px 16px; } .brand { margin-bottom: 20px; gap: 10px; } .brand h1 { font-size: 22px; } .tiles { grid-template-columns: 1fr 1fr; gap: 12px; } .tile { min-height: 120px; padding: 16px; } .tile-icon-integrated { font-size: 32px; margin-bottom: 10px; } .tile h3 { font-size: 15px; margin: 0 0 4px 0; } .tile p { font-size: 11px; line-height: 1.3; } .badge-ia { top: 8px; right: 8px; padding: 3px 6px; font-size: 8px; } }
-    .app-wrap { max-width: 1200px; margin: 0 auto; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; }
-    .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--ring); padding-bottom: 16px; }
-    @media (max-width: 768px) { .app-wrap { padding: 12px; } .app-head { flex-direction: column; align-items: flex-start; gap: 12px; } .app-head > div:last-child { width: 100%; justify-content: space-between; } .btn { flex: 1; justify-content: center; } }
-    .app-body { flex: 1; background: rgba(21, 35, 54, 0.4); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative; }
-    .iframe { width: 100%; height: 100%; border: none; }
-    .hide { display: none; }
-    .fb-feed-container { width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; background: rgba(0,0,0,0.1); }
-    .fb-page, .fb-page span, .fb-page iframe { width: 100% !important; min-width: 100% !important; border-radius: 12px !important; filter: brightness(0.9) contrast(1.1); }
-    .btn { background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring); color: var(--primary); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; }
-    .btn:hover { background: rgba(77, 161, 168, .15); color: var(--primary-light); }
-    .boot { position: fixed; inset: 0; display: grid; place-items: center; z-index: 100; background: radial-gradient(circle at center, #1b2e45 0%, #0a141d 100%); transition: opacity 0.6s ease; }
-    .logo-boot { width: 100px; height: 100px; border-radius: 22px; border: 1px solid var(--ring); overflow: hidden; margin-bottom: 20px; box-shadow: 0 0 30px rgba(77,161,168,0.2); }
-    .logo-boot img { width: 100%; height: 100%; object-fit: cover; }
-    .bar { height: 3px; width: 200px; background: rgba(255,255,255,0.05); overflow: hidden; position: relative; border-radius: 10px; }
-    .bar span { display: block; height: 100%; width: 30%; background: var(--primary); position: absolute; animation: load 2s infinite; }
-    @keyframes load { 0% { left: -30%; } 100% { left: 100%; } }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .tile-enter { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+
+    body {
+      margin: 0; padding: 0; background-color: #0b1f2a; color: var(--text-main);
+      font-family: 'Inter', sans-serif; display: flex; flex-direction: column;
+      height: 100vh; overflow: hidden;
+    }
+
+    .topbar {
+      background: rgba(var(--panel-base), 0.9); padding: 16px; text-align: center;
+      border-bottom: 1px solid var(--ring); display: flex; flex-direction: column; gap: 5px;
+      position: relative; z-index: 50;
+    }
+    .topbar h2 { margin: 0; font-size: 18px; font-weight: 600; color: var(--primary-light); }
+    .topbar p { margin: 0; font-size: 14px; color: var(--text-main); }
+
+    .btn-cerrar-app {
+      position: absolute; left: 16px; top: 16px;
+      background: none; border: none; color: var(--text-muted);
+      font-size: 24px; cursor: pointer; padding: 4px;
+    }
+
+    .camera-container {
+      flex: 1; position: relative; display: flex; justify-content: center; align-items: center;
+      background: #000; overflow: hidden; width: 100%;
+    }
+
+    video { width: 100%; height: 100%; object-fit: contain; }
+
+    /* Guía visual de encuadre */
+    .guideline-overlay {
+      position: absolute; inset: 0; pointer-events: none; z-index: 5;
+      display: flex; justify-content: center; align-items: center; overflow: hidden;
+    }
+    .guideline-frame {
+      border: 2px dashed var(--primary-light);
+      border-radius: 8px;
+      box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.6); /* Oscurece el exterior */
+      transition: all 0.3s ease;
+    }
+
+    .img-container {
+      display: none; width: 100%; height: 100%;
+      position: absolute; top: 0; left: 0; z-index: 10;
+      background: #000;
+      justify-content: center; align-items: center;
+    }
+    
+    #preview-img { max-width: 100%; max-height: 100%; display: block; object-fit: contain; }
+
+    .overlay {
+      position: absolute; inset: 0; z-index: 15;
+      display: none;
+      align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(2px);
+      text-align: center;
+      padding: 24px;
+    }
+    .overlay .card {
+      width: min(420px, 92vw);
+      background: rgba(var(--panel-base), 0.85);
+      border: 1px solid var(--ring);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    .overlay .title { font-weight: 700; color: var(--primary-light); margin: 0 0 6px 0; }
+    .overlay .desc { margin: 0; color: var(--text-main); opacity: .9; font-size: 14px; }
+
+    .controls {
+      background: rgba(var(--panel-base), 0.9); padding: 24px; text-align: center;
+      border-top: 1px solid var(--ring); z-index: 20;
+    }
+
+    .btn {
+      background: var(--primary); color: #0b1f2a; border: none; padding: 16px;
+      font-size: 16px; font-weight: 700; border-radius: var(--radius); width: 100%;
+      cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
+    }
+    .btn:active { transform: scale(0.98); }
+
+    .btn-secondary { background: transparent; color: var(--primary-light); border: 1px solid var(--primary-light); margin-top: 12px; }
+    .hide { display: none !important; }
+
+    /* Cropper theme */
+    .cropper-view-box, .cropper-face { border-radius: 4px; }
+    .cropper-line, .cropper-point { background-color: var(--primary-light) !important; }
   </style>
 </head>
 
 <body>
-  <div id="fb-root"></div>
-  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v24.0"></script>
-
-  <div class="ambient-bg"></div>
-
-  <div id="boot" class="boot" onclick="SInOS.skipBoot()">
-    <div style="text-align: center;">
-      <div class="logo-boot" style="margin: 0 auto 20px;"><img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" /></div>
-      <h1 style="font-size: 20px; letter-spacing: 2px;">PLATAFORMA SINDICAL</h1>
-      <div class="bar" style="margin: 20px auto;"><span></span></div>
-    </div>
-  </div>
-
   <div class="topbar">
-    <div class="title">
-      <div class="mark"><img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" /></div>
-      <div><span>Plataforma</span> Sindical CG</div>
-    </div>
-    <div class="clock" id="clock">--:--</div>
+    <button class="btn-cerrar-app" onclick="cerrarAppMovil()">
+      <i class="ph-bold ph-x"></i>
+    </button>
+    <h2 id="instruccion-titulo">Iniciando cámara...</h2>
+    <p id="instruccion-sub">Encuadra el documento en un fondo oscuro</p>
   </div>
 
-  <main id="home" class="layer hide">
-    <section class="wrap">
-      <section class="brand">
-        <div>
-          <h1>Bienvenido, <span class="text-gradient">Compañero</span></h1>
-          <p>Panel de Control y Gestión Sindical.</p>
-        </div>
-        <div class="badge">SNTSS Secc. XX</div>
-      </section>
-      <section class="tiles" id="tiles"></section>
-    </section>
-  </main>
+  <div class="camera-container">
+    <video id="video" autoplay playsinline></video>
 
-  <section id="app" class="layer hide">
-    <div class="app-wrap">
-      <div class="app-head">
-        <div style="display:flex; align-items:center; gap:16px;">
-          <div id="app-ic" style="font-size:32px; color:var(--primary-light);"></div>
-          <div>
-            <h2 id="app-title" style="margin:0; font-size:20px;">Módulo</h2>
-            <p id="app-desc" style="margin:0; font-size:13px; color:var(--text-muted);"></p>
-          </div>
-        </div>
-        <div style="display:flex; gap:10px;">
-          <button class="btn" onclick="SInOS.goHome()"><i class="ph-bold ph-house"></i> Inicio</button>
-          <button class="btn" onclick="SInOS.closeApp()"><i class="ph-bold ph-x"></i> Cerrar</button>
-        </div>
-      </div>
-      <div class="app-body">
-        <iframe id="app-iframe" class="iframe"></iframe>
-        <div id="app-internal" style="height:100%; overflow:auto;"></div>
+    <div class="guideline-overlay" id="guideline">
+      <div class="guideline-frame"></div>
+    </div>
+
+    <div id="crop-area" class="img-container">
+      <img id="preview-img" src="" alt="Vista previa">
+    </div>
+
+    <div id="overlay" class="overlay">
+      <div class="card">
+        <p class="title" id="overlay-title">Procesando…</p>
+        <p class="desc" id="overlay-desc">Detectando bordes y enderezando el documento.</p>
       </div>
     </div>
-  </section>
+  </div>
+
+  <div class="controls">
+    <button id="btn-capturar" class="btn" onclick="tomarFoto()">
+      <i class="ph-bold ph-camera"></i> Tomar Foto
+    </button>
+
+    <div id="grupo-confirmar" class="hide">
+      <button class="btn" onclick="confirmarFoto()">
+        <i class="ph-bold ph-check"></i> Confirmar y Enviar
+      </button>
+      <button class="btn btn-secondary" onclick="reintentarFoto()">
+        <i class="ph-bold ph-arrow-counter-clockwise"></i> Tomar de nuevo
+      </button>
+    </div>
+  </div>
 
   <script>
-    const APPS = [
-      { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-brain', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true },
-      { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-newspaper-clipping' },
-      { id: 'agenda', title: 'Red Sindical', desc: 'Consulta tu lugar, ve la agenda, eventos sindicales, biblioteca y más...', iconClass: 'ph-duotone ph-users-four', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true },
-      
-      // --- NUEVO MÓDULO NÚCLEO DE DEFENSA ---
-      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Unificación de criterios delegacionales.', iconClass: 'ph-duotone ph-shield-check', iframe: 'nucleo.html', featured: true },
-      
-      // --- NUEVO MÓDULO KIOSKO ---
-      { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción y escaneo de documentos.', iconClass: 'ph-duotone ph-scan', href: 'kiosko.html', featured: true },
+    // =============================
+    // CONFIGURACIÓN INICIAL
+    // =============================
+    const API_URL = 'https://sinos-api.onrender.com';
+    const socket = io(API_URL);
 
-      { id: 'denuncias', title: 'Gestor de Escritos', desc: 'Redacción asistida por IA.', iconClass: 'ph-duotone ph-signature', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
-      { id: 'comite', title: 'Comité Seccional', desc: 'Conoce al nuevo equipo de la Planilla Azul.', iconClass: 'ph-duotone ph-users-three', iframe: 'comite.html' },
-      { id: 'directorio', title: 'Directorio', desc: 'Contactos y delegados.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
-      { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de derechos.', iconClass: 'ph-duotone ph-calculator', iframe: 'prestaciones.html' },
-      { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga tus comprobantes de pago.', iconClass: 'ph-duotone ph-identification-card', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/' },
-      { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Accede a tu cuenta institucional.', iconClass: 'ph-duotone ph-user-circle', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login' }
-    ];
+    const urlParams = new URLSearchParams(window.location.search);
+    const idSesion = urlParams.get('sesion') || 'TEST';
+    const tipoScan = urlParams.get('tipo') || 'identificacion'; 
 
-    const SInOS = {
-      init() {
-        this.renderTiles();
-        setTimeout(() => this.hideBoot(), 1500);
-        this.tickClock(); setInterval(() => this.tickClock(), 1000);
-        window.addEventListener('resize', () => {
-          if(!document.getElementById('app').classList.contains('hide') && document.getElementById('app-title').textContent === 'Noticias') this.renderFacebook();
-        });
-      },
-      tickClock() { document.getElementById('clock').textContent = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }); },
-      hideBoot() {
-        document.getElementById('boot').style.opacity = '0';
-        setTimeout(() => { document.getElementById('boot').style.display = 'none'; document.getElementById('home').classList.remove('hide'); }, 600);
-        document.querySelectorAll('.tile').forEach((t, i) => { t.style.animationDelay = `${i * 0.05}s`; t.classList.add('tile-enter'); });
-      },
-      skipBoot() { this.hideBoot(); },
-      renderTiles() {
-        const wrap = document.getElementById('tiles');
-        APPS.forEach(a => {
-          const b = document.createElement('div');
-          b.className = `tile ${a.featured ? 'featured' : ''}`;
-          b.onclick = () => (a.href && !a.iframe) ? window.open(a.href, '_blank') : this.openApp(a.id);
-          b.innerHTML = `${a.ia ? '<div class="badge-ia"><i class="ph-bold ph-sparkle"></i> IA</div>' : ''}<i class="${a.iconClass} tile-icon-integrated"></i><h3>${a.title}</h3><p>${a.desc}</p>`;
-          wrap.appendChild(b);
-        });
-      },
-      renderFacebook() {
-        const int = document.getElementById('app-internal');
-        int.innerHTML = `<div class="fb-feed-container"><div class="fb-page" data-href="https://www.facebook.com/profile.php?id=100063446307036" data-tabs="timeline" data-width="${int.offsetWidth}" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"></div></div>`;
-        if (window.FB) FB.XFBML.parse(int);
-      },
-      openApp(id) {
-        const app = APPS.find(x => x.id === id);
-        document.getElementById('home').classList.add('hide');
-        document.getElementById('app').classList.remove('hide');
-        document.getElementById('app-title').textContent = app.title;
-        document.getElementById('app-desc').textContent = app.desc;
-        document.getElementById('app-ic').innerHTML = `<i class="${app.iconClass}"></i>`;
-        const ifr = document.getElementById('app-iframe');
-        const int = document.getElementById('app-internal');
-        if (app.id === 'noticias') {
-          ifr.style.display = 'none'; int.style.display = 'block';
-          this.renderFacebook();
-        } else if (app.iframe) {
-          ifr.style.display = 'block'; ifr.src = app.iframe; int.style.display = 'none';
-        } else {
-          ifr.style.display = 'none'; int.style.display = 'block';
-          int.innerHTML = `<div style="padding:40px; text-align:center;">Módulo en carga...</div>`;
+    const video = document.getElementById('video');
+    const cropArea = document.getElementById('crop-area');
+    const previewImg = document.getElementById('preview-img');
+    const btnCapturar = document.getElementById('btn-capturar');
+    const grupoConfirmar = document.getElementById('grupo-confirmar');
+    const titulo = document.getElementById('instruccion-titulo');
+    const subtitulo = document.getElementById('instruccion-sub');
+    const overlay = document.getElementById('overlay');
+    const overlayTitle = document.getElementById('overlay-title');
+    const overlayDesc = document.getElementById('overlay-desc');
+    const guideline = document.getElementById('guideline');
+
+    let cropper = null;
+    let pasoActual = 1;
+    let imagenFrente = null;
+    let imagenReverso = null;
+    let streamActual = null;
+
+    let scanicScanner = null;
+    let autoscanDataUrl = null; 
+
+    function setOverlay(show, titleText = "Procesando…", descText = "Detectando bordes y enderezando el documento.") {
+      overlayTitle.innerText = titleText;
+      overlayDesc.innerText = descText;
+      overlay.style.display = show ? 'flex' : 'none';
+    }
+
+    function actualizarTextos() {
+      const guidelineFrame = document.querySelector('.guideline-frame');
+
+      if (tipoScan === 'documento') {
+        titulo.innerText = "Escáner de Documento";
+        subtitulo.innerText = "Encuadra el documento en un fondo oscuro";
+        
+        // Formato vertical tipo hoja Carta (8.5 x 11)
+        if (guidelineFrame) {
+          guidelineFrame.style.aspectRatio = "8.5 / 11";
+          guidelineFrame.style.width = "85%";
+          guidelineFrame.style.maxWidth = "400px";
         }
-      },
-      goHome() { document.getElementById('app').classList.add('hide'); document.getElementById('home').classList.remove('hide'); },
-      closeApp() { this.goHome(); }
-    };
-    document.addEventListener('DOMContentLoaded', () => SInOS.init());
+      } else {
+        titulo.innerText = pasoActual === 1 ? "Paso 1: Frente (INE)" : "Paso 2: Reverso (INE)";
+        subtitulo.innerText = "Alinea la credencial dentro del recuadro";
+        
+        // Formato horizontal tipo tarjeta
+        if (guidelineFrame) {
+          guidelineFrame.style.aspectRatio = "85 / 54";
+          guidelineFrame.style.width = "85%";
+          guidelineFrame.style.maxWidth = "400px";
+        }
+      }
+    }
+    actualizarTextos();
+
+    // =============================
+    // INICIAR CÁMARA Y SCANIC
+    // =============================
+    async function iniciarCamara() {
+      try {
+        const constraints = {
+          audio: false,
+          video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+            advanced: [{ focusMode: "continuous" }]
+          }
+        };
+
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        streamActual = stream;
+        video.srcObject = stream;
+
+        await new Promise((res) => {
+          video.onloadedmetadata = () => res();
+        });
+
+        if (!scanicScanner) {
+          try {
+            const scanicModule = await import('https://unpkg.com/scanic/dist/scanic.js');
+            scanicScanner = new scanicModule.Scanner();
+            await scanicScanner.initialize();
+            console.log("✅ Módulo Scanic inicializado correctamente");
+          } catch (err) {
+            console.error("❌ Error al cargar Scanic:", err);
+          }
+        }
+
+        titulo.innerText = "Cámara lista";
+        actualizarTextos();
+      } catch (err) {
+        alert("Error al acceder a la cámara. Revisa permisos.");
+        titulo.innerText = "Cámara bloqueada";
+      }
+    }
+    iniciarCamara();
+
+    function detenerCamara() {
+      if (streamActual) {
+        streamActual.getTracks().forEach(t => t.stop());
+        streamActual = null;
+      }
+    }
+
+    // =============================
+    // CAPTURA Y AUTO-ESCANEO
+    // =============================
+    function capturarFrame() {
+      const canvasFull = document.createElement('canvas');
+      canvasFull.width = video.videoWidth;
+      canvasFull.height = video.videoHeight;
+      const ctx = canvasFull.getContext('2d', { willReadFrequently: false });
+      
+      // Filtro de contraste para resaltar bordes antes del escaneo automático
+      ctx.filter = 'contrast(1.3) grayscale(20%)';
+      ctx.drawImage(video, 0, 0, canvasFull.width, canvasFull.height);
+      ctx.filter = 'none';
+      
+      return canvasFull;
+    }
+
+    function abrirVistaPrevia(dataUrl, modo = "auto") {
+      autoscanDataUrl = (modo === "auto") ? dataUrl : null;
+      
+      cropArea.style.display = 'flex';
+      previewImg.src = dataUrl;
+      video.style.display = 'none';
+      guideline.style.display = 'none';
+      
+      btnCapturar.classList.add('hide');
+      grupoConfirmar.classList.remove('hide');
+
+      if (modo === "auto") {
+        titulo.innerText = "Documento Detectado";
+        subtitulo.innerText = "Si se ve bien, confirma y envía";
+      } else {
+        titulo.innerText = "Ajustar Recorte";
+        subtitulo.innerText = "Arrastra las esquinas si es necesario";
+      }
+    }
+
+    function iniciarCropperManual(dataUrl) {
+      abrirVistaPrevia(dataUrl, "manual");
+      
+      // Si es documento permitimos recorte libre (NaN), si es ID forzamos proporción
+      const proporcion = (tipoScan === 'identificacion') ? (85 / 54) : NaN;
+
+      if (cropper) { cropper.destroy(); cropper = null; }
+      cropper = new Cropper(previewImg, {
+        aspectRatio: proporcion,
+        viewMode: 1,
+        dragMode: 'move',
+        autoCropArea: 0.95,
+        background: false,
+        guides: true,
+      });
+    }
+
+    async function intentarAutoScan(canvasFull) {
+      try {
+        if (!scanicScanner) return null;
+
+        const img = new Image();
+        const dataUrl = canvasFull.toDataURL('image/jpeg', 0.95);
+
+        await new Promise((res, rej) => {
+          img.onload = () => res();
+          img.onerror = () => rej(new Error("Error imagen"));
+          img.src = dataUrl;
+        });
+
+        const totalPixels = canvasFull.width * canvasFull.height;
+        const options = {
+          mode: 'extract',
+          maxProcessingDimension: 1200,
+          minArea: totalPixels * 0.20 // El documento debe ocupar al menos el 20% de la foto
+        };
+
+        let result = await scanicScanner.scan(img, options);
+
+        if (result && result.success && result.output) {
+          return result.output.toDataURL('image/jpeg', 0.95);
+        }
+        return null; 
+      } catch (e) {
+        return null; 
+      }
+    }
+
+    async function tomarFoto() {
+      setOverlay(true, "Procesando…", "Buscando bordes del documento...");
+      btnCapturar.disabled = true;
+
+      try {
+        const canvasFull = capturarFrame();
+        const extractedDataUrl = await intentarAutoScan(canvasFull);
+
+        setOverlay(false);
+        btnCapturar.disabled = false;
+
+        if (extractedDataUrl) {
+          abrirVistaPrevia(extractedDataUrl, "auto");
+          return;
+        }
+
+        iniciarCropperManual(canvasFull.toDataURL('image/jpeg', 1.0));
+      } catch (err) {
+        setOverlay(false);
+        btnCapturar.disabled = false;
+        alert("No se pudo procesar la imagen. Intenta de nuevo.");
+      }
+    }
+
+    function reintentarFoto() {
+      autoscanDataUrl = null;
+      if (cropper) { cropper.destroy(); cropper = null; }
+      
+      cropArea.style.display = 'none';
+      video.style.display = 'block';
+      guideline.style.display = 'flex';
+
+      btnCapturar.classList.remove('hide');
+      grupoConfirmar.classList.add('hide');
+      actualizarTextos();
+    }
+
+    // =============================
+    // PROCESAMIENTO FINAL Y ENVÍO
+    // =============================
+    function mejorarComoScanner(inputDataUrl) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+
+          ctx.filter = 'contrast(1.2) saturate(0.95) brightness(1.05)';
+          ctx.drawImage(img, 0, 0);
+
+          resolve(canvas.toDataURL('image/jpeg', 0.9));
+        };
+        img.src = inputDataUrl;
+      });
+    }
+
+    async function confirmarFoto() {
+      let imgFinal = null;
+
+      if (autoscanDataUrl) {
+        imgFinal = await mejorarComoScanner(autoscanDataUrl);
+      } else {
+        if (!cropper) return;
+        
+        // Si es documento, pedimos mayor resolución al recortar
+        const canvasRecorte = cropper.getCroppedCanvas({
+          width: (tipoScan === 'identificacion') ? 1200 : 1600
+        });
+        const dataUrlManual = canvasRecorte.toDataURL('image/jpeg', 0.95);
+        imgFinal = await mejorarComoScanner(dataUrlManual);
+        cropper.destroy(); cropper = null;
+      }
+
+      if (tipoScan === 'documento') {
+        procesarYEnviarDocumento(imgFinal);
+      } else {
+        if (pasoActual === 1) {
+          imagenFrente = imgFinal;
+          pasoActual = 2;
+          reintentarFoto();
+        } else {
+          imagenReverso = imgFinal;
+          procesarYEnviarIdentificacion();
+        }
+      }
+    }
+
+    function procesarYEnviarDocumento(imgBase64) {
+      titulo.innerText = "Procesando...";
+      subtitulo.innerText = "Generando documento estándar...";
+      cropArea.style.display = 'none';
+      btnCapturar.classList.add('hide');
+      grupoConfirmar.classList.add('hide');
+
+      const canvasFinal = document.createElement('canvas');
+      const ctxFinal = canvasFinal.getContext('2d');
+      
+      // Medidas para Hoja Tamaño Carta
+      canvasFinal.width = 1275; 
+      canvasFinal.height = 1650;
+
+      ctxFinal.fillStyle = "white";
+      ctxFinal.fillRect(0, 0, canvasFinal.width, canvasFinal.height);
+
+      const img = new Image();
+      img.onload = () => {
+        // Escalar manteniendo proporción, dejando 50px de margen por lado
+        const ratio = Math.min((canvasFinal.width - 100) / img.width, (canvasFinal.height - 100) / img.height);
+        const newWidth = img.width * ratio;
+        const newHeight = img.height * ratio;
+        
+        // Centrar en la hoja
+        const x = (canvasFinal.width - newWidth) / 2;
+        const y = (canvasFinal.height - newHeight) / 2;
+
+        ctxFinal.drawImage(img, x, y, newWidth, newHeight);
+        
+        enviarAlServidor(canvasFinal.toDataURL('image/jpeg', 0.85));
+      };
+      img.src = imgBase64;
+    }
+
+    function procesarYEnviarIdentificacion() {
+      titulo.innerText = "Procesando...";
+      subtitulo.innerText = "Uniendo documento en una hoja...";
+      cropArea.style.display = 'none';
+      btnCapturar.classList.add('hide');
+      grupoConfirmar.classList.add('hide');
+
+      const canvasFinal = document.createElement('canvas');
+      const ctxFinal = canvasFinal.getContext('2d');
+      canvasFinal.width = 1240; canvasFinal.height = 1754;
+
+      ctxFinal.fillStyle = "white";
+      ctxFinal.fillRect(0, 0, canvasFinal.width, canvasFinal.height);
+
+      const img1 = new Image();
+      const img2 = new Image();
+
+      img1.onload = () => {
+        ctxFinal.drawImage(img1, 100, 150, 1040, 650);
+        img2.onload = () => {
+          ctxFinal.drawImage(img2, 100, 900, 1040, 650);
+          enviarAlServidor(canvasFinal.toDataURL('image/jpeg', 0.85));
+        };
+        img2.src = imagenReverso;
+      };
+      img1.src = imagenFrente;
+    }
+
+    function enviarAlServidor(imagenBase64) {
+      titulo.innerText = "¡Enviado!";
+      subtitulo.innerText = "Revisa la pantalla del Kiosko.";
+      cropArea.style.display = 'flex';
+      previewImg.src = imagenBase64;
+
+      socket.emit('enviar-documento', { sesion: idSesion, archivo: imagenBase64 });
+
+      setTimeout(() => { alert("Enviado con éxito."); }, 500);
+    }
+
+    function cerrarAppMovil() {
+      detenerCamara();
+      try { window.close(); } catch (_) {}
+      document.body.innerHTML = '<div style="display:flex; height:100vh; align-items:center; justify-content:center; text-align:center; padding:20px;"><div><i class="ph-bold ph-check-circle" style="font-size:64px; color:var(--primary-light);"></i><h2>Escaneo Cancelado</h2></div></div>';
+    }
   </script>
 </body>
 </html>
