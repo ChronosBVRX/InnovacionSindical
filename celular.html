@@ -50,17 +50,16 @@
 
     video { width: 100%; height: 100%; object-fit: contain; }
 
-    /* NUEVO: Estilos para la guía visual del usuario */
+    /* Guía visual de encuadre */
     .guideline-overlay {
       position: absolute; inset: 0; pointer-events: none; z-index: 5;
       display: flex; justify-content: center; align-items: center; overflow: hidden;
     }
     .guideline-frame {
-      width: 85%; max-width: 400px;
-      aspect-ratio: 85 / 54; /* Proporción estándar INE */
       border: 2px dashed var(--primary-light);
       border-radius: 8px;
-      box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.5); /* Oscurece el exterior */
+      box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.6); /* Oscurece el exterior */
+      transition: all 0.3s ease;
     }
 
     .img-container {
@@ -119,7 +118,7 @@
       <i class="ph-bold ph-x"></i>
     </button>
     <h2 id="instruccion-titulo">Iniciando cámara...</h2>
-    <p id="instruccion-sub">Encuadra y toma la foto en un fondo oscuro</p>
+    <p id="instruccion-sub">Encuadra el documento en un fondo oscuro</p>
   </div>
 
   <div class="camera-container">
@@ -158,7 +157,7 @@
 
   <script>
     // =============================
-    // CONFIG
+    // CONFIGURACIÓN INICIAL
     // =============================
     const API_URL = 'https://sinos-api.onrender.com';
     const socket = io(API_URL);
@@ -177,7 +176,7 @@
     const overlay = document.getElementById('overlay');
     const overlayTitle = document.getElementById('overlay-title');
     const overlayDesc = document.getElementById('overlay-desc');
-    const guideline = document.getElementById('guideline'); // NUEVO: Referencia a la guía
+    const guideline = document.getElementById('guideline');
 
     let cropper = null;
     let pasoActual = 1;
@@ -185,7 +184,6 @@
     let imagenReverso = null;
     let streamActual = null;
 
-    // Scanic
     let scanicScanner = null;
     let autoscanDataUrl = null; 
 
@@ -196,18 +194,34 @@
     }
 
     function actualizarTextos() {
+      const guidelineFrame = document.querySelector('.guideline-frame');
+
       if (tipoScan === 'documento') {
         titulo.innerText = "Escáner de Documento";
         subtitulo.innerText = "Encuadra el documento en un fondo oscuro";
+        
+        // Formato vertical tipo hoja Carta (8.5 x 11)
+        if (guidelineFrame) {
+          guidelineFrame.style.aspectRatio = "8.5 / 11";
+          guidelineFrame.style.width = "85%";
+          guidelineFrame.style.maxWidth = "400px";
+        }
       } else {
         titulo.innerText = pasoActual === 1 ? "Paso 1: Frente (INE)" : "Paso 2: Reverso (INE)";
         subtitulo.innerText = "Alinea la credencial dentro del recuadro";
+        
+        // Formato horizontal tipo tarjeta
+        if (guidelineFrame) {
+          guidelineFrame.style.aspectRatio = "85 / 54";
+          guidelineFrame.style.width = "85%";
+          guidelineFrame.style.maxWidth = "400px";
+        }
       }
     }
     actualizarTextos();
 
     // =============================
-    // CAMERA & SCANIC INIT
+    // INICIAR CÁMARA Y SCANIC
     // =============================
     async function iniciarCamara() {
       try {
@@ -217,7 +231,7 @@
             facingMode: { ideal: "environment" },
             width: { ideal: 1920 },
             height: { ideal: 1080 },
-            advanced: [{ focusMode: "continuous" }] // NUEVO: Forzar autoenfoque
+            advanced: [{ focusMode: "continuous" }]
           }
         };
 
@@ -257,7 +271,7 @@
     }
 
     // =============================
-    // CAPTURE + AUTOSCAN + FALLBACK
+    // CAPTURA Y AUTO-ESCANEO
     // =============================
     function capturarFrame() {
       const canvasFull = document.createElement('canvas');
@@ -265,10 +279,10 @@
       canvasFull.height = video.videoHeight;
       const ctx = canvasFull.getContext('2d', { willReadFrequently: false });
       
-      // NUEVO: Aumentar contraste temporalmente para ayudar al algoritmo
+      // Filtro de contraste para resaltar bordes antes del escaneo automático
       ctx.filter = 'contrast(1.3) grayscale(20%)';
       ctx.drawImage(video, 0, 0, canvasFull.width, canvasFull.height);
-      ctx.filter = 'none'; // Limpiamos el filtro por si se requiere dibujar otra cosa
+      ctx.filter = 'none';
       
       return canvasFull;
     }
@@ -279,7 +293,7 @@
       cropArea.style.display = 'flex';
       previewImg.src = dataUrl;
       video.style.display = 'none';
-      guideline.style.display = 'none'; // NUEVO: Ocultar guía al ver la foto
+      guideline.style.display = 'none';
       
       btnCapturar.classList.add('hide');
       grupoConfirmar.classList.remove('hide');
@@ -295,6 +309,8 @@
 
     function iniciarCropperManual(dataUrl) {
       abrirVistaPrevia(dataUrl, "manual");
+      
+      // Si es documento permitimos recorte libre (NaN), si es ID forzamos proporción
       const proporcion = (tipoScan === 'identificacion') ? (85 / 54) : NaN;
 
       if (cropper) { cropper.destroy(); cropper = null; }
@@ -302,7 +318,7 @@
         aspectRatio: proporcion,
         viewMode: 1,
         dragMode: 'move',
-        autoCropArea: 0.92,
+        autoCropArea: 0.95,
         background: false,
         guides: true,
       });
@@ -321,13 +337,11 @@
           img.src = dataUrl;
         });
 
-        // NUEVO: Calcular dinámicamente el área mínima basada en los píxeles reales (20% de la foto)
         const totalPixels = canvasFull.width * canvasFull.height;
-
         const options = {
           mode: 'extract',
           maxProcessingDimension: 1200,
-          minArea: totalPixels * 0.20 
+          minArea: totalPixels * 0.20 // El documento debe ocupar al menos el 20% de la foto
         };
 
         let result = await scanicScanner.scan(img, options);
@@ -357,7 +371,6 @@
           return;
         }
 
-        // Fallback a recorte manual
         iniciarCropperManual(canvasFull.toDataURL('image/jpeg', 1.0));
       } catch (err) {
         setOverlay(false);
@@ -372,7 +385,7 @@
       
       cropArea.style.display = 'none';
       video.style.display = 'block';
-      guideline.style.display = 'flex'; // NUEVO: Mostrar guía nuevamente
+      guideline.style.display = 'flex';
 
       btnCapturar.classList.remove('hide');
       grupoConfirmar.classList.add('hide');
@@ -380,7 +393,7 @@
     }
 
     // =============================
-    // CONFIRM + ENHANCE + SEND
+    // PROCESAMIENTO FINAL Y ENVÍO
     // =============================
     function mejorarComoScanner(inputDataUrl) {
       return new Promise((resolve) => {
@@ -407,8 +420,10 @@
         imgFinal = await mejorarComoScanner(autoscanDataUrl);
       } else {
         if (!cropper) return;
+        
+        // Si es documento, pedimos mayor resolución al recortar
         const canvasRecorte = cropper.getCroppedCanvas({
-          width: (tipoScan === 'identificacion') ? 1200 : 1400
+          width: (tipoScan === 'identificacion') ? 1200 : 1600
         });
         const dataUrlManual = canvasRecorte.toDataURL('image/jpeg', 0.95);
         imgFinal = await mejorarComoScanner(dataUrlManual);
@@ -416,7 +431,7 @@
       }
 
       if (tipoScan === 'documento') {
-        enviarAlServidor(imgFinal);
+        procesarYEnviarDocumento(imgFinal);
       } else {
         if (pasoActual === 1) {
           imagenFrente = imgFinal;
@@ -427,6 +442,41 @@
           procesarYEnviarIdentificacion();
         }
       }
+    }
+
+    function procesarYEnviarDocumento(imgBase64) {
+      titulo.innerText = "Procesando...";
+      subtitulo.innerText = "Generando documento estándar...";
+      cropArea.style.display = 'none';
+      btnCapturar.classList.add('hide');
+      grupoConfirmar.classList.add('hide');
+
+      const canvasFinal = document.createElement('canvas');
+      const ctxFinal = canvasFinal.getContext('2d');
+      
+      // Medidas para Hoja Tamaño Carta
+      canvasFinal.width = 1275; 
+      canvasFinal.height = 1650;
+
+      ctxFinal.fillStyle = "white";
+      ctxFinal.fillRect(0, 0, canvasFinal.width, canvasFinal.height);
+
+      const img = new Image();
+      img.onload = () => {
+        // Escalar manteniendo proporción, dejando 50px de margen por lado
+        const ratio = Math.min((canvasFinal.width - 100) / img.width, (canvasFinal.height - 100) / img.height);
+        const newWidth = img.width * ratio;
+        const newHeight = img.height * ratio;
+        
+        // Centrar en la hoja
+        const x = (canvasFinal.width - newWidth) / 2;
+        const y = (canvasFinal.height - newHeight) / 2;
+
+        ctxFinal.drawImage(img, x, y, newWidth, newHeight);
+        
+        enviarAlServidor(canvasFinal.toDataURL('image/jpeg', 0.85));
+      };
+      img.src = imgBase64;
     }
 
     function procesarYEnviarIdentificacion() {
