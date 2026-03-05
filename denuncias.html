@@ -156,12 +156,10 @@
      ESTILOS EXCLUSIVOS PARA IMPRESIÓN
      ========================================= */
   @media print {
-    /* Ocultamos el formulario de atrás, el menú del modal y las notificaciones */
     .wrap, .modal-h, #status {
       display: none !important;
     }
     
-    /* Le quitamos los fondos oscuros y la posición al modal para que la hoja fluya natural */
     body, .modal, .modal-card, .modal-b {
       background: transparent !important;
       position: static !important;
@@ -174,7 +172,6 @@
       overflow: visible !important;
     }
 
-    /* Ajustamos la hoja para que tome todo el espacio en papel y no escale extraño */
     .page.carta {
       width: 100% !important;
       height: auto !important;
@@ -188,7 +185,6 @@
       height: auto !important;
     }
 
-    /* Solucionamos la posición de la firma para documentos largos */
     .sheet .pie {
       position: relative !important;
       bottom: auto !important;
@@ -401,6 +397,45 @@
         $('#problematica').value = d.prob || '';
       };
 
+      // --- FUNCIÓN DE LIMPIEZA TOTAL PARA KIOSKO ---
+      const limpiarKiosco = () => {
+        localStorage.removeItem(FORM_KEY); // Borrar memoria
+        $('#fDenuncia').reset(); // Limpiar formulario
+        
+        // Limpiar campos controlados por código
+        $('#cargo').value = '';
+        $('#destinatario').value = '';
+        $('#fecha').value = new Date().toISOString().slice(0,10);
+        
+        // Cerrar modal si está abierto
+        $('#modal').classList.remove('show');
+        
+        // Redirigir al inicio para garantizar privacidad al siguiente usuario
+        window.location.href = "https://chronosbvrx.github.io/InnovacionSindical/";
+      };
+
+      // --- SISTEMA DE INACTIVIDAD (2 MINUTOS) ---
+      let tiempoInactividad;
+      const TIEMPO_LIMITE = 120000; // 120,000 milisegundos = 2 minutos
+
+      const reiniciarTemporizador = () => {
+        clearTimeout(tiempoInactividad);
+        tiempoInactividad = setTimeout(() => {
+          showStatus("🔒 Sesión cerrada por inactividad.");
+          setTimeout(limpiarKiosco, 1500); // Pequeña pausa para que se lea el mensaje
+        }, TIEMPO_LIMITE);
+      };
+
+      // Escuchar actividad del usuario para reiniciar el reloj
+      window.addEventListener('mousemove', reiniciarTemporizador);
+      window.addEventListener('touchstart', reiniciarTemporizador);
+      window.addEventListener('keypress', reiniciarTemporizador);
+      window.addEventListener('click', reiniciarTemporizador);
+      
+      // Iniciar el temporizador al cargar la página
+      reiniciarTemporizador();
+      // ------------------------------------------
+
       $('#puestoCatalogo').addEventListener('change', (e) => {
         const [cargo, nombre] = e.target.value.split('|');
         $('#cargo').value = cargo || '';
@@ -486,7 +521,11 @@
           const matricula = $('#matricula').value || 'Generado';
           doc.save(`Oficio_${matricula}.pdf`);
           
-          showStatus("✅ Descargado.");
+          showStatus("✅ Descargado con éxito.");
+          
+          // Limpiar el kiosco después de una descarga exitosa
+          setTimeout(limpiarKiosco, 2000);
+
         } catch (error) {
           console.error("Error al generar PDF:", error);
           showStatus("❌ Error al generar el PDF.");
@@ -503,7 +542,6 @@
         crearPDF(this); 
       });
 
-      // El botón principal ahora solo redacta y abre el modal
       $('#fDenuncia').addEventListener('submit', async (e) => { 
         e.preventDefault(); 
         
@@ -525,7 +563,6 @@
         const cuerpoIA = await redactarIA($('#problematica').value);
         $('#sheet').innerHTML = generarContenido(d, cuerpoIA);
 
-        // Restaurar botón y mostrar modal
         btnSubmit.innerHTML = btnText;
         btnSubmit.disabled = false;
 
@@ -538,6 +575,10 @@
         document.title = "Oficio_Sindical";
         window.print();
         document.title = originalTitle;
+        
+        // Limpiar el kiosco después de mandar a imprimir
+        showStatus("🖨️ Documento enviado a la impresora.");
+        setTimeout(limpiarKiosco, 2000);
       });
 
       $('#btnCopy').addEventListener('click', () => {
