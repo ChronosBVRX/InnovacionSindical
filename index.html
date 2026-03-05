@@ -128,10 +128,10 @@
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-newspaper-clipping' },
       { id: 'agenda', title: 'Red Sindical', desc: 'Consulta tu lugar, ve la agenda, eventos sindicales, biblioteca y más...', iconClass: 'ph-duotone ph-users-four', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true },
       
-      // --- NUEVO MÓDULO NÚCLEO DE DEFENSA ---
+      // --- MÓDULO NÚCLEO DE DEFENSA ---
       { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Unificación de criterios delegacionales.', iconClass: 'ph-duotone ph-shield-check', iframe: 'nucleo.html', featured: true },
       
-      // --- NUEVO MÓDULO KIOSKO ---
+      // --- MÓDULO KIOSKO ---
       { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción y escaneo de documentos.', iconClass: 'ph-duotone ph-scan', href: 'kiosko.html', featured: true },
 
       { id: 'denuncias', title: 'Gestor de Escritos', desc: 'Redacción asistida por IA.', iconClass: 'ph-duotone ph-signature', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
@@ -158,21 +158,35 @@
         document.querySelectorAll('.tile').forEach((t, i) => { t.style.animationDelay = `${i * 0.05}s`; t.classList.add('tile-enter'); });
       },
       skipBoot() { this.hideBoot(); },
+      
       renderTiles() {
         const wrap = document.getElementById('tiles');
         APPS.forEach(a => {
           const b = document.createElement('div');
           b.className = `tile ${a.featured ? 'featured' : ''}`;
-          b.onclick = () => (a.href && !a.iframe) ? window.open(a.href, '_blank') : this.openApp(a.id);
+          
+          b.onclick = () => {
+            const url = a.href || a.iframe;
+            // Excepción de seguridad: Si la URL es del IMSS, la abre en una nueva pestaña
+            if (url && url.includes('imss.gob.mx')) {
+              window.open(url, '_blank');
+            } else {
+              // Si no es del IMSS, la abre dentro de la plataforma
+              this.openApp(a.id);
+            }
+          };
+          
           b.innerHTML = `${a.ia ? '<div class="badge-ia"><i class="ph-bold ph-sparkle"></i> IA</div>' : ''}<i class="${a.iconClass} tile-icon-integrated"></i><h3>${a.title}</h3><p>${a.desc}</p>`;
           wrap.appendChild(b);
         });
       },
+      
       renderFacebook() {
         const int = document.getElementById('app-internal');
         int.innerHTML = `<div class="fb-feed-container"><div class="fb-page" data-href="https://www.facebook.com/profile.php?id=100063446307036" data-tabs="timeline" data-width="${int.offsetWidth}" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"></div></div>`;
         if (window.FB) FB.XFBML.parse(int);
       },
+      
       openApp(id) {
         const app = APPS.find(x => x.id === id);
         document.getElementById('home').classList.add('hide');
@@ -180,21 +194,36 @@
         document.getElementById('app-title').textContent = app.title;
         document.getElementById('app-desc').textContent = app.desc;
         document.getElementById('app-ic').innerHTML = `<i class="${app.iconClass}"></i>`;
+        
         const ifr = document.getElementById('app-iframe');
         const int = document.getElementById('app-internal');
+        
+        ifr.src = ''; 
+        const targetUrl = app.iframe || app.href;
+
         if (app.id === 'noticias') {
           ifr.style.display = 'none'; int.style.display = 'block';
           this.renderFacebook();
-        } else if (app.iframe) {
-          ifr.style.display = 'block'; ifr.src = app.iframe; int.style.display = 'none';
-        } else {
+        } 
+        else if (targetUrl) {
+          ifr.style.display = 'block'; 
+          ifr.src = targetUrl; 
+          int.style.display = 'none';
+        } 
+        else {
           ifr.style.display = 'none'; int.style.display = 'block';
           int.innerHTML = `<div style="padding:40px; text-align:center;">Módulo en carga...</div>`;
         }
       },
-      goHome() { document.getElementById('app').classList.add('hide'); document.getElementById('home').classList.remove('hide'); },
+      
+      goHome() { 
+        document.getElementById('app').classList.add('hide'); 
+        document.getElementById('home').classList.remove('hide'); 
+        document.getElementById('app-iframe').src = ''; 
+      },
       closeApp() { this.goHome(); }
     };
+    
     document.addEventListener('DOMContentLoaded', () => SInOS.init());
   </script>
 </body>
