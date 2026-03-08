@@ -209,11 +209,16 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 1; text-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
+      100% { transform: scale(1); opacity: 0.8; }
+    }
+
     /* --- OPTIMIZACIÓN PARA MÓVILES --- */
     @media (max-width: 600px) {
       .hero h1 { font-size: 28px; }
       
-      /* Ajuste de botones de búsqueda y filtro para celular */
       .controls {
         flex-direction: column;
         padding: 0 10px;
@@ -223,7 +228,6 @@
         width: 100%;
       }
 
-      /* Ajuste de tarjetas a 2 columnas */
       .grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
         gap: 12px;
@@ -231,13 +235,9 @@
 
       .card { padding: 16px 10px; }
       
-      .tag-area {
-        font-size: 8px; padding: 3px 6px; top: 8px; right: 8px;
-      }
+      .tag-area { font-size: 8px; padding: 3px 6px; top: 8px; right: 8px; }
 
-      .card-photo {
-        width: 65px; height: 65px; margin: 10px 0;
-      }
+      .card-photo { width: 65px; height: 65px; margin: 10px 0; }
       .card-photo i { font-size: 28px; }
 
       .card-role { font-size: 11px; margin-bottom: 4px; }
@@ -265,12 +265,12 @@
   </header>
 
   <main class="container">
-    <section class="hero">
+    <section class="hero" id="heroSection">
       <h1>Conoce a tu Nuevo Comité</h1>
       <p>Un equipo transparente y preparado para defender los derechos de la Sección XX Michoacán. Selecciona una cartera para verificar sus funciones.</p>
     </section>
 
-    <section class="controls">
+    <section class="controls" id="controlsSection">
       <div class="input-group">
         <i class="ph-bold ph-magnifying-glass input-icon"></i>
         <input id="searchInput" class="form-control" type="text" placeholder="Buscar cartera, función o nombre..." autocomplete="off">
@@ -299,6 +299,54 @@
     const $results = document.getElementById('results');
     const $search = document.getElementById('searchInput');
     const $area = document.getElementById('areaFilter');
+    const $hero = document.getElementById('heroSection');
+    const $controls = document.getElementById('controlsSection');
+
+    // === LÓGICA DE DESBLOQUEO ===
+    // Configura aquí la fecha y hora exacta en la que quieres que se desbloquee (Formato: AAAA-MM-DDT00:00:00)
+    // Actualmente configurado para el Jueves 12 de Marzo de 2026 a la medianoche.
+    const unlockDate = new Date('2026-03-12T00:00:00').getTime(); 
+    const now = new Date().getTime();
+
+    if (now < unlockDate) {
+      // ESTADO BLOQUEADO
+      $hero.style.display = 'none';
+      $controls.style.display = 'none';
+      
+      $results.innerHTML = `
+        <div class="empty-state" style="margin-top: 10vh; animation: fadeUp 0.8s ease forwards;">
+          <i class="ph-duotone ph-lock-key" style="font-size: 80px; color: var(--primary); margin-bottom: 20px; animation: pulse 2s infinite;"></i>
+          <h2 style="font-size: 32px; color: #fff; margin-bottom: 15px;">Próximamente Disponible</h2>
+          <p style="font-size: 18px; max-width: 500px; margin: 0 auto; line-height: 1.5;">La estructura de nuestro comité se revelará este jueves. ¡Estamos preparando todo!</p>
+          <div id="countdown" style="margin-top: 30px; font-size: 24px; font-weight: 800; color: var(--primary-light); letter-spacing: 2px; font-family: monospace;"></div>
+        </div>
+      `;
+
+      // Contador en tiempo real
+      const countdownInterval = setInterval(() => {
+        const currentTime = new Date().getTime();
+        const distance = unlockDate - currentTime;
+
+        if (distance < 0) {
+          clearInterval(countdownInterval);
+          location.reload(); // Recarga la página automáticamente cuando llegue a cero
+        } else {
+          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          
+          document.getElementById('countdown').innerHTML = 
+            `${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+        }
+      }, 1000);
+
+    } else {
+      // ESTADO DESBLOQUEADO (Se muestra normal)
+      fetchComite();
+      $search.addEventListener('input', applyFilters);
+      $area.addEventListener('change', applyFilters);
+    }
 
     // Cargar desde Supabase
     async function fetchComite() {
@@ -403,11 +451,6 @@
 
       render(filtered);
     }
-
-    $search.addEventListener('input', applyFilters);
-    $area.addEventListener('change', applyFilters);
-
-    fetchComite();
   </script>
 </body>
 </html>
