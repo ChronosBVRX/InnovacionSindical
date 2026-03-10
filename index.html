@@ -16,7 +16,8 @@
       --bg-body: #1b2e45; --bg-body-end: #152336;
       --panel-base: 46, 79, 119;
       --primary: #4da1a8; --primary-light: #7ad1d6;
-      --success: #4ade80; /* Nuevo color para indicar seguridad */
+      --success: #4ade80; 
+      --danger: #ef4444; /* Color para el botón cerrar */
       --text-main: #f0fdfa; --text-muted: #bce9eb;
       --ring: rgba(77, 161, 168, .35);
       --topbar: 64px; --radius: 16px;
@@ -32,7 +33,6 @@
     .title { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 16px; }
     .title span { color: var(--primary-light); }
     
-    /* Reloj modificado para incluir el candado de seguridad */
     .clock-container { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); background: rgba(var(--panel-base), 0.4); padding: 6px 12px; border-radius: 12px; border: 1px solid var(--ring); }
     .secure-badge { display: flex; align-items: center; gap: 4px; color: var(--success); font-weight: 600; font-size: 11px; text-transform: uppercase; border-right: 1px solid var(--ring); padding-right: 8px; }
     
@@ -55,26 +55,32 @@
     .badge-ia { position: absolute; top: 14px; right: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #0b1f2a; font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 999px; text-transform: uppercase; }
     .badge-secure-app { position: absolute; top: 14px; left: 14px; color: var(--success); font-size: 16px; background: rgba(74, 222, 128, 0.15); padding: 4px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.3); display: flex; align-items: center; justify-content: center; }
 
-    /* Footer de Privacidad */
     .privacy-footer { text-align: center; padding: 20px; font-size: 12px; color: var(--text-muted); opacity: 0.8; margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); }
     .privacy-footer i { color: var(--success); margin-right: 4px; font-size: 14px; vertical-align: middle; }
 
-    @media (max-width: 768px) { .wrap { padding: 20px 16px; } .brand { margin-bottom: 20px; gap: 10px; } .brand h1 { font-size: 22px; } .tiles { grid-template-columns: 1fr 1fr; gap: 12px; } .tile { min-height: 120px; padding: 16px; } .tile-icon-integrated { font-size: 32px; margin-bottom: 10px; } .tile h3 { font-size: 15px; margin: 0 0 4px 0; } .tile p { font-size: 11px; line-height: 1.3; } .badge-ia { top: 8px; right: 8px; padding: 3px 6px; font-size: 8px; } .badge-secure-app { top: 8px; left: 8px; font-size: 12px; padding: 3px; } .clock-container { padding: 4px 8px; font-size: 11px; } .secure-badge span { display: none; } /* Oculta el texto "Seguro" en móvil, deja solo el candado */ }
+    @media (max-width: 768px) { .wrap { padding: 20px 16px; } .brand { margin-bottom: 20px; gap: 10px; } .brand h1 { font-size: 22px; } .tiles { grid-template-columns: 1fr 1fr; gap: 12px; } .tile { min-height: 120px; padding: 16px; } .tile-icon-integrated { font-size: 32px; margin-bottom: 10px; } .tile h3 { font-size: 15px; margin: 0 0 4px 0; } .tile p { font-size: 11px; line-height: 1.3; } .badge-ia { top: 8px; right: 8px; padding: 3px 6px; font-size: 8px; } .badge-secure-app { top: 8px; left: 8px; font-size: 12px; padding: 3px; } .clock-container { padding: 4px 8px; font-size: 11px; } .secure-badge span { display: none; } }
     
-    .app-wrap { max-width: 1200px; margin: 0 auto; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
+    .app-wrap { max-width: 1200px; margin: 0 auto; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; transition: all 0.3s ease; }
     .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--ring); padding-bottom: 16px; }
     @media (max-width: 768px) { .app-wrap { padding: 12px; } .app-head { flex-direction: column; align-items: flex-start; gap: 12px; } .app-head > div:last-child { width: 100%; justify-content: space-between; } .btn { flex: 1; justify-content: center; } }
-    .app-body { flex: 1; background: rgba(21, 35, 54, 0.4); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative; }
+    .app-body { flex: 1; background: rgba(21, 35, 54, 0.4); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative; transition: all 0.3s ease; }
     .iframe { width: 100%; height: 100%; border: none; }
     .hide { display: none !important; }
     
+    /* MODIFICACIONES PANTALLA COMPLETA */
+    .fullscreen-mode .app-wrap { max-width: 100%; padding: 0; }
+    .fullscreen-mode .app-head { display: none; }
+    .fullscreen-mode .app-body { border-radius: 0; border: none; }
+
     .fb-feed-container { width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; background: rgba(0,0,0,0.1); }
     .fb-page, .fb-page span, .fb-page iframe { width: 100% !important; min-width: 100% !important; border-radius: 12px !important; filter: brightness(0.9) contrast(1.1); }
     
     .btn { background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring); color: var(--primary); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; }
     .btn:hover { background: rgba(77, 161, 168, .15); color: var(--primary-light); }
     
-    /* Estilos de Boot actualizados */
+    .btn-danger { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5; }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.25); color: #fecaca; border-color: rgba(239, 68, 68, 0.5); }
+
     .boot { position: fixed; inset: 0; display: grid; place-items: center; z-index: 100; background: radial-gradient(circle at center, #1b2e45 0%, #0a141d 100%); transition: opacity 0.6s ease; }
     .logo-boot { width: 100px; height: 100px; border-radius: 22px; border: 1px solid var(--ring); overflow: hidden; margin-bottom: 20px; box-shadow: 0 0 30px rgba(77,161,168,0.2); }
     .logo-boot img { width: 100%; height: 100%; object-fit: cover; }
@@ -111,11 +117,17 @@
       <div><span>Plataforma</span> Sindical CG</div>
     </div>
     
-    <div class="clock-container">
-      <div class="secure-badge" title="Conexión Encriptada">
-        <i class="ph-fill ph-lock-key"></i> <span>Seguro</span>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <button id="btn-top-close" class="btn btn-danger hide" onclick="SInOS.closeApp()">
+        <i class="ph-bold ph-x"></i> <span class="hide-mobile">Cerrar Módulo</span>
+      </button>
+
+      <div class="clock-container">
+        <div class="secure-badge" title="Conexión Encriptada">
+          <i class="ph-fill ph-lock-key"></i> <span>Seguro</span>
+        </div>
+        <div id="clock">--:--</div>
       </div>
-      <div id="clock">--:--</div>
     </div>
   </div>
 
@@ -163,20 +175,16 @@
     const APPS = [
       { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-brain', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-newspaper-clipping' },
-      { id: 'agenda', title: 'Red Sindical', desc: 'Consulta tu lugar, ve la agenda, eventos sindicales, biblioteca y más...', iconClass: 'ph-duotone ph-users-four', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true },
       
-      // --- MÓDULO NÚCLEO DE DEFENSA ---
-      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Unificación de criterios delegacionales.', iconClass: 'ph-duotone ph-shield-check', iframe: 'nucleo.html', featured: true },
+      // MÓDULOS EN PANTALLA COMPLETA (Se añadió la propiedad "fullscreen: true")
+      { id: 'agenda', title: 'Red Sindical', desc: 'Consulta tu lugar, ve la agenda, eventos sindicales, biblioteca y más...', iconClass: 'ph-duotone ph-users-four', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true, fullscreen: true },
+      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Unificación de criterios delegacionales.', iconClass: 'ph-duotone ph-shield-check', iframe: 'nucleo.html', featured: true, fullscreen: true },
       
-      // --- MÓDULO KIOSKO ---
       { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción y escaneo de documentos.', iconClass: 'ph-duotone ph-scan', href: 'kiosko.html', featured: true },
-
       { id: 'denuncias', title: 'Gestor de Escritos', desc: 'Redacción asistida por IA.', iconClass: 'ph-duotone ph-signature', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
       { id: 'comite', title: 'Comité Seccional', desc: 'Conoce al nuevo equipo de la Planilla Azul.', iconClass: 'ph-duotone ph-users-three', iframe: 'comite.html' },
       { id: 'directorio', title: 'Directorio', desc: 'Contactos y delegados.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
       { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de derechos.', iconClass: 'ph-duotone ph-calculator', iframe: 'prestaciones.html' },
-      
-      // MÓDULOS SENSIBLES (Se añade secure: true)
       { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga tus comprobantes de pago.', iconClass: 'ph-duotone ph-identification-card', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/', secure: true },
       { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Accede a tu cuenta institucional.', iconClass: 'ph-duotone ph-user-circle', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true }
     ];
@@ -184,7 +192,7 @@
     const SInOS = {
       init() {
         this.renderTiles();
-        this.runSecurityBoot(); // Iniciamos la secuencia de seguridad
+        this.runSecurityBoot(); 
         this.tickClock(); setInterval(() => this.tickClock(), 1000);
         window.addEventListener('resize', () => {
           if(!document.getElementById('app').classList.contains('hide') && document.getElementById('app-title').textContent === 'Noticias') this.renderFacebook();
@@ -217,7 +225,7 @@
             clearInterval(bootInterval);
             setTimeout(() => this.hideBoot(), 600);
           }
-        }, 700); // Velocidad de la animación (700ms por línea)
+        }, 700);
       },
 
       hideBoot() {
@@ -225,7 +233,6 @@
         setTimeout(() => { 
           document.getElementById('boot').style.display = 'none'; 
           document.getElementById('home').classList.remove('hide'); 
-          // Animar tiles al entrar
           document.querySelectorAll('.tile').forEach((t, i) => { t.style.animationDelay = `${i * 0.05}s`; t.classList.add('tile-enter'); });
         }, 600);
       },
@@ -240,15 +247,13 @@
           
           b.onclick = () => {
             const url = a.href || a.iframe;
-            // Excepción de seguridad: Si la URL es del IMSS, la abre en una nueva pestaña
             if (url && url.includes('imss.gob.mx')) {
-              window.open(url, '_blank', 'noopener,noreferrer'); // noopener y noreferrer añaden seguridad extra al abrir nuevas pestañas
+              window.open(url, '_blank', 'noopener,noreferrer');
             } else {
               this.openApp(a.id);
             }
           };
           
-          // Renderizado de las etiquetas (IA y Seguridad)
           let badgesHTML = '';
           if (a.ia) badgesHTML += `<div class="badge-ia"><i class="ph-bold ph-sparkle"></i> IA</div>`;
           if (a.secure) badgesHTML += `<div class="badge-secure-app" title="Conexión Directa y Segura"><i class="ph-bold ph-lock-key"></i></div>`;
@@ -266,10 +271,22 @@
       
       openApp(id) {
         const app = APPS.find(x => x.id === id);
+        const appSection = document.getElementById('app');
+        const btnTopClose = document.getElementById('btn-top-close');
+
+        // Mostrar la vista de la app
         document.getElementById('home').classList.add('hide');
-        document.getElementById('app').classList.remove('hide');
+        appSection.classList.remove('hide');
         
-        // Añadir indicador visual de seguridad al título de la app si es segura
+        // --- NUEVA LÓGICA DE PANTALLA COMPLETA ---
+        if (app.fullscreen) {
+          appSection.classList.add('fullscreen-mode');
+          btnTopClose.classList.remove('hide'); // Mostrar el botón cerrar arriba
+        } else {
+          appSection.classList.remove('fullscreen-mode');
+          btnTopClose.classList.add('hide'); // Ocultar el botón cerrar arriba
+        }
+        
         let secureTitleIcon = app.secure ? '<i class="ph-fill ph-lock-key" style="color: var(--success); margin-left: 8px; font-size: 16px;" title="Conexión Segura"></i>' : '';
         document.getElementById('app-title').innerHTML = app.title + secureTitleIcon;
         
@@ -301,7 +318,12 @@
         document.getElementById('app').classList.add('hide'); 
         document.getElementById('home').classList.remove('hide'); 
         document.getElementById('app-iframe').src = ''; 
+        
+        // Limpiar estilos de pantalla completa al salir
+        document.getElementById('app').classList.remove('fullscreen-mode');
+        document.getElementById('btn-top-close').classList.add('hide');
       },
+      
       closeApp() { this.goHome(); }
     };
     
