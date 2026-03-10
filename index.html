@@ -22,6 +22,7 @@
       --topbar: 64px; --radius: 16px;
       --glass-bg: rgba(var(--panel-base), 0.35);
     }
+    
     html, body { height: 100%; margin: 0; overflow: hidden; background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
     .ambient-bg { position: fixed; inset: 0; z-index: -1; background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%); }
     .ambient-bg::before { content: ""; position: absolute; inset: 0; opacity: .06; background-image: linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px); background-size: 40px 40px; }
@@ -35,6 +36,7 @@
     .clock-container { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); background: rgba(var(--panel-base), 0.4); padding: 6px 12px; border-radius: 12px; border: 1px solid var(--ring); }
     .secure-badge { display: flex; align-items: center; gap: 4px; color: var(--success); font-weight: 600; font-size: 11px; text-transform: uppercase; border-right: 1px solid var(--ring); padding-right: 8px; }
     
+    /* Contenedor Principal (Home) */
     .layer { position: fixed; inset: 0; top: var(--topbar); overflow-y: auto; display: flex; flex-direction: column; }
     .wrap { padding: 32px 24px; max-width: 1200px; margin: 0 auto; flex: 1; width: 100%; box-sizing: border-box; }
     
@@ -47,36 +49,38 @@
     .tile { position: relative; display: flex; flex-direction: column; min-height: 180px; padding: 24px; cursor: pointer; background: var(--glass-bg); backdrop-filter: blur(8px); border: 1px solid var(--ring); border-radius: var(--radius); transition: all 0.3s ease; overflow: hidden; }
     .tile:hover { transform: translateY(-4px); border-color: var(--primary); background: rgba(var(--panel-base), 0.6); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25); }
     .tile.featured { background: linear-gradient(145deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.45)); border: 1px solid var(--primary-light); box-shadow: 0 0 15px rgba(77, 161, 168, 0.15); }
-    .tile.featured:hover { border-color: var(--text-main); box-shadow: 0 0 25px rgba(77, 161, 168, 0.3); }
     .tile-icon-integrated { font-size: 48px; color: var(--primary-light); margin-bottom: 16px; transition: transform 0.3s ease; }
-    .tile:hover .tile-icon-integrated { transform: scale(1.1); color: var(--text-main); }
     
-    .badge-ia { position: absolute; top: 14px; right: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #0b1f2a; font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 999px; text-transform: uppercase; }
-    .badge-secure-app { position: absolute; top: 14px; left: 14px; color: var(--success); font-size: 16px; background: rgba(74, 222, 128, 0.15); padding: 4px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.3); display: flex; align-items: center; justify-content: center; }
-
-    .privacy-footer { text-align: center; padding: 20px; font-size: 12px; color: var(--text-muted); opacity: 0.8; margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); }
-    .privacy-footer i { color: var(--success); margin-right: 4px; font-size: 14px; vertical-align: middle; }
-
-    @media (max-width: 768px) { .wrap { padding: 20px 16px; } .brand { margin-bottom: 20px; gap: 10px; } .brand h1 { font-size: 22px; } .tiles { grid-template-columns: 1fr 1fr; gap: 12px; } .tile { min-height: 120px; padding: 16px; } .tile-icon-integrated { font-size: 32px; margin-bottom: 10px; } .tile h3 { font-size: 15px; margin: 0 0 4px 0; } .tile p { font-size: 11px; line-height: 1.3; } .badge-ia { top: 8px; right: 8px; padding: 3px 6px; font-size: 8px; } .badge-secure-app { top: 8px; left: 8px; font-size: 12px; padding: 3px; } .clock-container { padding: 4px 8px; font-size: 11px; } .secure-badge span { display: none; } }
-    
-    .app-wrap { max-width: 1200px; margin: 0 auto; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
-    .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--ring); padding-bottom: 16px; }
-    @media (max-width: 768px) { .app-wrap { padding: 12px; } .app-head { flex-direction: column; align-items: flex-start; gap: 12px; } .app-head > div:last-child { width: 100%; justify-content: space-between; } .btn { flex: 1; justify-content: center; } }
-    .app-body { flex: 1; background: rgba(21, 35, 54, 0.4); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative; }
-    .iframe { width: 100%; height: 100%; border: none; }
-    .hide { display: none !important; }
-    
-    .fb-feed-container { width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; background: rgba(0,0,0,0.1); }
-    .fb-page, .fb-page span, .fb-page iframe { width: 100% !important; min-width: 100% !important; border-radius: 12px !important; filter: brightness(0.9) contrast(1.1); }
+    /* --- SECCIÓN DEL IFRAME (OPTIMIZADA PARA ANCHO TOTAL) --- */
+    .app-wrap { width: 100%; max-width: 100%; margin: 0; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
+    .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--ring); padding-bottom: 12px; }
+    .app-body { flex: 1; background: rgba(21, 35, 54, 0.4); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative; width: 100%; }
+    .iframe { width: 100%; height: 100%; border: none; display: block; }
     
     .btn { background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring); color: var(--primary); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; }
     .btn:hover { background: rgba(77, 161, 168, .15); color: var(--primary-light); }
-    
+
+    .hide { display: none !important; }
+
+    /* Boot Screen */
     .boot { position: fixed; inset: 0; display: grid; place-items: center; z-index: 100; background: radial-gradient(circle at center, #1b2e45 0%, #0a141d 100%); transition: opacity 0.6s ease; }
     .logo-boot { width: 100px; height: 100px; border-radius: 22px; border: 1px solid var(--ring); overflow: hidden; margin-bottom: 20px; box-shadow: 0 0 30px rgba(77,161,168,0.2); }
     .logo-boot img { width: 100%; height: 100%; object-fit: cover; }
     .bar { height: 3px; width: 200px; background: rgba(255,255,255,0.05); overflow: hidden; position: relative; border-radius: 10px; }
     .bar span { display: block; height: 100%; width: 30%; background: var(--primary); position: absolute; animation: load 2s infinite; }
+
+    /* Responsive */
+    @media (max-width: 768px) { 
+      .wrap { padding: 20px 16px; } 
+      .app-wrap { padding: 8px; } /* Máximo espacio en móvil */
+      .app-head h2 { font-size: 16px; }
+      .app-head p { display: none; } /* Ganamos espacio vertical */
+      .tiles { grid-template-columns: 1fr 1fr; gap: 12px; } 
+      .tile { min-height: 120px; padding: 16px; }
+      .clock-container { padding: 4px 8px; font-size: 11px; } 
+      .secure-badge span { display: none; }
+    }
+
     @keyframes load { 0% { left: -30%; } 100% { left: 100%; } }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .tile-enter { animation: fadeUp 0.5s ease forwards; opacity: 0; }
@@ -94,7 +98,6 @@
       <div class="logo-boot" style="margin: 0 auto 20px;"><img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo SNTSS"/></div>
       <h1 style="font-size: 20px; letter-spacing: 2px;">PLATAFORMA SINDICAL</h1>
       <div class="bar" style="margin: 20px auto;"><span></span></div>
-      
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(77, 161, 168, 0.2);">
         <i class="ph-fill ph-shield-check" style="color: var(--success); font-size: 18px;"></i>
         <div id="security-status" style="font-size: 12px; color: var(--success); font-family: monospace; transition: opacity 0.2s ease; text-align: left; min-width: 220px;">Inicializando entorno...</div>
@@ -107,7 +110,6 @@
       <div class="mark"><img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo"/></div>
       <div><span>Plataforma</span> Sindical CG</div>
     </div>
-    
     <div class="clock-container">
       <div class="secure-badge" title="Conexión Encriptada">
         <i class="ph-fill ph-lock-key"></i> <span>Seguro</span>
@@ -125,28 +127,23 @@
         </div>
         <div class="badge">SNTSS Secc. XX</div>
       </section>
-      
       <section class="tiles" id="tiles"></section>
     </section>
-    
-    <footer class="privacy-footer">
-      <i class="ph-fill ph-shield-check"></i> <strong>Privacidad Garantizada:</strong> Esta plataforma actúa como un puente directo. No almacenamos, interceptamos ni guardamos credenciales institucionales o datos personales del IMSS.
-    </footer>
   </main>
 
   <section id="app" class="layer hide">
     <div class="app-wrap">
       <div class="app-head">
-        <div style="display:flex; align-items:center; gap:16px;">
-          <div id="app-ic" style="font-size:32px; color:var(--primary-light);"></div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div id="app-ic" style="font-size:28px; color:var(--primary-light);"></div>
           <div>
-            <h2 id="app-title" style="margin:0; font-size:20px;">Módulo</h2>
-            <p id="app-desc" style="margin:0; font-size:13px; color:var(--text-muted);"></p>
+            <h2 id="app-title" style="margin:0; font-size:18px;">Módulo</h2>
+            <p id="app-desc" style="margin:0; font-size:12px; color:var(--text-muted);"></p>
           </div>
         </div>
-        <div style="display:flex; gap:10px;">
-          <button class="btn" onclick="SInOS.goHome()"><i class="ph-bold ph-house"></i> Inicio</button>
-          <button class="btn" onclick="SInOS.closeApp()"><i class="ph-bold ph-x"></i> Cerrar</button>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" onclick="SInOS.goHome()"><i class="ph-bold ph-house"></i></button>
+          <button class="btn" onclick="SInOS.closeApp()"><i class="ph-bold ph-x"></i></button>
         </div>
       </div>
       <div class="app-body">
@@ -160,21 +157,15 @@
     const APPS = [
       { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-brain', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-newspaper-clipping' },
-      
-      // Módulos en pestaña nueva
-      { id: 'agenda', title: 'Red Sindical', desc: 'Consulta tu lugar, ve la agenda, eventos sindicales, biblioteca y más...', iconClass: 'ph-duotone ph-users-four', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true, newTab: true },
-      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Unificación de criterios delegacionales.', iconClass: 'ph-duotone ph-shield-check', href: 'nucleo.html', featured: true, newTab: true },
-      // ¡AQUÍ ESTÁ COMITÉ SECCIONAL ACTUALIZADO!
-      { id: 'comite', title: 'Comité Seccional', desc: 'Conoce al nuevo equipo de la Planilla Azul.', iconClass: 'ph-duotone ph-users-three', href: 'comite.html', newTab: true },
-      
-      // AQUI ESTA LA MODIFICACION DEL KIOSKO (newTab: true)
-      { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción y escaneo de documentos.', iconClass: 'ph-duotone ph-scan', href: 'kiosko.html', featured: true, newTab: true },
-      
+      { id: 'agenda', title: 'Red Sindical', desc: 'Consulta la agenda y biblioteca.', iconClass: 'ph-duotone ph-users-four', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true, newTab: true },
+      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Unificación de criterios.', iconClass: 'ph-duotone ph-shield-check', href: 'nucleo.html', featured: true, newTab: true },
+      { id: 'comite', title: 'Comité Seccional', desc: 'Equipo de la Planilla Azul.', iconClass: 'ph-duotone ph-users-three', href: 'comite.html', newTab: true },
+      { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción de documentos.', iconClass: 'ph-duotone ph-scan', href: 'kiosko.html', featured: true, newTab: true },
       { id: 'denuncias', title: 'Gestor de Escritos', desc: 'Redacción asistida por IA.', iconClass: 'ph-duotone ph-signature', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
       { id: 'directorio', title: 'Directorio', desc: 'Contactos y delegados.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
       { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de derechos.', iconClass: 'ph-duotone ph-calculator', iframe: 'prestaciones.html' },
-      { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga tus comprobantes de pago.', iconClass: 'ph-duotone ph-identification-card', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/', secure: true },
-      { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Accede a tu cuenta institucional.', iconClass: 'ph-duotone ph-user-circle', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true }
+      { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga de comprobantes.', iconClass: 'ph-duotone ph-identification-card', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/', secure: true },
+      { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Cuenta institucional.', iconClass: 'ph-duotone ph-user-circle', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true }
     ];
 
     const SInOS = {
@@ -182,25 +173,14 @@
         this.renderTiles();
         this.runSecurityBoot(); 
         this.tickClock(); setInterval(() => this.tickClock(), 1000);
-        window.addEventListener('resize', () => {
-          if(!document.getElementById('app').classList.contains('hide') && document.getElementById('app-title').textContent === 'Noticias') this.renderFacebook();
-        });
       },
       
       tickClock() { document.getElementById('clock').textContent = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }); },
       
       runSecurityBoot() {
-        const messages = [
-          "Verificando integridad del sistema...",
-          "Estableciendo conexión encriptada TLS...",
-          "Cargando módulos de privacidad end-to-end...",
-          "Validando firmas de seguridad institucionales...",
-          "Entorno de trabajo seguro habilitado."
-        ];
-        
+        const messages = ["Verificando integridad...", "Conexión TLS...", "Privacidad habilitada...", "Entorno Seguro."];
         const statusEl = document.getElementById('security-status');
         let currentMsg = 0;
-
         const bootInterval = setInterval(() => {
           if (currentMsg < messages.length) {
             statusEl.style.opacity = '0'; 
@@ -232,7 +212,6 @@
         APPS.forEach(a => {
           const b = document.createElement('div');
           b.className = `tile ${a.featured ? 'featured' : ''}`;
-          
           b.onclick = () => {
             const url = a.href || a.iframe;
             if (a.newTab || (url && url.includes('imss.gob.mx'))) {
@@ -242,19 +221,10 @@
             }
           };
           
-          let badgesHTML = '';
-          if (a.ia) badgesHTML += `<div class="badge-ia"><i class="ph-bold ph-sparkle"></i> IA</div>`;
-          if (a.secure) badgesHTML += `<div class="badge-secure-app" title="Conexión Directa y Segura"><i class="ph-bold ph-lock-key"></i></div>`;
-          
+          let badgesHTML = a.ia ? `<div class="badge-ia"><i class="ph-bold ph-sparkle"></i> IA</div>` : '';
           b.innerHTML = `${badgesHTML}<i class="${a.iconClass} tile-icon-integrated"></i><h3>${a.title}</h3><p>${a.desc}</p>`;
           wrap.appendChild(b);
         });
-      },
-      
-      renderFacebook() {
-        const int = document.getElementById('app-internal');
-        int.innerHTML = `<div class="fb-feed-container"><div class="fb-page" data-href="https://www.facebook.com/profile.php?id=100063446307036" data-tabs="timeline" data-width="${int.offsetWidth}" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"></div></div>`;
-        if (window.FB) FB.XFBML.parse(int);
       },
       
       openApp(id) {
@@ -262,30 +232,20 @@
         document.getElementById('home').classList.add('hide');
         document.getElementById('app').classList.remove('hide');
         
-        let secureTitleIcon = app.secure ? '<i class="ph-fill ph-lock-key" style="color: var(--success); margin-left: 8px; font-size: 16px;" title="Conexión Segura"></i>' : '';
-        document.getElementById('app-title').innerHTML = app.title + secureTitleIcon;
-        
+        document.getElementById('app-title').textContent = app.title;
         document.getElementById('app-desc').textContent = app.desc;
         document.getElementById('app-ic').innerHTML = `<i class="${app.iconClass}"></i>`;
         
         const ifr = document.getElementById('app-iframe');
         const int = document.getElementById('app-internal');
-        
-        ifr.src = ''; 
         const targetUrl = app.iframe || app.href;
 
         if (app.id === 'noticias') {
           ifr.style.display = 'none'; int.style.display = 'block';
-          this.renderFacebook();
-        } 
-        else if (targetUrl) {
-          ifr.style.display = 'block'; 
-          ifr.src = targetUrl; 
-          int.style.display = 'none';
-        } 
-        else {
-          ifr.style.display = 'none'; int.style.display = 'block';
-          int.innerHTML = `<div style="padding:40px; text-align:center;">Módulo en carga...</div>`;
+          int.innerHTML = `<div class="fb-page" data-href="https://www.facebook.com/profile.php?id=100063446307036" data-tabs="timeline" data-width="500" data-adapt-container-width="true"></div>`;
+          if (window.FB) FB.XFBML.parse(int);
+        } else {
+          ifr.style.display = 'block'; ifr.src = targetUrl; int.style.display = 'none';
         }
       },
       
