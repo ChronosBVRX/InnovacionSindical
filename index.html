@@ -17,7 +17,6 @@
       --panel-base: 46, 79, 119;
       --primary: #4da1a8; --primary-light: #7ad1d6;
       --success: #4ade80; 
-      --danger: #ef4444; /* Color para el botón cerrar */
       --text-main: #f0fdfa; --text-muted: #bce9eb;
       --ring: rgba(77, 161, 168, .35);
       --topbar: 64px; --radius: 16px;
@@ -60,27 +59,19 @@
 
     @media (max-width: 768px) { .wrap { padding: 20px 16px; } .brand { margin-bottom: 20px; gap: 10px; } .brand h1 { font-size: 22px; } .tiles { grid-template-columns: 1fr 1fr; gap: 12px; } .tile { min-height: 120px; padding: 16px; } .tile-icon-integrated { font-size: 32px; margin-bottom: 10px; } .tile h3 { font-size: 15px; margin: 0 0 4px 0; } .tile p { font-size: 11px; line-height: 1.3; } .badge-ia { top: 8px; right: 8px; padding: 3px 6px; font-size: 8px; } .badge-secure-app { top: 8px; left: 8px; font-size: 12px; padding: 3px; } .clock-container { padding: 4px 8px; font-size: 11px; } .secure-badge span { display: none; } }
     
-    .app-wrap { max-width: 1200px; margin: 0 auto; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; transition: all 0.3s ease; }
+    .app-wrap { max-width: 1200px; margin: 0 auto; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
     .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--ring); padding-bottom: 16px; }
     @media (max-width: 768px) { .app-wrap { padding: 12px; } .app-head { flex-direction: column; align-items: flex-start; gap: 12px; } .app-head > div:last-child { width: 100%; justify-content: space-between; } .btn { flex: 1; justify-content: center; } }
-    .app-body { flex: 1; background: rgba(21, 35, 54, 0.4); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative; transition: all 0.3s ease; }
+    .app-body { flex: 1; background: rgba(21, 35, 54, 0.4); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative; }
     .iframe { width: 100%; height: 100%; border: none; }
     .hide { display: none !important; }
     
-    /* MODIFICACIONES PANTALLA COMPLETA */
-    .fullscreen-mode .app-wrap { max-width: 100%; padding: 0; }
-    .fullscreen-mode .app-head { display: none; }
-    .fullscreen-mode .app-body { border-radius: 0; border: none; }
-
     .fb-feed-container { width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; background: rgba(0,0,0,0.1); }
     .fb-page, .fb-page span, .fb-page iframe { width: 100% !important; min-width: 100% !important; border-radius: 12px !important; filter: brightness(0.9) contrast(1.1); }
     
     .btn { background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring); color: var(--primary); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; }
     .btn:hover { background: rgba(77, 161, 168, .15); color: var(--primary-light); }
     
-    .btn-danger { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5; }
-    .btn-danger:hover { background: rgba(239, 68, 68, 0.25); color: #fecaca; border-color: rgba(239, 68, 68, 0.5); }
-
     .boot { position: fixed; inset: 0; display: grid; place-items: center; z-index: 100; background: radial-gradient(circle at center, #1b2e45 0%, #0a141d 100%); transition: opacity 0.6s ease; }
     .logo-boot { width: 100px; height: 100px; border-radius: 22px; border: 1px solid var(--ring); overflow: hidden; margin-bottom: 20px; box-shadow: 0 0 30px rgba(77,161,168,0.2); }
     .logo-boot img { width: 100%; height: 100%; object-fit: cover; }
@@ -117,17 +108,11 @@
       <div><span>Plataforma</span> Sindical CG</div>
     </div>
     
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <button id="btn-top-close" class="btn btn-danger hide" onclick="SInOS.closeApp()">
-        <i class="ph-bold ph-x"></i> <span class="hide-mobile">Cerrar Módulo</span>
-      </button>
-
-      <div class="clock-container">
-        <div class="secure-badge" title="Conexión Encriptada">
-          <i class="ph-fill ph-lock-key"></i> <span>Seguro</span>
-        </div>
-        <div id="clock">--:--</div>
+    <div class="clock-container">
+      <div class="secure-badge" title="Conexión Encriptada">
+        <i class="ph-fill ph-lock-key"></i> <span>Seguro</span>
       </div>
+      <div id="clock">--:--</div>
     </div>
   </div>
 
@@ -176,9 +161,9 @@
       { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-brain', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-newspaper-clipping' },
       
-      // MÓDULOS EN PANTALLA COMPLETA (Se añadió la propiedad "fullscreen: true")
-      { id: 'agenda', title: 'Red Sindical', desc: 'Consulta tu lugar, ve la agenda, eventos sindicales, biblioteca y más...', iconClass: 'ph-duotone ph-users-four', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true, fullscreen: true },
-      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Unificación de criterios delegacionales.', iconClass: 'ph-duotone ph-shield-check', iframe: 'nucleo.html', featured: true, fullscreen: true },
+      // Módulos configurados para abrir en pestaña nueva (newTab: true)
+      { id: 'agenda', title: 'Red Sindical', desc: 'Consulta tu lugar, ve la agenda, eventos sindicales, biblioteca y más...', iconClass: 'ph-duotone ph-users-four', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true, newTab: true },
+      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Unificación de criterios delegacionales.', iconClass: 'ph-duotone ph-shield-check', href: 'nucleo.html', featured: true, newTab: true },
       
       { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción y escaneo de documentos.', iconClass: 'ph-duotone ph-scan', href: 'kiosko.html', featured: true },
       { id: 'denuncias', title: 'Gestor de Escritos', desc: 'Redacción asistida por IA.', iconClass: 'ph-duotone ph-signature', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
@@ -247,7 +232,8 @@
           
           b.onclick = () => {
             const url = a.href || a.iframe;
-            if (url && url.includes('imss.gob.mx')) {
+            // Evaluamos si tiene la propiedad newTab o si es del IMSS para abrir en pestaña nueva
+            if (a.newTab || (url && url.includes('imss.gob.mx'))) {
               window.open(url, '_blank', 'noopener,noreferrer');
             } else {
               this.openApp(a.id);
@@ -271,21 +257,8 @@
       
       openApp(id) {
         const app = APPS.find(x => x.id === id);
-        const appSection = document.getElementById('app');
-        const btnTopClose = document.getElementById('btn-top-close');
-
-        // Mostrar la vista de la app
         document.getElementById('home').classList.add('hide');
-        appSection.classList.remove('hide');
-        
-        // --- NUEVA LÓGICA DE PANTALLA COMPLETA ---
-        if (app.fullscreen) {
-          appSection.classList.add('fullscreen-mode');
-          btnTopClose.classList.remove('hide'); // Mostrar el botón cerrar arriba
-        } else {
-          appSection.classList.remove('fullscreen-mode');
-          btnTopClose.classList.add('hide'); // Ocultar el botón cerrar arriba
-        }
+        document.getElementById('app').classList.remove('hide');
         
         let secureTitleIcon = app.secure ? '<i class="ph-fill ph-lock-key" style="color: var(--success); margin-left: 8px; font-size: 16px;" title="Conexión Segura"></i>' : '';
         document.getElementById('app-title').innerHTML = app.title + secureTitleIcon;
@@ -318,12 +291,7 @@
         document.getElementById('app').classList.add('hide'); 
         document.getElementById('home').classList.remove('hide'); 
         document.getElementById('app-iframe').src = ''; 
-        
-        // Limpiar estilos de pantalla completa al salir
-        document.getElementById('app').classList.remove('fullscreen-mode');
-        document.getElementById('btn-top-close').classList.add('hide');
       },
-      
       closeApp() { this.goHome(); }
     };
     
