@@ -161,13 +161,14 @@
       { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-brain', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-newspaper-clipping' },
       
-      // Módulos configurados para abrir en pestaña nueva (newTab: true)
+      // Módulos en pestaña nueva
       { id: 'agenda', title: 'Red Sindical', desc: 'Consulta tu lugar, ve la agenda, eventos sindicales, biblioteca y más...', iconClass: 'ph-duotone ph-users-four', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true, newTab: true },
       { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Unificación de criterios delegacionales.', iconClass: 'ph-duotone ph-shield-check', href: 'nucleo.html', featured: true, newTab: true },
+      // ¡AQUÍ ESTÁ COMITÉ SECCIONAL ACTUALIZADO!
+      { id: 'comite', title: 'Comité Seccional', desc: 'Conoce al nuevo equipo de la Planilla Azul.', iconClass: 'ph-duotone ph-users-three', href: 'comite.html', newTab: true },
       
       { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción y escaneo de documentos.', iconClass: 'ph-duotone ph-scan', href: 'kiosko.html', featured: true },
       { id: 'denuncias', title: 'Gestor de Escritos', desc: 'Redacción asistida por IA.', iconClass: 'ph-duotone ph-signature', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
-      { id: 'comite', title: 'Comité Seccional', desc: 'Conoce al nuevo equipo de la Planilla Azul.', iconClass: 'ph-duotone ph-users-three', iframe: 'comite.html' },
       { id: 'directorio', title: 'Directorio', desc: 'Contactos y delegados.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
       { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de derechos.', iconClass: 'ph-duotone ph-calculator', iframe: 'prestaciones.html' },
       { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga tus comprobantes de pago.', iconClass: 'ph-duotone ph-identification-card', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/', secure: true },
@@ -232,7 +233,6 @@
           
           b.onclick = () => {
             const url = a.href || a.iframe;
-            // Evaluamos si tiene la propiedad newTab o si es del IMSS para abrir en pestaña nueva
             if (a.newTab || (url && url.includes('imss.gob.mx'))) {
               window.open(url, '_blank', 'noopener,noreferrer');
             } else {
