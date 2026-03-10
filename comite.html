@@ -60,12 +60,16 @@
       border-bottom: 1px solid var(--glass-border); z-index: 100;
     }
 
+    /* BOTÓN REGRESAR MEJORADO */
     .nav-btn {
-      background: transparent; border: none; color: var(--primary-light); font-size: 24px;
-      cursor: pointer; display: flex; align-items: center; padding: 8px; border-radius: 8px;
-      transition: background 0.2s;
+      background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(96, 165, 250, 0.3); 
+      color: var(--primary-light); font-size: 14px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; gap: 6px; 
+      padding: 6px 14px; border-radius: 8px; font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
     }
-    .nav-btn:hover { background: rgba(59, 130, 246, 0.15); }
+    .nav-btn i { font-size: 18px; }
+    .nav-btn:hover { background: rgba(59, 130, 246, 0.25); border-color: rgba(96, 165, 250, 0.5); color: #fff; }
 
     .badge-campana {
       background: linear-gradient(135deg, var(--primary), #2563eb);
@@ -246,6 +250,7 @@
       
       .action-text { font-size: 10px; padding: 5px 10px; }
       .card-description { font-size: 12px; }
+      .nav-btn span { display: none; } /* Oculta la palabra "Regresar" en móvil para ahorrar espacio */
     }
   </style>
 </head>
@@ -255,8 +260,8 @@
 
   <header class="topbar">
     <div style="display:flex; align-items:center; gap:12px;">
-      <button class="nav-btn" onclick="history.back()" title="Regresar">
-        <i class="ph-bold ph-arrow-left"></i>
+      <button class="nav-btn" onclick="window.close(); window.location.href='index.html';" title="Regresar al inicio">
+        <i class="ph-bold ph-arrow-left"></i> <span>Regresar</span>
       </button>
       <div class="badge-campana">
         <i class="ph-bold ph-check-circle" style="margin-right: 4px;"></i> Proyecto Azul
@@ -303,8 +308,6 @@
     const $controls = document.getElementById('controlsSection');
 
     // === LÓGICA DE DESBLOQUEO ===
-    // Configura aquí la fecha y hora exacta en la que quieres que se desbloquee (Formato: AAAA-MM-DDT00:00:00)
-    // Actualmente configurado para el Jueves 12 de Marzo de 2026 a la medianoche.
     const unlockDate = new Date('2026-03-12T00:00:00').getTime(); 
     const now = new Date().getTime();
 
@@ -322,14 +325,13 @@
         </div>
       `;
 
-      // Contador en tiempo real
       const countdownInterval = setInterval(() => {
         const currentTime = new Date().getTime();
         const distance = unlockDate - currentTime;
 
         if (distance < 0) {
           clearInterval(countdownInterval);
-          location.reload(); // Recarga la página automáticamente cuando llegue a cero
+          location.reload(); 
         } else {
           const days = Math.floor(distance / (1000 * 60 * 60 * 24));
           const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -342,13 +344,12 @@
       }, 1000);
 
     } else {
-      // ESTADO DESBLOQUEADO (Se muestra normal)
+      // ESTADO DESBLOQUEADO
       fetchComite();
       $search.addEventListener('input', applyFilters);
       $area.addEventListener('change', applyFilters);
     }
 
-    // Cargar desde Supabase
     async function fetchComite() {
       $results.innerHTML = '<div class="empty-state"><h3>Cargando estructura...</h3></div>';
       const { data, error } = await supabaseClient.from('comite').select('*').order('id', { ascending: true });
