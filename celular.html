@@ -12,6 +12,8 @@
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
   <style>
     :root {
@@ -50,7 +52,6 @@
 
     video { width: 100%; height: 100%; object-fit: contain; }
 
-    /* Guía visual de encuadre */
     .guideline-overlay {
       position: absolute; inset: 0; pointer-events: none; z-index: 5;
       display: flex; justify-content: center; align-items: center; overflow: hidden;
@@ -58,7 +59,7 @@
     .guideline-frame {
       border: 2px dashed var(--primary-light);
       border-radius: 8px;
-      box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.6); /* Oscurece el exterior */
+      box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.6);
       transition: all 0.3s ease;
     }
 
@@ -71,22 +72,22 @@
     
     #preview-img { max-width: 100%; max-height: 100%; display: block; object-fit: contain; }
 
+    /* CONTENEDOR PARA SUBIR PDF */
+    #pdf-upload-container {
+      flex: 1; display: none; flex-direction: column;
+      align-items: center; justify-content: center; padding: 30px; text-align: center;
+    }
+
     .overlay {
       position: absolute; inset: 0; z-index: 15;
-      display: none;
-      align-items: center; justify-content: center;
-      background: rgba(0,0,0,0.35);
-      backdrop-filter: blur(2px);
-      text-align: center;
-      padding: 24px;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.35); backdrop-filter: blur(2px);
+      text-align: center; padding: 24px;
     }
     .overlay .card {
-      width: min(420px, 92vw);
-      background: rgba(var(--panel-base), 0.85);
-      border: 1px solid var(--ring);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      width: min(420px, 92vw); background: rgba(var(--panel-base), 0.85);
+      border: 1px solid var(--ring); border-radius: 16px;
+      padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.35);
     }
     .overlay .title { font-weight: 700; color: var(--primary-light); margin: 0 0 6px 0; }
     .overlay .desc { margin: 0; color: var(--text-main); opacity: .9; font-size: 14px; }
@@ -106,7 +107,6 @@
     .btn-secondary { background: transparent; color: var(--primary-light); border: 1px solid var(--primary-light); margin-top: 12px; }
     .hide { display: none !important; }
 
-    /* Cropper theme */
     .cropper-view-box, .cropper-face { border-radius: 4px; }
     .cropper-line, .cropper-point { background-color: var(--primary-light) !important; }
   </style>
@@ -117,11 +117,11 @@
     <button class="btn-cerrar-app" onclick="cerrarAppMovil()">
       <i class="ph-bold ph-x"></i>
     </button>
-    <h2 id="instruccion-titulo">Iniciando cámara...</h2>
-    <p id="instruccion-sub">Encuadra el documento en un fondo oscuro</p>
+    <h2 id="instruccion-titulo">Cargando...</h2>
+    <p id="instruccion-sub">Preparando herramienta</p>
   </div>
 
-  <div class="camera-container">
+  <div class="camera-container" id="camera-section">
     <video id="video" autoplay playsinline></video>
 
     <div class="guideline-overlay" id="guideline">
@@ -140,7 +140,18 @@
     </div>
   </div>
 
-  <div class="controls">
+  <div id="pdf-upload-container">
+    <i class="ph-duotone ph-file-pdf" style="font-size: 80px; color: var(--primary-light); margin-bottom: 20px;"></i>
+    <h3 style="margin: 0 0 10px 0;">Sube tu archivo PDF</h3>
+    <p style="color: var(--text-muted); margin-bottom: 30px;">Recuerda que el documento no debe superar las 5 hojas permitidas.</p>
+    
+    <input type="file" id="pdf-file-input" accept="application/pdf" style="display: none;">
+    <button class="btn" style="width: 80%;" onclick="document.getElementById('pdf-file-input').click()">
+      <i class="ph-bold ph-upload-simple"></i> Seleccionar PDF
+    </button>
+  </div>
+
+  <div class="controls" id="controls-section">
     <button id="btn-capturar" class="btn" onclick="tomarFoto()">
       <i class="ph-bold ph-camera"></i> Tomar Foto
     </button>
@@ -156,9 +167,7 @@
   </div>
 
   <script>
-    // =============================
-    // CONFIGURACIÓN INICIAL
-    // =============================
+    // Configuración Inicial
     const API_URL = 'https://sinos-api.onrender.com';
     const socket = io(API_URL);
 
@@ -183,11 +192,10 @@
     let imagenFrente = null;
     let imagenReverso = null;
     let streamActual = null;
-
     let scanicScanner = null;
     let autoscanDataUrl = null; 
 
-    function setOverlay(show, titleText = "Procesando…", descText = "Detectando bordes y enderezando el documento.") {
+    function setOverlay(show, titleText = "Procesando…", descText = "Por favor espera.") {
       overlayTitle.innerText = titleText;
       overlayDesc.innerText = descText;
       overlay.style.display = show ? 'flex' : 'none';
@@ -195,22 +203,17 @@
 
     function actualizarTextos() {
       const guidelineFrame = document.querySelector('.guideline-frame');
-
       if (tipoScan === 'documento') {
         titulo.innerText = "Escáner de Documento";
         subtitulo.innerText = "Encuadra el documento en un fondo oscuro";
-        
-        // Formato vertical tipo hoja Carta (8.5 x 11)
         if (guidelineFrame) {
           guidelineFrame.style.aspectRatio = "8.5 / 11";
           guidelineFrame.style.width = "85%";
           guidelineFrame.style.maxWidth = "400px";
         }
-      } else {
+      } else if (tipoScan === 'identificacion') {
         titulo.innerText = pasoActual === 1 ? "Paso 1: Frente (INE)" : "Paso 2: Reverso (INE)";
         subtitulo.innerText = "Alinea la credencial dentro del recuadro";
-        
-        // Formato horizontal tipo tarjeta
         if (guidelineFrame) {
           guidelineFrame.style.aspectRatio = "85 / 54";
           guidelineFrame.style.width = "85%";
@@ -218,7 +221,70 @@
         }
       }
     }
-    actualizarTextos();
+
+    // =============================
+    // LÓGICA DE PDF (NUEVO)
+    // =============================
+    if (tipoScan === 'pdf') {
+      document.getElementById('camera-section').style.display = 'none';
+      document.getElementById('controls-section').style.display = 'none';
+      document.getElementById('pdf-upload-container').style.display = 'flex';
+      
+      titulo.innerText = "Enviar Documento PDF";
+      subtitulo.innerText = "Selecciona un archivo de tu dispositivo";
+
+      // Listener para el input file del PDF
+      document.getElementById('pdf-file-input').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.type !== 'application/pdf') {
+          alert('Por favor, selecciona un archivo en formato PDF.');
+          return;
+        }
+
+        setOverlay(true, "Analizando PDF...", "Verificando el número de hojas.");
+
+        // Leer como ArrayBuffer para usar pdf.js
+        const fileReaderBuffer = new FileReader();
+        fileReaderBuffer.onload = async function() {
+          const typedarray = new Uint8Array(this.result);
+          try {
+            // Cargar Worker de PDF.js
+            const pdfjsLib = window['pdfjs-dist/build/pdf'];
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+            const pdf = await pdfjsLib.getDocument(typedarray).promise;
+            
+            // Validación de las 5 hojas
+            if (pdf.numPages > 5) {
+              setOverlay(false);
+              alert(`El archivo tiene ${pdf.numPages} hojas. El máximo permitido es 5.`);
+              document.getElementById('pdf-file-input').value = ""; // Limpiar input
+              return;
+            }
+
+            // Si pasa la validación, lo leemos como Base64 para mandarlo al socket
+            const fileReaderBase64 = new FileReader();
+            fileReaderBase64.onload = () => {
+              enviarAlServidor(fileReaderBase64.result, true);
+            };
+            fileReaderBase64.readAsDataURL(file);
+
+          } catch (err) {
+            console.error(err);
+            setOverlay(false);
+            alert('Error al leer el PDF. Asegúrate de que no esté dañado.');
+          }
+        };
+        fileReaderBuffer.readAsArrayBuffer(file);
+      });
+
+    } else {
+      // Si no es PDF, iniciamos la cámara normal
+      actualizarTextos();
+      iniciarCamara();
+    }
 
     // =============================
     // INICIAR CÁMARA Y SCANIC
@@ -248,9 +314,8 @@
             const scanicModule = await import('https://unpkg.com/scanic/dist/scanic.js');
             scanicScanner = new scanicModule.Scanner();
             await scanicScanner.initialize();
-            console.log("✅ Módulo Scanic inicializado correctamente");
           } catch (err) {
-            console.error("❌ Error al cargar Scanic:", err);
+            console.error("Error al cargar Scanic:", err);
           }
         }
 
@@ -261,7 +326,6 @@
         titulo.innerText = "Cámara bloqueada";
       }
     }
-    iniciarCamara();
 
     function detenerCamara() {
       if (streamActual) {
@@ -278,18 +342,14 @@
       canvasFull.width = video.videoWidth;
       canvasFull.height = video.videoHeight;
       const ctx = canvasFull.getContext('2d', { willReadFrequently: false });
-      
-      // Filtro de contraste para resaltar bordes antes del escaneo automático
       ctx.filter = 'contrast(1.3) grayscale(20%)';
       ctx.drawImage(video, 0, 0, canvasFull.width, canvasFull.height);
       ctx.filter = 'none';
-      
       return canvasFull;
     }
 
     function abrirVistaPrevia(dataUrl, modo = "auto") {
       autoscanDataUrl = (modo === "auto") ? dataUrl : null;
-      
       cropArea.style.display = 'flex';
       previewImg.src = dataUrl;
       video.style.display = 'none';
@@ -309,8 +369,6 @@
 
     function iniciarCropperManual(dataUrl) {
       abrirVistaPrevia(dataUrl, "manual");
-      
-      // Si es documento permitimos recorte libre (NaN), si es ID forzamos proporción
       const proporcion = (tipoScan === 'identificacion') ? (85 / 54) : NaN;
 
       if (cropper) { cropper.destroy(); cropper = null; }
@@ -341,7 +399,7 @@
         const options = {
           mode: 'extract',
           maxProcessingDimension: 1200,
-          minArea: totalPixels * 0.20 // El documento debe ocupar al menos el 20% de la foto
+          minArea: totalPixels * 0.20
         };
 
         let result = await scanicScanner.scan(img, options);
@@ -420,8 +478,6 @@
         imgFinal = await mejorarComoScanner(autoscanDataUrl);
       } else {
         if (!cropper) return;
-        
-        // Si es documento, pedimos mayor resolución al recortar
         const canvasRecorte = cropper.getCroppedCanvas({
           width: (tipoScan === 'identificacion') ? 1200 : 1600
         });
@@ -453,8 +509,6 @@
 
       const canvasFinal = document.createElement('canvas');
       const ctxFinal = canvasFinal.getContext('2d');
-      
-      // Medidas para Hoja Tamaño Carta
       canvasFinal.width = 1275; 
       canvasFinal.height = 1650;
 
@@ -463,17 +517,13 @@
 
       const img = new Image();
       img.onload = () => {
-        // Escalar manteniendo proporción, dejando 50px de margen por lado
         const ratio = Math.min((canvasFinal.width - 100) / img.width, (canvasFinal.height - 100) / img.height);
         const newWidth = img.width * ratio;
         const newHeight = img.height * ratio;
-        
-        // Centrar en la hoja
         const x = (canvasFinal.width - newWidth) / 2;
         const y = (canvasFinal.height - newHeight) / 2;
 
         ctxFinal.drawImage(img, x, y, newWidth, newHeight);
-        
         enviarAlServidor(canvasFinal.toDataURL('image/jpeg', 0.85));
       };
       img.src = imgBase64;
@@ -507,21 +557,30 @@
       img1.src = imagenFrente;
     }
 
-    function enviarAlServidor(imagenBase64) {
+    function enviarAlServidor(archivoBase64, isPdf = false) {
       titulo.innerText = "¡Enviado!";
       subtitulo.innerText = "Revisa la pantalla del Kiosko.";
-      cropArea.style.display = 'flex';
-      previewImg.src = imagenBase64;
+      setOverlay(false);
 
-      socket.emit('enviar-documento', { sesion: idSesion, archivo: imagenBase64 });
+      if (!isPdf) {
+        cropArea.style.display = 'flex';
+        previewImg.src = archivoBase64;
+      } else {
+        // Interfaz de éxito para PDF en móvil
+        document.getElementById('pdf-upload-container').innerHTML = `
+          <i class="ph-duotone ph-check-circle" style="font-size: 80px; color: var(--primary-light); margin-bottom: 20px;"></i>
+          <h3 style="margin: 0 0 10px 0;">¡PDF Enviado!</h3>
+          <p style="color: var(--text-muted);">Continúa el proceso desde el Kiosko.</p>
+        `;
+      }
 
-      setTimeout(() => { alert("Enviado con éxito."); }, 500);
+      socket.emit('enviar-documento', { sesion: idSesion, archivo: archivoBase64 });
     }
 
     function cerrarAppMovil() {
       detenerCamara();
       try { window.close(); } catch (_) {}
-      document.body.innerHTML = '<div style="display:flex; height:100vh; align-items:center; justify-content:center; text-align:center; padding:20px;"><div><i class="ph-bold ph-check-circle" style="font-size:64px; color:var(--primary-light);"></i><h2>Escaneo Cancelado</h2></div></div>';
+      document.body.innerHTML = '<div style="display:flex; height:100vh; align-items:center; justify-content:center; text-align:center; padding:20px;"><div><i class="ph-bold ph-check-circle" style="font-size:64px; color:var(--primary-light);"></i><h2>Proceso Terminado</h2></div></div>';
     }
   </script>
 </body>
