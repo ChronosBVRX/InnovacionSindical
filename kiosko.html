@@ -200,16 +200,29 @@
     const API_URL = 'https://sinos-api.onrender.com';
     const socket = io(API_URL);
 
-    socket.on('documento-recibido', (archivoBase64) => {
+    socket.on('documento-recibido', (datosRecibidos) => {
+      // Nos aseguramos de extraer el texto base64, por si el servidor mandó un objeto
+      const archivoBase64 = typeof datosRecibidos === 'string' ? datosRecibidos : datosRecibidos.archivo;
+
       const imgPreview = document.getElementById('doc-image');
       const pdfPreview = document.getElementById('doc-pdf');
 
-      // Detectar si el archivo recibido es un PDF o una Imagen
-      if (archivoBase64.startsWith('data:application/pdf')) {
+      // Verificamos si es un PDF
+      if (archivoBase64 && archivoBase64.startsWith('data:application/pdf')) {
         imgPreview.style.display = 'none';
         pdfPreview.style.display = 'block';
-        pdfPreview.src = archivoBase64;
-      } else {
+        
+        // Convertimos el Base64 a un Blob URL para que el iframe lo cargue perfecto sin romperse
+        fetch(archivoBase64)
+          .then(res => res.blob())
+          .then(blob => {
+            const blobUrl = URL.createObjectURL(blob);
+            pdfPreview.src = blobUrl;
+          })
+          .catch(err => console.error("Error al generar vista previa del PDF:", err));
+
+      } else if (archivoBase64) {
+        // Es una imagen normal (identificación o escáner de cámara)
         pdfPreview.style.display = 'none';
         imgPreview.style.display = 'block';
         imgPreview.src = archivoBase64;
@@ -247,15 +260,15 @@
     function imprimirDocumento() {
       const pdfPreview = document.getElementById('doc-pdf');
       
-      // Si es PDF, intentamos imprimir el iframe directamente
       if (pdfPreview.style.display === 'block') {
         try {
+          // Disparamos la impresión directa del PDF en el iframe
           pdfPreview.contentWindow.print();
         } catch (e) {
-          window.print(); // Fallback
+          window.print();
         }
       } else {
-        window.print(); // Impresión normal para imágenes
+        window.print();
       }
     }
 
