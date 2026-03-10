@@ -48,7 +48,7 @@
     }
     .btn-flotante:hover { background: rgba(77, 161, 168, 0.2); color: var(--primary-light); }
 
-    .container { width: 100%; max-width: 800px; padding: 40px; text-align: center; }
+    .container { width: 100%; max-width: 900px; padding: 40px; text-align: center; }
 
     .view { display: none; animation: fadeIn 0.5s ease forwards; }
     .view.active { display: block; }
@@ -58,7 +58,7 @@
     h1 { font-size: 36px; margin-bottom: 10px; font-weight: 700; }
     p.subtitle { color: var(--text-muted); font-size: 18px; margin-bottom: 40px; }
 
-    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
     
     .card-btn {
       background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--ring);
@@ -72,8 +72,8 @@
     }
     
     .card-btn i { font-size: 64px; color: var(--primary-light); }
-    .card-btn h3 { margin: 0; font-size: 22px; }
-    .card-btn p { margin: 0; font-size: 14px; color: var(--text-muted); }
+    .card-btn h3 { margin: 0; font-size: 20px; }
+    .card-btn p { margin: 0; font-size: 13px; color: var(--text-muted); }
 
     .qr-box {
       background: white; padding: 20px; border-radius: var(--radius);
@@ -82,12 +82,15 @@
     
     .session-id { font-family: monospace; font-size: 24px; color: var(--primary-light); letter-spacing: 2px; margin-top: 10px; }
 
-    /* Estilo normal para el monitor */
-    .document-preview {
-      width: 100%; max-width: 500px; height: 600px; background: #fff;
+    /* Contenedor flexible para imagen o PDF */
+    .document-preview-container {
+      width: 100%; max-width: 600px; height: 500px; background: #fff;
       margin: 0 auto 20px; border-radius: 8px; border: 2px solid var(--ring);
-      object-fit: contain; display: block;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
     }
+
+    #doc-image { max-width: 100%; max-height: 100%; object-fit: contain; display: none; }
+    #doc-pdf { width: 100%; height: 100%; border: none; display: none; }
 
     .btn-action {
       background: var(--primary); color: #0b1f2a; border: none; padding: 16px 32px;
@@ -99,34 +102,25 @@
     .btn-secondary { background: transparent; color: var(--text-main); border: 1px solid var(--ring); }
     .btn-secondary:hover { background: rgba(255,255,255,0.1); }
 
-    /* =========================================
-       NUEVO: REGLAS ESTRICTAS PARA IMPRESIÓN
-       ========================================= */
     @media print {
       body * { visibility: hidden !important; }
       body { background: white !important; }
       
-      #doc-image { 
+      #doc-image, #doc-pdf { 
         visibility: visible !important; 
         position: absolute !important; 
         left: 0 !important; 
         top: 0 !important; 
-        
-        /* Forzar tamaño completo de la hoja */
         width: 100vw !important; 
         height: 100vh !important; 
         max-width: none !important; 
         max-height: none !important;
-        
-        /* Quitar bordes y márgenes del monitor */
         border: none !important; 
         margin: 0 !important; 
         padding: 0 !important; 
         border-radius: 0 !important;
-        
-        /* Ajustar sin deformar */
-        object-fit: contain !important; 
       }
+      #doc-image { object-fit: contain !important; }
       
       @page { margin: 0; size: auto; }
     }
@@ -142,26 +136,32 @@
     
     <div id="view-menu" class="view active">
       <h1>Kiosko de Recepción Digital</h1>
-      <p class="subtitle">Selecciona el tipo de documento que deseas escanear con tu celular</p>
+      <p class="subtitle">Selecciona el tipo de documento que deseas enviar con tu celular</p>
       
       <div class="options-grid">
         <div class="card-btn" onclick="iniciarSesion('identificacion')">
           <i class="ph-duotone ph-identification-card"></i>
-          <h3>Identificación (INE/DNI)</h3>
-          <p>Escanea el frente y reverso.<br>Se imprimirá en una sola hoja.</p>
+          <h3>Identificación</h3>
+          <p>Escanea frente y reverso.<br>Impresión en una hoja.</p>
         </div>
         
         <div class="card-btn" onclick="iniciarSesion('documento')">
           <i class="ph-duotone ph-file-text"></i>
-          <h3>Documento Normal</h3>
-          <p>Escanea un escrito o carta.<br>Página completa.</p>
+          <h3>Escáner Físico</h3>
+          <p>Toma foto a un escrito.<br>Página completa.</p>
+        </div>
+
+        <div class="card-btn" onclick="iniciarSesion('pdf')">
+          <i class="ph-duotone ph-file-pdf"></i>
+          <h3>Documento PDF</h3>
+          <p>Sube un archivo PDF.<br>Máximo 5 hojas.</p>
         </div>
       </div>
     </div>
 
     <div id="view-qr" class="view">
       <h1>Conecta tu Celular</h1>
-      <p class="subtitle">Apunta con la cámara de tu celular a este código para iniciar el escáner.</p>
+      <p class="subtitle">Apunta con la cámara de tu celular a este código para continuar.</p>
       
       <div class="qr-box" id="qrcode"></div>
       <div>ID de Sesión: <span id="session-display" class="session-id">----</span></div>
@@ -174,12 +174,15 @@
 
     <div id="view-result" class="view">
       <h1>¡Documento Recibido!</h1>
-      <p class="subtitle">Verifica que sea legible antes de imprimir.</p>
+      <p class="subtitle">Verifica que sea correcto antes de imprimir.</p>
       
-      <img id="doc-image" class="document-preview" src="" alt="Vista previa del documento">
+      <div class="document-preview-container">
+        <img id="doc-image" src="" alt="Vista previa del documento">
+        <iframe id="doc-pdf" src=""></iframe>
+      </div>
       
       <div style="display: flex; gap: 20px; justify-content: center;">
-        <button class="btn-action" onclick="window.print()">
+        <button class="btn-action" onclick="imprimirDocumento()">
           <i class="ph-bold ph-printer"></i> Imprimir Ahora
         </button>
         <button class="btn-action btn-secondary" onclick="mostrarVista('view-menu')">
@@ -197,8 +200,21 @@
     const API_URL = 'https://sinos-api.onrender.com';
     const socket = io(API_URL);
 
-    socket.on('documento-recibido', (imagenBase64) => {
-      document.getElementById('doc-image').src = imagenBase64;
+    socket.on('documento-recibido', (archivoBase64) => {
+      const imgPreview = document.getElementById('doc-image');
+      const pdfPreview = document.getElementById('doc-pdf');
+
+      // Detectar si el archivo recibido es un PDF o una Imagen
+      if (archivoBase64.startsWith('data:application/pdf')) {
+        imgPreview.style.display = 'none';
+        pdfPreview.style.display = 'block';
+        pdfPreview.src = archivoBase64;
+      } else {
+        pdfPreview.style.display = 'none';
+        imgPreview.style.display = 'block';
+        imgPreview.src = archivoBase64;
+      }
+      
       mostrarVista('view-result');
     });
 
@@ -226,6 +242,21 @@
 
       mostrarVista('view-qr');
       socket.emit('crear-sesion', sesionActual);
+    }
+
+    function imprimirDocumento() {
+      const pdfPreview = document.getElementById('doc-pdf');
+      
+      // Si es PDF, intentamos imprimir el iframe directamente
+      if (pdfPreview.style.display === 'block') {
+        try {
+          pdfPreview.contentWindow.print();
+        } catch (e) {
+          window.print(); // Fallback
+        }
+      } else {
+        window.print(); // Impresión normal para imágenes
+      }
     }
 
     function cerrarKiosko() {
