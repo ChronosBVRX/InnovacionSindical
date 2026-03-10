@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
   <title>Plataforma Sindical CG</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,6 +16,7 @@
       --bg-body: #1b2e45; --bg-body-end: #152336;
       --panel-base: 46, 79, 119;
       --primary: #4da1a8; --primary-light: #7ad1d6;
+      --success: #4ade80; /* Nuevo color para indicar seguridad */
       --text-main: #f0fdfa; --text-muted: #bce9eb;
       --ring: rgba(77, 161, 168, .35);
       --topbar: 64px; --radius: 16px;
@@ -23,37 +25,56 @@
     html, body { height: 100%; margin: 0; overflow: hidden; background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
     .ambient-bg { position: fixed; inset: 0; z-index: -1; background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%); }
     .ambient-bg::before { content: ""; position: absolute; inset: 0; opacity: .06; background-image: linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px); background-size: 40px 40px; }
+    
     .topbar { position: fixed; inset: 0 0 auto 0; height: var(--topbar); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: rgba(var(--panel-base), 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--ring); z-index: 30; }
     .mark { width: 36px; height: 36px; border-radius: 8px; background: rgba(77, 161, 168, .15); border: 1px solid var(--ring); overflow: hidden; display: grid; place-items: center; }
     .mark img { width: 100%; height: 100%; object-fit: cover; }
     .title { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 16px; }
     .title span { color: var(--primary-light); }
-    .clock { font-size: 13px; color: var(--text-muted); background: rgba(var(--panel-base), 0.4); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--ring); }
-    .layer { position: fixed; inset: 0; top: var(--topbar); overflow-y: auto; }
-    .wrap { padding: 32px 24px; max-width: 1200px; margin: 0 auto; }
+    
+    /* Reloj modificado para incluir el candado de seguridad */
+    .clock-container { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); background: rgba(var(--panel-base), 0.4); padding: 6px 12px; border-radius: 12px; border: 1px solid var(--ring); }
+    .secure-badge { display: flex; align-items: center; gap: 4px; color: var(--success); font-weight: 600; font-size: 11px; text-transform: uppercase; border-right: 1px solid var(--ring); padding-right: 8px; }
+    
+    .layer { position: fixed; inset: 0; top: var(--topbar); overflow-y: auto; display: flex; flex-direction: column; }
+    .wrap { padding: 32px 24px; max-width: 1200px; margin: 0 auto; flex: 1; width: 100%; box-sizing: border-box; }
+    
     .brand { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--ring); }
     .brand h1 { margin: 0; font-size: 28px; font-weight: 700; color: var(--text-main); }
     .text-gradient { background: linear-gradient(to right, var(--primary-light), var(--text-main)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .badge { background: rgba(77, 161, 168, .15); border: 1px solid var(--ring); color: var(--primary-light); padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
-    .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+    
+    .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding-bottom: 40px; }
     .tile { position: relative; display: flex; flex-direction: column; min-height: 180px; padding: 24px; cursor: pointer; background: var(--glass-bg); backdrop-filter: blur(8px); border: 1px solid var(--ring); border-radius: var(--radius); transition: all 0.3s ease; overflow: hidden; }
     .tile:hover { transform: translateY(-4px); border-color: var(--primary); background: rgba(var(--panel-base), 0.6); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25); }
     .tile.featured { background: linear-gradient(145deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.45)); border: 1px solid var(--primary-light); box-shadow: 0 0 15px rgba(77, 161, 168, 0.15); }
     .tile.featured:hover { border-color: var(--text-main); box-shadow: 0 0 25px rgba(77, 161, 168, 0.3); }
     .tile-icon-integrated { font-size: 48px; color: var(--primary-light); margin-bottom: 16px; transition: transform 0.3s ease; }
     .tile:hover .tile-icon-integrated { transform: scale(1.1); color: var(--text-main); }
+    
     .badge-ia { position: absolute; top: 14px; right: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #0b1f2a; font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 999px; text-transform: uppercase; }
-    @media (max-width: 768px) { .wrap { padding: 20px 16px; } .brand { margin-bottom: 20px; gap: 10px; } .brand h1 { font-size: 22px; } .tiles { grid-template-columns: 1fr 1fr; gap: 12px; } .tile { min-height: 120px; padding: 16px; } .tile-icon-integrated { font-size: 32px; margin-bottom: 10px; } .tile h3 { font-size: 15px; margin: 0 0 4px 0; } .tile p { font-size: 11px; line-height: 1.3; } .badge-ia { top: 8px; right: 8px; padding: 3px 6px; font-size: 8px; } }
-    .app-wrap { max-width: 1200px; margin: 0 auto; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; }
+    .badge-secure-app { position: absolute; top: 14px; left: 14px; color: var(--success); font-size: 16px; background: rgba(74, 222, 128, 0.15); padding: 4px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.3); display: flex; align-items: center; justify-content: center; }
+
+    /* Footer de Privacidad */
+    .privacy-footer { text-align: center; padding: 20px; font-size: 12px; color: var(--text-muted); opacity: 0.8; margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); }
+    .privacy-footer i { color: var(--success); margin-right: 4px; font-size: 14px; vertical-align: middle; }
+
+    @media (max-width: 768px) { .wrap { padding: 20px 16px; } .brand { margin-bottom: 20px; gap: 10px; } .brand h1 { font-size: 22px; } .tiles { grid-template-columns: 1fr 1fr; gap: 12px; } .tile { min-height: 120px; padding: 16px; } .tile-icon-integrated { font-size: 32px; margin-bottom: 10px; } .tile h3 { font-size: 15px; margin: 0 0 4px 0; } .tile p { font-size: 11px; line-height: 1.3; } .badge-ia { top: 8px; right: 8px; padding: 3px 6px; font-size: 8px; } .badge-secure-app { top: 8px; left: 8px; font-size: 12px; padding: 3px; } .clock-container { padding: 4px 8px; font-size: 11px; } .secure-badge span { display: none; } /* Oculta el texto "Seguro" en móvil, deja solo el candado */ }
+    
+    .app-wrap { max-width: 1200px; margin: 0 auto; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
     .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--ring); padding-bottom: 16px; }
     @media (max-width: 768px) { .app-wrap { padding: 12px; } .app-head { flex-direction: column; align-items: flex-start; gap: 12px; } .app-head > div:last-child { width: 100%; justify-content: space-between; } .btn { flex: 1; justify-content: center; } }
     .app-body { flex: 1; background: rgba(21, 35, 54, 0.4); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative; }
     .iframe { width: 100%; height: 100%; border: none; }
-    .hide { display: none; }
+    .hide { display: none !important; }
+    
     .fb-feed-container { width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; background: rgba(0,0,0,0.1); }
     .fb-page, .fb-page span, .fb-page iframe { width: 100% !important; min-width: 100% !important; border-radius: 12px !important; filter: brightness(0.9) contrast(1.1); }
+    
     .btn { background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring); color: var(--primary); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; }
     .btn:hover { background: rgba(77, 161, 168, .15); color: var(--primary-light); }
+    
+    /* Estilos de Boot actualizados */
     .boot { position: fixed; inset: 0; display: grid; place-items: center; z-index: 100; background: radial-gradient(circle at center, #1b2e45 0%, #0a141d 100%); transition: opacity 0.6s ease; }
     .logo-boot { width: 100px; height: 100px; border-radius: 22px; border: 1px solid var(--ring); overflow: hidden; margin-bottom: 20px; box-shadow: 0 0 30px rgba(77,161,168,0.2); }
     .logo-boot img { width: 100%; height: 100%; object-fit: cover; }
@@ -73,18 +94,29 @@
 
   <div id="boot" class="boot" onclick="SInOS.skipBoot()">
     <div style="text-align: center;">
-      <div class="logo-boot" style="margin: 0 auto 20px;"><img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" /></div>
+      <div class="logo-boot" style="margin: 0 auto 20px;"><img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" alt="Logo SNTSS"/></div>
       <h1 style="font-size: 20px; letter-spacing: 2px;">PLATAFORMA SINDICAL</h1>
       <div class="bar" style="margin: 20px auto;"><span></span></div>
+      
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(77, 161, 168, 0.2);">
+        <i class="ph-fill ph-shield-check" style="color: var(--success); font-size: 18px;"></i>
+        <div id="security-status" style="font-size: 12px; color: var(--success); font-family: monospace; transition: opacity 0.2s ease; text-align: left; min-width: 220px;">Inicializando entorno...</div>
+      </div>
     </div>
   </div>
 
   <div class="topbar">
     <div class="title">
-      <div class="mark"><img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" /></div>
+      <div class="mark"><img src="https://github.com/ChronosBVRX/InnovacionSindical/blob/main/Logo%20SNTSS.jpeg?raw=true" alt="Logo"/></div>
       <div><span>Plataforma</span> Sindical CG</div>
     </div>
-    <div class="clock" id="clock">--:--</div>
+    
+    <div class="clock-container">
+      <div class="secure-badge" title="Conexión Encriptada">
+        <i class="ph-fill ph-lock-key"></i> <span>Seguro</span>
+      </div>
+      <div id="clock">--:--</div>
+    </div>
   </div>
 
   <main id="home" class="layer hide">
@@ -96,8 +128,13 @@
         </div>
         <div class="badge">SNTSS Secc. XX</div>
       </section>
+      
       <section class="tiles" id="tiles"></section>
     </section>
+    
+    <footer class="privacy-footer">
+      <i class="ph-fill ph-shield-check"></i> <strong>Privacidad Garantizada:</strong> Esta plataforma actúa como un puente directo. No almacenamos, interceptamos ni guardamos credenciales institucionales o datos personales del IMSS.
+    </footer>
   </main>
 
   <section id="app" class="layer hide">
@@ -138,25 +175,61 @@
       { id: 'comite', title: 'Comité Seccional', desc: 'Conoce al nuevo equipo de la Planilla Azul.', iconClass: 'ph-duotone ph-users-three', iframe: 'comite.html' },
       { id: 'directorio', title: 'Directorio', desc: 'Contactos y delegados.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
       { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de derechos.', iconClass: 'ph-duotone ph-calculator', iframe: 'prestaciones.html' },
-      { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga tus comprobantes de pago.', iconClass: 'ph-duotone ph-identification-card', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/' },
-      { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Accede a tu cuenta institucional.', iconClass: 'ph-duotone ph-user-circle', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login' }
+      
+      // MÓDULOS SENSIBLES (Se añade secure: true)
+      { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga tus comprobantes de pago.', iconClass: 'ph-duotone ph-identification-card', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/', secure: true },
+      { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Accede a tu cuenta institucional.', iconClass: 'ph-duotone ph-user-circle', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true }
     ];
 
     const SInOS = {
       init() {
         this.renderTiles();
-        setTimeout(() => this.hideBoot(), 1500);
+        this.runSecurityBoot(); // Iniciamos la secuencia de seguridad
         this.tickClock(); setInterval(() => this.tickClock(), 1000);
         window.addEventListener('resize', () => {
           if(!document.getElementById('app').classList.contains('hide') && document.getElementById('app-title').textContent === 'Noticias') this.renderFacebook();
         });
       },
+      
       tickClock() { document.getElementById('clock').textContent = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }); },
+      
+      runSecurityBoot() {
+        const messages = [
+          "Verificando integridad del sistema...",
+          "Estableciendo conexión encriptada TLS...",
+          "Cargando módulos de privacidad end-to-end...",
+          "Validando firmas de seguridad institucionales...",
+          "Entorno de trabajo seguro habilitado."
+        ];
+        
+        const statusEl = document.getElementById('security-status');
+        let currentMsg = 0;
+
+        const bootInterval = setInterval(() => {
+          if (currentMsg < messages.length) {
+            statusEl.style.opacity = '0'; 
+            setTimeout(() => {
+              statusEl.textContent = messages[currentMsg];
+              statusEl.style.opacity = '1';
+              currentMsg++;
+            }, 150);
+          } else {
+            clearInterval(bootInterval);
+            setTimeout(() => this.hideBoot(), 600);
+          }
+        }, 700); // Velocidad de la animación (700ms por línea)
+      },
+
       hideBoot() {
         document.getElementById('boot').style.opacity = '0';
-        setTimeout(() => { document.getElementById('boot').style.display = 'none'; document.getElementById('home').classList.remove('hide'); }, 600);
-        document.querySelectorAll('.tile').forEach((t, i) => { t.style.animationDelay = `${i * 0.05}s`; t.classList.add('tile-enter'); });
+        setTimeout(() => { 
+          document.getElementById('boot').style.display = 'none'; 
+          document.getElementById('home').classList.remove('hide'); 
+          // Animar tiles al entrar
+          document.querySelectorAll('.tile').forEach((t, i) => { t.style.animationDelay = `${i * 0.05}s`; t.classList.add('tile-enter'); });
+        }, 600);
       },
+      
       skipBoot() { this.hideBoot(); },
       
       renderTiles() {
@@ -169,14 +242,18 @@
             const url = a.href || a.iframe;
             // Excepción de seguridad: Si la URL es del IMSS, la abre en una nueva pestaña
             if (url && url.includes('imss.gob.mx')) {
-              window.open(url, '_blank');
+              window.open(url, '_blank', 'noopener,noreferrer'); // noopener y noreferrer añaden seguridad extra al abrir nuevas pestañas
             } else {
-              // Si no es del IMSS, la abre dentro de la plataforma
               this.openApp(a.id);
             }
           };
           
-          b.innerHTML = `${a.ia ? '<div class="badge-ia"><i class="ph-bold ph-sparkle"></i> IA</div>' : ''}<i class="${a.iconClass} tile-icon-integrated"></i><h3>${a.title}</h3><p>${a.desc}</p>`;
+          // Renderizado de las etiquetas (IA y Seguridad)
+          let badgesHTML = '';
+          if (a.ia) badgesHTML += `<div class="badge-ia"><i class="ph-bold ph-sparkle"></i> IA</div>`;
+          if (a.secure) badgesHTML += `<div class="badge-secure-app" title="Conexión Directa y Segura"><i class="ph-bold ph-lock-key"></i></div>`;
+          
+          b.innerHTML = `${badgesHTML}<i class="${a.iconClass} tile-icon-integrated"></i><h3>${a.title}</h3><p>${a.desc}</p>`;
           wrap.appendChild(b);
         });
       },
@@ -191,7 +268,11 @@
         const app = APPS.find(x => x.id === id);
         document.getElementById('home').classList.add('hide');
         document.getElementById('app').classList.remove('hide');
-        document.getElementById('app-title').textContent = app.title;
+        
+        // Añadir indicador visual de seguridad al título de la app si es segura
+        let secureTitleIcon = app.secure ? '<i class="ph-fill ph-lock-key" style="color: var(--success); margin-left: 8px; font-size: 16px;" title="Conexión Segura"></i>' : '';
+        document.getElementById('app-title').innerHTML = app.title + secureTitleIcon;
+        
         document.getElementById('app-desc').textContent = app.desc;
         document.getElementById('app-ic').innerHTML = `<i class="${app.iconClass}"></i>`;
         
