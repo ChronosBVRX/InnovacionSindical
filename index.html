@@ -3,12 +3,36 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+  <!-- CSP más estricta, adaptada a lo que ya usa la página -->
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' https://unpkg.com https://connect.facebook.net;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: https://raw.githubusercontent.com https://*.facebook.com https://*.fbcdn.net;
+      frame-src 'self' https://chronosbvrx.github.io https://trascendencia-sindical-7t85.onrender.com https://rh.imss.gob.mx https://tuperfil.imss.gob.mx https://www.facebook.com;
+      connect-src 'self' https://connect.facebook.net https://www.facebook.com https://raw.githubusercontent.com;
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      frame-ancestors 'self';
+      upgrade-insecure-requests;
+    "
+  />
+
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>Plataforma Sindical CG</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <!-- Idealmente autohospedado en tu mismo dominio/repositorio -->
+  <script defer src="https://unpkg.com/@phosphor-icons/web"></script>
+
   <link rel="icon" href="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" />
 
   <style>
@@ -16,88 +40,429 @@
       --bg-body: #1b2e45; --bg-body-end: #152336;
       --panel-base: 46, 79, 119;
       --primary: #4da1a8; --primary-light: #7ad1d6;
-      --success: #4ade80; 
+      --success: #4ade80;
       --text-main: #f0fdfa; --text-muted: #bce9eb;
       --ring: rgba(77, 161, 168, .35);
       --topbar: 64px; --radius: 16px;
       --glass-bg: rgba(var(--panel-base), 0.35);
     }
-    
-    html, body { height: 100%; margin: 0; overflow: hidden; background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
-    .ambient-bg { position: fixed; inset: 0; z-index: -1; background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%); }
-    .ambient-bg::before { content: ""; position: absolute; inset: 0; opacity: .06; background-image: linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px); background-size: 40px 40px; }
-    
-    .topbar { position: fixed; inset: 0 0 auto 0; height: var(--topbar); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: rgba(var(--panel-base), 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--ring); z-index: 30; }
-    .mark { width: 36px; height: 36px; border-radius: 8px; background: rgba(77, 161, 168, .15); border: 1px solid var(--ring); overflow: hidden; display: grid; place-items: center; }
-    .mark img { width: 100%; height: 100%; object-fit: cover; }
-    .title { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 16px; }
-    .title span { color: var(--primary-light); }
-    
-    .clock-container { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); background: rgba(var(--panel-base), 0.4); padding: 6px 12px; border-radius: 12px; border: 1px solid var(--ring); }
-    .secure-badge { display: flex; align-items: center; gap: 4px; color: var(--success); font-weight: 600; font-size: 11px; text-transform: uppercase; border-right: 1px solid var(--ring); padding-right: 8px; }
-    
-    /* Contenedor Principal (Home) */
-    .layer { position: fixed; inset: 0; top: var(--topbar); overflow-y: auto; display: flex; flex-direction: column; }
-    .wrap { padding: 32px 24px; max-width: 1200px; margin: 0 auto; flex: 1; width: 100%; box-sizing: border-box; }
-    
-    .brand { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--ring); }
-    .brand h1 { margin: 0; font-size: 28px; font-weight: 700; color: var(--text-main); }
-    .text-gradient { background: linear-gradient(to right, var(--primary-light), var(--text-main)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .badge { background: rgba(77, 161, 168, .15); border: 1px solid var(--ring); color: var(--primary-light); padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
-    
-    .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding-bottom: 20px; }
-    .tile { position: relative; display: flex; flex-direction: column; min-height: 180px; padding: 24px; cursor: pointer; background: var(--glass-bg); backdrop-filter: blur(8px); border: 1px solid var(--ring); border-radius: var(--radius); transition: all 0.3s ease; overflow: hidden; }
-    .tile:hover { transform: translateY(-4px); border-color: var(--primary); background: rgba(var(--panel-base), 0.6); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25); }
-    .tile.featured { background: linear-gradient(145deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.45)); border: 1px solid var(--primary-light); box-shadow: 0 0 15px rgba(77, 161, 168, 0.15); }
-    .tile-icon-integrated { font-size: 48px; color: var(--primary-light); margin-bottom: 16px; transition: transform 0.3s ease; }
-    
-    /* Nueva Sección de Seguridad */
-    .security-section { margin-top: 20px; padding-top: 32px; padding-bottom: 40px; border-top: 1px solid var(--ring); }
-    .security-header { margin-bottom: 24px; }
-    .security-header h2 { font-size: 20px; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin: 0 0 8px 0; }
-    .security-header h2 i { color: var(--success); }
-    .security-header p { color: var(--text-muted); font-size: 14px; margin: 0; line-height: 1.6; max-width: 850px; }
-    .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-    .tech-card { background: rgba(var(--panel-base), 0.25); border: 1px solid var(--ring); border-radius: 12px; padding: 16px; display: flex; gap: 16px; align-items: flex-start; transition: all 0.3s ease; }
-    .tech-card:hover { border-color: var(--primary-light); background: rgba(var(--panel-base), 0.4); }
-    .tech-icon { font-size: 32px; color: var(--primary-light); background: rgba(77, 161, 168, 0.1); padding: 8px; border-radius: 8px; }
-    .tech-info h4 { margin: 0 0 6px 0; font-size: 15px; color: var(--text-main); }
-    .tech-info p { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.4; }
 
-    /* --- SECCIÓN DEL IFRAME --- */
-    .app-wrap { width: 100%; max-width: 100%; margin: 0; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
-    .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--ring); padding-bottom: 12px; }
-    .app-body { flex: 1; background: rgba(21, 35, 54, 0.4); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative; width: 100%; }
-    .iframe { width: 100%; height: 100%; border: none; display: block; }
-    
-    .btn { background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring); color: var(--primary); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; }
-    .btn:hover { background: rgba(77, 161, 168, .15); color: var(--primary-light); }
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%);
+    }
+
+    .ambient-bg::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .06;
+      background-image:
+        linear-gradient(to right, var(--primary) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--primary) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: var(--topbar);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(var(--panel-base), 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--ring);
+      z-index: 30;
+    }
+
+    .mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(77, 161, 168, .15);
+      border: 1px solid var(--ring);
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
+
+    .mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .title span { color: var(--primary-light); }
+
+    .clock-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      background: rgba(var(--panel-base), 0.4);
+      padding: 6px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--ring);
+    }
+
+    .secure-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--success);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      border-right: 1px solid var(--ring);
+      padding-right: 8px;
+    }
+
+    .layer {
+      position: fixed;
+      inset: 0;
+      top: var(--topbar);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wrap {
+      padding: 32px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex: 1;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .brand {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--ring);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .text-gradient {
+      background: linear-gradient(to right, var(--primary-light), var(--text-main));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .badge {
+      background: rgba(77, 161, 168, .15);
+      border: 1px solid var(--ring);
+      color: var(--primary-light);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .tiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      padding-bottom: 20px;
+    }
+
+    .tile {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 180px;
+      padding: 24px;
+      cursor: pointer;
+      background: var(--glass-bg);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--ring);
+      border-radius: var(--radius);
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .tile:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      background: rgba(var(--panel-base), 0.6);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .tile.featured {
+      background: linear-gradient(145deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.45));
+      border: 1px solid var(--primary-light);
+      box-shadow: 0 0 15px rgba(77, 161, 168, 0.15);
+    }
+
+    .tile-icon-integrated {
+      font-size: 48px;
+      color: var(--primary-light);
+      margin-bottom: 16px;
+      transition: transform 0.3s ease;
+    }
+
+    .tile h3 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+    }
+
+    .tile p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .badge-ia {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary-light);
+      background: rgba(77, 161, 168, .14);
+      border: 1px solid var(--ring);
+    }
+
+    .security-section {
+      margin-top: 20px;
+      padding-top: 32px;
+      padding-bottom: 40px;
+      border-top: 1px solid var(--ring);
+    }
+
+    .security-header { margin-bottom: 24px; }
+
+    .security-header h2 {
+      font-size: 20px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 8px 0;
+    }
+
+    .security-header h2 i { color: var(--success); }
+
+    .security-header p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin: 0;
+      line-height: 1.6;
+      max-width: 850px;
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .tech-card {
+      background: rgba(var(--panel-base), 0.25);
+      border: 1px solid var(--ring);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      transition: all 0.3s ease;
+    }
+
+    .tech-card:hover {
+      border-color: var(--primary-light);
+      background: rgba(var(--panel-base), 0.4);
+    }
+
+    .tech-icon {
+      font-size: 32px;
+      color: var(--primary-light);
+      background: rgba(77, 161, 168, 0.1);
+      padding: 8px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .tech-info h4 {
+      margin: 0 0 6px 0;
+      font-size: 15px;
+      color: var(--text-main);
+    }
+
+    .tech-info p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .app-wrap {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 16px 24px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+
+    .app-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--ring);
+      padding-bottom: 12px;
+    }
+
+    .app-body {
+      flex: 1;
+      background: rgba(21, 35, 54, 0.4);
+      border-radius: 12px;
+      border: 1px solid var(--ring);
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+    }
+
+    .iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .btn {
+      background: rgba(var(--panel-base), 0.3);
+      border: 1px solid var(--ring);
+      color: var(--primary);
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      background: rgba(77, 161, 168, .15);
+      color: var(--primary-light);
+    }
 
     .hide { display: none !important; }
 
-    /* Boot Screen */
-    .boot { position: fixed; inset: 0; display: grid; place-items: center; z-index: 100; background: radial-gradient(circle at center, #1b2e45 0%, #0a141d 100%); transition: opacity 0.6s ease; }
-    .logo-boot { width: 100px; height: 100px; border-radius: 22px; border: 1px solid var(--ring); overflow: hidden; margin-bottom: 20px; box-shadow: 0 0 30px rgba(77,161,168,0.2); }
-    .logo-boot img { width: 100%; height: 100%; object-fit: cover; }
-    .bar { height: 3px; width: 200px; background: rgba(255,255,255,0.05); overflow: hidden; position: relative; border-radius: 10px; }
-    .bar span { display: block; height: 100%; width: 30%; background: var(--primary); position: absolute; animation: load 2s infinite; }
+    .boot {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 100;
+      background: radial-gradient(circle at center, #1b2e45 0%, #0a141d 100%);
+      transition: opacity 0.6s ease;
+    }
 
-    /* Responsive */
-    @media (max-width: 768px) { 
-      .wrap { padding: 20px 16px; } 
-      .app-wrap { padding: 8px; } 
+    .logo-boot {
+      width: 100px;
+      height: 100px;
+      border-radius: 22px;
+      border: 1px solid var(--ring);
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 0 30px rgba(77,161,168,0.2);
+    }
+
+    .logo-boot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .bar {
+      height: 3px;
+      width: 200px;
+      background: rgba(255,255,255,0.05);
+      overflow: hidden;
+      position: relative;
+      border-radius: 10px;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: 30%;
+      background: var(--primary);
+      position: absolute;
+      animation: load 2s infinite;
+    }
+
+    @media (max-width: 768px) {
+      .wrap { padding: 20px 16px; }
+      .app-wrap { padding: 8px; }
       .app-head h2 { font-size: 16px; }
-      .app-head p { display: none; } 
-      .tiles { grid-template-columns: 1fr 1fr; gap: 12px; } 
+      .app-head p { display: none; }
+      .tiles { grid-template-columns: 1fr 1fr; gap: 12px; }
       .tile { min-height: 120px; padding: 16px; }
-      .clock-container { padding: 4px 8px; font-size: 11px; } 
+      .clock-container { padding: 4px 8px; font-size: 11px; }
       .secure-badge span { display: none; }
       .tech-grid { grid-template-columns: 1fr; }
     }
 
-    @keyframes load { 0% { left: -30%; } 100% { left: 100%; } }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .tile-enter { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+    @keyframes load {
+      0% { left: -30%; }
+      100% { left: 100%; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tile-enter {
+      animation: fadeUp 0.5s ease forwards;
+      opacity: 0;
+    }
   </style>
 </head>
 
@@ -109,7 +474,14 @@
 
   <div id="boot" class="boot" onclick="SInOS.skipBoot()">
     <div style="text-align: center;">
-      <div class="logo-boot" style="margin: 0 auto 20px;"><img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo SNTSS"/></div>
+      <div class="logo-boot" style="margin: 0 auto 20px;">
+        <img
+          src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg"
+          alt="Logo SNTSS"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
       <h1 style="font-size: 20px; letter-spacing: 2px;">PLATAFORMA SINDICAL</h1>
       <div class="bar" style="margin: 20px auto;"><span></span></div>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(77, 161, 168, 0.2);">
@@ -121,11 +493,18 @@
 
   <div class="topbar">
     <div class="title">
-      <div class="mark"><img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo"/></div>
+      <div class="mark">
+        <img
+          src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg"
+          alt="Logo"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
       <div><span>Plataforma</span> Sindical CG</div>
     </div>
     <div class="clock-container">
-      <div class="secure-badge" title="Conexión Encriptada">
+      <div class="secure-badge" title="Conexión cifrada">
         <i class="ph-fill ph-lock-key"></i> <span>Seguro</span>
       </div>
       <div id="clock">--:--</div>
@@ -141,39 +520,45 @@
         </div>
         <div class="badge">SNTSS Secc. XX</div>
       </section>
-      
+
       <section class="tiles" id="tiles"></section>
 
       <section class="security-section">
         <div class="security-header">
-          <h2><i class="ph-fill ph-shield-check"></i> Infraestructura y Protocolos de Seguridad</h2>
-          <p>Compañeros, la protección de nuestra información sindical es prioridad. Esta plataforma opera bajo estrictos protocolos de encriptación y está respaldada por empresas líderes en tecnología global para garantizar total privacidad, estabilidad y certeza a todos los usuarios.</p>
+          <h2><i class="ph-fill ph-shield-check"></i> Infraestructura y Controles de Seguridad</h2>
+          <p>
+            Compañeros, la protección de la información es prioridad. Esta plataforma opera con conexión cifrada mediante HTTPS/TLS,
+            control de accesos, aislamiento entre módulos y buenas prácticas de despliegue para fortalecer la privacidad, la estabilidad
+            y la confiabilidad del servicio.
+          </p>
         </div>
+
         <div class="tech-grid">
           <div class="tech-card">
             <div class="tech-icon"><i class="ph-duotone ph-server"></i></div>
             <div class="tech-info">
-              <h4>Infraestructura Microsoft</h4>
-              <p>Alojamiento blindado con monitoreo continuo de vulnerabilidades y alta disponibilidad garantizada por los servidores globales de Microsoft.</p>
+              <h4>Infraestructura en la nube</h4>
+              <p>Servicios desplegados sobre infraestructura moderna con alta disponibilidad, monitoreo operativo y actualización continua.</p>
             </div>
           </div>
+
           <div class="tech-card">
             <div class="tech-icon"><i class="ph-duotone ph-database"></i></div>
             <div class="tech-info">
-              <h4>Bases de Datos Supabase</h4>
-              <p>Gestión de datos con encriptación de extremo a extremo (E2E), estrictas políticas de privacidad (RLS) y autenticación segura.</p>
+              <h4>Base de datos con control de acceso</h4>
+              <p>Protección de datos mediante autenticación segura, reglas de acceso por roles y cifrado en tránsito.</p>
             </div>
           </div>
+
           <div class="tech-card">
             <div class="tech-icon"><i class="ph-duotone ph-cloud-check"></i></div>
             <div class="tech-info">
-              <h4>Despliegue Render</h4>
-              <p>Ejecución de nuestros servicios e Inteligencia Artificial bajo protocolos HTTPS y certificados SSL/TLS para una navegación 100% segura.</p>
+              <h4>Conexión segura</h4>
+              <p>Navegación sobre HTTPS con certificados TLS y restricciones de contenido para reducir riesgos de carga insegura.</p>
             </div>
           </div>
         </div>
       </section>
-
     </section>
   </main>
 
@@ -188,18 +573,39 @@
           </div>
         </div>
         <div style="display:flex; gap:8px;">
-          <button class="btn" onclick="SInOS.goHome()"><i class="ph-bold ph-house"></i></button>
-          <button class="btn" onclick="SInOS.closeApp()"><i class="ph-bold ph-x"></i></button>
+          <button class="btn" onclick="SInOS.goHome()" type="button" aria-label="Volver al inicio">
+            <i class="ph-bold ph-house"></i>
+          </button>
+          <button class="btn" onclick="SInOS.closeApp()" type="button" aria-label="Cerrar módulo">
+            <i class="ph-bold ph-x"></i>
+          </button>
         </div>
       </div>
+
       <div class="app-body">
-        <iframe id="app-iframe" class="iframe"></iframe>
+        <iframe
+          id="app-iframe"
+          class="iframe"
+          title="Módulo integrado"
+          referrerpolicy="no-referrer"
+          loading="lazy"
+          allowfullscreen
+        ></iframe>
         <div id="app-internal" style="height:100%; overflow:auto;"></div>
       </div>
     </div>
   </section>
 
   <script>
+    const SAFE_ORIGINS = new Set([
+      window.location.origin,
+      'https://chronosbvrx.github.io',
+      'https://trascendencia-sindical-7t85.onrender.com',
+      'https://rh.imss.gob.mx',
+      'https://tuperfil.imss.gob.mx',
+      'https://www.facebook.com'
+    ]);
+
     const APPS = [
       { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-brain', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-newspaper-clipping' },
@@ -217,19 +623,32 @@
     const SInOS = {
       init() {
         this.renderTiles();
-        this.runSecurityBoot(); 
-        this.tickClock(); setInterval(() => this.tickClock(), 1000);
+        this.runSecurityBoot();
+        this.tickClock();
+        setInterval(() => this.tickClock(), 1000);
       },
-      
-      tickClock() { document.getElementById('clock').textContent = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }); },
-      
+
+      tickClock() {
+        document.getElementById('clock').textContent = new Date().toLocaleTimeString('es-MX', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      },
+
       runSecurityBoot() {
-        const messages = ["Verificando integridad...", "Conexión TLS...", "Privacidad habilitada...", "Entorno Seguro."];
+        const messages = [
+          "Verificando integridad...",
+          "Conexión TLS...",
+          "Privacidad habilitada...",
+          "Entorno Seguro."
+        ];
+
         const statusEl = document.getElementById('security-status');
         let currentMsg = 0;
+
         const bootInterval = setInterval(() => {
           if (currentMsg < messages.length) {
-            statusEl.style.opacity = '0'; 
+            statusEl.style.opacity = '0';
             setTimeout(() => {
               statusEl.textContent = messages[currentMsg];
               statusEl.style.opacity = '1';
@@ -243,66 +662,210 @@
       },
 
       hideBoot() {
-        document.getElementById('boot').style.opacity = '0';
-        setTimeout(() => { 
-          document.getElementById('boot').style.display = 'none'; 
-          document.getElementById('home').classList.remove('hide'); 
-          document.querySelectorAll('.tile').forEach((t, i) => { t.style.animationDelay = `${i * 0.05}s`; t.classList.add('tile-enter'); });
+        const boot = document.getElementById('boot');
+        boot.style.opacity = '0';
+
+        setTimeout(() => {
+          boot.style.display = 'none';
+          document.getElementById('home').classList.remove('hide');
+          document.querySelectorAll('.tile').forEach((t, i) => {
+            t.style.animationDelay = `${i * 0.05}s`;
+            t.classList.add('tile-enter');
+          });
         }, 600);
       },
-      
-      skipBoot() { this.hideBoot(); },
-      
+
+      skipBoot() {
+        this.hideBoot();
+      },
+
+      isSafeUrl(url) {
+        try {
+          const parsed = new URL(url, window.location.href);
+
+          if (!['http:', 'https:'].includes(parsed.protocol)) {
+            return false;
+          }
+
+          return SAFE_ORIGINS.has(parsed.origin);
+        } catch {
+          return false;
+        }
+      },
+
+      openSafeExternal(url) {
+        if (!this.isSafeUrl(url)) {
+          console.warn('URL bloqueada por política de seguridad:', url);
+          alert('No se pudo abrir el módulo por una restricción de seguridad.');
+          return;
+        }
+
+        window.open(url, '_blank', 'noopener,noreferrer');
+      },
+
+      setIframeUrl(url) {
+        const ifr = document.getElementById('app-iframe');
+
+        if (!this.isSafeUrl(url)) {
+          console.warn('Iframe bloqueado por política de seguridad:', url);
+          alert('No se pudo cargar el módulo por una restricción de seguridad.');
+          ifr.removeAttribute('src');
+          return false;
+        }
+
+        ifr.src = new URL(url, window.location.href).href;
+        return true;
+      },
+
+      clearInternalContainer() {
+        const int = document.getElementById('app-internal');
+        while (int.firstChild) {
+          int.removeChild(int.firstChild);
+        }
+      },
+
       renderTiles() {
         const wrap = document.getElementById('tiles');
+        wrap.replaceChildren();
+
         APPS.forEach(a => {
-          const b = document.createElement('div');
-          b.className = `tile ${a.featured ? 'featured' : ''}`;
-          b.onclick = () => {
+          const tile = document.createElement('div');
+          tile.className = `tile ${a.featured ? 'featured' : ''}`;
+          tile.setAttribute('role', 'button');
+          tile.setAttribute('tabindex', '0');
+          tile.setAttribute('aria-label', `${a.title}. ${a.desc}`);
+
+          const activate = () => {
             const url = a.href || a.iframe;
+
             if (a.newTab || (url && url.includes('imss.gob.mx'))) {
-              window.open(url, '_blank', 'noopener,noreferrer');
+              this.openSafeExternal(url);
             } else {
               this.openApp(a.id);
             }
           };
-          
-          let badgesHTML = a.ia ? `<div class="badge-ia"><i class="ph-bold ph-sparkle"></i> IA</div>` : '';
-          b.innerHTML = `${badgesHTML}<i class="${a.iconClass} tile-icon-integrated"></i><h3>${a.title}</h3><p>${a.desc}</p>`;
-          wrap.appendChild(b);
+
+          tile.addEventListener('click', activate);
+          tile.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              activate();
+            }
+          });
+
+          if (a.ia) {
+            const badge = document.createElement('div');
+            badge.className = 'badge-ia';
+
+            const badgeIcon = document.createElement('i');
+            badgeIcon.className = 'ph-bold ph-sparkle';
+
+            const badgeText = document.createElement('span');
+            badgeText.textContent = 'IA';
+
+            badge.appendChild(badgeIcon);
+            badge.appendChild(badgeText);
+            tile.appendChild(badge);
+          }
+
+          const icon = document.createElement('i');
+          icon.className = `${a.iconClass} tile-icon-integrated`;
+
+          const title = document.createElement('h3');
+          title.textContent = a.title;
+
+          const desc = document.createElement('p');
+          desc.textContent = a.desc;
+
+          tile.appendChild(icon);
+          tile.appendChild(title);
+          tile.appendChild(desc);
+
+          wrap.appendChild(tile);
         });
       },
-      
-      openApp(id) {
-        const app = APPS.find(x => x.id === id);
-        document.getElementById('home').classList.add('hide');
-        document.getElementById('app').classList.remove('hide');
-        
+
+      setAppHeader(app) {
         document.getElementById('app-title').textContent = app.title;
         document.getElementById('app-desc').textContent = app.desc;
-        document.getElementById('app-ic').innerHTML = `<i class="${app.iconClass}"></i>`;
-        
+
+        const iconWrap = document.getElementById('app-ic');
+        iconWrap.replaceChildren();
+
+        const icon = document.createElement('i');
+        icon.className = app.iconClass;
+        iconWrap.appendChild(icon);
+      },
+
+      renderFacebookModule() {
+        const ifr = document.getElementById('app-iframe');
+        const int = document.getElementById('app-internal');
+
+        ifr.style.display = 'none';
+        ifr.removeAttribute('src');
+
+        int.style.display = 'block';
+        this.clearInternalContainer();
+
+        const fbPage = document.createElement('div');
+        fbPage.className = 'fb-page';
+        fbPage.setAttribute('data-href', 'https://www.facebook.com/profile.php?id=100063446307036');
+        fbPage.setAttribute('data-tabs', 'timeline');
+        fbPage.setAttribute('data-width', '500');
+        fbPage.setAttribute('data-adapt-container-width', 'true');
+
+        int.appendChild(fbPage);
+
+        if (window.FB && typeof window.FB.XFBML?.parse === 'function') {
+          window.FB.XFBML.parse(int);
+        }
+      },
+
+      openApp(id) {
+        const app = APPS.find(x => x.id === id);
+        if (!app) return;
+
+        document.getElementById('home').classList.add('hide');
+        document.getElementById('app').classList.remove('hide');
+
+        this.setAppHeader(app);
+
         const ifr = document.getElementById('app-iframe');
         const int = document.getElementById('app-internal');
         const targetUrl = app.iframe || app.href;
 
         if (app.id === 'noticias') {
-          ifr.style.display = 'none'; int.style.display = 'block';
-          int.innerHTML = `<div class="fb-page" data-href="https://www.facebook.com/profile.php?id=100063446307036" data-tabs="timeline" data-width="500" data-adapt-container-width="true"></div>`;
-          if (window.FB) FB.XFBML.parse(int);
-        } else {
-          ifr.style.display = 'block'; ifr.src = targetUrl; int.style.display = 'none';
+          this.renderFacebookModule();
+          return;
+        }
+
+        this.clearInternalContainer();
+        int.style.display = 'none';
+        ifr.style.display = 'block';
+
+        if (!this.setIframeUrl(targetUrl)) {
+          this.goHome();
         }
       },
-      
-      goHome() { 
-        document.getElementById('app').classList.add('hide'); 
-        document.getElementById('home').classList.remove('hide'); 
-        document.getElementById('app-iframe').src = ''; 
+
+      goHome() {
+        document.getElementById('app').classList.add('hide');
+        document.getElementById('home').classList.remove('hide');
+
+        const ifr = document.getElementById('app-iframe');
+        ifr.removeAttribute('src');
+
+        const int = document.getElementById('app-internal');
+        this.clearInternalContainer();
+        int.style.display = 'none';
+        ifr.style.display = 'block';
       },
-      closeApp() { this.goHome(); }
+
+      closeApp() {
+        this.goHome();
+      }
     };
-    
+
     document.addEventListener('DOMContentLoaded', () => SInOS.init());
   </script>
 </body>
