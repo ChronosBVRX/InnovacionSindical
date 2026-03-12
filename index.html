@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-  <!-- CSP más estricta, adaptada a lo que ya usa la página -->
   <meta
     http-equiv="Content-Security-Policy"
     content="
@@ -30,7 +29,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Idealmente autohospedado en tu mismo dominio/repositorio -->
+  <!-- Íconos -->
   <script defer src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <link rel="icon" href="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" />
@@ -682,11 +681,7 @@
       isSafeUrl(url) {
         try {
           const parsed = new URL(url, window.location.href);
-
-          if (!['http:', 'https:'].includes(parsed.protocol)) {
-            return false;
-          }
-
+          if (!['http:', 'https:'].includes(parsed.protocol)) return false;
           return SAFE_ORIGINS.has(parsed.origin);
         } catch {
           return false;
@@ -699,7 +694,6 @@
           alert('No se pudo abrir el módulo por una restricción de seguridad.');
           return;
         }
-
         window.open(url, '_blank', 'noopener,noreferrer');
       },
 
@@ -719,9 +713,13 @@
 
       clearInternalContainer() {
         const int = document.getElementById('app-internal');
-        while (int.firstChild) {
-          int.removeChild(int.firstChild);
-        }
+        while (int.firstChild) int.removeChild(int.firstChild);
+      },
+
+      createIcon(className, extraClass = '') {
+        const icon = document.createElement('i');
+        icon.className = `${className} ${extraClass}`.trim();
+        return icon;
       },
 
       renderTiles() {
@@ -737,7 +735,6 @@
 
           const activate = () => {
             const url = a.href || a.iframe;
-
             if (a.newTab || (url && url.includes('imss.gob.mx'))) {
               this.openSafeExternal(url);
             } else {
@@ -756,20 +753,14 @@
           if (a.ia) {
             const badge = document.createElement('div');
             badge.className = 'badge-ia';
-
-            const badgeIcon = document.createElement('i');
-            badgeIcon.className = 'ph-bold ph-sparkle';
-
+            badge.appendChild(this.createIcon('ph-bold ph-sparkle'));
             const badgeText = document.createElement('span');
             badgeText.textContent = 'IA';
-
-            badge.appendChild(badgeIcon);
             badge.appendChild(badgeText);
             tile.appendChild(badge);
           }
 
-          const icon = document.createElement('i');
-          icon.className = `${a.iconClass} tile-icon-integrated`;
+          tile.appendChild(this.createIcon(a.iconClass, 'tile-icon-integrated'));
 
           const title = document.createElement('h3');
           title.textContent = a.title;
@@ -777,7 +768,6 @@
           const desc = document.createElement('p');
           desc.textContent = a.desc;
 
-          tile.appendChild(icon);
           tile.appendChild(title);
           tile.appendChild(desc);
 
@@ -791,10 +781,7 @@
 
         const iconWrap = document.getElementById('app-ic');
         iconWrap.replaceChildren();
-
-        const icon = document.createElement('i');
-        icon.className = app.iconClass;
-        iconWrap.appendChild(icon);
+        iconWrap.appendChild(this.createIcon(app.iconClass));
       },
 
       renderFacebookModule() {
