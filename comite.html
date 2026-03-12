@@ -179,10 +179,33 @@
       color:var(--muted);
       font-weight:600;
     }
+
+    .notice{
+      margin:0 0 20px;
+      padding:14px 16px;
+      border-radius:14px;
+      background:#ffffff10;
+      border:1px solid #ffffff22;
+      color:var(--txt);
+    }
+
+    .error{
+      background:rgba(217,83,79,.15);
+      border:1px solid rgba(217,83,79,.4);
+      color:#ffd9d8;
+    }
+
+    .okbox{
+      background:rgba(69,211,159,.15);
+      border:1px solid rgba(69,211,159,.4);
+      color:#dffcef;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
+    <div id="debugBox" class="notice">Cargando comité...</div>
+
     <div class="topbar">
       <div>
         <div class="title">
@@ -227,11 +250,12 @@
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-    const SUPABASE_URL = https://axsncdwshdvsysrpikwj.supabase.co;
-    const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs;
+    const SUPABASE_URL = 'https://axsncdwshdvsysrpikwj.supabase.co';
+    const SUPABASE_ANON_KEY = 'PEGA_AQUI_TU_ANON_KEY_ENTRE_COMILLAS';
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    const debugBox = document.getElementById('debugBox');
     const comiteGrid = document.getElementById('comiteGrid');
     const adminPanel = document.getElementById('adminPanel');
     const adminBadge = document.getElementById('adminBadge');
@@ -253,6 +277,13 @@
 
     let currentUser = null;
     let isAdmin = false;
+
+    function setDebug(message, type = 'normal') {
+      debugBox.textContent = message;
+      debugBox.className = 'notice';
+      if (type === 'error') debugBox.classList.add('error');
+      if (type === 'ok') debugBox.classList.add('okbox');
+    }
 
     async function getCurrentUser() {
       const { data, error } = await supabase.auth.getUser();
@@ -282,15 +313,24 @@
     }
 
     async function loadComite() {
+      setDebug('Consultando datos del comité...');
+
       const { data, error } = await supabase
         .from('comite')
         .select('*')
         .order('id', { ascending: true });
 
       if (error) {
-        console.error('Error cargando comité:', error.message);
+        console.error('Error cargando comité:', error);
+        setDebug('Error cargando comité: ' + error.message, 'error');
         comiteGrid.innerHTML = '<p>No se pudo cargar el comité.</p>';
         return;
+      }
+
+      if (!data || data.length === 0) {
+        setDebug('La conexión funciona, pero la tabla comite no tiene registros visibles.', 'ok');
+      } else {
+        setDebug('Comité cargado correctamente.', 'ok');
       }
 
       renderComite(data || []);
@@ -312,11 +352,11 @@
             <div class="meta"><strong>Área:</strong> ${escapeHtml(item.area || '-')}</div>
             <div class="meta"><strong>Categoría:</strong> ${escapeHtml(item.categoria || '-')}</div>
             <div class="meta"><strong>Unidad:</strong> ${escapeHtml(item.unidad || '-')}</div>
-            <div class="desc">${escapeHtml(item.descripcion || '')}</div>
+            <div class="desc">${escapeHtml(item.descripcion || item.desc || '')}</div>
 
             ${isAdmin ? `
               <div class="card-actions">
-                <button class="btn-primary" data-edit='${JSON.stringify(item).replace(/'/g, "&apos;")}'>Editar</button>
+                <button class="btn-primary" data-edit='${escapeHtmlAttr(JSON.stringify(item))}'>Editar</button>
                 <button class="btn-danger" data-delete="${item.id}">Eliminar</button>
               </div>
             ` : ''}
@@ -324,16 +364,14 @@
         </article>
       `).join('');
 
-      if (isAdmin) {
-        bindAdminCardActions();
-      }
+      if (isAdmin) bindAdminCardActions();
     }
 
     function bindAdminCardActions() {
       document.querySelectorAll('[data-edit]').forEach(btn => {
         btn.addEventListener('click', () => {
-          const raw = btn.getAttribute('data-edit').replace(/&apos;/g, "'");
-          const item = JSON.parse(raw);
+          const raw = btn.getAttribute('data-edit');
+          const item = JSON.parse(unescapeHtmlAttr(raw));
           fillForm(item);
         });
       });
@@ -367,7 +405,7 @@
       categoria.value = item.categoria || '';
       unidad.value = item.unidad || '';
       foto.value = item.foto || '';
-      descripcion.value = item.descripcion || '';
+      descripcion.value = item.descripcion || item.desc || '';
       formMessage.textContent = 'Editando registro #' + item.id;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -391,25 +429,21 @@
         descripcion: descripcion.value.trim()
       };
 
-      let error;
+      let result;
 
       if (memberId.value) {
-        const res = await supabase
+        result = await supabase
           .from('comite')
           .update(payload)
           .eq('id', memberId.value);
-
-        error = res.error;
       } else {
-        const res = await supabase
+        result = await supabase
           .from('comite')
           .insert([payload]);
-
-        error = res.error;
       }
 
-      if (error) {
-        formMessage.textContent = 'Error: ' + error.message;
+      if (result.error) {
+        formMessage.textContent = 'Error: ' + result.error.message;
         return;
       }
 
@@ -423,6 +457,7 @@
     btnLogin.addEventListener('click', async () => {
       const email = prompt('Correo electrónico:');
       if (!email) return;
+
       const password = prompt('Contraseña:');
       if (!password) return;
 
@@ -481,6 +516,24 @@
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
+    }
+
+    function escapeHtmlAttr(text) {
+      return String(text)
+        .replaceAll('&', '&amp;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;');
+    }
+
+    function unescapeHtmlAttr(text) {
+      return String(text)
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#039;', "'")
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&amp;', '&');
     }
 
     await refreshUI();
