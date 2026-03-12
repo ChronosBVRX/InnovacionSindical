@@ -29,7 +29,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Íconos -->
   <script defer src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <link rel="icon" href="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" />
@@ -140,6 +139,8 @@
       padding-right: 8px;
     }
 
+    .secure-badge i { font-size: 14px; }
+
     .layer {
       position: fixed;
       inset: 0;
@@ -191,6 +192,9 @@
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .tiles {
@@ -228,11 +232,19 @@
       box-shadow: 0 0 15px rgba(77, 161, 168, 0.15);
     }
 
+    /* Estilo moderno para los íconos de las tarjetas */
     .tile-icon-integrated {
       font-size: 48px;
       color: var(--primary-light);
       margin-bottom: 16px;
-      transition: transform 0.3s ease;
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 4px 6px rgba(77, 161, 168, 0.4));
+    }
+
+    .tile:hover .tile-icon-integrated {
+      transform: scale(1.1) rotate(-2deg);
+      color: #fff;
+      filter: drop-shadow(0 6px 12px rgba(122, 209, 214, 0.7));
     }
 
     .tile h3 {
@@ -261,6 +273,7 @@
       color: var(--primary-light);
       background: rgba(77, 161, 168, .14);
       border: 1px solid var(--ring);
+      box-shadow: 0 0 8px rgba(122, 209, 214, 0.2);
     }
 
     .security-section {
@@ -281,7 +294,10 @@
       margin: 0 0 8px 0;
     }
 
-    .security-header h2 i { color: var(--success); }
+    .security-header h2 i { 
+      color: var(--success);
+      filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.4));
+    }
 
     .security-header p {
       color: var(--text-muted);
@@ -311,8 +327,10 @@
     .tech-card:hover {
       border-color: var(--primary-light);
       background: rgba(var(--panel-base), 0.4);
+      transform: translateY(-2px);
     }
 
+    /* Íconos de seguridad más modernos */
     .tech-icon {
       font-size: 32px;
       color: var(--primary-light);
@@ -320,6 +338,8 @@
       padding: 8px;
       border-radius: 8px;
       flex-shrink: 0;
+      border: 1px solid rgba(122, 209, 214, 0.2);
+      filter: drop-shadow(0 4px 8px rgba(77, 161, 168, 0.3));
     }
 
     .tech-info h4 {
@@ -383,11 +403,16 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      transition: all 0.2s ease;
     }
+
+    .btn i { font-size: 18px; }
 
     .btn:hover {
       background: rgba(77, 161, 168, .15);
-      color: var(--primary-light);
+      color: var(--text-main);
+      border-color: var(--primary-light);
+      box-shadow: 0 0 10px rgba(122, 209, 214, 0.2);
     }
 
     .hide { display: none !important; }
@@ -409,7 +434,7 @@
       border: 1px solid var(--ring);
       overflow: hidden;
       margin-bottom: 20px;
-      box-shadow: 0 0 30px rgba(77,161,168,0.2);
+      box-shadow: 0 0 30px rgba(77,161,168,0.3);
     }
 
     .logo-boot img {
@@ -431,9 +456,10 @@
       display: block;
       height: 100%;
       width: 30%;
-      background: var(--primary);
+      background: var(--primary-light);
       position: absolute;
       animation: load 2s infinite;
+      box-shadow: 0 0 10px var(--primary-light);
     }
 
     @media (max-width: 768px) {
@@ -484,7 +510,7 @@
       <h1 style="font-size: 20px; letter-spacing: 2px;">PLATAFORMA SINDICAL</h1>
       <div class="bar" style="margin: 20px auto;"><span></span></div>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(77, 161, 168, 0.2);">
-        <i class="ph-fill ph-shield-check" style="color: var(--success); font-size: 18px;"></i>
+        <i class="ph-fill ph-shield-check" style="color: var(--success); font-size: 20px; filter: drop-shadow(0 0 5px rgba(74, 222, 128, 0.5));"></i>
         <div id="security-status" style="font-size: 12px; color: var(--success); font-family: monospace; transition: opacity 0.2s ease; text-align: left; min-width: 220px;">Inicializando entorno...</div>
       </div>
     </div>
@@ -517,7 +543,7 @@
           <h1>Bienvenido, <span class="text-gradient">Compañero</span></h1>
           <p>Panel de Control y Gestión Sindical.</p>
         </div>
-        <div class="badge">SNTSS Secc. XX</div>
+        <div class="badge"><i class="ph-bold ph-identification-badge"></i> SNTSS Secc. XX</div>
       </section>
 
       <section class="tiles" id="tiles"></section>
@@ -565,7 +591,7 @@
     <div class="app-wrap">
       <div class="app-head">
         <div style="display:flex; align-items:center; gap:12px;">
-          <div id="app-ic" style="font-size:28px; color:var(--primary-light);"></div>
+          <div id="app-ic" style="font-size:32px; color:var(--primary-light); filter: drop-shadow(0 2px 4px rgba(122, 209, 214, 0.4));"></div>
           <div>
             <h2 id="app-title" style="margin:0; font-size:18px;">Módulo</h2>
             <p id="app-desc" style="margin:0; font-size:12px; color:var(--text-muted);"></p>
@@ -573,7 +599,7 @@
         </div>
         <div style="display:flex; gap:8px;">
           <button class="btn" onclick="SInOS.goHome()" type="button" aria-label="Volver al inicio">
-            <i class="ph-bold ph-house"></i>
+            <i class="ph-duotone ph-house"></i>
           </button>
           <button class="btn" onclick="SInOS.closeApp()" type="button" aria-label="Cerrar módulo">
             <i class="ph-bold ph-x"></i>
@@ -605,18 +631,19 @@
       'https://www.facebook.com'
     ]);
 
+    // Íconos modernizados y más representativos para cada app
     const APPS = [
-      { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-brain', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true },
-      { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-newspaper-clipping' },
-      { id: 'agenda', title: 'Red Sindical', desc: 'Consulta la agenda y biblioteca.', iconClass: 'ph-duotone ph-users-four', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true, newTab: true },
-      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Unificación de criterios.', iconClass: 'ph-duotone ph-shield-check', href: 'nucleo.html', featured: true, newTab: true },
+      { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true },
+      { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-broadcast' },
+      { id: 'agenda', title: 'Red Sindical', desc: 'Consulta la agenda y biblioteca.', iconClass: 'ph-duotone ph-share-network', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true, newTab: true },
+      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Unificación de criterios.', iconClass: 'ph-duotone ph-scales', href: 'nucleo.html', featured: true, newTab: true },
       { id: 'comite', title: 'Comité Seccional', desc: 'Equipo de la Planilla Azul.', iconClass: 'ph-duotone ph-users-three', href: 'comite.html', newTab: true },
-      { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción de documentos.', iconClass: 'ph-duotone ph-scan', href: 'kiosko.html', featured: true, newTab: true },
-      { id: 'denuncias', title: 'Gestor de Escritos', desc: 'Redacción asistida por IA.', iconClass: 'ph-duotone ph-signature', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
+      { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción de documentos.', iconClass: 'ph-duotone ph-scan-smiley', href: 'kiosko.html', featured: true, newTab: true },
+      { id: 'denuncias', title: 'Gestor de Escritos', desc: 'Redacción asistida por IA.', iconClass: 'ph-duotone ph-pen-nib', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
       { id: 'directorio', title: 'Directorio', desc: 'Contactos y delegados.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
-      { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de derechos.', iconClass: 'ph-duotone ph-calculator', iframe: 'prestaciones.html' },
-      { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga de comprobantes.', iconClass: 'ph-duotone ph-identification-card', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/', secure: true },
-      { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Cuenta institucional.', iconClass: 'ph-duotone ph-user-circle', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true }
+      { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de derechos.', iconClass: 'ph-duotone ph-hand-coins', iframe: 'prestaciones.html' },
+      { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga de comprobantes.', iconClass: 'ph-duotone ph-file-pdf', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/', secure: true },
+      { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Cuenta institucional.', iconClass: 'ph-duotone ph-hospital', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true }
     ];
 
     const SInOS = {
