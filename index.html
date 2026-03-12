@@ -64,7 +64,7 @@
     .tech-info h4 { margin: 0 0 6px 0; font-size: 15px; color: var(--text-main); }
     .tech-info p { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.4; }
 
-    /* --- SECCIÓN DEL IFRAME (OPTIMIZADA PARA ANCHO TOTAL) --- */
+    /* --- SECCIÓN DEL IFRAME --- */
     .app-wrap { width: 100%; max-width: 100%; margin: 0; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
     .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--ring); padding-bottom: 12px; }
     .app-body { flex: 1; background: rgba(21, 35, 54, 0.4); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative; width: 100%; }
@@ -85,9 +85,9 @@
     /* Responsive */
     @media (max-width: 768px) { 
       .wrap { padding: 20px 16px; } 
-      .app-wrap { padding: 8px; } /* Máximo espacio en móvil */
+      .app-wrap { padding: 8px; } 
       .app-head h2 { font-size: 16px; }
-      .app-head p { display: none; } /* Ganamos espacio vertical */
+      .app-head p { display: none; } 
       .tiles { grid-template-columns: 1fr 1fr; gap: 12px; } 
       .tile { min-height: 120px; padding: 16px; }
       .clock-container { padding: 4px 8px; font-size: 11px; } 
@@ -151,10 +151,10 @@
         </div>
         <div class="tech-grid">
           <div class="tech-card">
-            <div class="tech-icon"><i class="ph-duotone ph-github-logo"></i></div>
+            <div class="tech-icon"><i class="ph-duotone ph-server"></i></div>
             <div class="tech-info">
-              <h4>Repositorio GitHub</h4>
-              <p>Alojamiento blindado del código fuente con monitoreo continuo de vulnerabilidades y alta disponibilidad garantizada por Microsoft.</p>
+              <h4>Infraestructura Microsoft</h4>
+              <p>Alojamiento blindado con monitoreo continuo de vulnerabilidades y alta disponibilidad garantizada por los servidores globales de Microsoft.</p>
             </div>
           </div>
           <div class="tech-card">
