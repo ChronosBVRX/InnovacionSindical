@@ -45,12 +45,25 @@
     .text-gradient { background: linear-gradient(to right, var(--primary-light), var(--text-main)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .badge { background: rgba(77, 161, 168, .15); border: 1px solid var(--ring); color: var(--primary-light); padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
     
-    .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding-bottom: 40px; }
+    .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding-bottom: 20px; }
     .tile { position: relative; display: flex; flex-direction: column; min-height: 180px; padding: 24px; cursor: pointer; background: var(--glass-bg); backdrop-filter: blur(8px); border: 1px solid var(--ring); border-radius: var(--radius); transition: all 0.3s ease; overflow: hidden; }
     .tile:hover { transform: translateY(-4px); border-color: var(--primary); background: rgba(var(--panel-base), 0.6); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25); }
     .tile.featured { background: linear-gradient(145deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.45)); border: 1px solid var(--primary-light); box-shadow: 0 0 15px rgba(77, 161, 168, 0.15); }
     .tile-icon-integrated { font-size: 48px; color: var(--primary-light); margin-bottom: 16px; transition: transform 0.3s ease; }
     
+    /* Nueva Sección de Seguridad */
+    .security-section { margin-top: 20px; padding-top: 32px; padding-bottom: 40px; border-top: 1px solid var(--ring); }
+    .security-header { margin-bottom: 24px; }
+    .security-header h2 { font-size: 20px; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin: 0 0 8px 0; }
+    .security-header h2 i { color: var(--success); }
+    .security-header p { color: var(--text-muted); font-size: 14px; margin: 0; line-height: 1.6; max-width: 850px; }
+    .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .tech-card { background: rgba(var(--panel-base), 0.25); border: 1px solid var(--ring); border-radius: 12px; padding: 16px; display: flex; gap: 16px; align-items: flex-start; transition: all 0.3s ease; }
+    .tech-card:hover { border-color: var(--primary-light); background: rgba(var(--panel-base), 0.4); }
+    .tech-icon { font-size: 32px; color: var(--primary-light); background: rgba(77, 161, 168, 0.1); padding: 8px; border-radius: 8px; }
+    .tech-info h4 { margin: 0 0 6px 0; font-size: 15px; color: var(--text-main); }
+    .tech-info p { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.4; }
+
     /* --- SECCIÓN DEL IFRAME (OPTIMIZADA PARA ANCHO TOTAL) --- */
     .app-wrap { width: 100%; max-width: 100%; margin: 0; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
     .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--ring); padding-bottom: 12px; }
@@ -79,6 +92,7 @@
       .tile { min-height: 120px; padding: 16px; }
       .clock-container { padding: 4px 8px; font-size: 11px; } 
       .secure-badge span { display: none; }
+      .tech-grid { grid-template-columns: 1fr; }
     }
 
     @keyframes load { 0% { left: -30%; } 100% { left: 100%; } }
@@ -127,7 +141,39 @@
         </div>
         <div class="badge">SNTSS Secc. XX</div>
       </section>
+      
       <section class="tiles" id="tiles"></section>
+
+      <section class="security-section">
+        <div class="security-header">
+          <h2><i class="ph-fill ph-shield-check"></i> Infraestructura y Protocolos de Seguridad</h2>
+          <p>Compañeros, la protección de nuestra información sindical es prioridad. Esta plataforma opera bajo estrictos protocolos de encriptación y está respaldada por empresas líderes en tecnología global para garantizar total privacidad, estabilidad y certeza a todos los usuarios.</p>
+        </div>
+        <div class="tech-grid">
+          <div class="tech-card">
+            <div class="tech-icon"><i class="ph-duotone ph-github-logo"></i></div>
+            <div class="tech-info">
+              <h4>Repositorio GitHub</h4>
+              <p>Alojamiento blindado del código fuente con monitoreo continuo de vulnerabilidades y alta disponibilidad garantizada por Microsoft.</p>
+            </div>
+          </div>
+          <div class="tech-card">
+            <div class="tech-icon"><i class="ph-duotone ph-database"></i></div>
+            <div class="tech-info">
+              <h4>Bases de Datos Supabase</h4>
+              <p>Gestión de datos con encriptación de extremo a extremo (E2E), estrictas políticas de privacidad (RLS) y autenticación segura.</p>
+            </div>
+          </div>
+          <div class="tech-card">
+            <div class="tech-icon"><i class="ph-duotone ph-cloud-check"></i></div>
+            <div class="tech-info">
+              <h4>Despliegue Render</h4>
+              <p>Ejecución de nuestros servicios e Inteligencia Artificial bajo protocolos HTTPS y certificados SSL/TLS para una navegación 100% segura.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </section>
   </main>
 
