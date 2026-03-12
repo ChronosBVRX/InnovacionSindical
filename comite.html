@@ -1,457 +1,489 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Planilla Azul – Nuestro Equipo</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comité</title>
   <style>
-    :root {
-      /* --- PALETA PLANILLA AZUL / SInOS --- */
-      --bg-body: #111d2b;
-      --bg-body-end: #0a141d;
-      --panel-base: 27, 46, 69;
-      
-      --primary: #3b82f6;
-      --primary-light: #60a5fa;
-      --primary-cyan: #4da1a8;
-
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --ring: rgba(59, 130, 246, 0.35);
-      --radius: 16px;
-
-      /* Glassmorphism */
-      --glass-bg: rgba(27, 46, 69, 0.4);
-      --glass-border: rgba(96, 165, 250, 0.2);
+    :root{
+      --bg:#1b2e45;
+      --panel:#2e4f77;
+      --panel2:#395f8d;
+      --txt:#f0fdfa;
+      --muted:#bce9eb;
+      --primary:#4da1a8;
+      --danger:#d9534f;
+      --ok:#45d39f;
+      --ring:rgba(77,161,168,.35);
     }
 
-    html, body {
-      margin: 0; min-height: 100vh;
-      background-color: var(--bg-body); color: var(--text-main);
-      font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      background:var(--bg);
+      color:var(--txt);
     }
 
-    .ambient-bg {
-      position: fixed; inset: 0; z-index: -1;
-      background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 60%),
-                  linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%);
-    }
-    .ambient-bg::before {
-      content: ""; position: absolute; inset: 0; opacity: 0.04;
-      background-image: linear-gradient(to right, var(--primary-light) 1px, transparent 1px), linear-gradient(to bottom, var(--primary-light) 1px, transparent 1px);
-      background-size: 30px 30px;
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:24px;
     }
 
-    .container {
-      max-width: 1200px; margin: 0 auto; padding: 70px 20px 60px;
+    .topbar{
+      display:flex;
+      gap:12px;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-bottom:24px;
     }
 
-    .topbar {
-      position: fixed; top: 0; left: 0; right: 0; height: 60px;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 20px; background: rgba(17, 29, 43, 0.85);
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--glass-border); z-index: 100;
+    .title{
+      font-size:2rem;
+      font-weight:800;
     }
 
-    /* BOTÓN REGRESAR MEJORADO */
-    .nav-btn {
-      background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(96, 165, 250, 0.3); 
-      color: var(--primary-light); font-size: 14px; font-weight: 600;
-      cursor: pointer; display: flex; align-items: center; gap: 6px; 
-      padding: 6px 14px; border-radius: 8px; font-family: 'Inter', sans-serif;
-      transition: all 0.2s;
-    }
-    .nav-btn i { font-size: 18px; }
-    .nav-btn:hover { background: rgba(59, 130, 246, 0.25); border-color: rgba(96, 165, 250, 0.5); color: #fff; }
-
-    .badge-campana {
-      background: linear-gradient(135deg, var(--primary), #2563eb);
-      color: white; font-size: 11px; font-weight: 700; text-transform: uppercase;
-      padding: 4px 10px; border-radius: 999px; letter-spacing: 1px;
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
     }
 
-    .hero {
-      text-align: center; padding: 40px 0 30px;
-      animation: fadeUp 0.8s ease forwards;
-    }
-    .hero h1 {
-      font-size: 36px; font-weight: 800; margin: 0 0 10px 0;
-      background: linear-gradient(to right, #60a5fa, #f8fafc);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      letter-spacing: -0.5px;
-    }
-    .hero p {
-      font-size: 16px; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.5;
+    button{
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      cursor:pointer;
+      font-weight:700;
     }
 
-    .controls {
-      display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
-      margin-bottom: 40px;
-    }
-    .input-group {
-      position: relative; flex: 1; min-width: 250px; max-width: 400px;
-    }
-    .input-icon {
-      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-      color: var(--primary-light); font-size: 18px; pointer-events: none;
-    }
-    .form-control {
-      width: 100%; background: var(--glass-bg); border: 1px solid var(--glass-border);
-      color: var(--text-main); padding: 12px 14px 12px 40px; border-radius: 12px;
-      font-family: inherit; font-size: 14px; outline: none; transition: all 0.3s;
-      box-sizing: border-box; backdrop-filter: blur(8px);
-    }
-    .form-control:focus {
-      border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-    }
-    .form-control::placeholder { color: var(--text-muted); opacity: 0.7; }
-    
-    .select-control {
-      padding-left: 14px; flex: 0 1 auto; min-width: 200px;
+    .btn-primary{ background:var(--primary); color:white; }
+    .btn-danger{ background:var(--danger); color:white; }
+    .btn-muted{ background:#ffffff14; color:var(--txt); border:1px solid #ffffff24; }
+
+    .status{
+      padding:10px 14px;
+      background:#ffffff10;
+      border:1px solid #ffffff20;
+      border-radius:12px;
+      color:var(--muted);
     }
 
-    .section-title {
-      width: 100%; font-size: 18px; font-weight: 800; color: var(--text-main);
-      margin: 40px 0 20px; padding-bottom: 10px;
-      border-bottom: 2px solid rgba(255,255,255,0.05); grid-column: 1 / -1;
-      display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 2px;
-    }
-    .section-title::before {
-      content: ''; display: block; width: 12px; height: 12px;
-      background: var(--primary); border-radius: 50%;
-      box-shadow: 0 0 10px var(--primary);
+    .admin-badge{
+      display:inline-block;
+      background:var(--ok);
+      color:#062b1f;
+      font-weight:800;
+      padding:6px 10px;
+      border-radius:999px;
+      margin-left:8px;
     }
 
-    .grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 24px;
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:18px;
     }
 
-    .card {
-      position: relative; background: var(--glass-bg); backdrop-filter: blur(12px);
-      border: 1px solid var(--glass-border); border-radius: var(--radius);
-      padding: 24px; display: flex; flex-direction: column; align-items: center; text-align: center;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; overflow: hidden;
+    .card{
+      background:var(--panel);
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow:0 10px 25px rgba(0,0,0,.2);
+      border:1px solid #ffffff14;
     }
 
-    .card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-      background: linear-gradient(90deg, transparent, var(--primary), transparent);
-      opacity: 0; transition: opacity 0.3s;
+    .card img{
+      width:100%;
+      height:260px;
+      object-fit:cover;
+      display:block;
+      background:#17304f;
     }
 
-    .card:hover {
-      transform: translateY(-5px); border-color: var(--primary-light);
-      background: rgba(30, 58, 138, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.1);
-    }
-    .card:hover::before { opacity: 1; }
-
-    .tag-area {
-      position: absolute; top: 16px; right: 16px; font-size: 10px; font-weight: 800;
-      text-transform: uppercase; color: var(--text-main); background: rgba(255,255,255,0.1);
-      padding: 4px 8px; border-radius: 6px;
+    .card-body{
+      padding:16px;
     }
 
-    .card-photo {
-      width: 100px; height: 100px; border-radius: 50%;
-      background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
-      border: 2px solid var(--primary-light);
-      display: flex; align-items: center; justify-content: center;
-      margin: 15px 0; overflow: hidden; box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
-    }
-    .card-photo img { width: 100%; height: 100%; object-fit: cover; }
-    .card-photo i { font-size: 40px; color: var(--primary-light); opacity: 0.6; }
-
-    .card-role {
-      font-size: 14px; color: var(--primary-light); font-weight: 800;
-      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; line-height: 1.3;
+    .card h3{
+      margin:0 0 8px;
+      font-size:1.2rem;
     }
 
-    .card-name {
-      font-size: 19px; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 6px;
-    }
-    .vacant-text { color: var(--text-muted); font-style: italic; opacity: 0.5; font-weight: 500; }
-
-    .card-details {
-      font-size: 13px; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px;
-    }
-    .card-details span { display: flex; align-items: center; justify-content: center; gap: 6px; }
-
-    .action-text {
-      margin-top: auto; font-size: 12px; font-weight: 600; color: var(--primary);
-      display: flex; align-items: center; gap: 6px; background: rgba(59, 130, 246, 0.1);
-      padding: 6px 12px; border-radius: 20px; transition: all 0.3s;
-    }
-    .card:hover .action-text { background: var(--primary); color: white; }
-    .action-text i { transition: transform 0.3s; }
-
-    .card-description {
-      max-height: 0; opacity: 0; overflow: hidden; transition: all 0.4s ease;
-      font-size: 13px; color: var(--text-muted); line-height: 1.6; text-align: left;
-      margin-top: 0; padding-top: 0; border-top: 1px solid transparent; width: 100%;
+    .meta{
+      font-size:.95rem;
+      color:var(--muted);
+      margin:4px 0;
     }
 
-    .card.active .card-description {
-      max-height: 300px; opacity: 1; margin-top: 16px; padding-top: 16px;
-      border-top-color: var(--glass-border);
-    }
-    .card.active .action-text i { transform: rotate(180deg); }
-
-    .empty-state {
-      grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-muted);
-    }
-    .empty-state i { font-size: 48px; margin-bottom: 15px; opacity: 0.5; }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .desc{
+      margin-top:10px;
+      line-height:1.45;
+      color:#eefefe;
     }
 
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 0.8; }
-      50% { transform: scale(1.1); opacity: 1; text-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
-      100% { transform: scale(1); opacity: 0.8; }
+    .card-actions{
+      display:flex;
+      gap:8px;
+      margin-top:14px;
     }
 
-    /* --- OPTIMIZACIÓN PARA MÓVILES --- */
-    @media (max-width: 600px) {
-      .hero h1 { font-size: 28px; }
-      
-      .controls {
-        flex-direction: column;
-        padding: 0 10px;
-      }
-      .input-group, .select-control {
-        max-width: 100%;
-        width: 100%;
-      }
+    .hidden{ display:none !important; }
 
-      .grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
-        gap: 12px;
-      }
+    .panel{
+      margin:24px 0;
+      background:var(--panel2);
+      border-radius:18px;
+      padding:18px;
+      border:1px solid #ffffff1c;
+    }
 
-      .card { padding: 16px 10px; }
-      
-      .tag-area { font-size: 8px; padding: 3px 6px; top: 8px; right: 8px; }
+    .panel h2{
+      margin-top:0;
+    }
 
-      .card-photo { width: 65px; height: 65px; margin: 10px 0; }
-      .card-photo i { font-size: 28px; }
+    form{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:12px;
+    }
 
-      .card-role { font-size: 11px; margin-bottom: 4px; }
-      .card-name { font-size: 15px; }
-      .card-details { font-size: 11px; margin-bottom: 12px; }
-      
-      .action-text { font-size: 10px; padding: 5px 10px; }
-      .card-description { font-size: 12px; }
-      .nav-btn span { display: none; } /* Oculta la palabra "Regresar" en móvil para ahorrar espacio */
+    input, textarea{
+      width:100%;
+      border-radius:12px;
+      border:1px solid #ffffff24;
+      background:#ffffff10;
+      color:var(--txt);
+      padding:12px;
+      outline:none;
+    }
+
+    textarea{
+      min-height:120px;
+      resize:vertical;
+      grid-column:1/-1;
+    }
+
+    .form-actions{
+      grid-column:1/-1;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .message{
+      margin:12px 0 0;
+      color:var(--muted);
+      font-weight:600;
     }
   </style>
 </head>
-
 <body>
-  <div class="ambient-bg"></div>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <div class="title">
+          Comité
+          <span id="adminBadge" class="admin-badge hidden">Admin</span>
+        </div>
+      </div>
 
-  <header class="topbar">
-    <div style="display:flex; align-items:center; gap:12px;">
-      <button class="nav-btn" onclick="window.close(); window.location.href='index.html';" title="Regresar al inicio">
-        <i class="ph-bold ph-arrow-left"></i> <span>Regresar</span>
-      </button>
-      <div class="badge-campana">
-        <i class="ph-bold ph-check-circle" style="margin-right: 4px;"></i> Proyecto Azul
+      <div class="actions">
+        <div id="userStatus" class="status">No has iniciado sesión</div>
+        <button id="btnLogin" class="btn-primary">Iniciar sesión</button>
+        <button id="btnLogout" class="btn-muted hidden">Cerrar sesión</button>
       </div>
     </div>
-  </header>
 
-  <main class="container">
-    <section class="hero" id="heroSection">
-      <h1>Conoce a tu Nuevo Comité</h1>
-      <p>Un equipo transparente y preparado para defender los derechos de la Sección XX Michoacán. Selecciona una cartera para verificar sus funciones.</p>
-    </section>
+    <section id="adminPanel" class="panel hidden">
+      <h2>Administrar comité</h2>
 
-    <section class="controls" id="controlsSection">
-      <div class="input-group">
-        <i class="ph-bold ph-magnifying-glass input-icon"></i>
-        <input id="searchInput" class="form-control" type="text" placeholder="Buscar cartera, función o nombre..." autocomplete="off">
-      </div>
-      <select id="areaFilter" class="form-control select-control">
-        <option value="Todas">Toda la Estructura</option>
-        <option value="Secretarios">Comité Ejecutivo (Secretarios)</option>
-        <option value="Comisiones">Comisiones Seccionales</option>
-        <option value="Subcomisiones Mixtas">Representantes Subcomisiones</option>
-      </select>
-    </section>
+      <form id="memberForm">
+        <input type="hidden" id="memberId" />
 
-    <div id="results" class="grid"></div>
-  </main>
+        <input id="nombre" type="text" placeholder="Nombre" required />
+        <input id="cartera" type="text" placeholder="Cartera" />
+        <input id="area" type="text" placeholder="Área" />
+        <input id="categoria" type="text" placeholder="Categoría" />
+        <input id="unidad" type="text" placeholder="Unidad" />
+        <input id="foto" type="url" placeholder="URL de la foto" />
+        <textarea id="descripcion" placeholder="Descripción"></textarea>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script>
-    // === Conexión a Supabase ===
-    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    let DATA = [];
-    const $results = document.getElementById('results');
-    const $search = document.getElementById('searchInput');
-    const $area = document.getElementById('areaFilter');
-    const $hero = document.getElementById('heroSection');
-    const $controls = document.getElementById('controlsSection');
-
-    // === LÓGICA DE DESBLOQUEO ===
-    const unlockDate = new Date('2026-03-12T00:00:00').getTime(); 
-    const now = new Date().getTime();
-
-    if (now < unlockDate) {
-      // ESTADO BLOQUEADO
-      $hero.style.display = 'none';
-      $controls.style.display = 'none';
-      
-      $results.innerHTML = `
-        <div class="empty-state" style="margin-top: 10vh; animation: fadeUp 0.8s ease forwards;">
-          <i class="ph-duotone ph-lock-key" style="font-size: 80px; color: var(--primary); margin-bottom: 20px; animation: pulse 2s infinite;"></i>
-          <h2 style="font-size: 32px; color: #fff; margin-bottom: 15px;">Próximamente Disponible</h2>
-          <p style="font-size: 18px; max-width: 500px; margin: 0 auto; line-height: 1.5;">La estructura de nuestro comité se revelará este jueves. ¡Estamos preparando todo!</p>
-          <div id="countdown" style="margin-top: 30px; font-size: 24px; font-weight: 800; color: var(--primary-light); letter-spacing: 2px; font-family: monospace;"></div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Guardar</button>
+          <button type="button" id="btnCancelEdit" class="btn-muted">Cancelar</button>
         </div>
-      `;
+      </form>
 
-      const countdownInterval = setInterval(() => {
-        const currentTime = new Date().getTime();
-        const distance = unlockDate - currentTime;
+      <div id="formMessage" class="message"></div>
+    </section>
 
-        if (distance < 0) {
-          clearInterval(countdownInterval);
-          location.reload(); 
-        } else {
-          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-          
-          document.getElementById('countdown').innerHTML = 
-            `${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
-        }
-      }, 1000);
+    <div id="comiteGrid" class="grid"></div>
+  </div>
 
-    } else {
-      // ESTADO DESBLOQUEADO
-      fetchComite();
-      $search.addEventListener('input', applyFilters);
-      $area.addEventListener('change', applyFilters);
-    }
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-    async function fetchComite() {
-      $results.innerHTML = '<div class="empty-state"><h3>Cargando estructura...</h3></div>';
-      const { data, error } = await supabaseClient.from('comite').select('*').order('id', { ascending: true });
-      
-      if (!error && data) {
-        DATA = data;
-        render(DATA);
-      } else {
-        $results.innerHTML = '<div class="empty-state"><h3>Error de conexión con el servidor.</h3></div>';
-        console.error("Error al cargar comité:", error);
+    const SUPABASE_URL = 'TU_SUPABASE_URL';
+    const SUPABASE_ANON_KEY = 'TU_SUPABASE_ANON_KEY';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const comiteGrid = document.getElementById('comiteGrid');
+    const adminPanel = document.getElementById('adminPanel');
+    const adminBadge = document.getElementById('adminBadge');
+    const userStatus = document.getElementById('userStatus');
+    const btnLogin = document.getElementById('btnLogin');
+    const btnLogout = document.getElementById('btnLogout');
+    const memberForm = document.getElementById('memberForm');
+    const btnCancelEdit = document.getElementById('btnCancelEdit');
+    const formMessage = document.getElementById('formMessage');
+
+    const memberId = document.getElementById('memberId');
+    const nombre = document.getElementById('nombre');
+    const cartera = document.getElementById('cartera');
+    const area = document.getElementById('area');
+    const categoria = document.getElementById('categoria');
+    const unidad = document.getElementById('unidad');
+    const foto = document.getElementById('foto');
+    const descripcion = document.getElementById('descripcion');
+
+    let currentUser = null;
+    let isAdmin = false;
+
+    async function getCurrentUser() {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error('Error getUser:', error.message);
+        return null;
       }
+      return data.user;
     }
 
-    function render(list) {
-      $results.innerHTML = '';
+    async function checkIfAdmin() {
+      const user = await getCurrentUser();
+      if (!user) return false;
 
-      if (list.length === 0) {
-        $results.innerHTML = `
-          <div class="empty-state">
-            <i class="ph-duotone ph-magnifying-glass-minus"></i>
-            <h3>No se encontraron resultados</h3>
-            <p>Intenta con otra palabra clave o selecciona "Toda la Estructura".</p>
-          </div>
-        `;
+      const { data, error } = await supabase
+        .from('admins_comite')
+        .select('user_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error verificando admin:', error.message);
+        return false;
+      }
+
+      return !!data;
+    }
+
+    async function loadComite() {
+      const { data, error } = await supabase
+        .from('comite')
+        .select('*')
+        .order('id', { ascending: true });
+
+      if (error) {
+        console.error('Error cargando comité:', error.message);
+        comiteGrid.innerHTML = '<p>No se pudo cargar el comité.</p>';
         return;
       }
-      
-      let currentArea = '';
 
-      for (const item of list) {
-        if (item.area !== currentArea) {
-          const header = document.createElement('div');
-          header.className = 'section-title';
-          header.textContent = item.area;
-          $results.appendChild(header);
-          currentArea = item.area;
-        }
+      renderComite(data || []);
+    }
 
-        const nombreReal = item.nombre || "";
-        const categoriaReal = item.categoria || "";
-        const unidadReal = item.unidad || "";
-        const fotoReal = item.foto || "";
+    function renderComite(items) {
+      if (!items.length) {
+        comiteGrid.innerHTML = '<p>No hay integrantes capturados.</p>';
+        return;
+      }
 
-        const displayName = nombreReal.trim() !== "" ? nombreReal : "Candidato por Definir";
-        const isVacant = nombreReal.trim() === "";
-        const displayCat = categoriaReal.trim() !== "" ? categoriaReal : "Pendiente";
-        const displayUnit = unidadReal.trim() !== "" ? unidadReal : "Pendiente";
-        
-        const photoHtml = fotoReal.trim() !== "" 
-          ? `<img src="${fotoReal}" alt="Foto">` 
-          : `<i class="ph-duotone ph-user"></i>`;
+      comiteGrid.innerHTML = items.map(item => `
+        <article class="card">
+          <img src="${escapeHtml(item.foto || '')}" alt="${escapeHtml(item.nombre || 'Sin nombre')}"
+               onerror="this.src='https://placehold.co/600x400?text=Sin+foto'">
+          <div class="card-body">
+            <h3>${escapeHtml(item.nombre || '')}</h3>
+            <div class="meta"><strong>Cartera:</strong> ${escapeHtml(item.cartera || '-')}</div>
+            <div class="meta"><strong>Área:</strong> ${escapeHtml(item.area || '-')}</div>
+            <div class="meta"><strong>Categoría:</strong> ${escapeHtml(item.categoria || '-')}</div>
+            <div class="meta"><strong>Unidad:</strong> ${escapeHtml(item.unidad || '-')}</div>
+            <div class="desc">${escapeHtml(item.descripcion || '')}</div>
 
-        const card = document.createElement('article');
-        card.className = 'card';
-        card.style.animation = `fadeUp 0.5s ease forwards`;
-        
-        card.innerHTML = `
-          <div class="tag-area">${item.area === 'Subcomisiones Mixtas' ? 'Subcomisión' : item.area.slice(0, -1)}</div>
-          <div class="card-photo">${photoHtml}</div>
-          <div class="card-role">${item.cartera}</div>
-          <div class="card-name ${isVacant ? 'vacant-text' : ''}">${displayName}</div>
-          
-          <div class="card-details">
-            <span><i class="ph-bold ph-identification-badge"></i> ${displayCat}</span>
-            <span><i class="ph-bold ph-hospital"></i> ${displayUnit}</span>
+            ${isAdmin ? `
+              <div class="card-actions">
+                <button class="btn-primary" data-edit='${JSON.stringify(item).replace(/'/g, "&apos;")}'>Editar</button>
+                <button class="btn-danger" data-delete="${item.id}">Eliminar</button>
+              </div>
+            ` : ''}
           </div>
+        </article>
+      `).join('');
 
-          <div class="action-text">
-            <span>Verificar Funciones</span>
-            <i class="ph-bold ph-caret-down"></i>
-          </div>
-
-          <div class="card-description">
-            <strong style="color:var(--text-main);">Responsabilidad Estatutaria:</strong><br>
-            ${item.desc || 'Funciones no definidas.'}
-          </div>
-        `;
-
-        card.addEventListener('click', () => {
-          card.classList.toggle('active');
-        });
-
-        $results.appendChild(card);
+      if (isAdmin) {
+        bindAdminCardActions();
       }
     }
 
-    function applyFilters() {
-      const term = $search.value.trim().toLowerCase();
-      const area = $area.value;
-
-      const filtered = DATA.filter(item => {
-        const matchesText = !term || 
-          (item.cartera || '').toLowerCase().includes(term) || 
-          (item.desc || '').toLowerCase().includes(term) || 
-          (item.nombre || '').toLowerCase().includes(term);
-        const matchesArea = area === "Todas" || item.area === area;
-        
-        return matchesText && matchesArea;
+    function bindAdminCardActions() {
+      document.querySelectorAll('[data-edit]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const raw = btn.getAttribute('data-edit').replace(/&apos;/g, "'");
+          const item = JSON.parse(raw);
+          fillForm(item);
+        });
       });
 
-      render(filtered);
+      document.querySelectorAll('[data-delete]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-delete');
+          const ok = confirm('¿Seguro que deseas eliminar este integrante?');
+          if (!ok) return;
+
+          const { error } = await supabase
+            .from('comite')
+            .delete()
+            .eq('id', id);
+
+          if (error) {
+            alert('No se pudo eliminar: ' + error.message);
+            return;
+          }
+
+          await loadComite();
+        });
+      });
     }
+
+    function fillForm(item) {
+      memberId.value = item.id || '';
+      nombre.value = item.nombre || '';
+      cartera.value = item.cartera || '';
+      area.value = item.area || '';
+      categoria.value = item.categoria || '';
+      unidad.value = item.unidad || '';
+      foto.value = item.foto || '';
+      descripcion.value = item.descripcion || '';
+      formMessage.textContent = 'Editando registro #' + item.id;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetForm() {
+      memberForm.reset();
+      memberId.value = '';
+      formMessage.textContent = '';
+    }
+
+    memberForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        nombre: nombre.value.trim(),
+        cartera: cartera.value.trim(),
+        area: area.value.trim(),
+        categoria: categoria.value.trim(),
+        unidad: unidad.value.trim(),
+        foto: foto.value.trim(),
+        descripcion: descripcion.value.trim()
+      };
+
+      let error;
+
+      if (memberId.value) {
+        const res = await supabase
+          .from('comite')
+          .update(payload)
+          .eq('id', memberId.value);
+
+        error = res.error;
+      } else {
+        const res = await supabase
+          .from('comite')
+          .insert([payload]);
+
+        error = res.error;
+      }
+
+      if (error) {
+        formMessage.textContent = 'Error: ' + error.message;
+        return;
+      }
+
+      resetForm();
+      await loadComite();
+      formMessage.textContent = 'Guardado correctamente.';
+    });
+
+    btnCancelEdit.addEventListener('click', resetForm);
+
+    btnLogin.addEventListener('click', async () => {
+      const email = prompt('Correo electrónico:');
+      if (!email) return;
+      const password = prompt('Contraseña:');
+      if (!password) return;
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        alert('Error al iniciar sesión: ' + error.message);
+        return;
+      }
+
+      await refreshUI();
+    });
+
+    btnLogout.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      await refreshUI();
+    });
+
+    async function refreshUI() {
+      currentUser = await getCurrentUser();
+      isAdmin = await checkIfAdmin();
+
+      if (currentUser) {
+        userStatus.textContent = currentUser.email || 'Sesión iniciada';
+        btnLogin.classList.add('hidden');
+        btnLogout.classList.remove('hidden');
+      } else {
+        userStatus.textContent = 'No has iniciado sesión';
+        btnLogin.classList.remove('hidden');
+        btnLogout.classList.add('hidden');
+      }
+
+      if (isAdmin) {
+        adminPanel.classList.remove('hidden');
+        adminBadge.classList.remove('hidden');
+      } else {
+        adminPanel.classList.add('hidden');
+        adminBadge.classList.add('hidden');
+        resetForm();
+      }
+
+      await loadComite();
+    }
+
+    supabase.auth.onAuthStateChange(async () => {
+      await refreshUI();
+    });
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    await refreshUI();
   </script>
 </body>
 </html>
