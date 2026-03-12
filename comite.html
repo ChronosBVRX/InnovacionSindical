@@ -3,248 +3,378 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Comité</title>
+  <title>Comité Sindical</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    :root{
-      --bg:#1b2e45;
-      --panel:#2e4f77;
-      --panel2:#395f8d;
-      --txt:#f0fdfa;
-      --muted:#bce9eb;
-      --primary:#4da1a8;
-      --danger:#d9534f;
-      --ok:#45d39f;
-      --ring:rgba(77,161,168,.35);
+    :root {
+      --bg: #1b2e45;
+      --panel: #2e4f77;
+      --panel2: #395f8d;
+      --txt: #f0fdfa;
+      --muted: #bce9eb;
+      --primary: #4da1a8;
+      --primary-hover: #3b8289;
+      --danger: #d9534f;
+      --danger-hover: #c9302c;
+      --ok: #45d39f;
+      --ring: rgba(77, 161, 168, .35);
+      --shadow: 0 10px 25px rgba(0, 0, 0, .2);
+      --shadow-hover: 0 15px 35px rgba(0, 0, 0, .4);
     }
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      background:var(--bg);
-      color:var(--txt);
+    * { box-sizing: border-box; }
+    
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--txt);
+      line-height: 1.5;
     }
 
-    .wrap{
-      max-width:1200px;
-      margin:0 auto;
-      padding:24px;
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
     }
 
-    .topbar{
-      display:flex;
-      gap:12px;
-      justify-content:space-between;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-bottom:24px;
+    /* --- Animaciones --- */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .title{
-      font-size:2rem;
-      font-weight:800;
+    /* --- Barra Superior --- */
+    .topbar {
+      display: flex;
+      gap: 16px;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
     }
 
-    button{
-      border:none;
-      border-radius:12px;
-      padding:10px 14px;
-      cursor:pointer;
-      font-weight:700;
+    .title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
-    .btn-primary{ background:var(--primary); color:white; }
-    .btn-danger{ background:var(--danger); color:white; }
-    .btn-muted{ background:#ffffff14; color:var(--txt); border:1px solid #ffffff24; }
-
-    .status{
-      padding:10px 14px;
-      background:#ffffff10;
-      border:1px solid #ffffff20;
-      border-radius:12px;
-      color:var(--muted);
+    .title i {
+      color: var(--primary);
     }
 
-    .admin-badge{
-      display:inline-block;
-      background:var(--ok);
-      color:#062b1f;
-      font-weight:800;
-      padding:6px 10px;
-      border-radius:999px;
-      margin-left:8px;
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
     }
 
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-      gap:18px;
+    /* --- Botones --- */
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
     }
 
-    .card{
-      background:var(--panel);
-      border-radius:18px;
-      overflow:hidden;
-      box-shadow:0 10px 25px rgba(0,0,0,.2);
-      border:1px solid #ffffff14;
+    button:active { transform: scale(0.95); }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 12px rgba(77, 161, 168, 0.4); }
+
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: var(--danger-hover); box-shadow: 0 4px 12px rgba(217, 83, 79, 0.4); }
+
+    .btn-muted { background: #ffffff14; color: var(--txt); border: 1px solid #ffffff24; }
+    .btn-muted:hover { background: #ffffff24; }
+
+    /* --- Estados y Badges --- */
+    .status {
+      padding: 10px 14px;
+      background: #ffffff10;
+      border: 1px solid #ffffff20;
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .card img{
-      width:100%;
-      height:260px;
-      object-fit:cover;
-      display:block;
-      background:#17304f;
+    .admin-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--ok);
+      color: #062b1f;
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 999px;
+      box-shadow: 0 2px 10px rgba(69, 211, 159, 0.3);
     }
 
-    .card-body{
-      padding:16px;
+    /* --- Categorías y Grid --- */
+    .category-section {
+      margin-bottom: 48px;
+      animation: fadeInUp 0.6s ease backwards;
     }
 
-    .card h3{
-      margin:0 0 8px;
-      font-size:1.2rem;
+    .category-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--panel2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .meta{
-      font-size:.95rem;
-      color:var(--muted);
-      margin:4px 0;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
     }
 
-    .desc{
-      margin-top:10px;
-      line-height:1.45;
-      color:#eefefe;
+    /* --- Tarjetas (Cards) --- */
+    .card {
+      background: var(--panel);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid #ffffff14;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
     }
 
-    .card-actions{
-      display:flex;
-      gap:8px;
-      margin-top:14px;
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-hover);
+      border-color: #ffffff30;
     }
 
-    .hidden{ display:none !important; }
-
-    .panel{
-      margin:24px 0;
-      background:var(--panel2);
-      border-radius:18px;
-      padding:18px;
-      border:1px solid #ffffff1c;
+    .card img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      display: block;
+      background: #17304f;
+      transition: transform 0.3s ease;
     }
 
-    .panel h2{
-      margin-top:0;
+    .card:hover img {
+      transform: scale(1.05);
     }
 
-    form{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:12px;
+    .card-body {
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 2;
+      background: var(--panel);
     }
 
-    input, textarea{
-      width:100%;
-      border-radius:12px;
-      border:1px solid #ffffff24;
-      background:#ffffff10;
-      color:var(--txt);
-      padding:12px;
-      outline:none;
+    .card h3 {
+      margin: 0 0 12px;
+      font-size: 1.3rem;
+      color: var(--txt);
     }
 
-    textarea{
-      min-height:120px;
-      resize:vertical;
-      grid-column:1/-1;
+    .meta {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin: 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .form-actions{
-      grid-column:1/-1;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
+    .meta i {
+      width: 16px;
+      text-align: center;
+      color: var(--primary);
     }
 
-    .message{
-      margin:12px 0 0;
-      color:var(--muted);
-      font-weight:600;
+    .desc {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #ffffff10;
+      font-size: 0.9rem;
+      color: #eefefe;
+      flex-grow: 1;
     }
 
-    .notice{
-      margin:0 0 20px;
-      padding:14px 16px;
-      border-radius:14px;
-      background:#ffffff10;
-      border:1px solid #ffffff22;
-      color:var(--txt);
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
     }
 
-    .error{
-      background:rgba(217,83,79,.15);
-      border:1px solid rgba(217,83,79,.4);
-      color:#ffd9d8;
+    .card-actions button {
+      flex: 1;
+      justify-content: center;
     }
 
-    .okbox{
-      background:rgba(69,211,159,.15);
-      border:1px solid rgba(69,211,159,.4);
-      color:#dffcef;
+    .hidden { display: none !important; }
+
+    /* --- Formulario de Administración --- */
+    .panel {
+      margin: 0 0 40px 0;
+      background: var(--panel2);
+      border-radius: 18px;
+      padding: 24px;
+      border: 1px solid #ffffff1c;
+      box-shadow: var(--shadow);
+      animation: fadeInUp 0.5s ease;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    input, textarea {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid #ffffff24;
+      background: #ffffff10;
+      color: var(--txt);
+      padding: 14px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--primary);
+      background: #ffffff1a;
+      box-shadow: 0 0 0 3px var(--ring);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      grid-column: 1 / -1;
+      font-family: inherit;
+    }
+
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    /* --- Mensajes y Notificaciones --- */
+    .message {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .notice {
+      margin: 0 0 24px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      background: #ffffff10;
+      border: 1px solid #ffffff22;
+      color: var(--txt);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: fadeInUp 0.4s ease;
+    }
+
+    .error {
+      background: rgba(217, 83, 79, .15);
+      border: 1px solid rgba(217, 83, 79, .4);
+      color: #ffd9d8;
+    }
+
+    .okbox {
+      background: rgba(69, 211, 159, .15);
+      border: 1px solid rgba(69, 211, 159, .4);
+      color: #dffcef;
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div id="debugBox" class="notice">Cargando comité...</div>
+    <div id="debugBox" class="notice"><i class="fa-solid fa-spinner fa-spin"></i> Cargando plataforma sindical...</div>
 
     <div class="topbar">
-      <div>
+      <div class="title-group">
+        <button id="btnBack" class="btn-muted"><i class="fa-solid fa-arrow-left"></i> Volver</button>
+        
         <div class="title">
-          Comité
-          <span id="adminBadge" class="admin-badge hidden">Admin</span>
+          <i class="fa-solid fa-users-viewfinder"></i> Directorio del Comité
+          <span id="adminBadge" class="admin-badge hidden"><i class="fa-solid fa-shield-halved"></i> Admin</span>
         </div>
       </div>
 
       <div class="actions">
-        <div id="userStatus" class="status">No has iniciado sesión</div>
-        <button id="btnLogin" class="btn-primary">Iniciar sesión</button>
-        <button id="btnLogout" class="btn-muted hidden">Cerrar sesión</button>
+        <div id="userStatus" class="status"><i class="fa-solid fa-user-xmark"></i> No has iniciado sesión</div>
+        <button id="btnLogin" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión</button>
+        <button id="btnLogout" class="btn-muted hidden"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
       </div>
     </div>
 
     <section id="adminPanel" class="panel hidden">
-      <h2>Administrar comité</h2>
+      <h2><i class="fa-solid fa-user-pen"></i> Administrar Integrante</h2>
 
       <form id="memberForm">
         <input type="hidden" id="memberId" />
-
-        <input id="nombre" type="text" placeholder="Nombre" required />
-        <input id="cartera" type="text" placeholder="Cartera" />
+        <input id="nombre" type="text" placeholder="Nombre completo" required />
+        <input id="cartera" type="text" placeholder="Cartera (Ej. Secretaría General)" />
         <input id="area" type="text" placeholder="Área" />
-        <input id="categoria" type="text" placeholder="Categoría" />
-        <input id="unidad" type="text" placeholder="Unidad" />
-        <input id="foto" type="url" placeholder="URL de la foto" />
-        <textarea id="descripcion" placeholder="Descripción"></textarea>
+        <input id="categoria" type="text" placeholder="Categoría (Para agrupar)" />
+        <input id="unidad" type="text" placeholder="Unidad / Ubicación" />
+        <input id="foto" type="url" placeholder="URL de la fotografía" />
+        <textarea id="descripcion" placeholder="Descripción o reseña del integrante"></textarea>
 
         <div class="form-actions">
-          <button type="submit" class="btn-primary">Guardar</button>
-          <button type="button" id="btnCancelEdit" class="btn-muted">Cancelar</button>
+          <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar integrante</button>
+          <button type="button" id="btnCancelEdit" class="btn-muted"><i class="fa-solid fa-xmark"></i> Cancelar</button>
         </div>
       </form>
 
       <div id="formMessage" class="message"></div>
     </section>
 
-    <div id="comiteGrid" class="grid"></div>
+    <div id="comiteContainer"></div>
   </div>
 
   <script type="module">
@@ -256,7 +386,7 @@
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const debugBox = document.getElementById('debugBox');
-    const comiteGrid = document.getElementById('comiteGrid');
+    const comiteContainer = document.getElementById('comiteContainer');
     const adminPanel = document.getElementById('adminPanel');
     const adminBadge = document.getElementById('adminBadge');
     const userStatus = document.getElementById('userStatus');
@@ -265,6 +395,7 @@
     const memberForm = document.getElementById('memberForm');
     const btnCancelEdit = document.getElementById('btnCancelEdit');
     const formMessage = document.getElementById('formMessage');
+    const btnBack = document.getElementById('btnBack'); // Referencia al nuevo botón
 
     const memberId = document.getElementById('memberId');
     const nombre = document.getElementById('nombre');
@@ -278,8 +409,18 @@
     let currentUser = null;
     let isAdmin = false;
 
-    function setDebug(message, type = 'normal') {
-      debugBox.textContent = message;
+    // --- EVENTO PARA EL BOTÓN DE VOLVER ---
+    btnBack.addEventListener('click', () => {
+      // Regresa a la página anterior en el historial del navegador
+      window.history.back();
+      
+      // Opcional: Si quieres que vaya a una URL específica por defecto si no hay historial, 
+      // puedes usar esto en su lugar:
+      // window.location.href = 'index.html'; 
+    });
+
+    function setDebug(message, type = 'normal', icon = 'fa-info-circle') {
+      debugBox.innerHTML = `<i class="fa-solid ${icon}"></i> ${message}`;
       debugBox.className = 'notice';
       if (type === 'error') debugBox.classList.add('error');
       if (type === 'ok') debugBox.classList.add('okbox');
@@ -308,12 +449,11 @@
         console.error('Error verificando admin:', error.message);
         return false;
       }
-
       return !!data;
     }
 
     async function loadComite() {
-      setDebug('Consultando datos del comité...');
+      setDebug('Consultando datos del comité...', 'normal', 'fa-spinner fa-spin');
 
       const { data, error } = await supabase
         .from('comite')
@@ -322,15 +462,16 @@
 
       if (error) {
         console.error('Error cargando comité:', error);
-        setDebug('Error cargando comité: ' + error.message, 'error');
-        comiteGrid.innerHTML = '<p>No se pudo cargar el comité.</p>';
+        setDebug('Error al cargar la plataforma: ' + error.message, 'error', 'fa-triangle-exclamation');
+        comiteContainer.innerHTML = '<div class="notice error"><i class="fa-solid fa-circle-exclamation"></i> No se pudo cargar el comité.</div>';
         return;
       }
 
       if (!data || data.length === 0) {
-        setDebug('La conexión funciona, pero la tabla comite no tiene registros visibles.', 'ok');
+        setDebug('Conexión exitosa. No hay registros capturados en este momento.', 'ok', 'fa-check');
       } else {
-        setDebug('Comité cargado correctamente.', 'ok');
+        setDebug('Comité cargado y sincronizado correctamente.', 'ok', 'fa-cloud-arrow-down');
+        setTimeout(() => debugBox.classList.add('hidden'), 3000); 
       }
 
       renderComite(data || []);
@@ -338,31 +479,60 @@
 
     function renderComite(items) {
       if (!items.length) {
-        comiteGrid.innerHTML = '<p>No hay integrantes capturados.</p>';
+        comiteContainer.innerHTML = '<div class="notice"><i class="fa-solid fa-folder-open"></i> El directorio está vacío.</div>';
         return;
       }
 
-      comiteGrid.innerHTML = items.map(item => `
-        <article class="card">
-          <img src="${escapeHtml(item.foto || '')}" alt="${escapeHtml(item.nombre || 'Sin nombre')}"
-               onerror="this.src='https://placehold.co/600x400?text=Sin+foto'">
-          <div class="card-body">
-            <h3>${escapeHtml(item.nombre || '')}</h3>
-            <div class="meta"><strong>Cartera:</strong> ${escapeHtml(item.cartera || '-')}</div>
-            <div class="meta"><strong>Área:</strong> ${escapeHtml(item.area || '-')}</div>
-            <div class="meta"><strong>Categoría:</strong> ${escapeHtml(item.categoria || '-')}</div>
-            <div class="meta"><strong>Unidad:</strong> ${escapeHtml(item.unidad || '-')}</div>
-            <div class="desc">${escapeHtml(item.descripcion || item.desc || '')}</div>
+      // Agrupar los miembros por categoría
+      const grupos = items.reduce((acc, item) => {
+        const cat = item.categoria && item.categoria.trim() !== '' ? item.categoria.trim() : 'Otras Áreas';
+        if (!acc[cat]) acc[cat] = [];
+        acc[cat].push(item);
+        return acc;
+      }, {});
 
-            ${isAdmin ? `
-              <div class="card-actions">
-                <button class="btn-primary" data-edit='${escapeHtmlAttr(JSON.stringify(item))}'>Editar</button>
-                <button class="btn-danger" data-delete="${item.id}">Eliminar</button>
-              </div>
-            ` : ''}
+      let html = '';
+      let animDelay = 0;
+
+      for (const [nombreCategoria, miembros] of Object.entries(grupos)) {
+        html += `
+          <div class="category-section" style="animation-delay: ${animDelay}s">
+            <h2 class="category-title">
+              <i class="fa-solid fa-sitemap"></i> ${escapeHtml(nombreCategoria)}
+            </h2>
+            <div class="grid">
+        `;
+        
+        animDelay += 0.1;
+
+        html += miembros.map(item => `
+          <article class="card">
+            <img src="${escapeHtml(item.foto || '')}" alt="${escapeHtml(item.nombre || 'Sin nombre')}"
+                 onerror="this.src='https://placehold.co/600x400/17304f/f0fdfa?text=Sin+foto'">
+            <div class="card-body">
+              <h3>${escapeHtml(item.nombre || '')}</h3>
+              <div class="meta"><i class="fa-solid fa-briefcase"></i> <span><strong>Cartera:</strong> ${escapeHtml(item.cartera || '-')}</span></div>
+              <div class="meta"><i class="fa-solid fa-building"></i> <span><strong>Área:</strong> ${escapeHtml(item.area || '-')}</span></div>
+              <div class="meta"><i class="fa-solid fa-location-dot"></i> <span><strong>Unidad:</strong> ${escapeHtml(item.unidad || '-')}</span></div>
+              ${(item.descripcion || item.desc) ? `<div class="desc">${escapeHtml(item.descripcion || item.desc)}</div>` : ''}
+
+              ${isAdmin ? `
+                <div class="card-actions">
+                  <button class="btn-primary" data-edit='${escapeHtmlAttr(JSON.stringify(item))}'><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                  <button class="btn-danger" data-delete="${item.id}"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
+                </div>
+              ` : ''}
+            </div>
+          </article>
+        `).join('');
+
+        html += `
+            </div>
           </div>
-        </article>
-      `).join('');
+        `;
+      }
+
+      comiteContainer.innerHTML = html;
 
       if (isAdmin) bindAdminCardActions();
     }
@@ -379,7 +549,7 @@
       document.querySelectorAll('[data-delete]').forEach(btn => {
         btn.addEventListener('click', async () => {
           const id = btn.getAttribute('data-delete');
-          const ok = confirm('¿Seguro que deseas eliminar este integrante?');
+          const ok = confirm('⚠️ ¿Seguro que deseas eliminar este integrante del comité? Esta acción no se puede deshacer.');
           if (!ok) return;
 
           const { error } = await supabase
@@ -406,8 +576,9 @@
       unidad.value = item.unidad || '';
       foto.value = item.foto || '';
       descripcion.value = item.descripcion || item.desc || '';
-      formMessage.textContent = 'Editando registro #' + item.id;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      formMessage.innerHTML = `<i class="fa-solid fa-pen"></i> Editando registro activo`;
+      
+      adminPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function resetForm() {
@@ -443,19 +614,20 @@
       }
 
       if (result.error) {
-        formMessage.textContent = 'Error: ' + result.error.message;
+        formMessage.innerHTML = `<span style="color:var(--danger)"><i class="fa-solid fa-circle-xmark"></i> Error: ${result.error.message}</span>`;
         return;
       }
 
       resetForm();
       await loadComite();
-      formMessage.textContent = 'Guardado correctamente.';
+      formMessage.innerHTML = `<span style="color:var(--ok)"><i class="fa-solid fa-circle-check"></i> Registro guardado exitosamente.</span>`;
+      setTimeout(() => formMessage.textContent = '', 4000);
     });
 
     btnCancelEdit.addEventListener('click', resetForm);
 
     btnLogin.addEventListener('click', async () => {
-      const email = prompt('Correo electrónico:');
+      const email = prompt('Correo electrónico de administrador:');
       if (!email) return;
 
       const password = prompt('Contraseña:');
@@ -467,7 +639,7 @@
       });
 
       if (error) {
-        alert('Error al iniciar sesión: ' + error.message);
+        alert('Credenciales incorrectas: ' + error.message);
         return;
       }
 
@@ -484,11 +656,11 @@
       isAdmin = await checkIfAdmin();
 
       if (currentUser) {
-        userStatus.textContent = currentUser.email || 'Sesión iniciada';
+        userStatus.innerHTML = `<i class="fa-solid fa-user-check"></i> ${currentUser.email}`;
         btnLogin.classList.add('hidden');
         btnLogout.classList.remove('hidden');
       } else {
-        userStatus.textContent = 'No has iniciado sesión';
+        userStatus.innerHTML = `<i class="fa-solid fa-user-xmark"></i> Sesión no iniciada`;
         btnLogin.classList.remove('hidden');
         btnLogout.classList.add('hidden');
       }
