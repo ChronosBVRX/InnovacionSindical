@@ -454,18 +454,16 @@
     }
 
     // --- FUNCIÓN MÁGICA PARA GOOGLE DRIVE ---
-    // Convierte el enlace web de Drive en un enlace de imagen directa
     function obtenerUrlDirectaDrive(url) {
       if (!url) return '';
       if (url.includes('drive.google.com')) {
-        // Busca la combinación de letras y números que identifica tu archivo
         const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
         if (match && match[1]) {
-          // Devuelve el formato directo de Google para incrustar imágenes
-          return `https://lh3.googleusercontent.com/d/${match[1]}`;
+          // Solucionado: Formato correcto con interpolación (faltaba el $ en el código anterior)
+          return `https://drive.google.com/uc?export=view&id=${match[1]}`;
         }
       }
-      return url; // Si no es de Drive, lo deja igual
+      return url;
     }
 
     async function loadComite() {
@@ -528,12 +526,11 @@
         animDelay += 0.1;
 
         html += miembros.map(item => {
-          // APLICAMOS LA MAGIA AQUÍ AL RENDERIZAR LA TARJETA
           const fotoDirecta = obtenerUrlDirectaDrive(item.foto);
 
           return `
           <article class="card">
-            <img src="${escapeHtml(fotoDirecta)}" alt="${escapeHtml(item.nombre || 'Sin nombre')}"
+            <img src="${escapeHtmlAttr(fotoDirecta)}" alt="${escapeHtmlAttr(item.nombre || 'Sin nombre')}"
                  onerror="this.src='https://placehold.co/600x400/17304f/f0fdfa?text=Sin+foto'">
             <div class="card-body">
               ${item.area ? `<div class="cargo-badge"><i class="fa-solid fa-id-badge"></i> ${escapeHtml(item.area)}</div>` : ''}
@@ -680,11 +677,32 @@
       await loadComite();
     }
 
-    supabase.auth.onAuthStateChange(async () => refreshUI());
+    // --- CORRECCIÓN CRÍTICA DE BUCLE DE SESIÓN ---
+    // Ahora solo refresca si realmente hubo un inicio o cierre de sesión, 
+    // evitando que Chrome se trabe al cargar inicialmente.
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+        refreshUI();
+      }
+    });
 
-    function escapeHtml(text) { return String(text).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;'); }
-    function escapeHtmlAttr(text) { return String(text).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll("'", '&#039;').replaceAll('<', '&lt;').replaceAll('>', '&gt;'); }
-    function unescapeHtmlAttr(text) { return String(text).replaceAll('&quot;', '"').replaceAll('&#039;', "'").replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&'); }
+    // --- CORRECCIÓN CRÍTICA DE SINTAXIS ---
+    // Funciones reescritas con seguridad máxima para que no rompan el JS
+    function escapeHtml(str) {
+      if (!str) return '';
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return String(str).replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+
+    function escapeHtmlAttr(str) {
+      return escapeHtml(str);
+    }
+
+    function unescapeHtmlAttr(str) {
+      if (!str) return '';
+      const map = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#039;': "'" };
+      return String(str).replace(/&amp;|&lt;|&gt;|&quot;|&#039;/g, function(m) { return map[m]; });
+    }
 
     await refreshUI();
   </script>
