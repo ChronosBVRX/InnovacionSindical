@@ -133,7 +133,7 @@
       box-shadow: 0 2px 10px rgba(69, 211, 159, 0.3);
     }
 
-    /* --- Categorías y Grid --- */
+    /* --- Categorías / Carteras y Grid --- */
     .category-section {
       margin-bottom: 48px;
       animation: fadeInUp 0.6s ease backwards;
@@ -358,9 +358,9 @@
       <form id="memberForm">
         <input type="hidden" id="memberId" />
         <input id="nombre" type="text" placeholder="Nombre completo" required />
-        <input id="cartera" type="text" placeholder="Cartera (Ej. Secretaría General)" />
+        <input id="cartera" type="text" placeholder="Cartera (Ej. Secretaría General)" required />
         <input id="area" type="text" placeholder="Área" />
-        <input id="categoria" type="text" placeholder="Categoría (Para agrupar)" />
+        <input id="categoria" type="text" placeholder="Categoría (Opcional)" />
         <input id="unidad" type="text" placeholder="Unidad / Ubicación" />
         <input id="foto" type="url" placeholder="URL de la fotografía" />
         <textarea id="descripcion" placeholder="Descripción o reseña del integrante"></textarea>
@@ -395,7 +395,7 @@
     const memberForm = document.getElementById('memberForm');
     const btnCancelEdit = document.getElementById('btnCancelEdit');
     const formMessage = document.getElementById('formMessage');
-    const btnBack = document.getElementById('btnBack'); // Referencia al nuevo botón
+    const btnBack = document.getElementById('btnBack');
 
     const memberId = document.getElementById('memberId');
     const nombre = document.getElementById('nombre');
@@ -409,14 +409,8 @@
     let currentUser = null;
     let isAdmin = false;
 
-    // --- EVENTO PARA EL BOTÓN DE VOLVER ---
     btnBack.addEventListener('click', () => {
-      // Regresa a la página anterior en el historial del navegador
       window.history.back();
-      
-      // Opcional: Si quieres que vaya a una URL específica por defecto si no hay historial, 
-      // puedes usar esto en su lugar:
-      // window.location.href = 'index.html'; 
     });
 
     function setDebug(message, type = 'normal', icon = 'fa-info-circle') {
@@ -483,22 +477,23 @@
         return;
       }
 
-      // Agrupar los miembros por categoría
+      // 1. Agrupar los miembros por CARTERA (en lugar de categoría)
       const grupos = items.reduce((acc, item) => {
-        const cat = item.categoria && item.categoria.trim() !== '' ? item.categoria.trim() : 'Otras Áreas';
-        if (!acc[cat]) acc[cat] = [];
-        acc[cat].push(item);
+        const nombreCartera = item.cartera && item.cartera.trim() !== '' ? item.cartera.trim() : 'Sin Cartera Asignada';
+        if (!acc[nombreCartera]) acc[nombreCartera] = [];
+        acc[nombreCartera].push(item);
         return acc;
       }, {});
 
       let html = '';
       let animDelay = 0;
 
-      for (const [nombreCategoria, miembros] of Object.entries(grupos)) {
+      // 2. Generar el HTML agrupado por cartera
+      for (const [nombreCartera, miembros] of Object.entries(grupos)) {
         html += `
           <div class="category-section" style="animation-delay: ${animDelay}s">
             <h2 class="category-title">
-              <i class="fa-solid fa-sitemap"></i> ${escapeHtml(nombreCategoria)}
+              <i class="fa-solid fa-briefcase"></i> ${escapeHtml(nombreCartera)}
             </h2>
             <div class="grid">
         `;
@@ -511,8 +506,8 @@
                  onerror="this.src='https://placehold.co/600x400/17304f/f0fdfa?text=Sin+foto'">
             <div class="card-body">
               <h3>${escapeHtml(item.nombre || '')}</h3>
-              <div class="meta"><i class="fa-solid fa-briefcase"></i> <span><strong>Cartera:</strong> ${escapeHtml(item.cartera || '-')}</span></div>
               <div class="meta"><i class="fa-solid fa-building"></i> <span><strong>Área:</strong> ${escapeHtml(item.area || '-')}</span></div>
+              <div class="meta"><i class="fa-solid fa-tags"></i> <span><strong>Categoría:</strong> ${escapeHtml(item.categoria || '-')}</span></div>
               <div class="meta"><i class="fa-solid fa-location-dot"></i> <span><strong>Unidad:</strong> ${escapeHtml(item.unidad || '-')}</span></div>
               ${(item.descripcion || item.desc) ? `<div class="desc">${escapeHtml(item.descripcion || item.desc)}</div>` : ''}
 
