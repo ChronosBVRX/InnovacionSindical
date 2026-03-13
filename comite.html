@@ -133,7 +133,7 @@
       box-shadow: 0 2px 10px rgba(69, 211, 159, 0.3);
     }
 
-    /* --- Bloques Principales (Secretarías, Comisiones, etc) --- */
+    /* --- Bloques Principales --- */
     .main-category-group {
       margin-bottom: 56px;
       animation: fadeInUp 0.6s ease backwards;
@@ -227,7 +227,6 @@
       color: var(--primary);
     }
     
-    /* Etiqueta de Cargo Visual */
     .cargo-badge {
       display: inline-block;
       background: rgba(77, 161, 168, 0.2);
@@ -380,10 +379,10 @@
       <form id="memberForm">
         <input type="hidden" id="memberId" />
         <input id="nombre" type="text" placeholder="Nombre completo" required />
-        <input id="categoria" type="text" placeholder="Grupo (Ej. Secretarías, Comisiones, Subcomisiones)" required />
-        <input id="cartera" type="text" placeholder="Área o Departamento (Ej. Hacienda)" />
-        <input id="area" type="text" placeholder="Cargo (Ej. Secretario General, Auxiliar)" />
-        <input id="unidad" type="text" placeholder="Unidad / Ubicación" />
+        <input id="cartera" type="text" placeholder="Cartera (Ej. Secretaría General, Comisión de Deportes)" required />
+        <input id="area" type="text" placeholder="Cargo en la cartera (Ej. Titular, Auxiliar)" />
+        <input id="categoria" type="text" placeholder="Categoría Laboral (Ej. Médico, Administrativo)" />
+        <input id="unidad" type="text" placeholder="Unidad de adscripción" />
         <input id="foto" type="url" placeholder="URL de la fotografía" />
         <textarea id="descripcion" placeholder="Descripción o reseña del integrante"></textarea>
 
@@ -421,9 +420,9 @@
 
     const memberId = document.getElementById('memberId');
     const nombre = document.getElementById('nombre');
-    const categoria = document.getElementById('categoria');
     const cartera = document.getElementById('cartera');
     const area = document.getElementById('area');
+    const categoria = document.getElementById('categoria');
     const unidad = document.getElementById('unidad');
     const foto = document.getElementById('foto');
     const descripcion = document.getElementById('descripcion');
@@ -492,24 +491,39 @@
         return;
       }
 
-      // 1. Agrupación simple: SOLO por Categoría (Secretarías, Comisiones, Subcomisiones)
-      const grupos = items.reduce((acc, item) => {
-        const cat = item.categoria && item.categoria.trim() !== '' ? item.categoria.trim() : 'Otras Áreas';
+      // 1. Agrupación Automática basada en el nombre de la cartera
+      const grupos = {
+        'Secretarías': [],
+        'Comisiones': [],
+        'Subcomisiones': [],
+        'Otras Áreas': []
+      };
+
+      items.forEach(item => {
+        const carteraTexto = (item.cartera || '').toLowerCase();
         
-        if (!acc[cat]) acc[cat] = [];
-        acc[cat].push(item);
-        return acc;
-      }, {});
+        if (carteraTexto.includes('subcomisi')) {
+          grupos['Subcomisiones'].push(item);
+        } else if (carteraTexto.includes('comisi')) {
+          grupos['Comisiones'].push(item);
+        } else if (carteraTexto.includes('secretar')) {
+          grupos['Secretarías'].push(item);
+        } else {
+          grupos['Otras Áreas'].push(item);
+        }
+      });
 
       let html = '';
       let animDelay = 0;
 
       // 2. Renderizar Bloques Principales
-      for (const [nombreCat, miembros] of Object.entries(grupos)) {
+      for (const [nombreBloque, miembros] of Object.entries(grupos)) {
+        if (miembros.length === 0) continue; // Si no hay nadie en ese bloque, no lo dibuja
+
         html += `
           <div class="main-category-group" style="animation-delay: ${animDelay}s">
             <h1 class="main-category-title">
-              <i class="fa-solid fa-layer-group"></i> ${escapeHtml(nombreCat)}
+              <i class="fa-solid fa-layer-group"></i> ${escapeHtml(nombreBloque)}
             </h1>
             <div class="grid">
         `;
@@ -525,7 +539,8 @@
               ${item.area ? `<div class="cargo-badge"><i class="fa-solid fa-id-badge"></i> ${escapeHtml(item.area)}</div>` : ''}
               <h3>${escapeHtml(item.nombre || '')}</h3>
               
-              <div class="meta"><i class="fa-solid fa-briefcase"></i> <span><strong>Área:</strong> ${escapeHtml(item.cartera || '-')}</span></div>
+              <div class="meta"><i class="fa-solid fa-briefcase"></i> <span><strong>Cartera:</strong> ${escapeHtml(item.cartera || '-')}</span></div>
+              <div class="meta"><i class="fa-solid fa-user-tag"></i> <span><strong>Categoría Laboral:</strong> ${escapeHtml(item.categoria || '-')}</span></div>
               <div class="meta"><i class="fa-solid fa-location-dot"></i> <span><strong>Unidad:</strong> ${escapeHtml(item.unidad || '-')}</span></div>
               ${(item.descripcion || item.desc) ? `<div class="desc">${escapeHtml(item.descripcion || item.desc)}</div>` : ''}
 
@@ -575,9 +590,9 @@
     function fillForm(item) {
       memberId.value = item.id || '';
       nombre.value = item.nombre || '';
-      categoria.value = item.categoria || '';
       cartera.value = item.cartera || '';
       area.value = item.area || '';
+      categoria.value = item.categoria || '';
       unidad.value = item.unidad || '';
       foto.value = item.foto || '';
       descripcion.value = item.descripcion || item.desc || '';
@@ -597,9 +612,9 @@
 
       const payload = {
         nombre: nombre.value.trim(),
-        categoria: categoria.value.trim(),
         cartera: cartera.value.trim(),
         area: area.value.trim(),
+        categoria: categoria.value.trim(),
         unidad: unidad.value.trim(),
         foto: foto.value.trim(),
         descripcion: descripcion.value.trim()
