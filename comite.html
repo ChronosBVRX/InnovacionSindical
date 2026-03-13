@@ -529,15 +529,25 @@
         return;
       }
 
-      // Agrupación dinámica por la cartera ingresada
-      const grupos = {};
+      // Lógica original restaurada: Agrupación por categorías predefinidas
+      const grupos = {
+        'Secretarías': [],
+        'Comisiones': [],
+        'Subcomisiones': [],
+        'Otras Áreas': []
+      };
 
       items.forEach(item => {
-        const nombreCartera = item.cartera ? item.cartera.trim() : 'Sin Cartera Asignada';
-        if (!grupos[nombreCartera]) {
-          grupos[nombreCartera] = [];
+        const carteraTexto = (item.cartera || '').toLowerCase();
+        if (carteraTexto.includes('subcomisi')) {
+          grupos['Subcomisiones'].push(item);
+        } else if (carteraTexto.includes('comisi')) {
+          grupos['Comisiones'].push(item);
+        } else if (carteraTexto.includes('secretar')) {
+          grupos['Secretarías'].push(item);
+        } else {
+          grupos['Otras Áreas'].push(item);
         }
-        grupos[nombreCartera].push(item);
       });
 
       let html = '';
