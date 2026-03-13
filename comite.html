@@ -133,7 +133,7 @@
       box-shadow: 0 2px 10px rgba(69, 211, 159, 0.3);
     }
 
-    /* --- Jerarquía Visual (Categorías y Carteras) --- */
+    /* --- Bloques Principales (Secretarías, Comisiones, etc) --- */
     .main-category-group {
       margin-bottom: 56px;
       animation: fadeInUp 0.6s ease backwards;
@@ -148,7 +148,7 @@
       font-weight: 800;
       color: var(--txt);
       margin-top: 0;
-      margin-bottom: 32px;
+      margin-bottom: 24px;
       padding-bottom: 16px;
       border-bottom: 3px solid var(--primary);
       display: flex;
@@ -158,26 +158,7 @@
       letter-spacing: 1px;
     }
 
-    .sub-category-section {
-      margin-bottom: 40px;
-    }
-
-    .sub-category-section:last-child {
-      margin-bottom: 0;
-    }
-
-    .category-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--muted);
-      margin-bottom: 20px;
-      padding-bottom: 8px;
-      border-bottom: 1px dashed rgba(255,255,255,0.2);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    /* --- Grid --- */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -246,7 +227,7 @@
       color: var(--primary);
     }
     
-    /* Destacar el cargo */
+    /* Etiqueta de Cargo Visual */
     .cargo-badge {
       display: inline-block;
       background: rgba(77, 161, 168, 0.2);
@@ -257,6 +238,7 @@
       font-size: 0.85rem;
       margin-bottom: 10px;
       border: 1px solid rgba(77, 161, 168, 0.4);
+      align-self: flex-start;
     }
 
     .desc {
@@ -398,9 +380,9 @@
       <form id="memberForm">
         <input type="hidden" id="memberId" />
         <input id="nombre" type="text" placeholder="Nombre completo" required />
-        <input id="categoria" type="text" placeholder="Bloque (Ej. Secretaría, Comisión, Subcomisión)" required />
-        <input id="cartera" type="text" placeholder="Nombre del área (Ej. Hacienda, Conflictos)" required />
-        <input id="area" type="text" placeholder="Cargo (Ej. Secretario General, Auxiliar, Vocal)" />
+        <input id="categoria" type="text" placeholder="Grupo (Ej. Secretarías, Comisiones, Subcomisiones)" required />
+        <input id="cartera" type="text" placeholder="Área o Departamento (Ej. Hacienda)" />
+        <input id="area" type="text" placeholder="Cargo (Ej. Secretario General, Auxiliar)" />
         <input id="unidad" type="text" placeholder="Unidad / Ubicación" />
         <input id="foto" type="url" placeholder="URL de la fotografía" />
         <textarea id="descripcion" placeholder="Descripción o reseña del integrante"></textarea>
@@ -510,86 +492,57 @@
         return;
       }
 
-      // 1. Agrupar Jerárquicamente: Categoría (Secretarías/Comisiones) -> Cartera (Hacienda/Honor)
+      // 1. Agrupación simple: SOLO por Categoría (Secretarías, Comisiones, Subcomisiones)
       const grupos = items.reduce((acc, item) => {
         const cat = item.categoria && item.categoria.trim() !== '' ? item.categoria.trim() : 'Otras Áreas';
-        const subCat = item.cartera && item.cartera.trim() !== '' ? item.cartera.trim() : 'General';
         
-        if (!acc[cat]) acc[cat] = {};
-        if (!acc[cat][subCat]) acc[cat][subCat] = [];
-        
-        acc[cat][subCat].push(item);
+        if (!acc[cat]) acc[cat] = [];
+        acc[cat].push(item);
         return acc;
       }, {});
 
       let html = '';
       let animDelay = 0;
 
-      // 2. Renderizar Nivel 1 (Bloques principales)
-      for (const [nombreCat, carteras] of Object.entries(grupos)) {
+      // 2. Renderizar Bloques Principales
+      for (const [nombreCat, miembros] of Object.entries(grupos)) {
         html += `
           <div class="main-category-group" style="animation-delay: ${animDelay}s">
             <h1 class="main-category-title">
               <i class="fa-solid fa-layer-group"></i> ${escapeHtml(nombreCat)}
             </h1>
+            <div class="grid">
         `;
+        
         animDelay += 0.1;
 
-        // 3. Renderizar Nivel 2 (Sub-bloques o Carteras)
-        for (const [nombreCartera, miembros] of Object.entries(carteras)) {
-          
-          // Ordenar jerárquicamente a los miembros (Secretario/Presidente -> Auxiliares)
-          miembros.sort((a, b) => {
-            const cargoA = (a.area || '').toLowerCase();
-            const cargoB = (b.area || '').toLowerCase();
-            
-            // Función de peso jerárquico
-            const getJerarquia = (cargo) => {
-              if (cargo.includes('secretari') || cargo.includes('president') || cargo.includes('titular')) return 1;
-              if (cargo.includes('auxiliar') || cargo.includes('vocal') || cargo.includes('suplente')) return 3;
-              return 2; // Cargos intermedios o no definidos
-            };
-            
-            return getJerarquia(cargoA) - getJerarquia(cargoB);
-          });
+        // 3. Renderizar Miembros (Tarjetas en Grid)
+        html += miembros.map(item => `
+          <article class="card">
+            <img src="${escapeHtml(item.foto || '')}" alt="${escapeHtml(item.nombre || 'Sin nombre')}"
+                 onerror="this.src='https://placehold.co/600x400/17304f/f0fdfa?text=Sin+foto'">
+            <div class="card-body">
+              ${item.area ? `<div class="cargo-badge"><i class="fa-solid fa-id-badge"></i> ${escapeHtml(item.area)}</div>` : ''}
+              <h3>${escapeHtml(item.nombre || '')}</h3>
+              
+              <div class="meta"><i class="fa-solid fa-briefcase"></i> <span><strong>Área:</strong> ${escapeHtml(item.cartera || '-')}</span></div>
+              <div class="meta"><i class="fa-solid fa-location-dot"></i> <span><strong>Unidad:</strong> ${escapeHtml(item.unidad || '-')}</span></div>
+              ${(item.descripcion || item.desc) ? `<div class="desc">${escapeHtml(item.descripcion || item.desc)}</div>` : ''}
 
-          html += `
-            <div class="sub-category-section">
-              <h2 class="category-title">
-                <i class="fa-solid fa-briefcase"></i> ${escapeHtml(nombreCartera)}
-              </h2>
-              <div class="grid">
-          `;
-
-          // 4. Renderizar Miembros (Tarjetas)
-          html += miembros.map(item => `
-            <article class="card">
-              <img src="${escapeHtml(item.foto || '')}" alt="${escapeHtml(item.nombre || 'Sin nombre')}"
-                   onerror="this.src='https://placehold.co/600x400/17304f/f0fdfa?text=Sin+foto'">
-              <div class="card-body">
-                ${item.area ? `<div class="cargo-badge"><i class="fa-solid fa-id-badge"></i> ${escapeHtml(item.area)}</div>` : ''}
-                <h3>${escapeHtml(item.nombre || '')}</h3>
-                
-                <div class="meta"><i class="fa-solid fa-location-dot"></i> <span><strong>Unidad:</strong> ${escapeHtml(item.unidad || '-')}</span></div>
-                ${(item.descripcion || item.desc) ? `<div class="desc">${escapeHtml(item.descripcion || item.desc)}</div>` : ''}
-
-                ${isAdmin ? `
-                  <div class="card-actions">
-                    <button class="btn-primary" data-edit='${escapeHtmlAttr(JSON.stringify(item))}'><i class="fa-solid fa-pen-to-square"></i> Editar</button>
-                    <button class="btn-danger" data-delete="${item.id}"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
-                  </div>
-                ` : ''}
-              </div>
-            </article>
-          `).join('');
-
-          html += `
-              </div>
+              ${isAdmin ? `
+                <div class="card-actions">
+                  <button class="btn-primary" data-edit='${escapeHtmlAttr(JSON.stringify(item))}'><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                  <button class="btn-danger" data-delete="${item.id}"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
+                </div>
+              ` : ''}
             </div>
-          `;
-        }
+          </article>
+        `).join('');
 
-        html += `</div>`; // Cierra main-category-group
+        html += `
+            </div>
+          </div>
+        `;
       }
 
       comiteContainer.innerHTML = html;
