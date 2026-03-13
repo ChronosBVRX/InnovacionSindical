@@ -453,14 +453,15 @@
       return !!data;
     }
 
-    // --- FUNCIÓN MÁGICA PARA GOOGLE DRIVE ---
+    // --- FUNCIÓN ACTUALIZADA: API de miniaturas de Google Drive ---
     function obtenerUrlDirectaDrive(url) {
       if (!url) return '';
       if (url.includes('drive.google.com')) {
         const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
         if (match && match[1]) {
-          // Solucionado: Formato correcto con interpolación (faltaba el $ en el código anterior)
-          return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+          // Utilizamos el endpoint thumbnail de Google Drive. Es el único que salta las nuevas restricciones.
+          // Le añadimos sz=w1000 para que la devuelva en alta calidad (hasta 1000px).
+          return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
         }
       }
       return url;
@@ -677,17 +678,12 @@
       await loadComite();
     }
 
-    // --- CORRECCIÓN CRÍTICA DE BUCLE DE SESIÓN ---
-    // Ahora solo refresca si realmente hubo un inicio o cierre de sesión, 
-    // evitando que Chrome se trabe al cargar inicialmente.
     supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
         refreshUI();
       }
     });
 
-    // --- CORRECCIÓN CRÍTICA DE SINTAXIS ---
-    // Funciones reescritas con seguridad máxima para que no rompan el JS
     function escapeHtml(str) {
       if (!str) return '';
       const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
