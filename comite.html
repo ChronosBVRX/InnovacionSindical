@@ -133,19 +133,46 @@
       box-shadow: 0 2px 10px rgba(69, 211, 159, 0.3);
     }
 
-    /* --- Categorías / Carteras y Grid --- */
-    .category-section {
-      margin-bottom: 48px;
+    /* --- Jerarquía Visual (Categorías y Carteras) --- */
+    .main-category-group {
+      margin-bottom: 56px;
       animation: fadeInUp 0.6s ease backwards;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 24px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .main-category-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--txt);
+      margin-top: 0;
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 3px solid var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .sub-category-section {
+      margin-bottom: 40px;
+    }
+
+    .sub-category-section:last-child {
+      margin-bottom: 0;
     }
 
     .category-title {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 700;
       color: var(--muted);
       margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--panel2);
+      padding-bottom: 8px;
+      border-bottom: 1px dashed rgba(255,255,255,0.2);
       display: flex;
       align-items: center;
       gap: 10px;
@@ -217,6 +244,19 @@
       width: 16px;
       text-align: center;
       color: var(--primary);
+    }
+    
+    /* Destacar el cargo */
+    .cargo-badge {
+      display: inline-block;
+      background: rgba(77, 161, 168, 0.2);
+      color: #e0f2f1;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+      border: 1px solid rgba(77, 161, 168, 0.4);
     }
 
     .desc {
@@ -340,7 +380,7 @@
         <button id="btnBack" class="btn-muted"><i class="fa-solid fa-arrow-left"></i> Volver</button>
         
         <div class="title">
-          <i class="fa-solid fa-users-viewfinder"></i> Directorio del Comité
+          <i class="fa-solid fa-sitemap"></i> Estructura del Comité
           <span id="adminBadge" class="admin-badge hidden"><i class="fa-solid fa-shield-halved"></i> Admin</span>
         </div>
       </div>
@@ -358,9 +398,9 @@
       <form id="memberForm">
         <input type="hidden" id="memberId" />
         <input id="nombre" type="text" placeholder="Nombre completo" required />
-        <input id="cartera" type="text" placeholder="Cartera (Ej. Secretaría General)" required />
-        <input id="area" type="text" placeholder="Área" />
-        <input id="categoria" type="text" placeholder="Categoría (Opcional)" />
+        <input id="categoria" type="text" placeholder="Bloque (Ej. Secretaría, Comisión, Subcomisión)" required />
+        <input id="cartera" type="text" placeholder="Nombre del área (Ej. Hacienda, Conflictos)" required />
+        <input id="area" type="text" placeholder="Cargo (Ej. Secretario General, Auxiliar, Vocal)" />
         <input id="unidad" type="text" placeholder="Unidad / Ubicación" />
         <input id="foto" type="url" placeholder="URL de la fotografía" />
         <textarea id="descripcion" placeholder="Descripción o reseña del integrante"></textarea>
@@ -399,9 +439,9 @@
 
     const memberId = document.getElementById('memberId');
     const nombre = document.getElementById('nombre');
+    const categoria = document.getElementById('categoria');
     const cartera = document.getElementById('cartera');
     const area = document.getElementById('area');
-    const categoria = document.getElementById('categoria');
     const unidad = document.getElementById('unidad');
     const foto = document.getElementById('foto');
     const descripcion = document.getElementById('descripcion');
@@ -422,10 +462,7 @@
 
     async function getCurrentUser() {
       const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error('Error getUser:', error.message);
-        return null;
-      }
+      if (error) return null;
       return data.user;
     }
 
@@ -439,15 +476,12 @@
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (error) {
-        console.error('Error verificando admin:', error.message);
-        return false;
-      }
+      if (error) return false;
       return !!data;
     }
 
     async function loadComite() {
-      setDebug('Consultando datos del comité...', 'normal', 'fa-spinner fa-spin');
+      setDebug('Sincronizando estructura...', 'normal', 'fa-spinner fa-spin');
 
       const { data, error } = await supabase
         .from('comite')
@@ -455,16 +489,15 @@
         .order('id', { ascending: true });
 
       if (error) {
-        console.error('Error cargando comité:', error);
-        setDebug('Error al cargar la plataforma: ' + error.message, 'error', 'fa-triangle-exclamation');
-        comiteContainer.innerHTML = '<div class="notice error"><i class="fa-solid fa-circle-exclamation"></i> No se pudo cargar el comité.</div>';
+        setDebug('Error de conexión: ' + error.message, 'error', 'fa-triangle-exclamation');
+        comiteContainer.innerHTML = '<div class="notice error"><i class="fa-solid fa-circle-exclamation"></i> No se pudo cargar la estructura.</div>';
         return;
       }
 
       if (!data || data.length === 0) {
-        setDebug('Conexión exitosa. No hay registros capturados en este momento.', 'ok', 'fa-check');
+        setDebug('Sin registros en la base de datos.', 'ok', 'fa-check');
       } else {
-        setDebug('Comité cargado y sincronizado correctamente.', 'ok', 'fa-cloud-arrow-down');
+        setDebug('Estructura cargada correctamente.', 'ok', 'fa-cloud-arrow-down');
         setTimeout(() => debugBox.classList.add('hidden'), 3000); 
       }
 
@@ -473,58 +506,90 @@
 
     function renderComite(items) {
       if (!items.length) {
-        comiteContainer.innerHTML = '<div class="notice"><i class="fa-solid fa-folder-open"></i> El directorio está vacío.</div>';
+        comiteContainer.innerHTML = '<div class="notice"><i class="fa-solid fa-folder-open"></i> El organigrama está vacío.</div>';
         return;
       }
 
-      // 1. Agrupar los miembros por CARTERA (en lugar de categoría)
+      // 1. Agrupar Jerárquicamente: Categoría (Secretarías/Comisiones) -> Cartera (Hacienda/Honor)
       const grupos = items.reduce((acc, item) => {
-        const nombreCartera = item.cartera && item.cartera.trim() !== '' ? item.cartera.trim() : 'Sin Cartera Asignada';
-        if (!acc[nombreCartera]) acc[nombreCartera] = [];
-        acc[nombreCartera].push(item);
+        const cat = item.categoria && item.categoria.trim() !== '' ? item.categoria.trim() : 'Otras Áreas';
+        const subCat = item.cartera && item.cartera.trim() !== '' ? item.cartera.trim() : 'General';
+        
+        if (!acc[cat]) acc[cat] = {};
+        if (!acc[cat][subCat]) acc[cat][subCat] = [];
+        
+        acc[cat][subCat].push(item);
         return acc;
       }, {});
 
       let html = '';
       let animDelay = 0;
 
-      // 2. Generar el HTML agrupado por cartera
-      for (const [nombreCartera, miembros] of Object.entries(grupos)) {
+      // 2. Renderizar Nivel 1 (Bloques principales)
+      for (const [nombreCat, carteras] of Object.entries(grupos)) {
         html += `
-          <div class="category-section" style="animation-delay: ${animDelay}s">
-            <h2 class="category-title">
-              <i class="fa-solid fa-briefcase"></i> ${escapeHtml(nombreCartera)}
-            </h2>
-            <div class="grid">
+          <div class="main-category-group" style="animation-delay: ${animDelay}s">
+            <h1 class="main-category-title">
+              <i class="fa-solid fa-layer-group"></i> ${escapeHtml(nombreCat)}
+            </h1>
         `;
-        
         animDelay += 0.1;
 
-        html += miembros.map(item => `
-          <article class="card">
-            <img src="${escapeHtml(item.foto || '')}" alt="${escapeHtml(item.nombre || 'Sin nombre')}"
-                 onerror="this.src='https://placehold.co/600x400/17304f/f0fdfa?text=Sin+foto'">
-            <div class="card-body">
-              <h3>${escapeHtml(item.nombre || '')}</h3>
-              <div class="meta"><i class="fa-solid fa-building"></i> <span><strong>Área:</strong> ${escapeHtml(item.area || '-')}</span></div>
-              <div class="meta"><i class="fa-solid fa-tags"></i> <span><strong>Categoría:</strong> ${escapeHtml(item.categoria || '-')}</span></div>
-              <div class="meta"><i class="fa-solid fa-location-dot"></i> <span><strong>Unidad:</strong> ${escapeHtml(item.unidad || '-')}</span></div>
-              ${(item.descripcion || item.desc) ? `<div class="desc">${escapeHtml(item.descripcion || item.desc)}</div>` : ''}
+        // 3. Renderizar Nivel 2 (Sub-bloques o Carteras)
+        for (const [nombreCartera, miembros] of Object.entries(carteras)) {
+          
+          // Ordenar jerárquicamente a los miembros (Secretario/Presidente -> Auxiliares)
+          miembros.sort((a, b) => {
+            const cargoA = (a.area || '').toLowerCase();
+            const cargoB = (b.area || '').toLowerCase();
+            
+            // Función de peso jerárquico
+            const getJerarquia = (cargo) => {
+              if (cargo.includes('secretari') || cargo.includes('president') || cargo.includes('titular')) return 1;
+              if (cargo.includes('auxiliar') || cargo.includes('vocal') || cargo.includes('suplente')) return 3;
+              return 2; // Cargos intermedios o no definidos
+            };
+            
+            return getJerarquia(cargoA) - getJerarquia(cargoB);
+          });
 
-              ${isAdmin ? `
-                <div class="card-actions">
-                  <button class="btn-primary" data-edit='${escapeHtmlAttr(JSON.stringify(item))}'><i class="fa-solid fa-pen-to-square"></i> Editar</button>
-                  <button class="btn-danger" data-delete="${item.id}"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
-                </div>
-              ` : ''}
-            </div>
-          </article>
-        `).join('');
+          html += `
+            <div class="sub-category-section">
+              <h2 class="category-title">
+                <i class="fa-solid fa-briefcase"></i> ${escapeHtml(nombreCartera)}
+              </h2>
+              <div class="grid">
+          `;
 
-        html += `
+          // 4. Renderizar Miembros (Tarjetas)
+          html += miembros.map(item => `
+            <article class="card">
+              <img src="${escapeHtml(item.foto || '')}" alt="${escapeHtml(item.nombre || 'Sin nombre')}"
+                   onerror="this.src='https://placehold.co/600x400/17304f/f0fdfa?text=Sin+foto'">
+              <div class="card-body">
+                ${item.area ? `<div class="cargo-badge"><i class="fa-solid fa-id-badge"></i> ${escapeHtml(item.area)}</div>` : ''}
+                <h3>${escapeHtml(item.nombre || '')}</h3>
+                
+                <div class="meta"><i class="fa-solid fa-location-dot"></i> <span><strong>Unidad:</strong> ${escapeHtml(item.unidad || '-')}</span></div>
+                ${(item.descripcion || item.desc) ? `<div class="desc">${escapeHtml(item.descripcion || item.desc)}</div>` : ''}
+
+                ${isAdmin ? `
+                  <div class="card-actions">
+                    <button class="btn-primary" data-edit='${escapeHtmlAttr(JSON.stringify(item))}'><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                    <button class="btn-danger" data-delete="${item.id}"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
+                  </div>
+                ` : ''}
+              </div>
+            </article>
+          `).join('');
+
+          html += `
+              </div>
             </div>
-          </div>
-        `;
+          `;
+        }
+
+        html += `</div>`; // Cierra main-category-group
       }
 
       comiteContainer.innerHTML = html;
@@ -544,19 +609,11 @@
       document.querySelectorAll('[data-delete]').forEach(btn => {
         btn.addEventListener('click', async () => {
           const id = btn.getAttribute('data-delete');
-          const ok = confirm('⚠️ ¿Seguro que deseas eliminar este integrante del comité? Esta acción no se puede deshacer.');
+          const ok = confirm('⚠️ ¿Seguro que deseas eliminar este integrante?');
           if (!ok) return;
 
-          const { error } = await supabase
-            .from('comite')
-            .delete()
-            .eq('id', id);
-
-          if (error) {
-            alert('No se pudo eliminar: ' + error.message);
-            return;
-          }
-
+          const { error } = await supabase.from('comite').delete().eq('id', id);
+          if (error) { alert('Error: ' + error.message); return; }
           await loadComite();
         });
       });
@@ -565,9 +622,9 @@
     function fillForm(item) {
       memberId.value = item.id || '';
       nombre.value = item.nombre || '';
+      categoria.value = item.categoria || '';
       cartera.value = item.cartera || '';
       area.value = item.area || '';
-      categoria.value = item.categoria || '';
       unidad.value = item.unidad || '';
       foto.value = item.foto || '';
       descripcion.value = item.descripcion || item.desc || '';
@@ -587,29 +644,23 @@
 
       const payload = {
         nombre: nombre.value.trim(),
+        categoria: categoria.value.trim(),
         cartera: cartera.value.trim(),
         area: area.value.trim(),
-        categoria: categoria.value.trim(),
         unidad: unidad.value.trim(),
         foto: foto.value.trim(),
         descripcion: descripcion.value.trim()
       };
 
       let result;
-
       if (memberId.value) {
-        result = await supabase
-          .from('comite')
-          .update(payload)
-          .eq('id', memberId.value);
+        result = await supabase.from('comite').update(payload).eq('id', memberId.value);
       } else {
-        result = await supabase
-          .from('comite')
-          .insert([payload]);
+        result = await supabase.from('comite').insert([payload]);
       }
 
       if (result.error) {
-        formMessage.innerHTML = `<span style="color:var(--danger)"><i class="fa-solid fa-circle-xmark"></i> Error: ${result.error.message}</span>`;
+        formMessage.innerHTML = `<span style="color:var(--danger)"><i class="fa-solid fa-circle-xmark"></i> ${result.error.message}</span>`;
         return;
       }
 
@@ -628,15 +679,8 @@
       const password = prompt('Contraseña:');
       if (!password) return;
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) {
-        alert('Credenciales incorrectas: ' + error.message);
-        return;
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) { alert('Credenciales incorrectas: ' + error.message); return; }
 
       await refreshUI();
     });
@@ -672,35 +716,16 @@
       await loadComite();
     }
 
-    supabase.auth.onAuthStateChange(async () => {
-      await refreshUI();
-    });
+    supabase.auth.onAuthStateChange(async () => refreshUI());
 
     function escapeHtml(text) {
-      return String(text)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
+      return String(text).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
     }
-
     function escapeHtmlAttr(text) {
-      return String(text)
-        .replaceAll('&', '&amp;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;');
+      return String(text).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll("'", '&#039;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
     }
-
     function unescapeHtmlAttr(text) {
-      return String(text)
-        .replaceAll('&quot;', '"')
-        .replaceAll('&#039;', "'")
-        .replaceAll('&lt;', '<')
-        .replaceAll('&gt;', '>')
-        .replaceAll('&amp;', '&');
+      return String(text).replaceAll('&quot;', '"').replaceAll('&#039;', "'").replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&');
     }
 
     await refreshUI();
