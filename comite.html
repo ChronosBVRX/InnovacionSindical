@@ -341,6 +341,46 @@
       border: 1px solid rgba(69, 211, 159, .4);
       color: #dffcef;
     }
+
+    /* --- Ajustes para vista de celular (Grid de 2 columnas) --- */
+    @media (max-width: 600px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .card img {
+        height: 140px;
+      }
+
+      .card-body {
+        padding: 12px;
+      }
+
+      .card h3 {
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+      }
+
+      .cargo-badge {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+      }
+
+      .meta {
+        font-size: 0.8rem;
+      }
+
+      .card-actions {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .main-category-title {
+        font-size: 1.4rem;
+        margin-bottom: 16px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -453,14 +493,11 @@
       return !!data;
     }
 
-    // --- FUNCIÓN ACTUALIZADA: API de miniaturas de Google Drive ---
     function obtenerUrlDirectaDrive(url) {
       if (!url) return '';
       if (url.includes('drive.google.com')) {
         const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
         if (match && match[1]) {
-          // Utilizamos el endpoint thumbnail de Google Drive. Es el único que salta las nuevas restricciones.
-          // Le añadimos sz=w1000 para que la devuelva en alta calidad (hasta 1000px).
           return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
         }
       }
@@ -492,24 +529,15 @@
         return;
       }
 
-      const grupos = {
-        'Secretarías': [],
-        'Comisiones': [],
-        'Subcomisiones': [],
-        'Otras Áreas': []
-      };
+      // Agrupación dinámica por la cartera ingresada
+      const grupos = {};
 
       items.forEach(item => {
-        const carteraTexto = (item.cartera || '').toLowerCase();
-        if (carteraTexto.includes('subcomisi')) {
-          grupos['Subcomisiones'].push(item);
-        } else if (carteraTexto.includes('comisi')) {
-          grupos['Comisiones'].push(item);
-        } else if (carteraTexto.includes('secretar')) {
-          grupos['Secretarías'].push(item);
-        } else {
-          grupos['Otras Áreas'].push(item);
+        const nombreCartera = item.cartera ? item.cartera.trim() : 'Sin Cartera Asignada';
+        if (!grupos[nombreCartera]) {
+          grupos[nombreCartera] = [];
         }
+        grupos[nombreCartera].push(item);
       });
 
       let html = '';
