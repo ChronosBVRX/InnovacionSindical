@@ -233,13 +233,37 @@
       align-self: flex-start;
     }
 
-    .desc {
+    /* Estilos para la descripción y el botón de acordeón */
+    .desc-container {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .desc-text {
       margin-top: 14px;
       padding-top: 14px;
       border-top: 1px solid #ffffff10;
       font-size: 0.9rem;
       color: #eefefe;
-      flex-grow: 1;
+    }
+
+    .btn-toggle-desc {
+      display: none; /* Oculto en PC por defecto */
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--primary);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      justify-content: center;
+    }
+
+    .btn-toggle-desc:hover {
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .card-actions {
@@ -342,7 +366,7 @@
       color: #dffcef;
     }
 
-    /* --- Ajustes para vista de celular (Grid de 2 columnas) --- */
+    /* --- Ajustes para vista de celular (Grid de 2 columnas y Acordeón) --- */
     @media (max-width: 600px) {
       .grid {
         grid-template-columns: repeat(2, 1fr);
@@ -379,6 +403,20 @@
       .main-category-title {
         font-size: 1.4rem;
         margin-bottom: 16px;
+      }
+
+      /* Lógica visual del acordeón en móvil */
+      .desc-text {
+        display: none; /* Oculto por defecto en celular */
+      }
+      
+      .desc-text.show {
+        display: block; /* Se muestra al hacer clic */
+        animation: fadeInUp 0.3s ease;
+      }
+
+      .btn-toggle-desc {
+        display: flex; /* Muestra el botón solo en celular */
       }
     }
   </style>
@@ -466,6 +504,22 @@
 
     btnBack.addEventListener('click', () => { window.history.back(); });
 
+    // Delegación de eventos para el acordeón de "Ver detalles" en móviles
+    document.addEventListener('click', (e) => {
+      const btnToggle = e.target.closest('.btn-toggle-desc');
+      if (btnToggle) {
+        const descText = btnToggle.previousElementSibling;
+        if (descText && descText.classList.contains('desc-text')) {
+          descText.classList.toggle('show');
+          if (descText.classList.contains('show')) {
+            btnToggle.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Ocultar detalles';
+          } else {
+            btnToggle.innerHTML = '<i class="fa-solid fa-chevron-down"></i> Ver detalles';
+          }
+        }
+      }
+    });
+
     function setDebug(message, type = 'normal', icon = 'fa-info-circle') {
       debugBox.innerHTML = `<i class="fa-solid ${icon}"></i> ${message}`;
       debugBox.className = 'notice';
@@ -529,7 +583,7 @@
         return;
       }
 
-      // Lógica original restaurada: Agrupación por categorías predefinidas
+      // Agrupación por cartera (Secretarías, Comisiones, Subcomisiones)
       const grupos = {
         'Secretarías': [],
         'Comisiones': [],
@@ -575,9 +629,15 @@
               ${item.area ? `<div class="cargo-badge"><i class="fa-solid fa-id-badge"></i> ${escapeHtml(item.area)}</div>` : ''}
               <h3>${escapeHtml(item.nombre || '')}</h3>
               <div class="meta"><i class="fa-solid fa-briefcase"></i> <span><strong>Cartera:</strong> ${escapeHtml(item.cartera || '-')}</span></div>
-              <div class="meta"><i class="fa-solid fa-user-tag"></i> <span><strong>Categoría Laboral:</strong> ${escapeHtml(item.categoria || '-')}</span></div>
+              <div class="meta"><i class="fa-solid fa-user-tag"></i> <span><strong>Categoría:</strong> ${escapeHtml(item.categoria || '-')}</span></div>
               <div class="meta"><i class="fa-solid fa-location-dot"></i> <span><strong>Unidad:</strong> ${escapeHtml(item.unidad || '-')}</span></div>
-              ${(item.descripcion || item.desc) ? `<div class="desc">${escapeHtml(item.descripcion || item.desc)}</div>` : ''}
+              
+              ${(item.descripcion || item.desc) ? `
+                <div class="desc-container">
+                  <div class="desc-text">${escapeHtml(item.descripcion || item.desc)}</div>
+                  <button class="btn-toggle-desc"><i class="fa-solid fa-chevron-down"></i> Ver detalles</button>
+                </div>
+              ` : ''}
 
               ${isAdmin ? `
                 <div class="card-actions">
