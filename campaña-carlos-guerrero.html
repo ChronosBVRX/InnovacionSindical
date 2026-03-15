@@ -236,6 +236,51 @@
             margin-bottom: 1.5rem;
             text-transform: uppercase;
         }
+
+        /* --- AJUSTES RESPONSIVOS (MÓVIL) --- */
+        @media (max-width: 768px) {
+            section {
+                padding: 4rem 1rem;
+                min-height: auto;
+            }
+            .glass-card {
+                padding: 2rem 1.5rem;
+                transform: translateY(50px);
+            }
+            .glass-card h2 {
+                font-size: 2rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .eje-icon {
+                font-size: 2.5rem;
+            }
+            .frase-fuerza {
+                font-size: 1.2rem;
+                padding-left: 15px;
+                margin-bottom: 1.5rem;
+            }
+            .propuestas-list li {
+                font-size: 1rem;
+                padding: 12px;
+            }
+            #psd-section h2 {
+                font-size: clamp(2.2rem, 10vw, 3.5rem) !important; 
+            }
+            #psd-section p {
+                font-size: 1.1rem !important;
+            }
+            .cta-button {
+                padding: 12px 30px;
+                font-size: 1rem;
+                width: 100%;
+                justify-content: center;
+            }
+            footer {
+                padding: 4rem 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -338,7 +383,7 @@
             <h2>DE TRABAJADOR<br>A TRABAJADOR</h2>
             <p class="frase-fuerza" style="display: inline-block; border: none; padding-left: 0; text-transform: uppercase;">"estamos contigo."</p>
             <p style="color: var(--azul-cyan); font-size: 2rem; margin: 30px 0; font-weight: 900; filter: drop-shadow(0 0 10px rgba(100, 255, 218, 0.4));">VOTA AZUL ESTE 6 DE ABRIL</p>
-            <a href="https://wa.me/xxxxxxxxxxx" class="cta-button whatsapp-button" target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/52XXXXXXXXXX?text=Hola%20Carlos,%20quiero%20sumarme%20al%20Equipo%20Azul%20y%20apoyar%20la%20Plataforma%20Sindical%20Digital." class="cta-button whatsapp-button" target="_blank" rel="noopener noreferrer">
                 <i class="ph-bold ph-whatsapp-logo" style="font-size: 1.5rem;"></i>
                 SÚMATE AL EQUIPO AZUL
             </a>
@@ -470,15 +515,28 @@
             };
             tick();
 
-            // --- 7. RESPONSIVE ---
-            window.addEventListener('resize', () => {
+            // --- 7. RESPONSIVE Y ESCALADO 3D ---
+            const handleResize = () => {
                 windowHalfX = window.innerWidth / 2;
                 windowHalfY = window.innerHeight / 2;
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
+                
+                // Ajustar la escala del quiosco digital según el dispositivo
+                if (window.innerWidth < 768) {
+                    kioskGroup.scale.set(0.5, 0.5, 0.5); // 50% del tamaño en móvil
+                } else {
+                    kioskGroup.scale.set(1, 1, 1); // Tamaño normal en PC
+                }
+                
                 ScrollTrigger.refresh(); 
-            });
+            };
+
+            window.addEventListener('resize', handleResize);
+            
+            // Ejecutar al cargar para asegurar tamaño correcto
+            handleResize();
 
             // --- 8. GSAP SCROLLTRIGGER ---
             gsap.registerPlugin(ScrollTrigger);
