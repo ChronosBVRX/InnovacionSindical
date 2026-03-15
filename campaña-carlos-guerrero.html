@@ -178,6 +178,7 @@
             transform: scale(1.05);
         }
 
+        /* --- CONTENEDORES GLASS CARD --- */
         .glass-card {
             background: rgba(10, 25, 64, 0.5);
             backdrop-filter: blur(16px);
@@ -185,7 +186,7 @@
             border: 1px solid rgba(100, 255, 218, 0.12);
             border-radius: 24px;
             padding: 4rem;
-            max-width: 900px;
+            max-width: 1000px; /* Ampliado para acomodar imagen y texto */
             width: 100%;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
             opacity: 0;
@@ -195,6 +196,50 @@
         
         .glass-card.is-scrolled {
             border-color: rgba(100, 255, 218, 0.3);
+        }
+
+        /* --- NUEVO: DISEÑO DE DOS COLUMNAS CON IMAGEN --- */
+        .glass-card-inner {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-image-wrapper {
+            flex: 0 0 350px;
+            height: 350px;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(100, 255, 218, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            filter: grayscale(100%) brightness(0.6) contrast(1.2);
+            transition: filter 0.5s ease, transform 0.5s ease;
+        }
+
+        .glass-card:hover .card-image-wrapper img {
+            filter: grayscale(70%) brightness(0.8) contrast(1.1);
+            transform: scale(1.05);
+        }
+
+        .card-image-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(45deg, rgba(10, 37, 64, 0.8), rgba(100, 255, 218, 0.2));
+            mix-blend-mode: color;
+            pointer-events: none;
         }
 
         .glass-card h2 {
@@ -216,7 +261,7 @@
         }
 
         .frase-fuerza {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             font-weight: 600;
             color: #ffffff;
             margin-bottom: 2rem;
@@ -234,8 +279,8 @@
         }
 
         .propuestas-list li {
-            font-size: 1.2rem;
-            line-height: 1.6;
+            font-size: 1.1rem;
+            line-height: 1.5;
             color: var(--texto-gris);
             display: flex;
             align-items: center;
@@ -298,6 +343,19 @@
         }
 
         /* --- AJUSTES RESPONSIVOS (MÓVIL) --- */
+        @media (max-width: 900px) {
+            .glass-card-inner {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            .card-image-wrapper {
+                width: 100%;
+                height: 250px;
+                flex: auto;
+                order: -1;
+            }
+        }
+
         @media (max-width: 768px) {
             section {
                 padding: 4rem 1rem;
@@ -381,81 +439,116 @@
 
         <section id="eje1">
             <div class="glass-card scroll-reveal">
-                <span class="eje-numero">Eje Rector 01</span>
-                <h2><i class="ph-duotone ph-gears eje-icon"></i> Derechos Laborales</h2>
-                <button class="btn-audio-eje" data-audio="audio-eje1">
-                    <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
-                </button>
-                <p class="frase-fuerza">"Defender los derechos no es discurso, es acción."</p>
-                <ul class="propuestas-list">
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Defensa firme, con unidad y conocimiento del CCT.</li>
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Profesionalización de la estructura Sindical.</li>
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Cumplimiento al CAMTI.</li>
-                </ul>
+                <div class="glass-card-inner">
+                    <div class="card-content">
+                        <span class="eje-numero">Eje Rector 01</span>
+                        <h2><i class="ph-duotone ph-gears eje-icon"></i> Derechos Laborales</h2>
+                        <button class="btn-audio-eje" data-audio="audio-eje1">
+                            <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
+                        </button>
+                        <p class="frase-fuerza">"Defender los derechos no es discurso, es acción."</p>
+                        <ul class="propuestas-list">
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> Defensa firme, con unidad y conocimiento del CCT.</li>
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> Profesionalización de la estructura Sindical.</li>
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> Cumplimiento al CAMTI.</li>
+                        </ul>
+                    </div>
+                    <div class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Unión y apoyo médico">
+                    </div>
+                </div>
             </div>
         </section>
 
         <section id="eje2">
             <div class="glass-card scroll-reveal">
-                <span class="eje-numero">Eje Rector 02</span>
-                <h2><i class="ph-duotone ph-chart-line-up eje-icon"></i> Condiciones de Trabajo</h2>
-                <button class="btn-audio-eje" data-audio="audio-eje2">
-                    <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
-                </button>
-                <p class="frase-fuerza">"Trabajar con dignidad también es trabajar con equilibrio."</p>
-                <ul class="propuestas-list">
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Infraestructura segura y abasto real de insumos.</li>
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Cobertura real de plazas basándonos en necesidades reales.</li>
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Disminución de cargas laborales, respetando jornadas y descansos.</li>
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Combate frontal al acoso y hostigamiento laboral.</li>
-                </ul>
+                <div class="glass-card-inner">
+                    <div class="card-content">
+                        <span class="eje-numero">Eje Rector 02</span>
+                        <h2><i class="ph-duotone ph-chart-line-up eje-icon"></i> Condiciones de Trabajo</h2>
+                        <button class="btn-audio-eje" data-audio="audio-eje2">
+                            <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
+                        </button>
+                        <p class="frase-fuerza">"Trabajar con dignidad también es trabajar con equilibrio."</p>
+                        <ul class="propuestas-list">
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> Infraestructura segura y abasto real de insumos.</li>
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> Cobertura real de plazas basándonos en necesidades reales.</li>
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> Disminución de cargas laborales y respeto a jornadas.</li>
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> Combate frontal al acoso y hostigamiento laboral.</li>
+                        </ul>
+                    </div>
+                    <div class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Infraestructura hospitalaria moderna">
+                    </div>
+                </div>
             </div>
         </section>
 
         <section id="eje3">
             <div class="glass-card scroll-reveal">
-                <span class="eje-numero">Eje Rector 03</span>
-                <h2><i class="ph-duotone ph-scales eje-icon"></i> Inclusión y Equidad</h2>
-                <button class="btn-audio-eje" data-audio="audio-eje3">
-                    <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
-                </button>
-                <p class="frase-fuerza">"La dignidad no se negocia. Se defiende."</p>
-                <ul class="propuestas-list">
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Igualdad sustantiva y participación equitativa.</li>
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Cero tolerancia a cualquier forma de discriminación.</li>
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Protección integral de los derechos humanos y dignidad de cada trabajador.</li>
-                </ul>
+                <div class="glass-card-inner">
+                    <div class="card-content">
+                        <span class="eje-numero">Eje Rector 03</span>
+                        <h2><i class="ph-duotone ph-scales eje-icon"></i> Inclusión y Equidad</h2>
+                        <button class="btn-audio-eje" data-audio="audio-eje3">
+                            <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
+                        </button>
+                        <p class="frase-fuerza">"La dignidad no se negocia. Se defiende."</p>
+                        <ul class="propuestas-list">
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> Igualdad sustantiva y participación equitativa.</li>
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> Cero tolerancia a cualquier forma de discriminación.</li>
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> Protección integral de los derechos humanos.</li>
+                        </ul>
+                    </div>
+                    <div class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1573497620053-ea5300f94f21?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Equipo de trabajo unido">
+                    </div>
+                </div>
             </div>
         </section>
 
         <section id="eje4">
             <div class="glass-card scroll-reveal">
-                <span class="eje-numero">Eje Rector 04</span>
-                <h2><i class="ph-duotone ph-heart-break eje-icon"></i> Seguridad Social</h2>
-                <button class="btn-audio-eje" data-audio="audio-eje4">
-                    <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
-                </button>
-                <p class="frase-fuerza">"Por un retiro digno y dinámico y servicios de calidad."</p>
-                <ul class="propuestas-list">
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Buscar mejoras para el retiro de las nuevas generaciones.</li>
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> SPPSTIMSS por zona, garantizando bienestar y prevención.</li>
-                </ul>
+                <div class="glass-card-inner">
+                    <div class="card-content">
+                        <span class="eje-numero">Eje Rector 04</span>
+                        <h2><i class="ph-duotone ph-heart-break eje-icon"></i> Seguridad Social</h2>
+                        <button class="btn-audio-eje" data-audio="audio-eje4">
+                            <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
+                        </button>
+                        <p class="frase-fuerza">"Por un retiro digno y dinámico y servicios de calidad."</p>
+                        <ul class="propuestas-list">
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> Buscar mejoras para el retiro de las nuevas generaciones.</li>
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> SPPSTIMSS por zona, garantizando bienestar y prevención.</li>
+                        </ul>
+                    </div>
+                    <div class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Cuidado y bienestar médico">
+                    </div>
+                </div>
             </div>
         </section>
 
         <section id="eje5">
             <div class="glass-card scroll-reveal">
-                <span class="eje-numero">Eje Rector 05</span>
-                <h2><i class="ph-duotone ph-users-three eje-icon"></i> Organización</h2>
-                <button class="btn-audio-eje" data-audio="audio-eje5">
-                    <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
-                </button>
-                <p class="frase-fuerza">"Un Sindicato fuerte se construye con unidad y compromiso."</p>
-                <ul class="propuestas-list">
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Educación sindical obligatoria y permanente para nuestra estructura.</li>
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Presencia activa, cercana y respaldo continuo en las unidades.</li>
-                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Fortalecimiento de la Red Juventud y liderazgo juvenil.</li>
-                </ul>
+                <div class="glass-card-inner">
+                    <div class="card-content">
+                        <span class="eje-numero">Eje Rector 05</span>
+                        <h2><i class="ph-duotone ph-users-three eje-icon"></i> Organización</h2>
+                        <button class="btn-audio-eje" data-audio="audio-eje5">
+                            <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
+                        </button>
+                        <p class="frase-fuerza">"Un Sindicato fuerte se construye con unidad y compromiso."</p>
+                        <ul class="propuestas-list">
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> Educación sindical obligatoria para nuestra estructura.</li>
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> Presencia activa y respaldo continuo en las unidades.</li>
+                            <li><i class="ph-duotone ph-check-circle check-icon"></i> Fortalecimiento de la Red Juventud y liderazgo.</li>
+                        </ul>
+                    </div>
+                    <div class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Reunión y organización de equipo">
+                    </div>
+                </div>
             </div>
         </section>
 
