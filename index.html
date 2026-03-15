@@ -4,6 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
+  <title>Plataforma Sindical Digital (PSD)</title>
+  <meta name="description" content="Plataforma Sindical Digital (PSD) - Panel de Control y Gestión Sindical." />
+  <meta property="og:title" content="Plataforma Sindical Digital (PSD)" />
+  <meta property="og:description" content="Panel de Control y Gestión Sindical para la base trabajadora." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" />
+
   <meta
     http-equiv="Content-Security-Policy"
     content="
@@ -23,7 +30,6 @@
   />
 
   <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <title>Plataforma Sindical CG</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -498,7 +504,7 @@
 
   <div class="ambient-bg"></div>
 
-  <div id="boot" class="boot" onclick="SInOS.skipBoot()">
+  <div id="boot" class="boot" onclick="PSD.skipBoot()">
     <div style="text-align: center;">
       <div class="logo-boot" style="margin: 0 auto 20px;">
         <img
@@ -508,7 +514,7 @@
           decoding="async"
         />
       </div>
-      <h1 style="font-size: 20px; letter-spacing: 2px;">PLATAFORMA SINDICAL</h1>
+      <h1 style="font-size: 20px; letter-spacing: 2px;">PLATAFORMA SINDICAL DIGITAL</h1>
       <div class="bar" style="margin: 20px auto;"><span></span></div>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(77, 161, 168, 0.2);">
         <i class="ph-fill ph-shield-check" style="color: var(--success); font-size: 20px; filter: drop-shadow(0 0 5px rgba(74, 222, 128, 0.5));"></i>
@@ -527,7 +533,7 @@
           decoding="async"
         />
       </div>
-      <div><span>Plataforma</span> Sindical CG</div>
+      <div><span>Plataforma</span> Sindical Digital (PSD)</div>
     </div>
     <div class="clock-container">
       <div class="secure-badge" title="Conexión cifrada">
@@ -599,10 +605,10 @@
           </div>
         </div>
         <div style="display:flex; gap:8px;">
-          <button class="btn" onclick="SInOS.goHome()" type="button" aria-label="Volver al inicio">
+          <button class="btn" onclick="PSD.goHome()" type="button" aria-label="Volver al inicio">
             <i class="ph-duotone ph-house"></i>
           </button>
-          <button class="btn" onclick="SInOS.closeApp()" type="button" aria-label="Cerrar módulo">
+          <button class="btn" onclick="PSD.closeApp()" type="button" aria-label="Cerrar módulo">
             <i class="ph-bold ph-x"></i>
           </button>
         </div>
@@ -632,8 +638,9 @@
       'https://www.facebook.com'
     ]);
 
+    // TrascendencIA ahora incluye newTab: true para abrir en ventana completa
     const APPS = [
-      { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true },
+      { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true, newTab: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-broadcast' },
       { id: 'agenda', title: 'Red Sindical', desc: 'Consulta la agenda y biblioteca.', iconClass: 'ph-duotone ph-share-network', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true, newTab: true },
       { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Unificación de criterios.', iconClass: 'ph-duotone ph-scales', href: 'nucleo.html', featured: true, newTab: true },
@@ -646,7 +653,8 @@
       { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Cuenta institucional.', iconClass: 'ph-duotone ph-hospital', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true }
     ];
 
-    const SInOS = {
+    // Se renombra SInOS a PSD para borrar todo rastro
+    const PSD = {
       init() {
         this.renderTiles();
         this.runSecurityBoot();
@@ -880,7 +888,7 @@
       }
     };
 
-    document.addEventListener('DOMContentLoaded', () => SInOS.init());
+    document.addEventListener('DOMContentLoaded', () => PSD.init());
   </script>
 </body>
 </html>
