@@ -186,7 +186,7 @@
             border: 1px solid rgba(100, 255, 218, 0.12);
             border-radius: 24px;
             padding: 4rem;
-            max-width: 1000px; /* Ampliado para acomodar imagen y texto */
+            max-width: 1000px;
             width: 100%;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
             opacity: 0;
@@ -198,7 +198,7 @@
             border-color: rgba(100, 255, 218, 0.3);
         }
 
-        /* --- NUEVO: DISEÑO DE DOS COLUMNAS CON IMAGEN --- */
+        /* --- DISEÑO DE DOS COLUMNAS CON IMAGEN --- */
         .glass-card-inner {
             display: flex;
             gap: 3rem;
@@ -303,15 +303,29 @@
             font-size: 1.3rem;
         }
 
-        #psd-section { text-align: center; }
+        /* --- SECCIÓN PSD (EJE 6) ACTUALIZADA --- */
+        #psd-section { 
+            text-align: center; 
+            min-height: 100vh;
+            justify-content: center;
+        }
 
         #psd-section .glass-card {
             background: transparent;
             border: none;
             box-shadow: none;
             backdrop-filter: none;
-            margin-top: -15vh;
+            margin-top: 0;
             pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .espacio-quiosco {
+            height: 350px; 
+            width: 100%;
         }
         
         .red-trabajadores {
@@ -320,7 +334,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.2em;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             display: block;
             opacity: 0.8;
             filter: drop-shadow(0 0 10px var(--azul-cyan));
@@ -383,11 +397,8 @@
                 font-size: 1rem;
                 padding: 12px;
             }
-            #psd-section h2 {
-                font-size: clamp(2.2rem, 10vw, 3.5rem) !important; 
-            }
-            #psd-section p {
-                font-size: 1.1rem !important;
+            .espacio-quiosco {
+                height: 250px; 
             }
             .cta-button {
                 padding: 12px 30px;
@@ -553,19 +564,29 @@
         </section>
 
         <section id="psd-section">
-            <span class="red-trabajadores">Conexión Segura</span>
             <div class="glass-card scroll-reveal" style="pointer-events: auto;">
-                <span class="eje-numero" style="font-size: 1.5rem;">Eje Final 06</span>
-                <h2 style="font-size: 4rem; justify-content: center; border: none; color: white;">INNOVACIÓN DIGITAL</h2>
-                <button class="btn-audio-eje" data-audio="audio-eje6" style="margin: 0 auto 2rem auto;">
-                    <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
-                </button>
-                <p class="frase-fuerza" style="color: var(--azul-cyan); font-size: 1.8rem; justify-content: center; border: none;">"El conocimiento se comparte para fortalecer al trabajador."</p>
-                <p style="font-size: 1.4rem; color: #fff; max-width: 700px; margin: 0 auto 2rem auto; line-height: 1.6;">Esta es nuestra gran revolución. Ponemos la **Inteligencia Artificial** a tu servicio con la **Plataforma Sindical Digital (PSD)** para resolver dudas y trámites en segundos.</p>
-                <a href="#footer" class="cta-button">
-                    <i class="ph-duotone ph-sparkle"></i>
-                    Únete al Equipo
-                </a>
+                
+                <div style="margin-bottom: 1rem;">
+                    <span class="red-trabajadores">Conexión Segura</span>
+                    <span class="eje-numero" style="font-size: 1.5rem; display: block;">Eje Final 06</span>
+                    <h2 style="font-size: clamp(2.5rem, 8vw, 4.5rem); justify-content: center; border: none; color: white; line-height: 1.1; margin-bottom: 0;">INNOVACIÓN DIGITAL</h2>
+                </div>
+
+                <div class="espacio-quiosco"></div>
+
+                <div style="max-width: 800px; margin: 0 auto; padding: 0 1rem;">
+                    <p class="frase-fuerza" style="color: var(--azul-cyan); font-size: clamp(1.4rem, 4vw, 1.8rem); justify-content: center; border: none; margin-bottom: 1.5rem; padding-left: 0;">
+                        "El conocimiento se comparte para fortalecer al trabajador."
+                    </p>
+                    <p style="font-size: 1.3rem; color: #a8b2d1; margin-bottom: 2.5rem; line-height: 1.6;">
+                        Esta es nuestra gran revolución. Ponemos la <strong style="color: #fff;">Inteligencia Artificial</strong> a tu servicio con la <strong style="color: #fff;">Plataforma Sindical Digital (PSD)</strong> para resolver dudas y trámites en segundos.
+                    </p>
+                    <a href="#footer" class="cta-button" style="padding: 18px 45px; font-size: 1.1rem;">
+                        <i class="ph-duotone ph-sparkle"></i>
+                        Únete al Equipo
+                    </a>
+                </div>
+
             </div>
         </section>
 
@@ -781,6 +802,7 @@
                 });
             });
 
+            // Ajuste del modelo 3D para que aterrice en el centro de la nueva sección espaciada
             gsap.to(kioskGroup.position, {
                 scrollTrigger: {
                     trigger: "#psd-section",
