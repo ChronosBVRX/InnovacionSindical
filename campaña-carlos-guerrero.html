@@ -43,6 +43,40 @@
             pointer-events: none;
         }
 
+        /* --- PANTALLA DE ENTRADA (SPLASH SCREEN) --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--fondo-oscuro);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        #splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .splash-title {
+            color: var(--azul-cyan);
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 10px rgba(100, 255, 218, 0.4));
+        }
+
         main { position: relative; z-index: 1; }
         
         section {
@@ -287,6 +321,15 @@
 
     <audio id="audio-bienvenida" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Bienvenido.mp3" preload="auto"></audio>
 
+    <div id="splash-screen">
+        <h1 class="splash-title">Sección XX Michoacán</h1>
+        <p style="font-size: 1.2rem; color: var(--texto-blanco); margin-bottom: 2.5rem;">Innovación Sindical en Acción</p>
+        <button id="btn-entrar" class="cta-button" style="padding: 20px 50px; font-size: 1.2rem;">
+            <i class="ph-duotone ph-play-circle" style="font-size: 1.8rem;"></i>
+            Descubrir plan
+        </button>
+    </div>
+
     <canvas id="bg-canvas"></canvas>
 
     <main>
@@ -383,7 +426,7 @@
             <h2>DE TRABAJADOR<br>A TRABAJADOR</h2>
             <p class="frase-fuerza" style="display: inline-block; border: none; padding-left: 0; text-transform: uppercase;">"estamos contigo."</p>
             <p style="color: var(--azul-cyan); font-size: 2rem; margin: 30px 0; font-weight: 900; filter: drop-shadow(0 0 10px rgba(100, 255, 218, 0.4));">VOTA AZUL ESTE 6 DE ABRIL</p>
-            <a href="https://chat.whatsapp.com/G5gGUZxnubW0Eqb7NnxJ1d?text=Hola%20Carlos,%20quiero%20sumarme%20al%20Equipo%20Azul%20y%20apoyar%20la%20Plataforma%20Sindical%20Digital." class="cta-button whatsapp-button" target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/52XXXXXXXXXX?text=Hola%20Carlos,%20quiero%20sumarme%20al%20Equipo%20Azul%20y%20apoyar%20la%20Plataforma%20Sindical%20Digital." class="cta-button whatsapp-button" target="_blank" rel="noopener noreferrer">
                 <i class="ph-bold ph-whatsapp-logo" style="font-size: 1.5rem;"></i>
                 SÚMATE AL EQUIPO AZUL
             </a>
@@ -393,27 +436,21 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- 1. REPRODUCTOR DE AUDIO DE BIENVENIDA ---
+            // --- 1. PANTALLA DE ENTRADA Y AUDIO ---
+            const splashScreen = document.getElementById('splash-screen');
+            const btnEntrar = document.getElementById('btn-entrar');
             const audioBienvenida = document.getElementById('audio-bienvenida');
-            let audioReproducido = false;
 
-            const reproducirAudio = () => {
-                if (!audioReproducido) {
-                    audioBienvenida.play().then(() => {
-                        audioReproducido = true;
-                        document.removeEventListener('click', reproducirAudio);
-                        document.removeEventListener('touchstart', reproducirAudio);
-                        document.removeEventListener('scroll', reproducirAudio);
-                    }).catch((error) => {
-                        console.log("Esperando interacción del usuario para reproducir audio...");
-                    });
-                }
-            };
+            // Asegurarnos de que inicie hasta arriba
+            window.scrollTo(0, 0);
 
-            // Escuchamos clics, toques o el primer scroll para disparar el audio
-            document.addEventListener('click', reproducirAudio);
-            document.addEventListener('touchstart', reproducirAudio);
-            document.addEventListener('scroll', reproducirAudio);
+            btnEntrar.addEventListener('click', () => {
+                // Reproducir el audio
+                audioBienvenida.play().catch(e => console.log("No se pudo reproducir el audio automáticamente.", e));
+                
+                // Ocultar la pantalla de entrada
+                splashScreen.classList.add('hidden');
+            });
 
             // --- 2. CONFIGURACIÓN THREE.JS ---
             const canvas = document.querySelector('#bg-canvas');
