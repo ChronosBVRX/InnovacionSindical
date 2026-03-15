@@ -206,41 +206,7 @@
       gap: 6px;
     }
 
-    /* --- ESTILOS FOOTER DISCRETO --- */
-    .psd-footer {
-      margin-top: 50px;
-      padding: 24px 0;
-      border-top: 1px solid rgba(77, 161, 168, 0.1);
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      color: var(--text-muted);
-      font-size: 12px;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 20px;
-    }
-
-    .footer-links a {
-      color: var(--primary-light);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.2s ease;
-      font-weight: 500;
-    }
-
-    .footer-links a:hover {
-      color: var(--text-main);
-      text-shadow: 0 0 8px rgba(122, 209, 214, 0.4);
-    }
-
-    /* --- RESTO DE ESTILOS EXISTENTES --- */
+    /* --- CAMPAIGN BANNER STYLES --- */
     .campaign-banner {
       display: flex;
       align-items: center;
@@ -261,6 +227,15 @@
       transform: translateY(-4px);
       box-shadow: 0 12px 32px rgba(77, 161, 168, 0.3);
       background: linear-gradient(135deg, rgba(77, 161, 168, 0.3), rgba(var(--panel-base), 0.8));
+    }
+
+    .campaign-banner::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle, rgba(122, 209, 214, 0.1) 0%, transparent 60%);
+      pointer-events: none;
     }
 
     .campaign-content {
@@ -306,6 +281,17 @@
       box-shadow: 0 4px 12px rgba(77, 161, 168, 0.3);
     }
 
+    .campaign-banner:hover .campaign-btn {
+      background: var(--primary-light);
+      transform: scale(1.05);
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0px); }
+    }
+
     .tiles {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -349,6 +335,12 @@
       filter: drop-shadow(0 4px 6px rgba(77, 161, 168, 0.4));
     }
 
+    .tile:hover .tile-icon-integrated {
+      transform: scale(1.1) rotate(-2deg);
+      color: #fff;
+      filter: drop-shadow(0 6px 12px rgba(122, 209, 214, 0.7));
+    }
+
     .tile h3 { margin: 0 0 8px 0; font-size: 18px; }
     .tile p { margin: 0; color: var(--text-muted); font-size: 14px; line-height: 1.5; }
 
@@ -366,13 +358,17 @@
       color: var(--primary-light);
       background: rgba(77, 161, 168, .14);
       border: 1px solid var(--ring);
+      box-shadow: 0 0 8px rgba(122, 209, 214, 0.2);
     }
 
     .security-section {
       margin-top: 20px;
       padding-top: 32px;
+      padding-bottom: 40px;
       border-top: 1px solid var(--ring);
     }
+
+    .security-header { margin-bottom: 24px; }
 
     .security-header h2 {
       font-size: 20px;
@@ -383,11 +379,17 @@
       margin: 0 0 8px 0;
     }
 
+    .security-header h2 i {
+      color: var(--success);
+      filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.4));
+    }
+
     .security-header p {
       color: var(--text-muted);
       font-size: 14px;
-      margin: 0 0 24px 0;
+      margin: 0;
       line-height: 1.6;
+      max-width: 850px;
     }
 
     .tech-grid {
@@ -404,6 +406,13 @@
       display: flex;
       gap: 16px;
       align-items: flex-start;
+      transition: all 0.3s ease;
+    }
+
+    .tech-card:hover {
+      border-color: var(--primary-light);
+      background: rgba(var(--panel-base), 0.4);
+      transform: translateY(-2px);
     }
 
     .tech-icon {
@@ -413,34 +422,82 @@
       padding: 8px;
       border-radius: 8px;
       flex-shrink: 0;
+      border: 1px solid rgba(122, 209, 214, 0.2);
+      filter: drop-shadow(0 4px 8px rgba(77, 161, 168, 0.3));
     }
 
-    .tech-info h4 { margin: 0 0 6px 0; font-size: 15px; }
+    .tech-info h4 { margin: 0 0 6px 0; font-size: 15px; color: var(--text-main); }
     .tech-info p { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.4; }
 
-    .app-wrap { height: 100%; display: flex; flex-direction: column; padding: 16px 24px; }
+    /* --- FOOTER STYLES --- */
+    .psd-footer {
+      margin-top: 40px;
+      padding: 24px 0;
+      border-top: 1px solid rgba(77, 161, 168, 0.1);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      color: var(--primary-light);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .footer-links a:hover {
+      color: var(--text-main);
+      text-shadow: 0 0 8px rgba(122, 209, 214, 0.4);
+    }
+
+    .app-wrap { width: 100%; max-width: 100%; margin: 0; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
     .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--ring); padding-bottom: 12px; }
-    .app-body { flex: 1; background: rgba(21, 35, 54, 0.4); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative; }
-    .iframe { width: 100%; height: 100%; border: none; }
-    .btn { background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring); color: var(--primary); padding: 8px 18px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .app-body { flex: 1; background: rgba(21, 35, 54, 0.4); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative; width: 100%; }
+    .iframe { width: 100%; height: 100%; border: none; display: block; }
+    .btn { background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring); color: var(--primary); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
+    .btn i { font-size: 18px; }
+    .btn:hover { background: rgba(77, 161, 168, .15); color: var(--text-main); border-color: var(--primary-light); box-shadow: 0 0 10px rgba(122, 209, 214, 0.2); }
 
     .hide { display: none !important; }
 
     .boot { position: fixed; inset: 0; display: grid; place-items: center; z-index: 100; background: radial-gradient(circle at center, #1b2e45 0%, #0a141d 100%); transition: opacity 0.6s ease; }
     .logo-boot { width: 100px; height: 100px; border-radius: 22px; border: 1px solid var(--ring); overflow: hidden; box-shadow: 0 0 30px rgba(77,161,168,0.3); }
     .logo-boot img { width: 100%; height: 100%; object-fit: cover; }
-    .bar { height: 3px; width: 200px; background: rgba(255,255,255,0.05); overflow: hidden; position: relative; border-radius: 10px; margin: 20px auto; }
-    .bar span { display: block; height: 100%; width: 30%; background: var(--primary-light); position: absolute; animation: load 2s infinite; }
-
-    @keyframes load { 0% { left: -30%; } 100% { left: 100%; } }
-    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .tile-enter { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+    .bar { height: 3px; width: 200px; background: rgba(255,255,255,0.05); overflow: hidden; position: relative; border-radius: 10px; }
+    .bar span { display: block; height: 100%; width: 30%; background: var(--primary-light); position: absolute; animation: load 2s infinite; box-shadow: 0 0 10px var(--primary-light); }
 
     @media (max-width: 768px) {
-      .psd-footer { flex-direction: column; text-align: center; }
+      .wrap { padding: 20px 16px; }
+      .app-wrap { padding: 8px; }
+      .app-head h2 { font-size: 16px; }
+      .app-head p { display: none; }
+      .tiles { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .tile { min-height: 120px; padding: 16px; }
+      .clock-container { padding: 4px 8px; font-size: 11px; }
+      .secure-badge span { display: none; }
+      .tech-grid { grid-template-columns: 1fr; }
+      .campaign-banner { flex-direction: column; text-align: center; padding: 20px; gap: 16px; }
+      .campaign-content { flex-direction: column; gap: 12px; }
+      .psd-footer { flex-direction: column; text-align: center; gap: 12px; }
       .footer-links { justify-content: center; }
     }
+
+    @keyframes load { 0% { left: -30%; } 100% { left: 100%; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .tile-enter { animation: fadeUp 0.5s ease forwards; opacity: 0; }
   </style>
 </head>
 
@@ -452,12 +509,15 @@
 
   <div id="boot" class="boot" onclick="PSD.skipBoot()">
     <div style="text-align: center;">
-      <div class="logo-boot">
+      <div class="logo-boot" style="margin: 0 auto 20px;">
         <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo SNTSS" />
       </div>
-      <h1 style="font-size: 20px; letter-spacing: 2px; margin-top:20px;">PLATAFORMA SINDICAL DIGITAL</h1>
-      <div class="bar"><span></span></div>
-      <div id="security-status" style="font-size: 12px; color: var(--success); font-family: monospace;">Inicializando entorno...</div>
+      <h1 style="font-size: 20px; letter-spacing: 2px;">PLATAFORMA SINDICAL DIGITAL</h1>
+      <div class="bar" style="margin: 20px auto;"><span></span></div>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(77, 161, 168, 0.2);">
+        <i class="ph-fill ph-shield-check" style="color: var(--success); font-size: 20px; filter: drop-shadow(0 0 5px rgba(74, 222, 128, 0.5));"></i>
+        <div id="security-status" style="font-size: 12px; color: var(--success); font-family: monospace; transition: opacity 0.2s ease; text-align: left; min-width: 220px;">Inicializando entorno...</div>
+      </div>
     </div>
   </div>
 
@@ -506,14 +566,14 @@
             <div class="tech-icon"><i class="ph-duotone ph-server"></i></div>
             <div class="tech-info">
               <h4>Nube Moderna</h4>
-              <p>Infraestructura escalable y segura.</p>
+              <p>Infraestructura moderna.</p>
             </div>
           </div>
           <div class="tech-card">
             <div class="tech-icon"><i class="ph-duotone ph-database"></i></div>
             <div class="tech-info">
               <h4>Datos Cifrados</h4>
-              <p>Protección estricta de tu privacidad.</p>
+              <p>Control estricto de accesos.</p>
             </div>
           </div>
         </div>
@@ -566,17 +626,17 @@
     ]);
 
     const APPS = [
-      { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true, newTab: true },
-      { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-broadcast' },
-      { id: 'agenda', title: 'Red Sindical', desc: 'Consulta la agenda.', iconClass: 'ph-duotone ph-share-network', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true, newTab: true },
-      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Defensa laboral.', iconClass: 'ph-duotone ph-scales', href: 'nucleo.html', featured: true, newTab: true },
+      { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true, newTab: true },
+      { id: 'noticias', title: 'Noticias', desc: 'Comunicados.', iconClass: 'ph-duotone ph-broadcast' },
+      { id: 'agenda', title: 'Red Sindical', desc: 'Agenda.', iconClass: 'ph-duotone ph-share-network', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true, newTab: true },
+      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Defensa.', iconClass: 'ph-duotone ph-scales', href: 'nucleo.html', featured: true, newTab: true },
       { id: 'comite', title: 'Comité Seccional', desc: 'Planilla Azul.', iconClass: 'ph-duotone ph-users-three', href: 'comite.html', newTab: true },
-      { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción de documentos.', iconClass: 'ph-duotone ph-scan-smiley', href: 'kiosko.html', featured: true, newTab: true },
-      { id: 'denuncias', title: 'Gestor de Escritos', desc: 'Redacción con IA.', iconClass: 'ph-duotone ph-pen-nib', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
+      { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción.', iconClass: 'ph-duotone ph-scan-smiley', href: 'kiosko.html', featured: true, newTab: true },
+      { id: 'denuncias', title: 'Gestor de Escritos', desc: 'IA.', iconClass: 'ph-duotone ph-pen-nib', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
       { id: 'directorio', title: 'Directorio', desc: 'Contactos.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
-      { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de derechos.', iconClass: 'ph-duotone ph-hand-coins', iframe: 'prestaciones.html' },
-      { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Comprobantes de pago.', iconClass: 'ph-duotone ph-file-pdf', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/', secure: true },
-      { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Cuenta institucional.', iconClass: 'ph-duotone ph-hospital', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true }
+      { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo.', iconClass: 'ph-duotone ph-hand-coins', iframe: 'prestaciones.html' },
+      { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga.', iconClass: 'ph-duotone ph-file-pdf', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/', secure: true },
+      { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Cuenta.', iconClass: 'ph-duotone ph-hospital', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true }
     ];
 
     const PSD = {
@@ -591,14 +651,21 @@
         document.getElementById('clock').textContent = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
       },
 
+      // --- LÓGICA DE LA ANIMACIÓN RESTAURADA ---
       runSecurityBoot() {
-        const msgs = ["Verificando integridad...", "Conexión TLS...", "Privacidad habilitada...", "Entorno Seguro."];
-        let i = 0;
-        const interval = setInterval(() => {
-          if (i < msgs.length) {
-            document.getElementById('security-status').textContent = msgs[i++];
+        const messages = ["Verificando integridad...", "Conexión TLS...", "Privacidad habilitada...", "Entorno Seguro."];
+        const statusEl = document.getElementById('security-status');
+        let currentMsg = 0;
+        const bootInterval = setInterval(() => {
+          if (currentMsg < messages.length) {
+            statusEl.style.opacity = '0';
+            setTimeout(() => {
+              statusEl.textContent = messages[currentMsg];
+              statusEl.style.opacity = '1';
+              currentMsg++;
+            }, 150);
           } else {
-            clearInterval(interval);
+            clearInterval(bootInterval);
             setTimeout(() => this.hideBoot(), 600);
           }
         }, 700);
@@ -620,7 +687,7 @@
       skipBoot() { this.hideBoot(); },
 
       openSafeExternal(url) {
-        // Permitimos avisoprivacidad.html explícitamente si es una ruta local
+        // Al ser una ruta local del mismo origen, PSD lo abrirá sin problemas
         window.open(url, '_blank', 'noopener,noreferrer');
       },
 
