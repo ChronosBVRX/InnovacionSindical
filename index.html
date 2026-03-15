@@ -206,6 +206,92 @@
       gap: 6px;
     }
 
+    /* --- BANNER DE CAMPAÑA PLANILLA AZUL --- */
+    .campaign-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.6));
+      border: 1px solid var(--primary-light);
+      border-radius: var(--radius);
+      padding: 24px 32px;
+      margin-bottom: 32px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(77, 161, 168, 0.15);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .campaign-banner:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(77, 161, 168, 0.3);
+      background: linear-gradient(135deg, rgba(77, 161, 168, 0.3), rgba(var(--panel-base), 0.8));
+    }
+
+    .campaign-banner::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle, rgba(122, 209, 214, 0.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .campaign-content {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      z-index: 1;
+    }
+
+    .campaign-icon {
+      font-size: 52px;
+      color: var(--primary-light);
+      filter: drop-shadow(0 4px 8px rgba(77, 161, 168, 0.4));
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .campaign-text h2 {
+      margin: 0 0 6px 0;
+      font-size: 24px;
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    .campaign-text p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .campaign-btn {
+      background: var(--primary);
+      color: var(--bg-body);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 1;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(77, 161, 168, 0.3);
+    }
+
+    .campaign-banner:hover .campaign-btn {
+      background: var(--primary-light);
+      transform: scale(1.05);
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0px); }
+    }
+
     .tiles {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -479,6 +565,17 @@
       .clock-container { padding: 4px 8px; font-size: 11px; }
       .secure-badge span { display: none; }
       .tech-grid { grid-template-columns: 1fr; }
+      
+      .campaign-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+        gap: 16px;
+      }
+      .campaign-content {
+        flex-direction: column;
+        gap: 12px;
+      }
     }
 
     @keyframes load {
@@ -551,6 +648,19 @@
           <p>Panel de Control y Gestión Sindical.</p>
         </div>
         <div class="badge"><i class="ph-bold ph-identification-badge"></i> SNTSS Secc. XX</div>
+      </section>
+
+      <section class="campaign-banner" onclick="PSD.openSafeExternal('campaña-carlos-guerrero.html')">
+        <div class="campaign-content">
+          <i class="ph-duotone ph-presentation-chart campaign-icon"></i>
+          <div class="campaign-text">
+            <h2>Planilla Azul</h2>
+            <p>Conoce nuestro proyecto y súmate al cambio.</p>
+          </div>
+        </div>
+        <button class="campaign-btn">
+          Ver Propuestas <i class="ph-bold ph-arrow-right"></i>
+        </button>
       </section>
 
       <section class="tiles" id="tiles"></section>
@@ -638,10 +748,7 @@
       'https://www.facebook.com'
     ]);
 
-    // AQUI ESTÁ EL CAMBIO: Se añadió la campaña interactiva en la primera posición
-  // AQUI ESTÁ EL CAMBIO: Se cambió 'iframe' por 'href' y se añadió 'newTab: true'
     const APPS = [
-      { id: 'campana', title: 'Planilla Azul', desc: 'Conoce nuestro proyecto.', iconClass: 'ph-duotone ph-presentation-chart', href: 'campaña-carlos-guerrero.html', featured: true, newTab: true },
       { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true, newTab: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-broadcast' },
       { id: 'agenda', title: 'Red Sindical', desc: 'Consulta la agenda y biblioteca.', iconClass: 'ph-duotone ph-share-network', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true, newTab: true },
