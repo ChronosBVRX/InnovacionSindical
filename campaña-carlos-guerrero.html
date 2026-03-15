@@ -3,16 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carlos Guerrero - SNTSS Sección XX Michoacán</title>
+    <title>Carlos Guerrero - PSD Sección XX Michoacán</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
+        /* --- ESTILOS GLOBALES --- */
         :root {
             --azul-principal: #1d4e89;
-            --azul-claro: #64ffda;
+            --azul-oscuro: #0a2540;
+            --azul-cyan: #64ffda;
             --texto-blanco: #f8f9fa;
             --texto-gris: #a8b2d1;
             --fondo-oscuro: #02060d;
@@ -21,10 +26,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background-color: var(--fondo-oscuro);
             color: var(--texto-blanco);
             overflow-x: hidden;
+            letter-spacing: -0.01em;
         }
 
         #bg-canvas {
@@ -49,239 +55,360 @@
             position: relative;
         }
 
-        .hero-title {
-            font-size: clamp(3rem, 8vw, 6rem);
+        .eje-numero {
+            color: var(--azul-cyan);
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            display: block;
+            opacity: 0.7;
+        }
+
+        .title-gradient {
+            font-size: clamp(2.5rem, 7vw, 5rem);
             font-weight: 900;
             text-transform: uppercase;
             text-align: center;
-            line-height: 1.1;
-            background: linear-gradient(to right, #ffffff, var(--azul-claro));
+            line-height: 1.05;
+            background: linear-gradient(135deg, #ffffff, var(--azul-cyan));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 1rem;
+            filter: drop-shadow(0 0 15px rgba(100, 255, 218, 0.4));
         }
 
         .hero-subtitle {
-            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-size: clamp(1rem, 2vw, 1.4rem);
             color: var(--texto-gris);
             text-align: center;
-            letter-spacing: 2px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 600;
             margin-bottom: 2rem;
         }
 
         .cta-button {
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--fondo-oscuro);
-            background-color: var(--azul-claro);
+            padding: 16px 45px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--azul-oscuro);
+            background: linear-gradient(135deg, #ffffff, var(--azul-cyan));
             border: none;
             border-radius: 50px;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: transform 0.3s, box-shadow 0.3s;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
 
         .cta-button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(100, 255, 218, 0.4);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(100, 255, 218, 0.5);
+        }
+
+        .whatsapp-button {
+            background: linear-gradient(135deg, #ffffff, var(--azul-principal));
+            color: #ffffff;
         }
 
         .glass-card {
-            background: rgba(10, 25, 47, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(100, 255, 218, 0.15);
-            border-radius: 20px;
-            padding: 3rem;
-            max-width: 800px;
+            background: rgba(10, 25, 64, 0.5);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(100, 255, 218, 0.12);
+            border-radius: 24px;
+            padding: 4rem;
+            max-width: 900px;
             width: 100%;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            opacity: 0; 
-            transform: translateY(100px); 
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            transform: translateY(100px);
+            transition: border-color 0.3s ease;
         }
-
-        .eje-numero {
-            color: var(--azul-claro);
-            font-size: 1.2rem;
-            font-weight: bold;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-            display: block;
+        
+        .glass-card.is-scrolled {
+            border-color: rgba(100, 255, 218, 0.3);
         }
 
         .glass-card h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
             color: white;
-            border-bottom: 2px solid var(--azul-principal);
-            padding-bottom: 10px;
+            line-height: 1.2;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .eje-icon {
+            font-size: 3rem;
+            color: var(--azul-cyan);
+            opacity: 0.9;
+            filter: drop-shadow(0 0 10px rgba(100, 255, 218, 0.5));
         }
 
         .frase-fuerza {
-            font-size: 1.4rem;
-            font-style: italic;
-            color: var(--azul-claro);
-            margin-bottom: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-left: 20px;
+            border-left: 3px solid var(--azul-cyan);
+            letter-spacing: -0.02em;
         }
 
-        .glass-card p {
-            font-size: 1.15rem;
-            line-height: 1.7;
+        .propuestas-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .propuestas-list li {
+            font-size: 1.2rem;
+            line-height: 1.6;
             color: var(--texto-gris);
-            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255,255,255,0.03);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.02);
+            transition: all 0.3s ease;
+        }
+        
+        .propuestas-list li:hover {
+            background: rgba(100, 255, 218, 0.05);
+            border-color: rgba(100, 255, 218, 0.1);
+            color: #fff;
+        }
+        
+        .check-icon {
+            color: var(--azul-cyan);
+            font-size: 1.3rem;
         }
 
-        #psd-section {
-            text-align: center;
-            background: radial-gradient(circle at center, rgba(29, 78, 137, 0.2) 0%, transparent 70%);
-        }
+        #psd-section { text-align: center; }
 
         #psd-section .glass-card {
             background: transparent;
             border: none;
             box-shadow: none;
             backdrop-filter: none;
-            margin-top: -10vh;
+            margin-top: -15vh;
             pointer-events: none;
+        }
+        
+        .red-trabajadores {
+            font-size: 1.2rem;
+            color: var(--azul-cyan);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 1rem;
+            display: block;
+            opacity: 0.8;
+            filter: drop-shadow(0 0 10px var(--azul-cyan));
         }
 
         footer {
             text-align: center;
-            padding: 4rem 2rem;
-            background: #010308;
+            padding: 6rem 2rem;
+            background: radial-gradient(circle at center, rgba(10, 37, 64, 0.5) 0%, var(--fondo-oscuro) 100%);
             border-top: 1px solid rgba(100, 255, 218, 0.1);
         }
 
         footer h2 {
-            font-size: 3rem;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
             color: white;
-            margin-bottom: 1rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
+    <audio id="audio-bienvenida" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Bienvenido.mp3" preload="auto"></audio>
+
     <canvas id="bg-canvas"></canvas>
 
     <main>
         <section id="hero">
-            <h1 class="hero-title">Seis Ejes.<br>Cero Excusas.</h1>
-            <p class="hero-subtitle">CARLOS GUERRERO | Secretario General Sección XX</p>
-            <p style="color: var(--azul-claro); font-size: 1.5rem; margin-bottom: 2rem; font-weight: bold;">Unidos Somos Fuerza</p>
-            <a href="#eje1" class="cta-button">Descubre el futuro del Sindicato</a>
+            <h1 class="title-gradient">Seis Ejes.<br>Cero Excusas.</h1>
+            <p class="hero-subtitle">CARLOS GUERRERO | Sección XX Michoacán</p>
+            <p style="color: var(--azul-cyan); font-size: 1.8rem; margin-bottom: 2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; filter: drop-shadow(0 0 10px rgba(100, 255, 218, 0.4));">Unidos Somos Fuerza</p>
+            <a href="#eje1" class="cta-button">
+                Ver Plan de Acción
+                <i class="ph-duotone ph-arrow-circle-down" style="font-size: 1.4rem;"></i>
+            </a>
         </section>
 
         <section id="eje1">
             <div class="glass-card scroll-reveal">
-                <span class="eje-numero">Eje 01</span>
-                <h2>Derechos Laborales</h2>
+                <span class="eje-numero">Eje Rector 01</span>
+                <h2><i class="ph-duotone ph-gears eje-icon"></i> Derechos Laborales</h2>
                 <p class="frase-fuerza">"Defender los derechos no es discurso, es acción."</p>
-                <p>Compañeros, la base de nuestro sindicato es la defensa irrestricta de nuestro Contrato Colectivo de Trabajo (CCT). Conmigo, tendrán una defensa firme impulsada por la unidad y el conocimiento profundo de nuestras garantías.</p>
-                <p>No improvisaremos: exigiré la <strong>profesionalización obligatoria de nuestra estructura sindical</strong> para que cada representante sepa exactamente cómo protegerte. Haremos valer cada letra del CCT y garantizaremos el cumplimiento absoluto al CAMTI.</p>
+                <ul class="propuestas-list">
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Defensa firme, con unidad y conocimiento del CCT.</li>
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Profesionalización de la estructura Sindical.</li>
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Cumplimiento al CAMTI.</li>
+                </ul>
             </div>
         </section>
 
         <section id="eje2">
             <div class="glass-card scroll-reveal">
-                <span class="eje-numero">Eje 02</span>
-                <h2>Condiciones de Trabajo</h2>
-                <p class="frase-fuerza">"Sin herramientas no hay servicio digno. Cada plaza vacía es una carga injusta."</p>
-                <p>Nuestra vocación de servicio no debe costarnos la salud física ni mental. Es momento de exigir <strong>infraestructura segura y abasto real de insumos</strong>. Gestionaremos efectivamente la <strong>cobertura real de plazas</strong> basándonos en necesidades reales, defendiendo nuestras plantillas completas.</p>
-                <p>Implementaremos una <strong>disminución de cargas laborales</strong> mediante una distribución equitativa. Y que quede claro: <strong>Cero tolerancia al acoso y hostigamiento laboral</strong>. Crearemos mecanismos claros de denuncia y daremos acompañamiento real. El respeto no se negocia.</p>
+                <span class="eje-numero">Eje Rector 02</span>
+                <h2><i class="ph-duotone ph-chart-line-up eje-icon"></i> Condiciones de Trabajo</h2>
+                <p class="frase-fuerza">"Trabajar con dignidad también es trabajar con equilibrio."</p>
+                <ul class="propuestas-list">
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Infraestructura segura y abasto real de insumos.</li>
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Cobertura real de plazas basándonos en necesidades reales.</li>
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Disminución de cargas laborales, respetando jornadas y descansos.</li>
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Combate frontal al acoso y hostigamiento laboral.</li>
+                </ul>
             </div>
         </section>
 
         <section id="eje3">
             <div class="glass-card scroll-reveal">
-                <span class="eje-numero">Eje 03</span>
-                <h2>Inclusión y Equidad</h2>
+                <span class="eje-numero">Eje Rector 03</span>
+                <h2><i class="ph-duotone ph-scales eje-icon"></i> Inclusión y Equidad</h2>
                 <p class="frase-fuerza">"La dignidad no se negocia. Se defiende."</p>
-                <p>Un sindicato fuerte es el que protege a toda su gente por igual. Garantizaremos la <strong>igualdad sustantiva</strong> con oportunidades para todas y todos, asegurando una participación equitativa en los espacios sindicales y tolerancia cero a cualquier forma de discriminación.</p>
-                <p>Brindaremos una <strong>protección integral de los derechos y la dignidad</strong> de cada trabajador, promoviendo entornos laborales libres de violencia y brindando atención sensible y acompañamiento real a quien lo necesite.</p>
+                <ul class="propuestas-list">
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Igualdad sustantiva y participación equitativa.</li>
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Cero tolerancia a cualquier forma de discriminación.</li>
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Protección integral de los derechos humanos y dignidad de cada trabajador.</li>
+                </ul>
             </div>
         </section>
 
         <section id="eje4">
             <div class="glass-card scroll-reveal">
-                <span class="eje-numero">Eje 04</span>
-                <h2>Seguridad Social y Beneficios</h2>
+                <span class="eje-numero">Eje Rector 04</span>
+                <h2><i class="ph-duotone ph-heart-break eje-icon"></i> Seguridad Social</h2>
                 <p class="frase-fuerza">"Por un retiro digno y dinámico y servicios de calidad."</p>
-                <p>Nuestro esfuerzo de hoy debe garantizar nuestra tranquilidad de mañana. Trabajaremos incansablemente por <strong>mejoras en el retiro para las nuevas generaciones</strong>, impulsando aportaciones crecientes y pensiones verdaderamente dignas.</p>
-                <p>Además, fortaleceremos el <strong>SPPSTIMSS por zona</strong>, asegurando servicios médicos de calidad, prevención y bienestar para quienes dedicamos nuestra vida a cuidar la salud de los demás.</p>
+                <ul class="propuestas-list">
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Buscar mejoras para el retiro de las nuevas generaciones.</li>
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> SPPSTIMSS por zona, garantizando bienestar y prevención.</li>
+                </ul>
             </div>
         </section>
 
         <section id="eje5">
             <div class="glass-card scroll-reveal">
-                <span class="eje-numero">Eje 05</span>
-                <h2>Organización y Representación</h2>
+                <span class="eje-numero">Eje Rector 05</span>
+                <h2><i class="ph-duotone ph-users-three eje-icon"></i> Organización</h2>
                 <p class="frase-fuerza">"Un Sindicato fuerte se construye con unidad y compromiso."</p>
-                <p>Para representarte mejor, necesitamos la mejor preparación. Implementaremos una <strong>educación sindical permanente y obligatoria</strong> para nuestra estructura. Tendremos una <strong>presencia activa y un respaldo continuo</strong> en tus unidades.</p>
-                <p>Fomentaremos la cultura, el deporte y la recreación para tu bienestar integral, y daremos un fuerte impulso a la <strong>Red Juventud</strong>, fomentando la participación y el liderazgo de las nuevas generaciones.</p>
+                <ul class="propuestas-list">
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Educación sindical obligatoria y permanente para nuestra estructura.</li>
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Presencia activa, cercana y respaldo continuo en las unidades.</li>
+                    <li><i class="ph-duotone ph-check-circle check-icon"></i> Fortalecimiento de la Red Juventud y liderazgo juvenil.</li>
+                </ul>
             </div>
         </section>
 
         <section id="psd-section">
-            <div class="glass-card scroll-reveal" style="text-align: center;">
-                <span class="eje-numero" style="font-size: 1.5rem;">Eje 06</span>
-                <h2 style="font-size: 3.5rem; border: none; color: var(--azul-claro);">INNOVACIÓN SINDICAL DIGITAL</h2>
-                <p class="frase-fuerza" style="color: white; font-size: 1.8rem;">"Cuando el conocimiento se comparte, el trabajador se fortalece."</p>
-                <p style="font-size: 1.3rem; color: #fff;">Esta es nuestra gran revolución. Presentamos la <strong>Plataforma Sindical Digital (PSD)</strong>. Pondremos la <strong>Inteligencia Artificial al servicio del trabajador</strong> para resolver tus dudas sobre trámites y derechos en segundos. La tecnología ahora trabajará para ti.</p>
+            <span class="red-trabajadores">Conexión Segura</span>
+            <div class="glass-card scroll-reveal">
+                <span class="eje-numero" style="font-size: 1.5rem;">Eje Final 06</span>
+                <h2 style="font-size: 4rem; justify-content: center; border: none; color: white;">INNOVACIÓN DIGITAL</h2>
+                <p class="frase-fuerza" style="color: var(--azul-cyan); font-size: 1.8rem; justify-content: center; border: none;">"El conocimiento se comparte para fortalecer al trabajador."</p>
+                <p style="font-size: 1.4rem; color: #fff; max-width: 700px; margin: 0 auto 2rem auto; line-height: 1.6;">Esta es nuestra gran revolución. Ponemos la **Inteligencia Artificial** a tu servicio con la **Plataforma Sindical Digital (PSD)** para resolver dudas y trámites en segundos.</p>
+                <a href="#footer" class="cta-button">
+                    <i class="ph-duotone ph-sparkle"></i>
+                    Únete al Equipo
+                </a>
             </div>
         </section>
 
-        <footer>
-            <h2>DE TRABAJADOR A TRABAJADOR:<br>ESTAMOS CONTIGO</h2>
-            <p style="color: var(--azul-claro); font-size: 1.5rem; margin: 20px 0;">VOTA AZUL ESTE 6 DE ABRIL</p>
-            <a href="#" class="cta-button">Únete al Equipo (WhatsApp)</a>
+        <footer id="footer">
+            <h2>DE TRABAJADOR<br>A TRABAJADOR</h2>
+            <p class="frase-fuerza" style="display: inline-block; border: none; padding-left: 0; text-transform: uppercase;">"estamos contigo."</p>
+            <p style="color: var(--azul-cyan); font-size: 2rem; margin: 30px 0; font-weight: 900; filter: drop-shadow(0 0 10px rgba(100, 255, 218, 0.4));">VOTA AZUL ESTE 6 DE ABRIL</p>
+            <a href="https://wa.me/xxxxxxxxxxx" class="cta-button whatsapp-button" target="_blank" rel="noopener noreferrer">
+                <i class="ph-bold ph-whatsapp-logo" style="font-size: 1.5rem;"></i>
+                SÚMATE AL EQUIPO AZUL
+            </a>
+            <span style="font-size: 1rem; color: var(--texto-gris); text-transform: uppercase; letter-spacing: 0.2em; margin-top: 15px; display: block;">Sección XX, Michoacán 2026-2032</span>
         </footer>
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- 1. CONFIGURACIÓN THREE.JS ---
+            // --- 1. REPRODUCTOR DE AUDIO DE BIENVENIDA ---
+            const audioBienvenida = document.getElementById('audio-bienvenida');
+            let audioReproducido = false;
+
+            const reproducirAudio = () => {
+                if (!audioReproducido) {
+                    audioBienvenida.play().then(() => {
+                        audioReproducido = true;
+                        document.removeEventListener('click', reproducirAudio);
+                        document.removeEventListener('touchstart', reproducirAudio);
+                        document.removeEventListener('scroll', reproducirAudio);
+                    }).catch((error) => {
+                        console.log("Esperando interacción del usuario para reproducir audio...");
+                    });
+                }
+            };
+
+            // Escuchamos clics, toques o el primer scroll para disparar el audio
+            document.addEventListener('click', reproducirAudio);
+            document.addEventListener('touchstart', reproducirAudio);
+            document.addEventListener('scroll', reproducirAudio);
+
+            // --- 2. CONFIGURACIÓN THREE.JS ---
             const canvas = document.querySelector('#bg-canvas');
             const scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x02060d, 0.0015);
+            scene.fog = new THREE.FogExp2(0x02060d, 0.002);
 
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 30;
+            camera.position.z = 40; 
 
             const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            // --- 2. PARTICULAS DE FONDO ---
+            // --- 3. PARTÍCULAS DE FONDO ---
             const particlesGeometry = new THREE.BufferGeometry();
-            const particlesCount = 2000;
+            const particlesCount = 2500; 
             const posArray = new Float32Array(particlesCount * 3);
 
             for(let i = 0; i < particlesCount * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 150;
+                posArray[i] = (Math.random() - 0.5) * 200; 
             }
 
             particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            
             const particlesMaterial = new THREE.PointsMaterial({
                 size: 0.2,
-                color: 0x1d4e89,
+                color: 0x1d4e89, 
                 transparent: true,
-                opacity: 0.8,
-                blending: THREE.AdditiveBlending
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending,
+                sizeAttenuation: true
             });
 
             const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
             scene.add(particlesMesh);
 
-            // --- 3. MODELO 3D DEL KIOSCO ---
+            // --- 4. MODELO 3D PSD ---
             const kioskGroup = new THREE.Group();
             
-            const outerGeo = new THREE.CylinderGeometry(4, 4, 10, 6);
+            const outerGeo = new THREE.CylinderGeometry(5, 5, 12, 6);
             const outerMat = new THREE.MeshBasicMaterial({ 
                 color: 0x64ffda, 
                 wireframe: true, 
@@ -301,10 +428,10 @@
             kioskGroup.add(outerMesh);
             kioskGroup.add(coreMesh);
             
-            kioskGroup.position.set(0, -20, -10); 
+            kioskGroup.position.set(0, -30, -20); 
             scene.add(kioskGroup);
 
-            // --- 4. INTERACTIVIDAD ---
+            // --- 5. INTERACTIVIDAD DE RATÓN ---
             let mouseX = 0; let mouseY = 0;
             let targetX = 0; let targetY = 0;
             let windowHalfX = window.innerWidth / 2;
@@ -315,25 +442,27 @@
                 mouseY = (event.clientY - windowHalfY);
             });
 
-            // --- 5. BUCLE DE ANIMACIÓN ---
+            // --- 6. BUCLE DE ANIMACIÓN ---
             const clock = new THREE.Clock();
 
             const tick = () => {
                 const elapsedTime = clock.getElapsedTime();
 
-                targetX = mouseX * 0.0005;
-                targetY = mouseY * 0.0005;
+                targetX = mouseX * 0.0003;
+                targetY = mouseY * 0.0003;
                 
                 particlesMesh.rotation.y += 0.02 * (targetX - particlesMesh.rotation.y);
                 particlesMesh.rotation.x += 0.02 * (targetY - particlesMesh.rotation.x);
-                particlesMesh.position.y = (elapsedTime * 2) % 50;
+                
+                particlesMesh.position.y = (elapsedTime * 1.5) % 100;
+                particlesMesh.position.x = Math.sin(elapsedTime * 0.2) * 5;
 
-                kioskGroup.rotation.y = elapsedTime * 0.5;
-                outerMesh.rotation.x = elapsedTime * 0.2;
+                kioskGroup.rotation.y = elapsedTime * 0.3;
+                outerMesh.rotation.x = elapsedTime * 0.1;
                 coreMesh.scale.set(
-                    1 + Math.sin(elapsedTime * 2) * 0.1, 
-                    1 + Math.sin(elapsedTime * 2) * 0.1, 
-                    1 + Math.sin(elapsedTime * 2) * 0.1
+                    1 + Math.sin(elapsedTime * 3) * 0.08, 
+                    1 + Math.sin(elapsedTime * 3) * 0.08, 
+                    1 + Math.sin(elapsedTime * 3) * 0.08
                 );
 
                 renderer.render(scene, camera);
@@ -341,43 +470,36 @@
             };
             tick();
 
-            // --- 6. RESPONSIVE ---
+            // --- 7. RESPONSIVE ---
             window.addEventListener('resize', () => {
                 windowHalfX = window.innerWidth / 2;
                 windowHalfY = window.innerHeight / 2;
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
-                ScrollTrigger.refresh(); // Forzar recálculo en resize
+                ScrollTrigger.refresh(); 
             });
 
-            // --- 7. GSAP SCROLLTRIGGER ---
+            // --- 8. GSAP SCROLLTRIGGER ---
             gsap.registerPlugin(ScrollTrigger);
 
             const cards = document.querySelectorAll('.scroll-reveal');
-            cards.forEach((card) => {
+            cards.forEach((card, index) => {
                 gsap.to(card, {
                     scrollTrigger: {
                         trigger: card,
-                        start: "top 85%",
+                        start: "top 85%", 
                         end: "bottom 15%",
-                        toggleActions: "play reverse play reverse"
+                        toggleActions: "play reverse play reverse",
+                        onEnter: () => card.classList.add('is-scrolled'),
+                        onLeaveBack: () => card.classList.remove('is-scrolled')
                     },
                     opacity: 1,
                     y: 0,
                     duration: 1.2,
-                    ease: "power3.out"
+                    ease: "power3.out",
+                    delay: index * 0.1 
                 });
-            });
-
-            gsap.to(particlesMaterial.color, {
-                scrollTrigger: {
-                    trigger: "#psd-section",
-                    start: "top center",
-                    end: "bottom bottom",
-                    scrub: 1
-                },
-                r: 100/255, g: 255/255, b: 218/255
             });
 
             gsap.to(kioskGroup.position, {
@@ -385,10 +507,10 @@
                     trigger: "#psd-section",
                     start: "top 80%",
                     end: "center center",
-                    scrub: 1
+                    scrub: 1 
                 },
                 y: 0,
-                z: 0,
+                z: -5,
                 ease: "power2.out"
             });
 
@@ -399,7 +521,7 @@
                     end: "center center",
                     scrub: 1
                 },
-                opacity: 0.8
+                opacity: 0.9
             });
 
             gsap.to(coreMat, {
@@ -409,10 +531,35 @@
                     end: "center center",
                     scrub: 1
                 },
-                opacity: 0.9
+                opacity: 1
+            });
+            
+            ScrollTrigger.create({
+                trigger: "#hero",
+                start: "top top",
+                onEnterBack: () => gsap.to(particlesMaterial.color, { r: 29/255, g: 78/255, b: 137/255 })
             });
 
-            // Forzar actualización inicial
+            gsap.to(particlesMaterial.color, {
+                scrollTrigger: {
+                    trigger: "#psd-section",
+                    start: "top center",
+                    end: "bottom bottom",
+                    scrub: 0.5 
+                },
+                r: 100/255, g: 255/255, b: 218/255 
+            });
+
+            gsap.to(particlesMesh.position, {
+                scrollTrigger: {
+                    trigger: "#eje2", 
+                    start: "top center",
+                    end: "bottom bottom",
+                    scrub: 2
+                },
+                y: 200 
+            });
+            
             setTimeout(() => { ScrollTrigger.refresh(); }, 500);
         });
     </script>
