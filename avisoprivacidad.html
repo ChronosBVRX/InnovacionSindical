@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacidad PSD - Sección XX Michoacán</title>
+    <title>Aviso de Privacidad - PSD Sección XX</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         :root {
-            --primary: #004a99; /* Azul SNTSS */
-            --secondary: #00a8e8; /* Azul Tecnológico */
-            --text: #333;
-            --light-bg: #f8faff;
-            --white: #ffffff;
+            --bg-body: transparent; /* Transparente para heredar el fondo del iframe si es necesario, o el color base */
+            --bg-base: #1b2e45;
+            --panel-base: 46, 79, 119;
+            --primary: #4da1a8; 
+            --primary-light: #7ad1d6;
+            --success: #4ade80;
+            --text-main: #f0fdfa; 
+            --text-muted: #bce9eb;
+            --ring: rgba(77, 161, 168, 0.35);
+            --radius: 12px;
+            --glass-bg: rgba(var(--panel-base), 0.25);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,191 +26,276 @@
         body {
             font-family: 'Inter', sans-serif;
             line-height: 1.6;
-            color: var(--text);
-            background-color: var(--light-bg);
+            color: var(--text-main);
+            background-color: var(--bg-base);
+            padding: 20px;
         }
 
+        /* Encabezado ajustado para iframe */
         header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: var(--white);
-            padding: 4rem 2rem;
             text-align: center;
-            border-bottom-left-radius: 50px;
-            border-bottom-right-radius: 50px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--ring);
         }
 
-        .container {
-            max-width: 900px;
-            margin: -50px auto 50px;
-            padding: 0 20px;
+        header h1 {
+            font-size: 24px;
+            color: var(--primary-light);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 14px;
         }
 
         /* Tarjetas de Resumen */
         .trust-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
         }
 
         .card {
-            background: var(--white);
-            padding: 25px;
-            border-radius: 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--ring);
+            padding: 20px;
+            border-radius: var(--radius);
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
+            transition: all 0.3s ease;
         }
 
-        .card:hover { transform: translateY(-5px); }
-        .card h3 { color: var(--primary); margin-bottom: 10px; }
+        .card:hover {
+            border-color: var(--primary-light);
+            background: rgba(var(--panel-base), 0.4);
+            transform: translateY(-2px);
+        }
 
-        /* Acordeones */
+        .card i {
+            font-size: 32px;
+            color: var(--primary-light);
+            margin-bottom: 12px;
+        }
+
+        .card h3 { color: var(--text-main); font-size: 16px; margin-bottom: 8px; }
+        .card p { color: var(--text-muted); font-size: 13px; }
+
+        /* Acordeones Legales */
         .accordion-item {
-            background: var(--white);
-            margin-bottom: 15px;
-            border-radius: 15px;
+            background: var(--glass-bg);
+            border: 1px solid var(--ring);
+            margin-bottom: 12px;
+            border-radius: var(--radius);
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
         }
 
         .accordion-header {
-            padding: 20px;
-            background: var(--white);
+            padding: 16px 20px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-weight: 600;
-            color: var(--primary);
+            color: var(--primary-light);
             transition: background 0.3s;
+            font-size: 15px;
         }
 
-        .accordion-header:hover { background: #f0f7ff; }
+        .accordion-header:hover { background: rgba(77, 161, 168, 0.1); }
+
+        .accordion-header span {
+            font-size: 20px;
+            font-weight: 300;
+            transition: transform 0.3s;
+        }
 
         .accordion-content {
             padding: 0 20px;
             max-height: 0;
             overflow: hidden;
-            transition: all 0.3s ease-out;
-            border-top: 0px solid #eee;
+            transition: all 0.4s ease-out;
+            color: var(--text-muted);
+            font-size: 14px;
         }
 
         .accordion-content.active {
-            padding: 20px;
-            max-height: 1000px;
-            border-top: 1px solid #eee;
+            padding: 0 20px 20px 20px;
+            max-height: 2000px; /* Suficiente para contenido legal largo */
         }
+
+        .accordion-content p { margin-bottom: 12px; }
+        
+        .accordion-content ul {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .accordion-content li { margin-bottom: 6px; }
+
+        .accordion-content strong { color: var(--text-main); }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 15px 0;
+            font-size: 13px;
         }
 
         th, td {
             text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
+            padding: 10px;
+            border-bottom: 1px solid var(--ring);
         }
 
-        footer {
+        th { color: var(--primary-light); font-weight: 600; }
+
+        .legal-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--ring);
             text-align: center;
-            padding: 40px;
-            color: #777;
-            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-size: 12px;
         }
 
-        .badge {
-            background: #e1f5fe;
-            color: #0288d1;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
+        /* Scrollbar personalizado para el iframe */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-light); }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Aviso de Privacidad PSD</h1>
-    <p>Sección XX Michoacán - SNTSS</p>
-    <p style="margin-top:10px; opacity: 0.9;">Tu información, protegida por la tecnología más segura.</p>
+    <h1><i class="ph-fill ph-shield-check"></i> Aviso de Privacidad Integral</h1>
+    <p>Plataforma Sindical Digital (PSD) y Kioscos Físicos - SNTSS Sección XX Michoacán</p>
 </header>
 
-<div class="container">
-    <div class="trust-cards">
-        <div class="card">
-            <h3>🔒 Seguridad</h3>
-            <p>Cifrado de grado bancario en todos tus trámites.</p>
-        </div>
-        <div class="card">
-            <h3>👤 Control</h3>
-            <p>Tú decides qué datos compartir y cuándo borrarlos.</p>
-        </div>
-        <div class="card">
-            <h3>📜 Transparencia</h3>
-            <p>Uso exclusivo para fines sindicales. Sin terceros.</p>
-        </div>
+<div class="trust-cards">
+    <div class="card">
+        <i class="ph-duotone ph-lock-key"></i>
+        <h3>Protección LFPDPPP</h3>
+        <p>Alineados a la legislación mexicana vigente.</p>
     </div>
-
-    <div class="accordion-item">
-        <div class="accordion-header">1. ¿Quién es responsable de mis datos? <span>+</span></div>
-        <div class="accordion-content">
-            <p>La <strong>Sección XX Michoacán del SNTSS</strong> es la responsable legal. Nuestra oficina central se ubica en Morelia, Michoacán. Hemos creado la Plataforma Sindical Digital (PSD) para modernizar tu servicio.</p>
-        </div>
+    <div class="card">
+        <i class="ph-duotone ph-handshake"></i>
+        <h3>Uso Orgánico</h3>
+        <p>Tus datos sirven para facilitar tus trámites, nada más.</p>
     </div>
-
-    <div class="accordion-item">
-        <div class="accordion-header">2. ¿Qué datos recolectamos? <span>+</span></div>
-        <div class="accordion-content">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Dato</th>
-                        <th>Uso en la PSD</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>Nombre y Matrícula</td><td>Identificación única.</td></tr>
-                    <tr><td>CURP / RFC</td><td>Validación ante el IMSS.</td></tr>
-                    <tr><td>WhatsApp / Correo</td><td>Notificaciones de trámites.</td></tr>
-                    <tr><td>Unidad Médica</td><td>Personalización de beneficios.</td></tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="card">
+        <i class="ph-duotone ph-eye-slash"></i>
+        <h3>Sin Terceros</h3>
+        <p>No vendemos ni compartimos tu información comercialmente.</p>
     </div>
+</div>
 
-    <div class="accordion-item">
-        <div class="accordion-header">3. Seguridad en Kioscos y Web <span>+</span></div>
-        <div class="accordion-content">
-            <p>Toda la información procesada en nuestros <strong>Kioscos Físicos</strong> y en la aplicación web utiliza protocolos SSL/TLS. No almacenamos contraseñas en texto plano y bloqueamos sesiones automáticamente para proteger tu privacidad si olvidas cerrar sesión.</p>
-        </div>
+<div class="accordion-item">
+    <div class="accordion-header">1. Identidad y Domicilio del Responsable <span>+</span></div>
+    <div class="accordion-content">
+        <p>En cumplimiento con la <strong>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)</strong>, la <strong>Sección XX Michoacán del Sindicato Nacional de Trabajadores del Seguro Social (SNTSS)</strong> (en adelante "El Responsable"), con sede en Morelia, Michoacán, es responsable del uso y protección de sus datos personales recolectados a través de la Plataforma Sindical Digital (PSD) y los Kioscos Físicos instalados en las unidades.</p>
     </div>
+</div>
 
-    <div class="accordion-item">
-        <div class="accordion-header">4. Tus Derechos (ARCO) <span>+</span></div>
-        <div class="accordion-content">
-            <p>Tienes derecho a Acceder, Rectificar, Cancelar u Oponerte al uso de tus datos. Puedes hacerlo enviando un correo a <strong>contacto@seccionxxmich.org.mx</strong> o directamente en el panel de configuración de tu perfil en la PSD.</p>
-        </div>
+<div class="accordion-item">
+    <div class="accordion-header">2. Datos Personales Sometidos a Tratamiento <span>+</span></div>
+    <div class="accordion-content">
+        <p>Para brindar un entorno orgánico, humano y eficiente en la gestión de sus trámites, recabaremos los siguientes datos:</p>
+        <ul>
+            <li><strong>Datos de Identificación:</strong> Nombre completo, CURP, RFC y Matrícula.</li>
+            <li><strong>Datos de Contacto:</strong> Correo electrónico y número de teléfono (celular/WhatsApp).</li>
+            <li><strong>Datos Laborales:</strong> Unidad de adscripción, categoría, turno y antigüedad.</li>
+            <li><strong>Datos Electrónicos:</strong> Dirección IP y registros de sesión (únicamente para fines de seguridad de la cuenta).</li>
+        </ul>
+        <p><strong>Tratamiento de Datos Sensibles:</strong> Le informamos que, por la naturaleza de los servicios, su condición de afiliado al sindicato es considerada un <em>dato personal sensible</em> bajo la legislación mexicana. Nos comprometemos a que los mismos serán tratados bajo estrictas medidas de seguridad que garanticen su confidencialidad.</p>
     </div>
+</div>
 
-    <footer>
-        <p>&copy; 2026 Sección XX Michoacán - Plataforma Sindical Digital</p>
-        <p>Última actualización: 15 de marzo de 2026</p>
-    </footer>
+<div class="accordion-item">
+    <div class="accordion-header">3. Finalidades del Tratamiento de Datos <span>+</span></div>
+    <div class="accordion-content">
+        <p>Su información será utilizada para las siguientes <strong>finalidades principales</strong> (necesarias para el servicio):</p>
+        <ul>
+            <li>Validar su identidad como miembro activo de la Sección XX.</li>
+            <li>Crear y gestionar su expediente digital dentro de la PSD.</li>
+            <li>Procesar trámites sindicales (préstamos, becas, escalafón, pliegos testamentarios, etc.) iniciados vía web o mediante los Kioscos Sindicales.</li>
+            <li>Notificarle sobre el estatus de sus trámites y resoluciones.</li>
+        </ul>
+        <p>Y para las siguientes <strong>finalidades secundarias</strong>:</p>
+        <ul>
+            <li>Envío de boletines informativos, convocatorias y noticias relevantes de la Sección XX.</li>
+            <li>Generación de estadísticas internas anonimizadas para mejorar la atención de nuestra base trabajadora.</li>
+        </ul>
+    </div>
+</div>
+
+<div class="accordion-item">
+    <div class="accordion-header">4. Transferencia de Datos Personales <span>+</span></div>
+    <div class="accordion-content">
+        <p>La Sección XX Michoacán <strong>NO</strong> vende, renta ni comercializa sus datos personales.</p>
+        <p>Sus datos solo podrán ser transferidos a las autoridades competentes en los casos legalmente previstos, o bien, a las áreas administrativas del <strong>Instituto Mexicano del Seguro Social (IMSS)</strong> y al <strong>Comité Ejecutivo Nacional del SNTSS</strong>, única y exclusivamente cuando dicha transferencia sea indispensable para la conclusión del trámite o beneficio que usted haya solicitado a través de la PSD.</p>
+    </div>
+</div>
+
+<div class="accordion-item">
+    <div class="accordion-header">5. Ejercicio de Derechos ARCO y Revocación <span>+</span></div>
+    <div class="accordion-content">
+        <p>Usted tiene derecho a conocer qué datos personales tenemos de usted (<strong>Acceso</strong>); solicitar la corrección de su información en caso de estar desactualizada o ser inexacta (<strong>Rectificación</strong>); que la eliminemos de nuestros registros cuando considere que no se requiere para los fines señalados (<strong>Cancelación</strong>); así como oponerse al uso de sus datos para fines específicos (<strong>Oposición</strong>).</p>
+        <p>Para el ejercicio de cualquiera de los derechos ARCO, o para revocar su consentimiento, deberá enviar una solicitud al correo electrónico: <strong>contacto@seccionxxmich.org.mx</strong> o gestionar la solicitud directamente desde el panel de "Configuración de Cuenta" en la PSD.</p>
+    </div>
+</div>
+
+<div class="accordion-item">
+    <div class="accordion-header">6. Uso de Cookies y Tecnologías de Rastreo <span>+</span></div>
+    <div class="accordion-content">
+        <p>Le informamos que en la PSD utilizamos cookies, web beacons y tecnologías similares para garantizar el correcto funcionamiento de las sesiones, evitar suplantaciones de identidad y ofrecerle una navegación fluida y segura. Estas tecnologías no extraen información personal de su dispositivo fuera del contexto de la plataforma.</p>
+    </div>
+</div>
+
+<div class="accordion-item">
+    <div class="accordion-header">7. Modificaciones al Aviso de Privacidad <span>+</span></div>
+    <div class="accordion-content">
+        <p>El presente aviso de privacidad puede sufrir modificaciones derivadas de nuevos requerimientos legales, de nuestras propias necesidades por los servicios que ofrecemos, o por cambios en nuestro modelo de gestión.</p>
+        <p>Nos comprometemos a mantenerlo informado sobre los cambios que pueda sufrir este aviso a través de una notificación emergente al iniciar sesión en la <strong>Plataforma Sindical Digital</strong> o en la pantalla de inicio de nuestros Kioscos.</p>
+    </div>
+</div>
+
+<div class="legal-footer">
+    <p>Al hacer uso de la Plataforma Sindical Digital o los Kioscos de la Sección XX, usted reconoce haber leído y comprendido el alcance legal de este documento.</p>
+    <p style="margin-top: 10px;"><strong>Última actualización:</strong> Marzo 2026</p>
 </div>
 
 <script>
-    // Lógica para los acordeones
+    // Lógica para los acordeones adaptada
     document.querySelectorAll('.accordion-header').forEach(header => {
         header.addEventListener('click', () => {
             const content = header.nextElementSibling;
             const span = header.querySelector('span');
             
+            // Cerrar otros acordeones si se desea (opcional)
+            /* document.querySelectorAll('.accordion-content').forEach(c => {
+                if (c !== content) {
+                    c.classList.remove('active');
+                    c.previousElementSibling.querySelector('span').style.transform = 'rotate(0deg)';
+                }
+            }); */
+            
             content.classList.toggle('active');
-            span.textContent = content.classList.contains('active') ? '-' : '+';
+            
+            // Animar el ícono de más/menos
+            if(content.classList.contains('active')) {
+                span.textContent = '−';
+                span.style.color = 'var(--text-main)';
+            } else {
+                span.textContent = '+';
+                span.style.color = 'var(--primary-light)';
+            }
         });
     });
 </script>
