@@ -463,10 +463,31 @@
       text-shadow: 0 0 8px rgba(122, 209, 214, 0.4);
     }
 
-    .app-wrap { width: 100%; max-width: 100%; margin: 0; padding: 16px 24px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
-    .app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--ring); padding-bottom: 12px; }
-    .app-body { flex: 1; background: rgba(21, 35, 54, 0.4); border-radius: 12px; border: 1px solid var(--ring); overflow: hidden; position: relative; width: 100%; }
+    /* --- IFRAME FULLSCREEN MODIFICATIONS --- */
+    .app-wrap { width: 100%; max-width: 100%; margin: 0; padding: 0; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; position: relative; }
+    
+    .app-head { 
+      position: absolute; 
+      top: 16px; 
+      right: 24px; 
+      z-index: 50; 
+      display: flex; 
+      align-items: center; 
+      gap: 8px; 
+      background: rgba(var(--panel-base), 0.75); 
+      backdrop-filter: blur(10px); 
+      padding: 8px; 
+      border-radius: 12px; 
+      border: 1px solid var(--ring); 
+      margin: 0; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    
+    .app-head > div:first-child { display: none !important; } /* Oculta el título para permitir que el iframe use todo el espacio visual */
+    
+    .app-body { flex: 1; background: transparent; border-radius: 0; border: none; overflow: hidden; position: relative; width: 100%; height: 100%; }
     .iframe { width: 100%; height: 100%; border: none; display: block; }
+    
     .btn { background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring); color: var(--primary); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
     .btn i { font-size: 18px; }
     .btn:hover { background: rgba(77, 161, 168, .15); color: var(--text-main); border-color: var(--primary-light); box-shadow: 0 0 10px rgba(122, 209, 214, 0.2); }
@@ -481,9 +502,7 @@
 
     @media (max-width: 768px) {
       .wrap { padding: 20px 16px; }
-      .app-wrap { padding: 8px; }
-      .app-head h2 { font-size: 16px; }
-      .app-head p { display: none; }
+      .app-head { right: 16px; top: 12px; }
       .tiles { grid-template-columns: 1fr 1fr; gap: 12px; }
       .tile { min-height: 120px; padding: 16px; }
       .clock-container { padding: 4px 8px; font-size: 11px; }
@@ -582,7 +601,7 @@
       <footer class="psd-footer">
         <div>&copy; 2026 SNTSS Sección XX Michoacán | <strong>PSD</strong></div>
         <div class="footer-links">
-          <a href="#" onclick="PSD.openSafeExternal('avisoprivacidad.html'); return false;">
+          <a href="#" onclick="PSD.openApp('privacidad'); return false;">
             <i class="ph-bold ph-shield-check"></i> Aviso de Privacidad
           </a>
           <a href="mailto:contacto@seccionxxmich.org.mx">
@@ -636,7 +655,9 @@
       { id: 'directorio', title: 'Directorio', desc: 'Contactos.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
       { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo.', iconClass: 'ph-duotone ph-hand-coins', iframe: 'prestaciones.html' },
       { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga.', iconClass: 'ph-duotone ph-file-pdf', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/', secure: true },
-      { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Cuenta.', iconClass: 'ph-duotone ph-hospital', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true }
+      { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Cuenta.', iconClass: 'ph-duotone ph-hospital', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true },
+      // Aquí agregamos el Aviso de Privacidad para que abra en formato iframe
+      { id: 'privacidad', title: 'Aviso de Privacidad', desc: 'Documento Legal.', iconClass: 'ph-bold ph-shield-check', iframe: 'avisoprivacidad.html' }
     ];
 
     const PSD = {
@@ -651,7 +672,6 @@
         document.getElementById('clock').textContent = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
       },
 
-      // --- LÓGICA DE LA ANIMACIÓN RESTAURADA ---
       runSecurityBoot() {
         const messages = ["Verificando integridad...", "Conexión TLS...", "Privacidad habilitada...", "Entorno Seguro."];
         const statusEl = document.getElementById('security-status');
@@ -687,13 +707,16 @@
       skipBoot() { this.hideBoot(); },
 
       openSafeExternal(url) {
-        // Al ser una ruta local del mismo origen, PSD lo abrirá sin problemas
         window.open(url, '_blank', 'noopener,noreferrer');
       },
 
       renderTiles() {
         const wrap = document.getElementById('tiles');
         APPS.forEach(a => {
+          // Si queremos renderizar el tile de privacidad aquí también, está bien, si no, solo existirá como lógica para el footer (este loop los ignora si los sacamos del flujo principal, pero está añadido para que el enrutamiento funcione sin problemas).
+          // Para que no aparezca el aviso de privacidad como tile (sólo en el footer):
+          if(a.id === 'privacidad') return; 
+
           const tile = document.createElement('div');
           tile.className = `tile ${a.featured ? 'featured' : ''}`;
           tile.onclick = () => {
