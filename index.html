@@ -638,8 +638,9 @@
       'https://www.facebook.com'
     ]);
 
-    // TrascendencIA ahora incluye newTab: true para abrir en ventana completa
+    // AQUI ESTÁ EL CAMBIO: Se añadió la campaña interactiva en la primera posición
     const APPS = [
+      { id: 'campana', title: 'Planilla Azul', desc: 'Experiencia inmersiva 3D de la campaña.', iconClass: 'ph-duotone ph-presentation-chart', iframe: 'campana.html', featured: true },
       { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual Sindical.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true, newTab: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados en tiempo real.', iconClass: 'ph-duotone ph-broadcast' },
       { id: 'agenda', title: 'Red Sindical', desc: 'Consulta la agenda y biblioteca.', iconClass: 'ph-duotone ph-share-network', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true, newTab: true },
@@ -653,7 +654,6 @@
       { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Cuenta institucional.', iconClass: 'ph-duotone ph-hospital', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true }
     ];
 
-    // Se renombra SInOS a PSD para borrar todo rastro
     const PSD = {
       init() {
         this.renderTiles();
