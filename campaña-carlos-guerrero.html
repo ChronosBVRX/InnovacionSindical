@@ -10,6 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
@@ -152,6 +153,31 @@
             color: #ffffff;
         }
 
+        /* --- ESTILOS DE BOTONES DE AUDIO POR EJE --- */
+        .btn-audio-eje {
+            background: rgba(100, 255, 218, 0.1);
+            border: 1px solid var(--azul-cyan);
+            color: var(--azul-cyan);
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-audio-eje:hover {
+            background: var(--azul-cyan);
+            color: var(--fondo-oscuro);
+            transform: scale(1.05);
+        }
+
         .glass-card {
             background: rgba(10, 25, 64, 0.5);
             backdrop-filter: blur(16px);
@@ -174,7 +200,7 @@
         .glass-card h2 {
             font-size: 3rem;
             font-weight: 800;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             color: white;
             line-height: 1.2;
             display: flex;
@@ -311,6 +337,10 @@
                 width: 100%;
                 justify-content: center;
             }
+            .btn-audio-eje {
+                width: 100%;
+                justify-content: center;
+            }
             footer {
                 padding: 4rem 1rem;
             }
@@ -320,6 +350,12 @@
 <body>
 
     <audio id="audio-bienvenida" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Bienvenido.mp3" preload="auto"></audio>
+    <audio id="audio-eje1" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/comite/P1.mp3" preload="none"></audio>
+    <audio id="audio-eje2" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/comite/P2.mp3" preload="none"></audio>
+    <audio id="audio-eje3" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/comite/P3.mp3" preload="none"></audio>
+    <audio id="audio-eje4" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/comite/p4.mp3" preload="none"></audio>
+    <audio id="audio-eje5" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/comite/P5.mp3" preload="none"></audio>
+    <audio id="audio-eje6" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/comite/P6.mp3" preload="none"></audio>
 
     <div id="splash-screen">
         <h1 class="splash-title">Sección XX Michoacán</h1>
@@ -347,6 +383,9 @@
             <div class="glass-card scroll-reveal">
                 <span class="eje-numero">Eje Rector 01</span>
                 <h2><i class="ph-duotone ph-gears eje-icon"></i> Derechos Laborales</h2>
+                <button class="btn-audio-eje" data-audio="audio-eje1">
+                    <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
+                </button>
                 <p class="frase-fuerza">"Defender los derechos no es discurso, es acción."</p>
                 <ul class="propuestas-list">
                     <li><i class="ph-duotone ph-check-circle check-icon"></i> Defensa firme, con unidad y conocimiento del CCT.</li>
@@ -360,6 +399,9 @@
             <div class="glass-card scroll-reveal">
                 <span class="eje-numero">Eje Rector 02</span>
                 <h2><i class="ph-duotone ph-chart-line-up eje-icon"></i> Condiciones de Trabajo</h2>
+                <button class="btn-audio-eje" data-audio="audio-eje2">
+                    <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
+                </button>
                 <p class="frase-fuerza">"Trabajar con dignidad también es trabajar con equilibrio."</p>
                 <ul class="propuestas-list">
                     <li><i class="ph-duotone ph-check-circle check-icon"></i> Infraestructura segura y abasto real de insumos.</li>
@@ -374,6 +416,9 @@
             <div class="glass-card scroll-reveal">
                 <span class="eje-numero">Eje Rector 03</span>
                 <h2><i class="ph-duotone ph-scales eje-icon"></i> Inclusión y Equidad</h2>
+                <button class="btn-audio-eje" data-audio="audio-eje3">
+                    <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
+                </button>
                 <p class="frase-fuerza">"La dignidad no se negocia. Se defiende."</p>
                 <ul class="propuestas-list">
                     <li><i class="ph-duotone ph-check-circle check-icon"></i> Igualdad sustantiva y participación equitativa.</li>
@@ -387,6 +432,9 @@
             <div class="glass-card scroll-reveal">
                 <span class="eje-numero">Eje Rector 04</span>
                 <h2><i class="ph-duotone ph-heart-break eje-icon"></i> Seguridad Social</h2>
+                <button class="btn-audio-eje" data-audio="audio-eje4">
+                    <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
+                </button>
                 <p class="frase-fuerza">"Por un retiro digno y dinámico y servicios de calidad."</p>
                 <ul class="propuestas-list">
                     <li><i class="ph-duotone ph-check-circle check-icon"></i> Buscar mejoras para el retiro de las nuevas generaciones.</li>
@@ -399,6 +447,9 @@
             <div class="glass-card scroll-reveal">
                 <span class="eje-numero">Eje Rector 05</span>
                 <h2><i class="ph-duotone ph-users-three eje-icon"></i> Organización</h2>
+                <button class="btn-audio-eje" data-audio="audio-eje5">
+                    <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
+                </button>
                 <p class="frase-fuerza">"Un Sindicato fuerte se construye con unidad y compromiso."</p>
                 <ul class="propuestas-list">
                     <li><i class="ph-duotone ph-check-circle check-icon"></i> Educación sindical obligatoria y permanente para nuestra estructura.</li>
@@ -410,9 +461,12 @@
 
         <section id="psd-section">
             <span class="red-trabajadores">Conexión Segura</span>
-            <div class="glass-card scroll-reveal">
+            <div class="glass-card scroll-reveal" style="pointer-events: auto;">
                 <span class="eje-numero" style="font-size: 1.5rem;">Eje Final 06</span>
                 <h2 style="font-size: 4rem; justify-content: center; border: none; color: white;">INNOVACIÓN DIGITAL</h2>
+                <button class="btn-audio-eje" data-audio="audio-eje6" style="margin: 0 auto 2rem auto;">
+                    <i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta
+                </button>
                 <p class="frase-fuerza" style="color: var(--azul-cyan); font-size: 1.8rem; justify-content: center; border: none;">"El conocimiento se comparte para fortalecer al trabajador."</p>
                 <p style="font-size: 1.4rem; color: #fff; max-width: 700px; margin: 0 auto 2rem auto; line-height: 1.6;">Esta es nuestra gran revolución. Ponemos la **Inteligencia Artificial** a tu servicio con la **Plataforma Sindical Digital (PSD)** para resolver dudas y trámites en segundos.</p>
                 <a href="#footer" class="cta-button">
@@ -436,23 +490,63 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- 1. PANTALLA DE ENTRADA Y AUDIO ---
+            // --- 1. PANTALLA DE ENTRADA Y AUDIO BIENVENIDA ---
             const splashScreen = document.getElementById('splash-screen');
             const btnEntrar = document.getElementById('btn-entrar');
             const audioBienvenida = document.getElementById('audio-bienvenida');
 
-            // Asegurarnos de que inicie hasta arriba
             window.scrollTo(0, 0);
 
             btnEntrar.addEventListener('click', () => {
-                // Reproducir el audio
                 audioBienvenida.play().catch(e => console.log("No se pudo reproducir el audio automáticamente.", e));
-                
-                // Ocultar la pantalla de entrada
                 splashScreen.classList.add('hidden');
             });
 
-            // --- 2. CONFIGURACIÓN THREE.JS ---
+            // --- 2. CONTROL DE AUDIOS POR EJE ---
+            const btnAudios = document.querySelectorAll('.btn-audio-eje');
+            const todosLosAudios = document.querySelectorAll('audio');
+
+            btnAudios.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const audioId = this.getAttribute('data-audio');
+                    const audioTarget = document.getElementById(audioId);
+                    const isPlaying = !audioTarget.paused;
+
+                    // Detener todos los audios
+                    todosLosAudios.forEach(aud => {
+                        aud.pause();
+                        aud.currentTime = 0; 
+                    });
+
+                    // Restaurar el texto y diseño original de todos los botones
+                    btnAudios.forEach(b => {
+                        b.innerHTML = '<i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta';
+                        b.style.background = 'rgba(100, 255, 218, 0.1)';
+                        b.style.color = 'var(--azul-cyan)';
+                    });
+
+                    // Si no estaba reproduciéndose, iniciarlo y cambiar el botón a "Pausar"
+                    if (!isPlaying) {
+                        audioTarget.play();
+                        this.innerHTML = '<i class="ph-fill ph-pause-circle"></i> Pausar Audio';
+                        this.style.background = 'var(--azul-cyan)';
+                        this.style.color = 'var(--fondo-oscuro)';
+                    }
+                });
+            });
+
+            // Al terminar un audio, regresar su botón al estado normal
+            todosLosAudios.forEach(aud => {
+                aud.addEventListener('ended', () => {
+                    btnAudios.forEach(b => {
+                        b.innerHTML = '<i class="ph-fill ph-speaker-high"></i> Escuchar Propuesta';
+                        b.style.background = 'rgba(100, 255, 218, 0.1)';
+                        b.style.color = 'var(--azul-cyan)';
+                    });
+                });
+            });
+
+            // --- 3. CONFIGURACIÓN THREE.JS ---
             const canvas = document.querySelector('#bg-canvas');
             const scene = new THREE.Scene();
             scene.fog = new THREE.FogExp2(0x02060d, 0.002);
@@ -464,7 +558,7 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            // --- 3. PARTÍCULAS DE FONDO ---
+            // --- 4. PARTÍCULAS DE FONDO ---
             const particlesGeometry = new THREE.BufferGeometry();
             const particlesCount = 2500; 
             const posArray = new Float32Array(particlesCount * 3);
@@ -487,7 +581,7 @@
             const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
             scene.add(particlesMesh);
 
-            // --- 4. MODELO 3D PSD ---
+            // --- 5. MODELO 3D PSD ---
             const kioskGroup = new THREE.Group();
             
             const outerGeo = new THREE.CylinderGeometry(5, 5, 12, 6);
@@ -513,7 +607,7 @@
             kioskGroup.position.set(0, -30, -20); 
             scene.add(kioskGroup);
 
-            // --- 5. INTERACTIVIDAD DE RATÓN ---
+            // --- 6. INTERACTIVIDAD DE RATÓN ---
             let mouseX = 0; let mouseY = 0;
             let targetX = 0; let targetY = 0;
             let windowHalfX = window.innerWidth / 2;
@@ -524,7 +618,7 @@
                 mouseY = (event.clientY - windowHalfY);
             });
 
-            // --- 6. BUCLE DE ANIMACIÓN ---
+            // --- 7. BUCLE DE ANIMACIÓN ---
             const clock = new THREE.Clock();
 
             const tick = () => {
@@ -552,7 +646,7 @@
             };
             tick();
 
-            // --- 7. RESPONSIVE Y ESCALADO 3D ---
+            // --- 8. RESPONSIVE Y ESCALADO 3D ---
             const handleResize = () => {
                 windowHalfX = window.innerWidth / 2;
                 windowHalfY = window.innerHeight / 2;
@@ -560,22 +654,19 @@
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 
-                // Ajustar la escala del quiosco digital según el dispositivo
                 if (window.innerWidth < 768) {
-                    kioskGroup.scale.set(0.5, 0.5, 0.5); // 50% del tamaño en móvil
+                    kioskGroup.scale.set(0.5, 0.5, 0.5); 
                 } else {
-                    kioskGroup.scale.set(1, 1, 1); // Tamaño normal en PC
+                    kioskGroup.scale.set(1, 1, 1); 
                 }
                 
                 ScrollTrigger.refresh(); 
             };
 
             window.addEventListener('resize', handleResize);
-            
-            // Ejecutar al cargar para asegurar tamaño correcto
             handleResize();
 
-            // --- 8. GSAP SCROLLTRIGGER ---
+            // --- 9. GSAP SCROLLTRIGGER ---
             gsap.registerPlugin(ScrollTrigger);
 
             const cards = document.querySelectorAll('.scroll-reveal');
