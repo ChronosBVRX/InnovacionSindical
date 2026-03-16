@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trámites Sindicales - Sección XX</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== PALETA PSD ("Somos Guerreros") ===== */
+        :root {
+            --psd-primary: #0A2540; /* Azul Marino Institucional */
+            --psd-secondary: #0077B6; /* Azul Claro / Activo */
+            --psd-accent: #FFB703; /* Dorado / Amarillo (Botones o alertas) */
+            --psd-dark: #1A1A1A;
+            --psd-gray: #4A5568;
+            --psd-light-bg: #F8FAFC;
+            --psd-border: #E2E8F0;
+            --psd-white: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--psd-light-bg);
+            color: var(--psd-dark);
+            /* Importante para iframes: quitar márgenes externos si es necesario */
+            padding: 1rem; 
+        }
+
+        /* ===== ENCABEZADO ===== */
+        .page-header {
+            background: linear-gradient(135deg, var(--psd-primary) 0%, var(--psd-secondary) 100%);
+            color: var(--psd-white);
+            padding: 2rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .page-header h2 {
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .page-header p {
+            margin-bottom: 0;
+            opacity: 0.9;
+            font-size: 1.05rem;
+        }
+
+        /* ===== ESTILOS DE ACORDEÓN (TARJETAS) ===== */
+        .accordion-item {
+            border: none;
+            border-radius: 12px !important;
+            margin-bottom: 1rem;
+            background-color: var(--psd-white);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .accordion-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .accordion-button {
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--psd-primary);
+            background-color: var(--psd-white);
+            border-radius: 12px !important;
+        }
+        
+        .accordion-button:not(.collapsed) {
+            color: var(--psd-secondary);
+            background-color: rgba(0, 119, 182, 0.05); /* Fondo muy sutil al abrir */
+            box-shadow: inset 0 -1px 0 rgba(0,0,0,.125);
+        }
+
+        .accordion-button:focus {
+            box-shadow: none;
+            border-color: rgba(0,0,0,.125);
+        }
+
+        .accordion-button i.icon-title {
+            font-size: 1.3rem;
+            margin-right: 12px;
+            color: var(--psd-secondary);
+        }
+        
+        .accordion-button:not(.collapsed) i.icon-title {
+            color: var(--psd-accent);
+        }
+
+        /* ===== CONTENIDO DEL ACORDEÓN ===== */
+        .accordion-body {
+            padding: 1.5rem;
+            color: var(--psd-gray);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .req-list {
+            padding-left: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .req-list li {
+            margin-bottom: 0.4rem;
+        }
+
+        .info-box {
+            background-color: rgba(10, 37, 64, 0.04);
+            border-left: 4px solid var(--psd-accent);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin-top: 1rem;
+            color: var(--psd-primary);
+            font-weight: 500;
+        }
+
+        .info-box i {
+            color: var(--psd-accent);
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        /* ===== CATEGORÍAS TÍTULOS ===== */
+        .category-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--psd-primary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--psd-border);
+            display: flex;
+            align-items: center;
+        }
+        .category-title i {
+            margin-right: 10px;
+            color: var(--psd-secondary);
+        }
+
+        /* Buscador */
+        .search-container {
+            margin-bottom: 2rem;
+        }
+        .search-input {
+            border-radius: 20px;
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--psd-border);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .search-input:focus {
+            border-color: var(--psd-secondary);
+            box-shadow: 0 0 0 0.25rem rgba(0, 119, 182, 0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid px-0">
+        
+        <div class="page-header">
+            <h2><i class="bi bi-file-earmark-text"></i> Catálogo de Trámites</h2>
+            <p>Sección XX - Atención directa y sin intermediarios.</p>
+        </div>
+
+        <div class="search-container">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 rounded-start-pill text-muted">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" id="searchInput" class="form-control search-input border-start-0 rounded-end-pill" placeholder="Buscar trámite o requisito (ej. Guardería, Préstamo, Tarjetón)...">
+            </div>
+        </div>
+
+        <div id="tramitesContainer">
+
+            <h3 class="category-title"><i class="bi bi-people-fill"></i> Igualdad Sustantiva y Familia</h3>
+            <div class="accordion" id="accIgualdad">
+                
+                <div class="accordion-item tramite-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t1">
+                            <i class="bi bi-house-heart icon-title"></i> Guardería (Inscripción)
+                        </button>
+                    </h2>
+                    <div id="t1" class="accordion-collapse collapse" data-bs-parent="#accIgualdad">
+                        <div class="accordion-body">
+                            <strong>Requisitos:</strong>
+                            <ul class="req-list mt-2">
+                                <li>Original y 2 copias del acta de nacimiento del menor.</li>
+                                <li>Original y 2 copias de la CURP del menor.</li>
+                                <li>Original y 2 copias del último tarjetón de pago.</li>
+                                <li>3 copias de la credencial del INE.</li>
+                                <li><strong>Para trabajadores 08 (Sustitutos):</strong> Anexar contrato vigente y 2 copias.</li>
+                            </ul>
+                            <div class="info-box">
+                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> A través del Comité Local de tu centro de trabajo o de forma directa en la Dirección de la Guardería.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item tramite-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t2">
+                            <i class="bi bi-calendar-heart icon-title"></i> Sábados de Integración Familiar
+                        </button>
+                    </h2>
+                    <div id="t2" class="accordion-collapse collapse" data-bs-parent="#accIgualdad">
+                        <div class="accordion-body">
+                            <strong>Requisitos:</strong>
+                            <ul class="req-list mt-2">
+                                <li>Ser trabajador activo.</li>
+                                <li>Último tarjetón de pago, Gafete o INE.</li>
+                                <li>Acta de nacimiento del trabajador y de los hijos (original y copia).</li>
+                                <li>Acta de matrimonio o constancia de concubinato.</li>
+                                <li>2 fotografías tamaño infantil recientes de cada participante.</li>
+                                <li>Hijos mayores de edad: comprobante de estudios (beneficio hasta 25 años).</li>
+                                <li>Apegarse a la Convocatoria emitida.</li>
+                            </ul>
+                            <div class="info-box">
+                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> Directamente en la oficina de la Secretaría de Igualdad Sustantiva de la Sección.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item tramite-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t3">
+                            <i class="bi bi-sun icon-title"></i> Programa Vacacional (6-14 años)
+                        </button>
+                    </h2>
+                    <div id="t3" class="accordion-collapse collapse" data-bs-parent="#accIgualdad">
+                        <div class="accordion-body">
+                            <strong>Requisitos:</strong>
+                            <ul class="req-list mt-2">
+                                <li>Ser hijo de trabajador de base (6 a 14 años cumplidos).</li>
+                                <li>Original y copia de último tarjetón de pago, y copia de INE.</li>
+                                <li>Original y copia de acta de nacimiento del menor.</li>
+                                <li>Dos fotografías tamaño infantil recientes.</li>
+                                <li>Examen médico actualizado.</li>
+                                <li>Apegarse a la Convocatoria emitida.</li>
+                            </ul>
+                            <div class="info-box">
+                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> Directamente en la oficina de la Secretaría de Igualdad Sustantiva de la Sección.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item tramite-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t4">
+                            <i class="bi bi-cash-coin icon-title"></i> Pago Supletorio de Guardería (Alta y Cancelación)
+                        </button>
+                    </h2>
+                    <div id="t4" class="accordion-collapse collapse" data-bs-parent="#accIgualdad">
+                        <div class="accordion-body">
+                            <strong>Requisitos Generales (Alta):</strong>
+                            <ul class="req-list mt-2">
+                                <li>Original y 2 copias: Acta de nacimiento del menor, CURP, último tarjetón de pago.</li>
+                                <li>3 copias de credencial del INE.</li>
+                                <li>Para trabajadores 08: contrato vigente.</li>
+                                <li>Original y 2 copias de la Solicitud de Pago Supletorio (firmada y sellada por Personal de Adscripción).</li>
+                            </ul>
+                            <strong>Para Cancelación sumar:</strong> Oficio solicitando exclusión del Concepto 025 (y copias dobles de los documentos anteriores).
+                            <div class="info-box">
+                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> Directamente en la oficina de la Secretaría de Igualdad Sustantiva de la Sección.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <h3 class="category-title"><i class="bi bi-shield-check"></i> Previsión Social y Habitación</h3>
+            <div class="accordion" id="accPrevision">
+
+                <div class="accordion-item tramite-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t5">
+                            <i class="bi bi-house-check icon-title"></i> Préstamo Hipotecario
+                        </button>
+                    </h2>
+                    <div id="t5" class="accordion-collapse collapse" data-bs-parent="#accPrevision">
+                        <div class="accordion-body">
+                            <strong>Requisitos:</strong>
+                            <ul class="req-list mt-2">
+                                <li>Ser trabajador(a) de base.</li>
+                                <li>Tener al menos 3 años de antigüedad laboral.</li>
+                                <li>Presentar los últimos recibos de pago (tarjetones).</li>
+                                <li>Presentar INE o Gafete Institucional.</li>
+                                <li>Llenar (requisitar) la solicitud oficial correspondiente.</li>
+                            </ul>
+                            <div class="info-box">
+                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> Directamente en la oficina de la Secretaría de Previsión Social para turnar a la Comisión.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item tramite-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t6">
+                            <i class="bi bi-wallet2 icon-title"></i> Préstamo a Mediano Plazo
+                        </button>
+                    </h2>
+                    <div id="t6" class="accordion-collapse collapse" data-bs-parent="#accPrevision">
+                        <div class="accordion-body">
+                            <strong>Requisitos:</strong>
+                            <ul class="req-list mt-2">
+                                <li>Ser trabajador(a) de base con al menos 2 años de antigüedad laboral.</li>
+                                <li>Presentar el último recibo de pago (tarjetón).</li>
+                                <li>Presentar INE o Gafete Institucional.</li>
+                                <li>Llenar la solicitud correspondiente.</li>
+                            </ul>
+                            <div class="info-box">
+                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> Directamente en la oficina de la Secretaría de Previsión Social.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item tramite-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t7">
+                            <i class="bi bi-file-earmark-ruled icon-title"></i> Ayuda para Gastos de Escrituración
+                        </button>
+                    </h2>
+                    <div id="t7" class="accordion-collapse collapse" data-bs-parent="#accPrevision">
+                        <div class="accordion-body">
+                            <strong>Requisitos:</strong>
+                            <ul class="req-list mt-2">
+                                <li>Ser trabajador(a) de base.</li>
+                                <li>Presentar los dos últimos recibos de pago.</li>
+                                <li>Presentar Gafete Institucional.</li>
+                                <li>Llenar la solicitud correspondiente.</li>
+                            </ul>
+                            <div class="info-box">
+                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> Directamente en la oficina de la Secretaría de Previsión Social.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item tramite-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t8">
+                            <i class="bi bi-car-front icon-title"></i> Solicitud para Adquisición de Vehículo
+                        </button>
+                    </h2>
+                    <div id="t8" class="accordion-collapse collapse" data-bs-parent="#accPrevision">
+                        <div class="accordion-body">
+                            <strong>Paso 1:</strong> Inscribirse al Sorteo de créditos en la oficina de Previsión Social.<br><br>
+                            <strong>Requisitos si resultas asignado:</strong>
+                            <ul class="req-list mt-2">
+                                <li>Ser trabajador de Base con vigencia laboral y mínimo 5 años de antigüedad.</li>
+                                <li>Último tarjetón de pago con capacidad de crédito.</li>
+                                <li>Prioridad a mejores índices de asistencia (Asiduos hasta 3 incidencias; no asiduos hasta 5).</li>
+                                <li>Solicitud de financiamiento y carta cotización de la agencia.</li>
+                                <li>No contar en tarjetón con conceptos: 106, 130, 133, 134, 136, 154, 155.</li>
+                            </ul>
+                            <div class="info-box">
+                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> Directamente en la oficina de la Secretaría de Previsión Social.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item tramite-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t9">
+                            <i class="bi bi-person-hearts icon-title"></i> Seguro Facultativo (Familiares)
+                        </button>
+                    </h2>
+                    <div id="t9" class="accordion-collapse collapse" data-bs-parent="#accPrevision">
+                        <div class="accordion-body">
+                            <p>Afiliación de familiares hasta 4º grado de consanguinidad o políticos.</p>
+                            <strong>Requisitos:</strong>
+                            <ul class="req-list mt-2">
+                                <li><strong>Trabajador:</strong> Acta de nacimiento, último tarjetón, gafete o identificación oficial.</li>
+                                <li><strong>Familiar:</strong> Acta(s) para acreditar parentesco, CURP, comprobante de domicilio (no > 3 meses), identificación oficial. (Hoja rosa si es renovación).</li>
+                            </ul>
+                            <em>Fechas familiares políticos: Enero-Febrero o Julio-Agosto.</em>
+                            <div class="info-box">
+                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> Directamente en la oficina de la Secretaría de Previsión Social.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item tramite-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t10">
+                            <i class="bi bi-file-earmark-medical icon-title"></i> Trámite de Pliego Testamentario
+                        </button>
+                    </h2>
+                    <div id="t10" class="accordion-collapse collapse" data-bs-parent="#accPrevision">
+                        <div class="accordion-body">
+                            <strong>Requisitos:</strong>
+                            <ul class="req-list mt-2">
+                                <li>Copia del último tarjetón de cobro. (Jubilados/Pensionados: anexar el de activo y jubilado).</li>
+                                <li>Confianza "B": Anexar licencia sindical con el último nivel.</li>
+                                <li>Copia de IFE/INE por ambos lados.</li>
+                                <li>Llenar el formato establecido.</li>
+                            </ul>
+                            <div class="info-box">
+                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> A través del Comité Local o directamente en la oficina de la Secretaría de Previsión Social.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item tramite-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t11">
+                            <i class="bi bi-heartbreak icon-title"></i> Fondo de Ayuda Sindical por Defunción
+                        </button>
+                    </h2>
+                    <div id="t11" class="accordion-collapse collapse" data-bs-parent="#accPrevision">
+                        <div class="accordion-body">
+                            <strong>Requisitos del Trabajador (Finado):</strong> Mínimo 120 semanas cotizadas, conceptos 82/83/182/183/112/312 en tarjetón, hoja amarilla del pliego.<br><br>
+                            <strong>Documentación a presentar por deudos:</strong>
+                            <ul class="req-list mt-2">
+                                <li>Acta de Defunción original, copia último tarjetón, copia IFE/INE del trabajador.</li>
+                                <li>Acta de Nacimiento original y copia de IFE/INE de los beneficiarios.</li>
+                            </ul>
+                            <em>(Prescripción de 2 años improrrogables).</em>
+                            <div class="info-box">
+                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> Directamente en la oficina de la Secretaría de Previsión Social.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <h3 class="category-title"><i class="bi bi-mortarboard"></i> Desarrollo Académico y Capacitación</h3>
+            <div class="accordion" id="accDesarrollo">
+                
+                <div class="accordion-item tramite-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t12">
+                            <i class="bi bi-journal-richtext icon-title"></i> Maestrías y Doctorados
+                        </button>
+                    </h2>
+                    <div id="t12" class="accordion-collapse collapse" data-bs-parent="#accDesarrollo">
+                        <div class="accordion-body">
+                            <strong>Requisitos:</strong>
+                            <ul class="req-list mt-2">
+                                <li>Título y cédula profesional.</li>
+                                <li>1 a 23 años de antigüedad laboral. Edad máx: 48 años.</li>
+                                <li>Nombramiento de base y copia de tarjetón (2 quincenas).</li>
+                                <li>Anteproyecto de tesis, solicitud de beca, carta de motivos, CV aspirante y asesor calificado.</li>
+                                <li>Programa, carta de aceptación del curso y carta compromiso.</li>
+                            </ul>
+                            <div class="info-box">
+                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> Directamente en la oficina de la Secretaría de Asuntos Técnicos.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item tramite-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t13">
+                            <i class="bi bi-award icon-title"></i> Becas Monográficos y Convenios Educativos
+                        </button>
+                    </h2>
+                    <div id="t13" class="accordion-collapse collapse" data-bs-parent="#accDesarrollo">
+                        <div class="accordion-body">
+                            <strong>Cursos Monográficos:</strong> Solicitud y tarjetón. Entregar 30 días antes (misma sede) o 60 días antes (otra delegación).<br><br>
+                            <strong>Convenios Educativos (Nuevo Ingreso):</strong> Acta de nacimiento alumno y tarjetón.<br>
+                            <strong>Convenios Educativos (Renovación):</strong> Tarjetón, gafete y carta convenio anterior.
+                            <div class="info-box">
+                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> Directamente en la oficina de la Secretaría de Capacitación y Adiestramiento.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <h3 class="category-title"><i class="bi bi-heart-pulse"></i> Prestaciones Médicas Adicionales</h3>
+            <div class="accordion" id="accMedicos">
+                
+                <div class="accordion-item tramite-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t14">
+                            <i class="bi bi-bandaid icon-title"></i> Prótesis, Incapacidades e Indemnizaciones
+                        </button>
+                    </h2>
+                    <div id="t14" class="accordion-collapse collapse" data-bs-parent="#accMedicos">
+                        <div class="accordion-body">
+                            <p>Gestión de derechos estipulados en el CCT:</p>
+                            <ul class="req-list mt-2">
+                                <li><strong>Prótesis/Aparatos Auditivos:</strong> Prestaciones gratuitas para personal activo.</li>
+                                <li><strong>Incapacidades:</strong> Emisión de certificados procedentes.</li>
+                                <li><strong>Indemnizaciones:</strong> Por riesgos de trabajo o separación injustificada.</li>
+                            </ul>
+                            <div class="info-box">
+                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> Inicia en Salud en el Trabajo (apoyo de tu Comité Local). Para seguimiento sindical y asesoría, acudir directamente a la oficina de Previsión Social.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> </div> </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const items = document.querySelectorAll('.tramite-item');
+
+            searchInput.addEventListener('input', function(e) {
+                const term = e.target.value.toLowerCase();
+
+                items.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    if (text.includes(term)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Ocultar títulos de categoría si todos sus hijos están ocultos
+                document.querySelectorAll('.accordion').forEach(acc => {
+                    const parentTitle = acc.previousElementSibling;
+                    const visibleItems = Array.from(acc.querySelectorAll('.tramite-item')).filter(i => i.style.display !== 'none');
+                    
+                    if (visibleItems.length === 0) {
+                        parentTitle.style.display = 'none';
+                    } else {
+                        parentTitle.style.display = 'flex';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
