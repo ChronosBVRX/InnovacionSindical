@@ -9,34 +9,36 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        /* ===== PALETA PSD ("Somos Guerreros") ===== */
+        /* ===== PALETA PSD (Colores de la Plataforma) ===== */
         :root {
-            --psd-primary: #0A2540; /* Azul Marino Institucional */
-            --psd-secondary: #0077B6; /* Azul Claro / Activo */
-            --psd-accent: #FFB703; /* Dorado / Amarillo (Botones o alertas) */
-            --psd-dark: #1A1A1A;
-            --psd-gray: #4A5568;
-            --psd-light-bg: #F8FAFC;
-            --psd-border: #E2E8F0;
-            --psd-white: #FFFFFF;
+            --bg-body: #1b2e45; 
+            --bg-body-end: #152336;
+            --panel-base: 46, 79, 119;
+            --primary: #4da1a8; 
+            --primary-light: #7ad1d6;
+            --success: #4ade80;
+            --text-main: #f0fdfa; 
+            --text-muted: #bce9eb;
+            --ring: rgba(77, 161, 168, .35);
+            --glass-bg: rgba(var(--panel-base), 0.35);
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--psd-light-bg);
-            color: var(--psd-dark);
-            /* Importante para iframes: quitar márgenes externos si es necesario */
+            background-color: transparent; /* Transparente para que tome el fondo del iframe */
+            color: var(--text-main);
             padding: 1rem; 
         }
 
         /* ===== ENCABEZADO ===== */
         .page-header {
-            background: linear-gradient(135deg, var(--psd-primary) 0%, var(--psd-secondary) 100%);
-            color: var(--psd-white);
+            background: linear-gradient(135deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.6));
+            border: 1px solid var(--primary-light);
+            color: var(--text-main);
             padding: 2rem 1.5rem;
             border-radius: 12px;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 24px rgba(77, 161, 168, 0.15);
         }
         .page-header h2 {
             font-weight: 800;
@@ -44,70 +46,86 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            color: var(--primary-light);
         }
         .page-header p {
             margin-bottom: 0;
             opacity: 0.9;
             font-size: 1.05rem;
+            color: var(--text-muted);
         }
 
         /* ===== ESTILOS DE ACORDEÓN (TARJETAS) ===== */
         .accordion-item {
-            border: none;
+            border: 1px solid var(--ring);
             border-radius: 12px !important;
             margin-bottom: 1rem;
-            background-color: var(--psd-white);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            background: var(--glass-bg);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         
         .accordion-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
         }
 
         .accordion-button {
             padding: 1.25rem 1.5rem;
             font-weight: 600;
             font-size: 1.1rem;
-            color: var(--psd-primary);
-            background-color: var(--psd-white);
+            color: var(--text-main);
+            background: transparent;
             border-radius: 12px !important;
         }
         
         .accordion-button:not(.collapsed) {
-            color: var(--psd-secondary);
-            background-color: rgba(0, 119, 182, 0.05); /* Fondo muy sutil al abrir */
-            box-shadow: inset 0 -1px 0 rgba(0,0,0,.125);
+            color: var(--text-main);
+            background: rgba(var(--panel-base), 0.6);
+            box-shadow: inset 0 -1px 0 rgba(77, 161, 168, 0.2);
         }
 
         .accordion-button:focus {
             box-shadow: none;
-            border-color: rgba(0,0,0,.125);
+            border-color: rgba(77, 161, 168, 0.5);
+        }
+        
+        .accordion-button::after {
+            filter: brightness(0) invert(1); /* Pone la flecha en blanco */
         }
 
         .accordion-button i.icon-title {
             font-size: 1.3rem;
             margin-right: 12px;
-            color: var(--psd-secondary);
+            color: var(--primary-light);
+            filter: drop-shadow(0 2px 4px rgba(77, 161, 168, 0.4));
         }
         
         .accordion-button:not(.collapsed) i.icon-title {
-            color: var(--psd-accent);
+            color: var(--success);
+            filter: drop-shadow(0 2px 4px rgba(74, 222, 128, 0.4));
         }
 
         /* ===== CONTENIDO DEL ACORDEÓN ===== */
         .accordion-body {
             padding: 1.5rem;
-            color: var(--psd-gray);
+            color: var(--text-muted);
             font-size: 0.95rem;
             line-height: 1.6;
+            background: rgba(0, 0, 0, 0.15); /* Fondo un poco más oscuro para el contenido */
+        }
+
+        .accordion-body strong {
+            color: var(--primary-light);
         }
 
         .req-list {
             padding-left: 1.2rem;
             margin-bottom: 1.5rem;
+            color: var(--text-main);
         }
         
         .req-list li {
@@ -115,17 +133,17 @@
         }
 
         .info-box {
-            background-color: rgba(10, 37, 64, 0.04);
-            border-left: 4px solid var(--psd-accent);
+            background-color: rgba(77, 161, 168, 0.1);
+            border-left: 4px solid var(--success);
             padding: 1rem;
             border-radius: 0 8px 8px 0;
             margin-top: 1rem;
-            color: var(--psd-primary);
+            color: var(--text-main);
             font-weight: 500;
         }
 
         .info-box i {
-            color: var(--psd-accent);
+            color: var(--success);
             margin-right: 8px;
             font-size: 1.1rem;
         }
@@ -134,17 +152,17 @@
         .category-title {
             font-size: 1.25rem;
             font-weight: 700;
-            color: var(--psd-primary);
+            color: var(--text-main);
             margin-top: 2rem;
             margin-bottom: 1rem;
             padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--psd-border);
+            border-bottom: 2px solid var(--ring);
             display: flex;
             align-items: center;
         }
         .category-title i {
             margin-right: 10px;
-            color: var(--psd-secondary);
+            color: var(--primary-light);
         }
 
         /* Buscador */
@@ -154,12 +172,27 @@
         .search-input {
             border-radius: 20px;
             padding: 0.8rem 1.5rem;
-            border: 1px solid var(--psd-border);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            background: rgba(var(--panel-base), 0.5);
+            border: 1px solid var(--ring);
+            color: var(--text-main);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
         }
+        
+        .search-input::placeholder {
+            color: rgba(188, 233, 235, 0.6); /* --text-muted con opacidad */
+        }
+
         .search-input:focus {
-            border-color: var(--psd-secondary);
-            box-shadow: 0 0 0 0.25rem rgba(0, 119, 182, 0.25);
+            background: rgba(var(--panel-base), 0.7);
+            color: var(--text-main);
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 0.25rem rgba(77, 161, 168, 0.25);
+        }
+        
+        .input-group-text {
+            background: rgba(var(--panel-base), 0.5);
+            border: 1px solid var(--ring);
+            color: var(--primary-light);
         }
     </style>
 </head>
@@ -174,7 +207,7 @@
 
         <div class="search-container">
             <div class="input-group">
-                <span class="input-group-text bg-white border-end-0 rounded-start-pill text-muted">
+                <span class="input-group-text border-end-0 rounded-start-pill">
                     <i class="bi bi-search"></i>
                 </span>
                 <input type="text" id="searchInput" class="form-control search-input border-start-0 rounded-end-pill" placeholder="Buscar trámite o requisito (ej. Guardería, Préstamo, Tarjetón)...">
@@ -204,31 +237,6 @@
                             </ul>
                             <div class="info-box">
                                 <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> A través del Comité Local de tu centro de trabajo o de forma directa en la Dirección de la Guardería.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="accordion-item tramite-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t2">
-                            <i class="bi bi-calendar-heart icon-title"></i> Sábados de Integración Familiar
-                        </button>
-                    </h2>
-                    <div id="t2" class="accordion-collapse collapse" data-bs-parent="#accIgualdad">
-                        <div class="accordion-body">
-                            <strong>Requisitos:</strong>
-                            <ul class="req-list mt-2">
-                                <li>Ser trabajador activo.</li>
-                                <li>Último tarjetón de pago, Gafete o INE.</li>
-                                <li>Acta de nacimiento del trabajador y de los hijos (original y copia).</li>
-                                <li>Acta de matrimonio o constancia de concubinato.</li>
-                                <li>2 fotografías tamaño infantil recientes de cada participante.</li>
-                                <li>Hijos mayores de edad: comprobante de estudios (beneficio hasta 25 años).</li>
-                                <li>Apegarse a la Convocatoria emitida.</li>
-                            </ul>
-                            <div class="info-box">
-                                <i class="bi bi-geo-alt-fill"></i> <strong>Proceso de presentación:</strong> Directamente en la oficina de la Secretaría de Igualdad Sustantiva de la Sección.
                             </div>
                         </div>
                     </div>
@@ -281,7 +289,9 @@
                     </div>
                 </div>
 
-            </div> <h3 class="category-title"><i class="bi bi-shield-check"></i> Previsión Social y Habitación</h3>
+            </div> 
+            
+            <h3 class="category-title"><i class="bi bi-shield-check"></i> Previsión Social y Habitación</h3>
             <div class="accordion" id="accPrevision">
 
                 <div class="accordion-item tramite-item">
@@ -441,7 +451,9 @@
                     </div>
                 </div>
 
-            </div> <h3 class="category-title"><i class="bi bi-mortarboard"></i> Desarrollo Académico y Capacitación</h3>
+            </div> 
+            
+            <h3 class="category-title"><i class="bi bi-mortarboard"></i> Desarrollo Académico y Capacitación</h3>
             <div class="accordion" id="accDesarrollo">
                 
                 <div class="accordion-item tramite-item">
@@ -485,7 +497,9 @@
                     </div>
                 </div>
 
-            </div> <h3 class="category-title"><i class="bi bi-heart-pulse"></i> Prestaciones Médicas Adicionales</h3>
+            </div> 
+            
+            <h3 class="category-title"><i class="bi bi-heart-pulse"></i> Prestaciones Médicas Adicionales</h3>
             <div class="accordion" id="accMedicos">
                 
                 <div class="accordion-item tramite-item">
@@ -509,7 +523,9 @@
                     </div>
                 </div>
 
-            </div> </div> </div>
+            </div> 
+        </div> 
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
