@@ -663,9 +663,9 @@
       { id: 'denuncias', title: 'Gestor de Escritos', desc: 'IA.', iconClass: 'ph-duotone ph-pen-nib', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
       { id: 'directorio', title: 'Directorio', desc: 'Contactos.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
       { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo.', iconClass: 'ph-duotone ph-hand-coins', iframe: 'prestaciones.html' },
+      { id: 'tramites', title: 'Catálogo de Trámites', desc: 'Requisitos y Procesos.', iconClass: 'ph-duotone ph-file-text', iframe: 'requisitos_tramites.html', featured: true },
       { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga.', iconClass: 'ph-duotone ph-file-pdf', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/', secure: true },
       { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Cuenta.', iconClass: 'ph-duotone ph-hospital', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true },
-      // Aquí agregamos el Aviso de Privacidad para que abra en formato iframe
       { id: 'privacidad', title: 'Aviso de Privacidad', desc: 'Documento Legal.', iconClass: 'ph-bold ph-shield-check', iframe: 'avisoprivacidad.html' }
     ];
 
@@ -722,8 +722,6 @@
       renderTiles() {
         const wrap = document.getElementById('tiles');
         APPS.forEach(a => {
-          // Si queremos renderizar el tile de privacidad aquí también, está bien, si no, solo existirá como lógica para el footer (este loop los ignora si los sacamos del flujo principal, pero está añadido para que el enrutamiento funcione sin problemas).
-          // Para que no aparezca el aviso de privacidad como tile (sólo en el footer):
           if(a.id === 'privacidad') return; 
 
           const tile = document.createElement('div');
