@@ -56,6 +56,18 @@
       gap: 8px;
     }
 
+    /* --- LOADING STATE --- */
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 60vh;
+      text-align: center;
+      color: var(--primary-light);
+    }
+    .loading-state i { font-size: 48px; margin-bottom: 16px; }
+
     /* --- AUTH WALL (Muro de inicio de sesión) --- */
     .auth-wall {
       display: flex;
@@ -167,6 +179,11 @@
 </head>
 <body>
 
+  <div id="loading-state" class="loading-state">
+    <i class="ph-bold ph-spinner-gap ph-spin"></i>
+    <p>Conectando con la Plataforma...</p>
+  </div>
+
   <div id="auth-wall" class="auth-wall hide">
     <i class="ph-fill ph-lock-key"></i>
     <h2>Acceso Restringido</h2>
@@ -246,32 +263,43 @@
     let isAdmin = false;
 
     async function init() {
-      // 1. Obtener sesión
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      // Si no hay sesión, mostrar muro de auth y detener ejecución
-      if (!session) {
-        document.getElementById('auth-wall').classList.remove('hide');
-        return;
-      }
-      
-      // Si hay sesión, mostrar contenido principal
-      document.getElementById('main-content').classList.remove('hide');
+      try {
+        // 1. Obtener sesión
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        // Ocultamos la pantalla de carga ya que tuvimos respuesta del servidor
+        document.getElementById('loading-state').classList.add('hide');
 
-      // 2. Obtener Perfil (para saber si es Admin)
-      const { data: prof } = await supabase.from('profiles').select('role').eq('user_id', session.user.id).single();
-      
-      if (prof) {
-        isAdmin = (prof.role === 'admin');
-      }
+        if (sessionError) throw sessionError;
+        
+        // Si no hay sesión, mostrar muro de auth y detener ejecución
+        if (!session) {
+          document.getElementById('auth-wall').classList.remove('hide');
+          return;
+        }
+        
+        // Si hay sesión, mostrar contenido principal
+        document.getElementById('main-content').classList.remove('hide');
 
-      // 3. Mostrar panel de admin si aplica
-      if (isAdmin) {
-        document.getElementById('admin-section').classList.remove('hide');
-      }
+        // 2. Obtener Perfil (para saber si es Admin)
+        const { data: prof } = await supabase.from('profiles').select('role').eq('user_id', session.user.id).single();
+        
+        if (prof) {
+          isAdmin = (prof.role === 'admin');
+        }
 
-      // 4. Cargar lista de PDFs
-      loadPDFs();
+        // 3. Mostrar panel de admin si aplica
+        if (isAdmin) {
+          document.getElementById('admin-section').classList.remove('hide');
+        }
+
+        // 4. Cargar lista de PDFs
+        loadPDFs();
+
+      } catch (error) {
+        console.error("Error al inicializar la página:", error);
+        document.getElementById('loading-state').innerHTML = `<i class="ph-bold ph-warning-circle" style="color: #ff7b7b;"></i><p style="color: #ff7b7b;">Error al conectar. Por favor recarga la página.</p>`;
+      }
     }
 
     // Función para abrir el login (intenta abrir el modal del padre, si no, redirige)
@@ -287,33 +315,38 @@
     async function loadPDFs() {
       const container = document.getElementById('pdf-list-container');
       
-      // Consulta a la tabla 'listados_pdf'
-      const { data: pdfs, error } = await supabase
-        .from('listados_pdf')
-        .select('*')
-        .order('created_at', { ascending: false });
+      try {
+        const { data: pdfs, error } = await supabase
+          .from('listados_pdf')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-      if (error || !pdfs || pdfs.length === 0) {
-        container.innerHTML = `<div style="font-size: 13px; color: var(--text-muted);">Aún no hay listados publicados.</div>`;
-        return;
+        if (error) throw error;
+
+        if (!pdfs || pdfs.length === 0) {
+          container.innerHTML = `<div style="font-size: 13px; color: var(--text-muted);">Aún no hay listados publicados.</div>`;
+          return;
+        }
+
+        container.innerHTML = '';
+        pdfs.forEach(pdf => {
+          const deleteBtn = isAdmin ? `<button class="btn-delete-pdf" onclick="deletePDF('${pdf.id}', event)" title="Eliminar Listado"><i class="ph-bold ph-trash"></i></button>` : '';
+
+          container.innerHTML += `
+            <a href="${pdf.url}" target="_blank" class="pdf-card">
+              <i class="ph-duotone ph-file-pdf pdf-icon"></i>
+              <div class="pdf-info">
+                <h4>${pdf.titulo}</h4>
+                <p>Publicado: ${new Date(pdf.created_at).toLocaleDateString('es-MX')}</p>
+              </div>
+              ${deleteBtn}
+            </a>
+          `;
+        });
+      } catch (error) {
+        console.error("Error cargando PDFs:", error);
+        container.innerHTML = `<div style="font-size: 13px; color: #ff7b7b;">No se pudieron cargar los listados.</div>`;
       }
-
-      container.innerHTML = '';
-      pdfs.forEach(pdf => {
-        // Botón de eliminar solo para admins
-        const deleteBtn = isAdmin ? `<button class="btn-delete-pdf" onclick="deletePDF('${pdf.id}', event)" title="Eliminar Listado"><i class="ph-bold ph-trash"></i></button>` : '';
-
-        container.innerHTML += `
-          <a href="${pdf.url}" target="_blank" class="pdf-card">
-            <i class="ph-duotone ph-file-pdf pdf-icon"></i>
-            <div class="pdf-info">
-              <h4>${pdf.titulo}</h4>
-              <p>Publicado: ${new Date(pdf.created_at).toLocaleDateString('es-MX')}</p>
-            </div>
-            ${deleteBtn}
-          </a>
-        `;
-      });
     }
 
     // --- SUBIR PDF (Solo Admin) ---
