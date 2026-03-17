@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
   
   <style>
     :root {
@@ -28,6 +29,7 @@
       color: var(--text-main);
       font-family: 'Inter', sans-serif;
       box-sizing: border-box;
+      min-height: 100vh;
     }
 
     * { box-sizing: border-box; }
@@ -54,31 +56,69 @@
       gap: 8px;
     }
 
-    /* --- ESTADO DEL USUARIO --- */
-    .status-box {
-      background: rgba(21, 35, 54, 0.6);
-      border-radius: 12px;
-      padding: 16px;
-      border: 1px solid rgba(77, 161, 168, 0.2);
+    /* --- AUTH WALL (Muro de inicio de sesión) --- */
+    .auth-wall {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 70vh;
+      text-align: center;
+      background: rgba(var(--panel-base), 0.2);
+      border: 1px dashed var(--primary-light);
+      border-radius: 16px;
+      padding: 32px;
     }
-    .status-empty { color: var(--success); font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .auth-wall i { font-size: 64px; color: var(--primary-light); margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(122,209,214,0.3)); }
+    .auth-wall h2 { margin: 0 0 12px 0; font-size: 24px; }
+    .auth-wall p { margin: 0 0 24px 0; color: var(--text-muted); max-width: 400px; line-height: 1.5; }
+
+    /* --- EFECTO BLUR Y PROMOCIÓN DE CAMPAÑA --- */
+    .blur-container {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--ring);
+    }
+    .blur-content {
+      filter: blur(6px);
+      opacity: 0.4;
+      pointer-events: none;
+      user-select: none;
+    }
+    .promo-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(27, 46, 69, 0.8);
+      text-align: center;
+      padding: 24px;
+      z-index: 10;
+    }
+    .promo-overlay i { font-size: 42px; color: var(--primary-light); margin-bottom: 12px; }
+    .promo-overlay p { margin: 0 0 8px 0; font-size: 16px; font-weight: 500; line-height: 1.4; color: var(--text-main); }
+    .promo-overlay .highlight { color: var(--primary-light); font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-top: 4px;}
     
     .tramite-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px;
+      padding: 16px;
       border-bottom: 1px solid rgba(255,255,255,0.05);
     }
     .tramite-item:last-child { border-bottom: none; }
-    .tramite-info h4 { margin: 0 0 4px 0; font-size: 15px; color: var(--text-main); }
-    .tramite-info p { margin: 0; font-size: 12px; color: var(--text-muted); }
+    .tramite-info h4 { margin: 0 0 6px 0; font-size: 16px; color: var(--text-main); }
+    .tramite-info p { margin: 0; font-size: 13px; color: var(--text-muted); }
     .tramite-rank {
-      font-size: 24px; font-weight: 700; color: var(--primary-light);
-      background: rgba(77, 161, 168, 0.15); padding: 8px 16px; border-radius: 12px;
+      font-size: 28px; font-weight: 800; color: var(--primary-light);
+      background: rgba(77, 161, 168, 0.15); padding: 10px 20px; border-radius: 12px;
       text-align: center;
     }
-    .tramite-rank span { display: block; font-size: 10px; font-weight: 500; text-transform: uppercase; color: var(--text-muted); }
+    .tramite-rank span { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; }
 
     /* --- LISTA DE PDFS --- */
     .pdf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
@@ -116,53 +156,84 @@
     .form-control:focus { outline: none; border-color: var(--primary-light); }
     
     .btn {
-      background: var(--primary); color: var(--bg-body); border: none; padding: 10px 20px;
-      border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+      background: var(--primary); color: var(--bg-body); border: none; padding: 12px 24px;
+      border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: all 0.2s;
     }
-    .btn:hover { background: var(--primary-light); }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn:hover { background: var(--primary-light); transform: translateY(-2px); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
     .hide { display: none !important; }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h2><i class="ph-duotone ph-list-numbers" style="color: var(--primary-light);"></i> Bolsa de Trabajo y Escalafón</h2>
-    <p>Consulta tu posición actual en los listados oficiales de la Sección XX Michoacán.</p>
+  <div id="auth-wall" class="auth-wall hide">
+    <i class="ph-fill ph-lock-key"></i>
+    <h2>Acceso Restringido</h2>
+    <p>Inicia sesión en la Plataforma Sindical Digital para consultar tu lugar en el escalafón y la bolsa de trabajo.</p>
+    <button class="btn" onclick="openLogin()">Iniciar Sesión</button>
   </div>
 
-  <div class="card">
-    <h3><i class="ph-duotone ph-user-focus"></i> Mis Movimientos Registrados</h3>
-    <div class="status-box" id="user-status-container">
-      <div class="status-empty"><i class="ph-bold ph-spinner-gap ph-spin"></i> Consultando tu información...</div>
+  <div id="main-content" class="hide">
+    <div class="header">
+      <h2><i class="ph-duotone ph-list-numbers" style="color: var(--primary-light);"></i> Bolsa de Trabajo y Escalafón</h2>
+      <p>Consulta tu posición actual en los listados oficiales de la Sección XX Michoacán.</p>
     </div>
-  </div>
 
-  <div class="card">
-    <h3><i class="ph-duotone ph-file-pdf"></i> Listados Oficiales Publicados</h3>
-    <p style="font-size: 13px; color: var(--text-muted); margin-top: -10px; margin-bottom: 16px;">
-      Descarga los PDF con los escalafones generales y convocatorias de bolsa de trabajo vigentes.
-    </p>
-    <div class="pdf-grid" id="pdf-list-container">
-      <div style="font-size: 13px; color: var(--text-muted);">Cargando documentos...</div>
+    <div class="card">
+      <h3><i class="ph-duotone ph-user-focus"></i> Mis Movimientos Registrados</h3>
+      
+      <div class="blur-container">
+        <div class="blur-content">
+          <div class="tramite-item">
+            <div class="tramite-info">
+              <h4>Cambio de Adscripción - HGR1</h4>
+              <p>Estatus: <strong>En revisión subcomisión</strong> • Actualizado: Hoy</p>
+            </div>
+            <div class="tramite-rank">#12<span>Lugar</span></div>
+          </div>
+          <div class="tramite-item">
+            <div class="tramite-info">
+              <h4>Bolsa de Trabajo - Enfermería General</h4>
+              <p>Estatus: <strong>Aceptado / En espera</strong> • Actualizado: Ayer</p>
+            </div>
+            <div class="tramite-rank">#45<span>Lugar</span></div>
+          </div>
+        </div>
+
+        <div class="promo-overlay">
+          <i class="ph-fill ph-lock-key"></i>
+          <p>Esta información estará disponible y transparente para ti a partir del <strong>16 de abril</strong>.</p>
+          <p>¡Vota por la <span class="highlight">Planilla Azul</span> para hacerlo realidad!</p>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="card admin-panel hide" id="admin-section">
-    <h3><i class="ph-duotone ph-shield-check"></i> Carga de Listados (Solo Administradores)</h3>
-    <form id="upload-form">
-      <div class="form-group">
-        <label>Título del Documento</label>
-        <input type="text" id="docTitle" class="form-control" placeholder="Ej. Listado Escalafón Rama Médica - Marzo 2026" required>
+    <div class="card">
+      <h3><i class="ph-duotone ph-file-pdf"></i> Listados Oficiales Publicados</h3>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: -10px; margin-bottom: 16px;">
+        Descarga los PDF con los escalafones generales y convocatorias de bolsa de trabajo vigentes.
+      </p>
+      <div class="pdf-grid" id="pdf-list-container">
+        <div style="font-size: 13px; color: var(--text-muted);">Cargando documentos...</div>
       </div>
-      <div class="form-group">
-        <label>Archivo PDF</label>
-        <input type="file" id="docFile" class="form-control" accept="application/pdf" required>
-      </div>
-      <button type="submit" class="btn" id="btnUpload"><i class="ph-bold ph-upload-simple"></i> Subir Documento</button>
-      <div id="upload-status" style="margin-top: 10px; font-size: 13px;"></div>
-    </form>
+    </div>
+
+    <div class="card admin-panel hide" id="admin-section">
+      <h3><i class="ph-duotone ph-shield-check"></i> Carga de Listados (Solo Administradores)</h3>
+      <form id="upload-form">
+        <div class="form-group">
+          <label>Título del Documento</label>
+          <input type="text" id="docTitle" class="form-control" placeholder="Ej. Listado Escalafón Rama Médica - Marzo 2026" required>
+        </div>
+        <div class="form-group">
+          <label>Archivo PDF</label>
+          <input type="file" id="docFile" class="form-control" accept="application/pdf" required>
+        </div>
+        <button type="submit" class="btn" id="btnUpload"><i class="ph-bold ph-upload-simple"></i> Subir Documento</button>
+        <div id="upload-status" style="margin-top: 10px; font-size: 13px;"></div>
+      </form>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -172,28 +243,26 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let currentUser = null;
     let isAdmin = false;
-    let userMatricula = null;
 
     async function init() {
       // 1. Obtener sesión
       const { data: { session } } = await supabase.auth.getSession();
       
+      // Si no hay sesión, mostrar muro de auth y detener ejecución
       if (!session) {
-        document.getElementById('user-status-container').innerHTML = `<div class="status-empty" style="color:var(--text-muted)"><i class="ph-bold ph-warning-circle"></i> Inicia sesión en la plataforma para ver tu lugar.</div>`;
-        document.getElementById('pdf-list-container').innerHTML = `<div style="font-size: 13px; color: var(--text-muted);">Inicia sesión para ver los listados.</div>`;
+        document.getElementById('auth-wall').classList.remove('hide');
         return;
       }
       
-      currentUser = session.user;
+      // Si hay sesión, mostrar contenido principal
+      document.getElementById('main-content').classList.remove('hide');
 
-      // 2. Obtener Perfil (para saber si es Admin y su Matrícula)
-      const { data: prof } = await supabase.from('profiles').select('role, matricula').eq('user_id', currentUser.id).single();
+      // 2. Obtener Perfil (para saber si es Admin)
+      const { data: prof } = await supabase.from('profiles').select('role').eq('user_id', session.user.id).single();
       
       if (prof) {
         isAdmin = (prof.role === 'admin');
-        userMatricula = prof.matricula;
       }
 
       // 3. Mostrar panel de admin si aplica
@@ -201,54 +270,24 @@
         document.getElementById('admin-section').classList.remove('hide');
       }
 
-      // 4. Cargar datos
-      loadUserStatus();
+      // 4. Cargar lista de PDFs
       loadPDFs();
     }
 
-    // --- CARGAR EL ESTATUS DEL USUARIO ---
-    async function loadUserStatus() {
-      const container = document.getElementById('user-status-container');
-      
-      if (!userMatricula) {
-        container.innerHTML = `<div class="status-empty" style="color: #ff7b7b;"><i class="ph-bold ph-warning-circle"></i> Por favor, captura tu matrícula en tu Perfil para poder consultar tus movimientos.</div>`;
-        return;
+    // Función para abrir el login (intenta abrir el modal del padre, si no, redirige)
+    function openLogin() {
+      if (window.parent && window.parent.PSDAuth) {
+        window.parent.PSDAuth.openModal();
+      } else {
+        window.open('login.html', '_top');
       }
-
-      // Consulta a la tabla (Debes crearla en Supabase: tabla 'movimientos_escalafon' con columnas: matricula, tramite, lugar, estatus, fecha)
-      const { data: tramites, error } = await supabase
-        .from('movimientos_escalafon')
-        .select('*')
-        .eq('matricula', userMatricula);
-
-      if (error || !tramites || tramites.length === 0) {
-        container.innerHTML = `<div class="status-empty"><i class="ph-bold ph-check-circle"></i> No tienes movimientos pendientes o registrados actualmente en Bolsa de Trabajo o Escalafón.</div>`;
-        return;
-      }
-
-      // Renderizar los trámites que encuentre
-      container.innerHTML = '';
-      tramites.forEach(t => {
-        container.innerHTML += `
-          <div class="tramite-item">
-            <div class="tramite-info">
-              <h4>${t.tramite}</h4>
-              <p>Estatus: <strong>${t.estatus}</strong> • Actualizado: ${new Date(t.fecha).toLocaleDateString('es-MX')}</p>
-            </div>
-            <div class="tramite-rank">
-              ${t.lugar}
-              <span>Lugar</span>
-            </div>
-          </div>
-        `;
-      });
     }
 
     // --- CARGAR LISTA DE PDFS ---
     async function loadPDFs() {
       const container = document.getElementById('pdf-list-container');
       
-      // Consulta a la tabla (Debes crearla en Supabase: tabla 'listados_pdf' con columnas: id, titulo, url, created_at)
+      // Consulta a la tabla 'listados_pdf'
       const { data: pdfs, error } = await supabase
         .from('listados_pdf')
         .select('*')
@@ -296,7 +335,6 @@
       statusDiv.innerHTML = '<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Subiendo documento...</span>';
 
       try {
-        // 1. Subir al Storage (Asegúrate de crear un bucket público llamado 'documentos' en Supabase)
         const fileName = `escalafon/${Date.now()}_${fileInput.name.replace(/\s+/g, '_')}`;
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('documentos')
@@ -304,10 +342,8 @@
 
         if (uploadError) throw uploadError;
 
-        // 2. Obtener URL pública
         const { data: { publicUrl } } = supabase.storage.from('documentos').getPublicUrl(fileName);
 
-        // 3. Guardar registro en la base de datos
         const { error: dbError } = await supabase
           .from('listados_pdf')
           .insert([{ titulo: titleInput, url: publicUrl }]);
@@ -316,7 +352,7 @@
 
         statusDiv.innerHTML = '<span style="color: var(--success)">✅ Documento publicado exitosamente.</span>';
         document.getElementById('upload-form').reset();
-        loadPDFs(); // Recargar la lista
+        loadPDFs(); 
 
       } catch (err) {
         console.error(err);
@@ -328,12 +364,12 @@
 
     // --- ELIMINAR PDF (Solo Admin) ---
     async function deletePDF(id, event) {
-      event.preventDefault(); // Evitar que abra el link del PDF
+      event.preventDefault(); 
       if (!isAdmin || !confirm('¿Estás seguro de eliminar este listado? Esta acción no se puede deshacer.')) return;
 
       const { error } = await supabase.from('listados_pdf').delete().eq('id', id);
       if (!error) {
-        loadPDFs(); // Recargar vista
+        loadPDFs(); 
       } else {
         alert('Error al eliminar: ' + error.message);
       }
