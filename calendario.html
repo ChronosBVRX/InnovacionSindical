@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Calendario Sindical</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+  <style>
+    :root {
+      --bg-body: #1b2e45;
+      --text-main: #f0fdfa;
+      --text-muted: #bce9eb;
+      --ring: rgba(77, 161, 168, .35);
+      --primary-light: #7ad1d6;
+    }
+    body {
+      margin: 0;
+      padding: 24px;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      height: 100vh;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      margin-bottom: 20px;
+    }
+    .header h2 {
+      margin: 0 0 8px 0;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .calendar-container {
+      flex: 1;
+      background: rgba(21, 35, 54, 0.5);
+      border: 1px solid var(--ring);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    /* Truco para volver el iframe de Google Calendar modo oscuro */
+    .calendar-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      filter: invert(0.9) hue-rotate(180deg) brightness(1.1) contrast(0.9);
+      transition: filter 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2><i class="ph-duotone ph-calendar-blank" style="color: var(--primary-light);"></i> Calendario de Actividades</h2>
+    <p>Consulta los próximos eventos, asambleas y reuniones de la red sindical.</p>
+  </div>
+  <div class="calendar-container">
+    <iframe src="https://calendar.google.com/calendar/embed?src=redunidadenaccion%40gmail.com&ctz=America%2FMexico_City&showTitle=0&showPrint=0&showTz=0&showCalendars=0" loading="lazy"></iframe>
+  </div>
+</body>
+</html>
