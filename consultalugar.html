@@ -258,16 +258,35 @@
     // --- Configuración de Supabase ---
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+    
+    let supabase;
     let isAdmin = false;
+    let initCalled = false;
 
     async function init() {
+      if (initCalled) return;
+      initCalled = true;
+
       try {
-        // 1. Obtener sesión
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        // Ocultamos la pantalla de carga ya que tuvimos respuesta del servidor
+        // Validar si la librería CDN cargó correctamente
+        if (typeof window.supabase === 'undefined') {
+          throw new Error("No se pudo cargar la librería de conexión.");
+        }
+
+        // 1. Instanciar Supabase dentro del bloque seguro
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // 2. Control anti-congelamiento: 8 segundos máximo para conectar
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Tiempo de espera agotado al conectar.")), 8000)
+        );
+
+        const result = await Promise.race([sessionPromise, timeoutPromise]);
+        const session = result?.data?.session;
+        const sessionError = result?.error;
+
+        // --- ¡LLEGAMOS! Ocultamos la pantalla de carga ---
         document.getElementById('loading-state').classList.add('hide');
 
         if (sessionError) throw sessionError;
@@ -281,15 +300,11 @@
         // Si hay sesión, mostrar contenido principal
         document.getElementById('main-content').classList.remove('hide');
 
-        // 2. Obtener Perfil (para saber si es Admin)
-        const { data: prof } = await supabase.from('profiles').select('role').eq('user_id', session.user.id).single();
+        // 3. Obtener Perfil (con maybeSingle para evitar errores si aún no tiene perfil)
+        const { data: prof } = await supabase.from('profiles').select('role').eq('user_id', session.user.id).maybeSingle();
         
-        if (prof) {
-          isAdmin = (prof.role === 'admin');
-        }
-
-        // 3. Mostrar panel de admin si aplica
-        if (isAdmin) {
+        if (prof && prof.role === 'admin') {
+          isAdmin = true;
           document.getElementById('admin-section').classList.remove('hide');
         }
 
@@ -298,11 +313,18 @@
 
       } catch (error) {
         console.error("Error al inicializar la página:", error);
-        document.getElementById('loading-state').innerHTML = `<i class="ph-bold ph-warning-circle" style="color: #ff7b7b;"></i><p style="color: #ff7b7b;">Error al conectar. Por favor recarga la página.</p>`;
+        const loadingState = document.getElementById('loading-state');
+        loadingState.classList.remove('hide');
+        // Reemplazamos el loader por un mensaje visual de error
+        loadingState.innerHTML = `
+          <i class="ph-bold ph-warning-circle" style="color: #ff7b7b; font-size: 48px; margin-bottom: 16px;"></i>
+          <p style="color: #ff7b7b; margin: 0; font-weight: 600;">Error de Conexión</p>
+          <p style="color: var(--text-muted); font-size: 12px; margin-top: 8px;">Detalle: ${error.message}</p>
+          <button class="btn" style="margin-top: 20px; padding: 8px 16px;" onclick="location.reload()">Reintentar</button>
+        `;
       }
     }
 
-    // Función para abrir el login (intenta abrir el modal del padre, si no, redirige)
     function openLogin() {
       if (window.parent && window.parent.PSDAuth) {
         window.parent.PSDAuth.openModal();
@@ -311,10 +333,8 @@
       }
     }
 
-    // --- CARGAR LISTA DE PDFS ---
     async function loadPDFs() {
       const container = document.getElementById('pdf-list-container');
-      
       try {
         const { data: pdfs, error } = await supabase
           .from('listados_pdf')
@@ -349,10 +369,9 @@
       }
     }
 
-    // --- SUBIR PDF (Solo Admin) ---
     document.getElementById('upload-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!isAdmin) return;
+      if (!isAdmin || !supabase) return;
 
       const titleInput = document.getElementById('docTitle').value;
       const fileInput = document.getElementById('docFile').files[0];
@@ -395,10 +414,9 @@
       }
     });
 
-    // --- ELIMINAR PDF (Solo Admin) ---
     async function deletePDF(id, event) {
       event.preventDefault(); 
-      if (!isAdmin || !confirm('¿Estás seguro de eliminar este listado? Esta acción no se puede deshacer.')) return;
+      if (!isAdmin || !supabase || !confirm('¿Estás seguro de eliminar este listado? Esta acción no se puede deshacer.')) return;
 
       const { error } = await supabase.from('listados_pdf').delete().eq('id', id);
       if (!error) {
@@ -408,8 +426,14 @@
       }
     }
 
-    // Iniciar script al cargar
-    document.addEventListener('DOMContentLoaded', init);
+    // --- Arranque Seguro ---
+    // Si el DOM ya cargó antes de que esta línea se ejecute, se lanza inmediatamente.
+    // Si no, espera pacientemente al evento. Esto evita que el código se quede colgado.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   </script>
 </body>
 </html>
