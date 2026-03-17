@@ -15,12 +15,12 @@
     http-equiv="Content-Security-Policy"
     content="
       default-src 'self';
-      script-src 'self' 'unsafe-inline' https://connect.facebook.net;
+      script-src 'self' 'unsafe-inline' https://connect.facebook.net https://cdn.jsdelivr.net;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
       font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:;
-      img-src 'self' data: https://raw.githubusercontent.com https://*.facebook.com https://*.fbcdn.net;
+      img-src 'self' data: https://raw.githubusercontent.com https://*.facebook.com https://*.fbcdn.net https://ui-avatars.com https://*.supabase.co;
       frame-src 'self' https://chronosbvrx.github.io https://trascendencia-sindical-7t85.onrender.com https://rh.imss.gob.mx https://tuperfil.imss.gob.mx https://www.facebook.com;
-      connect-src 'self' https://connect.facebook.net https://www.facebook.com https://raw.githubusercontent.com;
+      connect-src 'self' https://connect.facebook.net https://www.facebook.com https://raw.githubusercontent.com https://*.supabase.co;
       object-src 'none';
       base-uri 'self';
       form-action 'self';
@@ -149,6 +149,29 @@
     }
 
     .secure-badge i { font-size: 14px; }
+
+    /* --- HEADER AUTH STYLES --- */
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .btn-auth { background: var(--primary); color: var(--bg-body); border: none; padding: 6px 16px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
+    .btn-auth:hover { background: var(--primary-light); transform: translateY(-1px); }
+    
+    .user-widget { display: flex; align-items: center; gap: 10px; cursor: pointer; background: rgba(var(--panel-base), 0.4); padding: 4px 12px 4px 4px; border-radius: 20px; border: 1px solid var(--ring); transition: all 0.2s ease; }
+    .user-widget:hover { border-color: var(--primary-light); background: rgba(var(--panel-base), 0.6); }
+    .user-widget img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--ring); background: var(--bg-body); }
+    .user-widget .name { font-size: 13px; font-weight: 600; color: var(--text-main); max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 4px; }
+    
+    .btn-logout { background: transparent; color: #ff7b7b; border: 1px solid rgba(255,123,123,0.3); padding: 6px 10px; border-radius: 8px; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; }
+    .btn-logout:hover { background: rgba(255,123,123,0.1); }
+
+    /* --- LOGIN MODAL STYLES --- */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(10, 20, 29, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-content { background: linear-gradient(180deg, rgba(46,79,119,.95), rgba(27,46,69,.95)); border: 1px solid var(--ring); border-radius: 16px; padding: 24px; width: 90%; max-width: 340px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: translateY(20px); transition: transform 0.3s ease; }
+    .modal-overlay.active .modal-content { transform: translateY(0); }
+    
+    .modal-input { width: 100%; padding: 10px 12px; margin-bottom: 16px; border-radius: 12px; border: 1px solid var(--ring); background: rgba(21,35,54,.85); color: var(--text-main); box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; transition: all 0.2s; }
+    .modal-input:focus { border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(77,161,168,.18); }
+    .modal-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
 
     .layer {
       position: fixed;
@@ -501,6 +524,7 @@
     .bar span { display: block; height: 100%; width: 30%; background: var(--primary-light); position: absolute; animation: load 2s infinite; box-shadow: 0 0 10px var(--primary-light); }
 
     @media (max-width: 768px) {
+      .hide-mobile { display: none !important; }
       .wrap { padding: 20px 16px; }
       .app-head { right: 16px; top: 12px; }
       .tiles { grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -523,6 +547,7 @@
 <body>
   <div id="fb-root"></div>
   <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v24.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <div class="ambient-bg"></div>
 
@@ -545,9 +570,46 @@
       <div class="mark"><img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo" /></div>
       <div><span>Plataforma</span> Sindical Digital (PSD)</div>
     </div>
-    <div class="clock-container">
-      <div class="secure-badge"><i class="ph-fill ph-lock-key"></i> <span>Seguro</span></div>
-      <div id="clock">--:--</div>
+    
+    <div class="topbar-right">
+      <div class="clock-container hide-mobile">
+        <div class="secure-badge"><i class="ph-fill ph-lock-key"></i> <span>Seguro</span></div>
+        <div id="clock">--:--</div>
+      </div>
+
+      <div id="auth-unlogged">
+        <button class="btn-auth" onclick="PSDAuth.openModal()">Iniciar Sesión</button>
+      </div>
+      
+      <div id="auth-logged" class="hide" style="display: flex; gap: 8px; align-items: center;">
+        <div class="user-widget" onclick="PSD.openSafeExternal('miembros.html')" title="Ir a mi perfil">
+          <img id="header-avatar" src="" alt="Avatar">
+          <span id="header-name" class="name">Cargando...</span>
+        </div>
+        <button class="btn-logout" onclick="PSDAuth.logout()" title="Cerrar sesión"><i class="ph-bold ph-sign-out"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="login-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;">
+        <h2 style="margin:0; font-size:18px; color:var(--text-main);">Acceso a Miembros</h2>
+        <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:24px; padding:0;" onclick="PSDAuth.closeModal()">&times;</button>
+      </div>
+      <form id="header-login-form">
+        <label class="modal-label">Matrícula o Correo</label>
+        <input id="hl-user" class="modal-input" placeholder="Ej. 12345678" required autocomplete="username">
+
+        <label class="modal-label">Contraseña</label>
+        <input id="hl-pass" type="password" class="modal-input" placeholder="••••••••" required autocomplete="current-password">
+
+        <button type="submit" style="width:100%; padding:12px; margin-top:8px;" class="btn-auth">Entrar a la Plataforma</button>
+        <div id="hl-error" style="color:#ff7b7b; font-size:13px; margin-top:12px; text-align:center; min-height: 15px;"></div>
+      </form>
+      <div style="margin-top:20px; text-align:center; font-size:13px; border-top: 1px solid var(--ring); padding-top: 16px;">
+        <a href="#" onclick="PSD.openSafeExternal('login.html'); return false;" style="color:var(--primary-light); text-decoration:none; font-weight:500;">¿Nuevo ingreso? Regístrate aquí</a>
+      </div>
     </div>
   </div>
 
@@ -656,7 +718,7 @@
     const APPS = [
       { id: 'trascendencia', title: 'TrascendencIA', desc: 'Asistente Virtual.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true, newTab: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados.', iconClass: 'ph-duotone ph-broadcast' },
-      { id: 'agenda', title: 'Red Sindical', desc: 'Agenda.', iconClass: 'ph-duotone ph-share-network', href: 'https://chronosbvrx.github.io/InnovacionSindical/login.html', featured: true, newTab: true },
+      { id: 'agenda', title: 'Red Sindical', desc: 'Agenda.', iconClass: 'ph-duotone ph-share-network', href: 'miembros.html', featured: true, newTab: true },
       { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Defensa.', iconClass: 'ph-duotone ph-scales', href: 'nucleo.html', featured: true, newTab: true },
       { id: 'comite', title: 'Comité Seccional', desc: 'Planilla Azul.', iconClass: 'ph-duotone ph-users-three', href: 'comite.html', newTab: true },
       { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción.', iconClass: 'ph-duotone ph-scan-smiley', href: 'kiosko.html', featured: true, newTab: true },
@@ -759,7 +821,103 @@
       closeApp() { this.goHome(); }
     };
 
-    document.addEventListener('DOMContentLoaded', () => PSD.init());
+    // --- CONFIGURACIÓN DE AUTENTICACIÓN SUPABASE PARA EL HEADER ---
+    const supabaseClient = window.supabase.createClient(
+      "https://axsncdwshdvsysrpikwj.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs"
+    );
+
+    const PSDAuth = {
+      async init() {
+        // Escuchar cambios de sesión
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+          this.updateUI(session);
+        });
+
+        // Revisar estado inicial
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        this.updateUI(session);
+
+        // Interceptar el formulario del modal
+        document.getElementById('header-login-form').addEventListener('submit', (e) => this.handleLogin(e));
+      },
+
+      async updateUI(session) {
+        const unloggedDiv = document.getElementById('auth-unlogged');
+        const loggedDiv = document.getElementById('auth-logged');
+
+        if (session) {
+          unloggedDiv.classList.add('hide');
+          loggedDiv.classList.remove('hide');
+          this.closeModal();
+
+          // Cargar datos del perfil
+          const { data: prof } = await supabaseClient
+            .from('profiles')
+            .select('display_name, avatar_url')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+
+          const name = prof?.display_name || session.user.user_metadata?.display_name || 'Compañero';
+          const avatar = prof?.avatar_url || session.user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e4f77&color=fff`;
+
+          document.getElementById('header-name').textContent = name.split(' ')[0]; // Mostrar solo el primer nombre
+          document.getElementById('header-avatar').src = avatar;
+        } else {
+          unloggedDiv.classList.remove('hide');
+          loggedDiv.classList.add('hide');
+        }
+      },
+
+      openModal() {
+        document.getElementById('login-modal').classList.add('active');
+        document.getElementById('hl-user').focus();
+      },
+
+      closeModal() {
+        document.getElementById('login-modal').classList.remove('active');
+        document.getElementById('hl-error').textContent = '';
+      },
+
+      async handleLogin(e) {
+        e.preventDefault();
+        const errDiv = document.getElementById('hl-error');
+        const userVal = document.getElementById('hl-user').value.trim();
+        const passVal = document.getElementById('hl-pass').value;
+
+        errDiv.textContent = 'Verificando credenciales...';
+        let emailToLogin = userVal;
+
+        // Si ingresó matrícula (solo números), resolvemos el correo usando el RPC
+        if (/^[0-9]{4,12}$/.test(userVal)) {
+          const { data: email, error: rpcErr } = await supabaseClient.rpc('get_email_by_matricula', { p_matricula: userVal });
+          if (rpcErr || !email) {
+            errDiv.textContent = 'Matrícula no encontrada.';
+            return;
+          }
+          emailToLogin = email;
+        }
+
+        // Intento de login
+        const { error } = await supabaseClient.auth.signInWithPassword({ email: emailToLogin, password: passVal });
+        
+        if (error) {
+          errDiv.textContent = 'Error: ' + (error.message.includes('Invalid') ? 'Credenciales incorrectas' : error.message);
+        } else {
+          errDiv.textContent = '';
+          document.getElementById('header-login-form').reset();
+        }
+      },
+
+      async logout() {
+        await supabaseClient.auth.signOut();
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => { 
+      PSD.init();
+      PSDAuth.init(); 
+    });
   </script>
 </body>
 </html>
