@@ -104,8 +104,8 @@
           <div class="tramite-item" style="display: flex; flex-direction: column; gap: 16px; background: rgba(var(--panel-base), 0.3);">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <div>
-                <h4 style="color: var(--primary-light); font-size: 18px; margin:0 0 4px 0;">Ejemplo Categoría - Zona</h4>
-                <p style="font-size: 12px; margin: 0; color: var(--text-muted);">Actualizado: Hoy</p>
+                <h4 style="color: var(--primary-light); font-size: 18px; margin:0 0 4px 0;">Químico Clínico - Zona 1</h4>
+                <p style="font-size: 14px; margin: 0 0 4px 0; color: var(--text-main);">Periodo: <strong>Marzo 2024 - Marzo 2025</strong></p>
               </div>
               <div class="tramite-rank">#12<span>Lugar para Base</span></div>
             </div>
@@ -146,6 +146,10 @@
         <div class="form-group">
           <label>Categoría y Zona (Ej. Químico Clínico - Zona 1 Lázaro Cárdenas)</label>
           <input type="text" id="docTitle" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Periodo o Actualización (Ej. 24/03/2024 al 24/03/2025)</label>
+          <input type="text" id="docPeriodo" class="form-control" placeholder="Escribe la vigencia del listado" required>
         </div>
         <div class="form-group">
           <label>Archivo PDF (Reporte IMSS-SIAP)</label>
@@ -220,11 +224,10 @@
       const container = document.getElementById('real-data-render');
       
       if (!currentUserMatricula) {
-        container.innerHTML = `<div style="padding: 20px; text-align:center; color: var(--danger);">No tienes una matrícula registrada en tu perfil.</div>`;
+        container.innerHTML = `<div style="padding: 20px; text-align:center; color: var(--danger);">No tienes una matrícula registrada en tu perfil. Modifícalo para poder consultar.</div>`;
         return;
       }
 
-      // Consultar la tabla de bolsa de trabajo
       const { data: lugares, error } = await supabaseApp
         .from('lugares_bolsa_trabajo')
         .select('*')
@@ -246,7 +249,8 @@
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <h4 style="color: var(--primary-light); font-size: 18px; margin:0 0 4px 0;">${t.categoria_zona}</h4>
-                <p style="font-size: 12px; margin: 0; color: var(--text-muted);">Actualizado: ${new Date(t.fecha).toLocaleDateString('es-MX')}</p>
+                <p style="font-size: 14px; margin: 0 0 4px 0; color: var(--text-main);">Periodo: <strong>${t.periodo || 'Vigente'}</strong></p>
+                <p style="font-size: 12px; margin: 0; color: var(--text-muted);">Subido a plataforma el: ${new Date(t.fecha).toLocaleDateString('es-MX')}</p>
               </div>
               <div class="tramite-rank">#${t.lugar}<span>Lugar para Base</span></div>
             </div>
@@ -271,14 +275,14 @@
       });
     }
 
-    // --- PROCESADOR INTELIGENTE DE PDFs ---
+    // --- PROCESADOR INTELIGENTE (NOMBRES Y MATRÍCULAS) ---
     async function extractDataFromPDF(file) {
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
       let rawRecords = [];
       const tramiteTitulo = document.getElementById('docTitle').value;
+      const periodoInput = document.getElementById('docPeriodo').value;
       
-      // Busca Nombres en formato APELLIDO/APELLIDO/NOMBRE y Matrículas exactas de 8 dígitos
       const nameRegex = /[A-ZÑ ]+\/[A-ZÑ ]+\/[A-ZÑ ]+/;
       const matRegex = /\b\d{8}\b/; 
       
@@ -289,7 +293,6 @@
         
         for (let item of content.items) {
           let text = item.str.trim().replace(/,/g, ' '); 
-          
           let foundName = text.match(nameRegex);
           let foundMat = text.match(matRegex);
 
@@ -311,6 +314,7 @@
           matricula: rawRecords[i].matricula,
           nombre: rawRecords[i].nombre,
           categoria_zona: tramiteTitulo,
+          periodo: periodoInput,
           lugar: i + 1,
           nombre_arriba: nArriba,
           nombre_abajo: nAbajo
@@ -345,7 +349,6 @@
 
         statusDiv.innerHTML = `<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Guardando ${finalRecords.length} lugares oficiales...</span>`;
 
-        // Insertamos en la nueva tabla lugares_bolsa_trabajo
         const { error: dbInsertError } = await supabaseApp.from('lugares_bolsa_trabajo').insert(finalRecords);
         if (dbInsertError) throw dbInsertError;
 
@@ -356,7 +359,7 @@
         const { data: { publicUrl } } = supabaseApp.storage.from('documentos').getPublicUrl(fileName);
         await supabaseApp.from('listados_pdf').insert([{ titulo: titleInput, url: publicUrl }]);
 
-        statusDiv.innerHTML = `<span style="color: var(--success)">✅ ¡Éxito! Se procesaron ${finalRecords.length} lugares para la bolsa de trabajo.</span>`;
+        statusDiv.innerHTML = `<span style="color: var(--success)">✅ ¡Éxito! Se procesaron y ocultaron ${finalRecords.length} lugares en la plataforma.</span>`;
         document.getElementById('upload-form').reset();
         
         loadPDFs(); 
