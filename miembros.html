@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Plataforma Sindical CG — Miembros</title>
+  <title>Plataforma Sindical CG — Mi Perfil</title>
   <link rel="icon" href="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/refs/heads/main/Logo%20SNTSS.jpeg">
   <style>
     :root {
@@ -21,7 +21,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto
+      font-family: system-ui, -apple-system, Segoe UI, Roboto;
     }
 
     body {
@@ -29,7 +29,7 @@
       background: linear-gradient(180deg, #152336, #1b2e45);
       color: var(--txt);
       display: flex;
-      flex-direction: column
+      flex-direction: column;
     }
 
     header {
@@ -63,7 +63,7 @@
       letter-spacing: 0.3px;
     }
 
-    #btnLogout {
+    .btn-header {
       background: transparent;
       color: #cbd5e1;
       border: 1px solid rgba(203, 213, 225, 0.3);
@@ -73,6 +73,16 @@
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-header:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.4);
     }
 
     #btnLogout:hover {
@@ -81,7 +91,7 @@
       border-color: rgba(239, 68, 68, 0.4);
     }
 
-    /* ====== HERO HEADER (imagen ultra widescreen) ====== */
+    /* ====== HERO HEADER ====== */
     .page-hero {
       padding: 24px 24px 10px;
       display: flex;
@@ -99,15 +109,6 @@
       box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
     }
 
-    .page-hero .hero-wrap::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 16px;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 0 20px rgba(0,0,0,0.2);
-      pointer-events: none;
-    }
-
     .page-hero .hero-img {
       width: 100%;
       height: clamp(160px, 20vw, 260px);
@@ -115,42 +116,31 @@
       object-position: center;
       display: block;
       filter: saturate(1.1) brightness(0.95) contrast(1.05);
-      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .page-hero .hero-wrap:hover .hero-img {
-      transform: scale(1.02);
     }
 
     @media (max-width: 980px) {
-      header {
-        padding: 10px 16px;
-      }
-      header h1 {
-        font-size: 1rem;
-      }
-      .page-hero {
-        padding: 16px 16px 8px;
-      }
-      .page-hero .hero-img {
-        height: clamp(120px, 25vw, 180px);
-      }
+      header { padding: 10px 16px; }
+      header h1 { font-size: 1rem; }
+      .page-hero { padding: 16px 16px 8px; }
+      .page-hero .hero-img { height: clamp(120px, 25vw, 180px); }
     }
 
     main {
       flex: 1;
       display: flex;
-      min-height: 0
+      min-height: 0;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
     }
 
     nav {
       width: 240px;
-      background: rgba(27, 46, 69, .85);
-      border-right: 1px solid rgba(77, 161, 168, .25);
+      background: transparent;
       padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 10px
+      gap: 10px;
     }
 
     nav button {
@@ -158,117 +148,83 @@
       border: none;
       background: rgba(77, 161, 168, .12);
       color: var(--txt);
-      padding: 10px;
+      padding: 10px 14px;
       border-radius: 10px;
       text-align: left;
       cursor: pointer;
-      transition: .2s
+      transition: .2s;
+      font-size: 14px;
     }
 
-    nav button:hover,
-    nav button.active {
+    nav button:hover, nav button.active {
       background: linear-gradient(90deg, var(--primary), var(--sky));
       color: #0f2638;
-      font-weight: 600
+      font-weight: 600;
     }
 
     section.content {
       flex: 1;
-      padding: 20px;
+      padding: 12px 20px 20px;
       display: none;
-      min-width: 0
+      min-width: 0;
     }
 
     section.content.active {
-      display: block
+      display: block;
+      animation: fade .4s ease;
     }
 
     .card {
       background: var(--panel);
       border: 1px solid rgba(77, 161, 168, .35);
       border-radius: 16px;
-      padding: 20px;
+      padding: 24px;
       box-shadow: 0 8px 25px rgba(0, 0, 0, .25);
-      animation: fade .4s ease
     }
 
     @keyframes fade {
-      from {
-        opacity: 0;
-        transform: translateY(10px)
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0)
-      }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    h2 {
-      margin-bottom: 10px;
-      color: #d1f5f7
-    }
-
-    p.muted {
-      color: var(--muted)
-    }
+    h2 { margin-bottom: 10px; color: #d1f5f7; }
+    p.muted { color: var(--muted); font-size: 14px; }
 
     .profile-info {
       display: flex;
       align-items: center;
-      gap: 16px;
-      margin-top: 10px;
-      flex-wrap: wrap
+      gap: 20px;
+      margin-top: 16px;
+      flex-wrap: wrap;
     }
 
     .avatar {
-      width: 110px;
-      height: 110px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
       background: #233b5c;
-      border: 1px solid var(--ring);
+      border: 2px solid var(--ring);
       display: grid;
       place-items: center;
-      font-size: 28px;
-      overflow: hidden
+      font-size: 32px;
+      overflow: hidden;
     }
 
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover
-    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-    .profile-data p {
-      margin: 2px 0
-    }
+    .profile-data p { margin: 6px 0; font-size: 15px; }
 
-    form {
-      display: grid;
-      gap: 10px;
-      max-width: 560px;
-      margin-top: 10px
-    }
-
-    label {
-      font-size: 13px;
-      color: #bce9eb
-    }
-
-    input,
-    textarea,
-    select {
-      background: #1b2e45;
+    form { display: grid; gap: 12px; max-width: 600px; margin-top: 16px; }
+    label { font-size: 13px; color: #bce9eb; margin-bottom: -4px; }
+    input, textarea, select {
+      background: #152336;
       border: 1px solid rgba(77, 161, 168, .4);
       color: #f0fdfa;
-      padding: 9px 11px;
-      border-radius: 10px
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 14px;
     }
-
-    textarea {
-      min-height: 90px;
-      resize: vertical
-    }
+    textarea { min-height: 90px; resize: vertical; }
 
     .btn {
       appearance: none;
@@ -277,301 +233,73 @@
       background: linear-gradient(90deg, var(--primary), var(--sky));
       color: #0f2638;
       font-weight: 600;
-      padding: 10px 16px;
+      padding: 12px 20px;
       border-radius: 12px;
-      margin-top: 6px;
-      transition: .2s
+      margin-top: 10px;
+      transition: .2s;
+      font-size: 14px;
     }
+    .btn:hover { filter: brightness(1.12); }
 
-    .btn:hover {
-      filter: brightness(1.12)
-    }
+    .meta { font-size: 12px; color: #8ccacdb6; }
+    .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 
-    .subtle-btn {
-      appearance: none;
-      border: 1px solid rgba(77, 161, 168, .28);
-      background: rgba(77, 161, 168, .1);
-      color: #fff;
-      padding: 6px 10px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 13px
-    }
-
-    .subtle-btn:hover {
-      background: rgba(77, 161, 168, .25)
-    }
-
-    .meta {
-      font-size: 12px;
-      color: #8ccacdb6
-    }
-
-    .row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: rgba(77, 161, 168, .15);
-      border: 1px solid rgba(77, 161, 168, .35);
-      font-size: 12px;
-      color: #d1f5f7
-    }
-
-    iframe {
-      width: 100%;
-      min-height: 600px;
-      border: 0;
-      border-radius: 12px
-    }
-
-    details.forum-toggle {
-      margin-top: 16px
-    }
-
-    details.forum-toggle>summary {
-      list-style: none;
-      cursor: pointer;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: rgba(77, 161, 168, .15);
-      border: 1px solid rgba(77, 161, 168, .28);
-      font-weight: 600;
-      color: #d1f5f7
-    }
-
-    details.forum-toggle[open]>summary {
-      background: rgba(77, 161, 168, .25)
-    }
-
-    details.forum-toggle>summary::-webkit-details-marker {
-      display: none
-    }
-
-    .rotate {
-      transition: transform .2s ease
-    }
-
-    details[open] .rotate {
-      transform: rotate(90deg)
-    }
-
-    .qr-card {
-      display: grid;
-      place-items: center;
-      background: rgba(255, 255, 255, .05);
-      border: 1px solid rgba(77, 161, 168, .25);
-      border-radius: 12px;
-      padding: 12px;
-      width: 220px
-    }
-
-    .qr-card canvas {
-      width: 196px !important;
-      height: 196px !important
-    }
-
-    @keyframes fadeInSmall {
-      from {
-        opacity: .6;
-        transform: translateY(4px)
-      }
-
-      to {
-        opacity: 1;
-        transform: none
-      }
-    }
-
-    @media (max-width:980px) {
-      nav {
-        width: 100%;
-        flex-direction: row;
-        position: sticky;
-        top: 52px;
-        z-index: 9;
-        overflow: auto;
-      }
-
-      main {
-        flex-direction: column
-      }
-    }
-
-    .perfil-layout {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .perfil-main {
-      flex: 2;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .perfil-extra {
-      flex: 1.3;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    .perfil-layout { display: flex; flex-direction: column; gap: 20px; }
+    .perfil-main { flex: 2; display: flex; flex-direction: column; gap: 16px; }
+    .perfil-extra { flex: 1.3; display: flex; flex-direction: column; gap: 12px; }
 
     .perfil-extra-card {
       background: #233b5c;
       border: 1px solid rgba(77, 161, 168, .35);
       border-radius: 12px;
-      padding: 10px 12px;
+      padding: 14px 16px;
     }
+    .perfil-extra-card h3 { margin: 0 0 8px; font-size: 15px; color: #d1f5f7; }
 
-    .perfil-extra-card h3 {
-      margin: 0 0 6px;
-      font-size: 14px;
-      color: #d1f5f7;
-    }
-
-    #perfilQuoteText {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    #perfilQuoteTag {
-      display: block;
-      margin-top: 4px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: rgba(188, 233, 235, 0.85);
-    }
+    #perfilQuoteText { font-size: 14px; color: var(--txt); line-height: 1.5; font-style: italic; }
+    #perfilQuoteTag { display: block; margin-top: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--primary); }
 
     .btn-mini {
-      margin-top: 8px;
-      font-size: 12px;
-      padding: 5px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(77, 161, 168, .6);
-      background: rgba(21, 35, 54, 0.9);
-      color: #f0fdfa;
-      cursor: pointer;
+      margin-top: 10px; font-size: 12px; padding: 6px 12px; border-radius: 999px;
+      border: 1px solid rgba(77, 161, 168, .6); background: rgba(21, 35, 54, 0.9); color: #f0fdfa; cursor: pointer;
     }
+    .btn-mini:hover { background: rgba(77, 161, 168, .25); }
 
-    .btn-mini:hover {
-      background: rgba(77, 161, 168, .25);
-    }
+    #perfilValorList, #perfilAccionesList { margin-left: 18px; font-size: 14px; color: var(--muted); }
+    #perfilValorList li+li, #perfilAccionesList li+li { margin-top: 6px; }
 
-    #perfilValorList,
-    #perfilAccionesList {
-      margin-left: 16px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    #perfilValorList li+li,
-    #perfilAccionesList li+li {
-      margin-top: 4px;
-    }
-
-    .perfil-empty-actions {
-      font-size: 13px;
-      color: #bbf7d0;
-      margin-top: 4px;
-    }
-
+    .perfil-empty-actions { font-size: 14px; color: #bbf7d0; margin-top: 6px; }
     .perfil-tag-acciones {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(248, 250, 252, .1);
-      background: rgba(120, 53, 15, .5);
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      color: #fed7aa;
-      margin-bottom: 4px;
+      display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px;
+      background: rgba(120, 53, 15, .5); font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: #fed7aa; margin-bottom: 6px;
     }
 
-    @media (min-width:980px) {
-      .perfil-layout {
-        flex-direction: row;
-        align-items: flex-start;
-      }
+    .escalafon-promo {
+      margin-top: 20px; padding: 16px; border: 1px dashed var(--sky); border-radius: 12px; background: rgba(122, 209, 214, 0.05);
+    }
+    .blur-box { background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px; position: relative; overflow: hidden; margin-top: 10px; }
+    .blur-text { filter: blur(5px); user-select: none; font-size: 14px; }
+    .promo-overlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+      background: rgba(27, 46, 69, 0.85); text-align: center; padding: 10px;
+    }
+    .promo-overlay p { font-weight: 600; font-size: 14px; color: #fff; line-height: 1.4; }
+    .promo-overlay span { color: var(--sky); font-weight: 700; }
+
+    @media (min-width: 980px) {
+      .perfil-layout { flex-direction: row; align-items: flex-start; }
+    }
+
+    @media (max-width: 980px) {
+      nav { width: 100%; flex-direction: row; position: sticky; top: 60px; z-index: 9; overflow-x: auto; background: var(--bg); border-bottom: 1px solid rgba(77,161,168,.25); }
+      nav button { white-space: nowrap; }
+      main { flex-direction: column; }
     }
 
     /* ====== DIAGNOSTICO ====== */
     .diag {
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 200, 120, .35);
-      background: rgba(255, 200, 120, .08);
-      color: #ffe8c7;
-      font-size: 12px;
-      white-space: pre-wrap;
-    }
-
-    /* ESTILOS NUEVOS PARA ESCALAFÓN */
-    .escalafon-promo {
-      margin-top: 16px;
-      padding: 12px;
-      border: 1px dashed var(--sky);
-      border-radius: 12px;
-      background: rgba(122, 209, 214, 0.05);
-    }
-
-    .blur-box {
-      background: rgba(0, 0, 0, 0.2);
-      padding: 10px;
-      border-radius: 8px;
-      position: relative;
-      overflow: hidden;
-      margin-top: 8px;
-    }
-
-    .blur-text {
-      filter: blur(5px);
-      user-select: none;
-      font-size: 13px;
-    }
-
-    .promo-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(27, 46, 69, 0.85);
-      text-align: center;
-      padding: 5px;
-    }
-
-    .promo-overlay p {
-      font-weight: 700;
-      font-size: 13px;
-      color: #fff;
-      line-height: 1.3;
-    }
-
-    .promo-overlay span {
-      color: var(--sky);
+      margin-top: 12px; padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 100, 100, .35);
+      background: rgba(255, 100, 100, .1); color: #ffc7c7; font-size: 13px; white-space: pre-wrap; display: none;
     }
   </style>
 </head>
@@ -579,32 +307,25 @@
 <body>
   <header>
     <h1>
-      <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/refs/heads/main/Logo%20SNTSS.jpeg"
-        alt="Logo">
-      Plataforma Sindical CG — Miembros
+      <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/refs/heads/main/Logo%20SNTSS.jpeg" alt="Logo">
+      Plataforma Sindical CG — Mi Perfil
     </h1>
-    <button id="btnLogout">Cerrar sesión</button>
+    <div style="display: flex; gap: 10px;">
+      <a href="index.html" class="btn-header">🏠 Inicio</a> 
+      <button id="btnLogout" class="btn-header">Cerrar sesión</button>
+    </div>
   </header>
 
   <section class="page-hero" aria-label="Header de la Plataforma Sindical CG">
     <div class="hero-wrap">
-      <img class="hero-img"
-        src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/ChatGPT%20Image%2020%20feb%202026%2C%2002_54_18%20p.m..png"
-        alt="Plataforma Sindical CG — Header">
+      <img class="hero-img" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/ChatGPT%20Image%2020%20feb%202026%2C%2002_54_18%20p.m..png" alt="Plataforma Sindical CG — Header">
     </div>
   </section>
 
   <main>
     <nav>
-      <button class="tab active" data-tab="perfil">👤 Perfil</button>
-      <button class="tab" data-tab="miembros" id="tabMiembros">👥 Miembros</button>
-      <button class="tab" data-tab="calendario">📅 Calendario</button>
-      <button class="tab" data-tab="reservas">🗓️ Reservas</button>
-      <button class="tab" data-tab="foro">🗣️ Foro</button>
-      <button class="tab" data-tab="videollamadas">📞 Videollamadas</button>
-      <button class="tab" data-tab="biblioteca">📚 Biblioteca</button>
-      <button class="tab" data-tab="scanner" id="tabScanner" style="display:none">🔎 Scanner</button>
-      <button class="tab" data-tab="personaliza">⚙️ Personaliza tu perfil</button>
+      <button class="tab active" data-tab="perfil">👤 Mi Información</button>
+      <button class="tab" data-tab="personaliza">⚙️ Editar Perfil</button>
     </nav>
 
     <section id="perfil" class="content active">
@@ -612,111 +333,39 @@
         <div class="perfil-layout">
           <div class="perfil-main">
             <div>
-              <h2>👋 Bienvenido</h2>
-              <p class="muted">Esta es tu página de miembro dentro de la Plataforma Sindical CG</p>
+              <h2>👋 Hola, <span id="headerName">Usuario</span></h2>
+              <p class="muted">Aquí puedes visualizar cómo ven tu perfil los demás miembros.</p>
 
-              <div id="diagBox" class="diag" style="display:none;"></div>
+              <div id="diagBox" class="diag"></div>
 
               <div class="profile-info">
                 <div class="avatar" id="userAvatar">🧑</div>
                 <div class="profile-data">
                   <p><strong>Nombre:</strong> <span id="pfName">Cargando…</span></p>
                   <p><strong>Email:</strong> <span id="pfEmail">—</span></p>
-
                   <p><strong>Matrícula:</strong> <span id="pfMatricula">—</span></p>
-
                   <p><strong>Teléfono:</strong> <span id="pfTelefono">—</span></p>
-                  <p class="meta" id="pfTelefonoVis" style="margin-top:4px"></p>
+                  <p class="meta" id="pfTelefonoVis" style="margin-top:2px"></p>
                   <p><strong>Cumpleaños:</strong> <span id="pfCumple">—</span></p>
                   <p><strong>Categoría:</strong> <span id="pfCategoria">—</span></p>
                   <p><strong>Adscripción:</strong> <span id="pfAdscripcion">—</span></p>
-                  <p style="margin-top:8px"><strong>Servicios / habilidades:</strong></p>
+                  <p style="margin-top:12px"><strong>Servicios / habilidades:</strong></p>
                   <p id="pfServicios" class="muted">—</p>
 
                   <div class="escalafon-promo">
                     <p class="meta"><strong>Estatus de Trámites y Escalafón:</strong></p>
-                    <p class="meta" style="font-size: 11px; margin-bottom: 4px;">Si tienes cambio de rama, ampliación de
-                      jornada, cambio de adscripción o turno, aquí aparecerá tu lugar:</p>
+                    <p class="meta" style="font-size: 11px; margin-bottom: 6px;">Si tienes cambio de rama, ampliación de jornada, cambio de adscripción o turno, aquí aparecerá tu lugar:</p>
                     <div class="blur-box">
                       <div class="blur-text">
-                        Lugar en escalafón: #12 de 145 solicitudes
-
-                        Trámite: Cambio de adscripción - HGR1
-
+                        Lugar en escalafón: #12 de 145 solicitudes<br>
+                        Trámite: Cambio de adscripción - HGR1<br>
                         Estatus: En revisión por subcomisión
                       </div>
                       <div class="promo-overlay">
-                        <p>A partir del 16 de abril, <br><span>vota por la planilla azul</span> <br>para hacerlo
-                          realidad</p>
+                        <p>A partir del 16 de abril, <br><span>vota por la planilla azul</span> <br>para hacerlo realidad</p>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="card" id="asistenciaResumen"
-              style="margin-top:20px; background:#233b5c; animation:fadeInSmall .2s ease">
-              <h3>📊 Asistencia y recompensas</h3>
-              <div id="asistData" class="meta" style="margin-bottom:8px">Cargando tus datos...</div>
-              <div class="row" style="flex-wrap:wrap;gap:20px">
-                <div>
-                  <div class="meta">Eventos asistidos (temporada)</div>
-                  <div id="asistTotal" style="font-size:26px;font-weight:700">0</div>
-                </div>
-                <div>
-                  <div class="meta">Racha actual (días)</div>
-                  <div id="asistRacha" style="font-size:26px;font-weight:700">0</div>
-                </div>
-                <div>
-                  <div class="meta">Puntos</div>
-                  <div id="asistPuntos" style="font-size:26px;font-weight:700">0</div>
-                </div>
-                <div>
-                  <div class="meta">Posición en ranking</div>
-                  <div id="asistTop" style="font-size:26px;font-weight:700">—</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="card" id="miniTop" style="margin-top:12px; background:#233b5c; animation:fadeInSmall .2s ease">
-              <h3>🏆 Top de asistencia </h3>
-              <div id="miniTopMeta" class="meta" style="margin-top:6px">Cargando…</div>
-              <div id="miniTopList" style="margin-top:10px;display:grid;gap:8px"></div>
-            </div>
-
-            <div class="card" id="perfilQRCard"
-              style="margin-top:12px; background:#233b5c; animation:fadeInSmall .2s ease">
-              <h3>✅ Próximo QR de verificación</h3>
-              <p class="muted" style="margin-top:6px">
-                Aquí aparecerá el próximo QR para verificar tu asistencia al próximo evento sindical.
-                Confirma tu asistencia para generarlo.
-              </p>
-
-              <div id="eventBox" class="meta" style="margin-top:10px">Buscando el próximo evento…</div>
-
-              <div id="rsvpBox" style="margin-top:12px; display:none">
-                <div class="row">
-                  <button class="btn" id="btnYes">✔️ Asistiré</button>
-                  <button class="subtle-btn" id="btnNo">✖️ No asistiré</button>
-                  <span class="meta" id="rsvpStatus"></span>
-                </div>
-
-                <div id="qrWrap" style="margin-top:12px; display:none">
-                  <div class="qr-card"><canvas id="qrCanvas" aria-label="Código QR"></canvas></div>
-                  <div class="meta" style="margin-top:6px">Muestra este QR al llegar.</div>
-                </div>
-              </div>
-
-              <div id="adminRSVPPanel" class="perfil-extra-card" style="margin-top:16px; display:none;">
-                <h3>📊 Confirmaciones de asistencia (solo admins)</h3>
-                <p class="meta" id="adminRSVPText">Cargando…</p>
-
-                <div id="adminRSVPListWrap" style="margin-top:8px; display:none;">
-                  <p class="meta" style="margin-bottom:4px;">Personas que confirmaron:</p>
-                  <ul id="adminRSVPList"
-                    style="margin:0 0 4px 18px; padding:0; font-size:13px; color:var(--muted); list-style:disc;"></ul>
-                  <p class="meta" id="adminRSVPMore" style="display:none;"></p>
                 </div>
               </div>
             </div>
@@ -728,7 +377,6 @@
               <p id="perfilQuoteText">Cargando frase…</p>
               <small id="perfilQuoteTag"></small>
               <button type="button" class="btn-mini" onclick="cambiarFrasePerfil()">Otra frase</button>
-              <div class="meta" id="perfilQuoteMeta" style="margin-top:6px;"></div>
             </div>
 
             <div class="perfil-extra-card">
@@ -738,8 +386,8 @@
 
             <div class="perfil-extra-card">
               <span class="perfil-tag-acciones">Próximas acciones</span>
-              <h3>Lo que puedes completar de tu perfil</h3>
-              <p class="meta" style="margin:4px 0 6px;">
+              <h3>Completa tu perfil</h3>
+              <p class="meta" style="margin:4px 0 8px;">
                 Solo verás lo que hace falta. Cuando completes un dato, desaparecerá de esta lista.
               </p>
               <ul id="perfilAccionesList"></ul>
@@ -752,102 +400,40 @@
       </div>
     </section>
 
-    <section id="miembros" class="content">
-      <div class="card">
-        <h2>👥 Directorio de Miembros (Solo Admin)</h2>
-        <div class="row" style="margin-top:6px">
-          <input id="qMembers" placeholder="Buscar por nombre, adscripción o servicios" style="min-width:260px">
-          <button class="subtle-btn" id="btnRefreshMembers">Actualizar</button>
-          <label class="row" style="gap:8px;align-items:center;margin-left:auto">
-            <input type="checkbox" id="chkOnlineOnly"><span>👁️ Solo online</span>
-          </label>
-        </div>
-        <div id="membersList" style="margin-top:14px;display:grid;gap:12px"></div>
-      </div>
-    </section>
-
-    <section id="calendario" class="content">
-      <div class="card">
-        <h2>📅 Calendario de Actividades</h2>
-        <iframe
-          src="https://calendar.google.com/calendar/embed?src=redunidadenaccion%40gmail.com&ctz=America%2FMexico_City&showTitle=0&showPrint=0&showTz=0&showCalendars=0"></iframe>
-      </div>
-    </section>
-
-    <section id="reservas" class="content">
-      <div class="card">
-        <h2>🗓️ Reservas</h2>
-        <p class="muted">Gestiona y consulta reservas desde esta pestaña.</p>
-        <iframe src="reservas.html"
-          style="width:100%;min-height:650px;border:0;border-radius:12px;margin-top:12px" loading="lazy"></iframe>
-      </div>
-    </section>
-
-    <section id="foro" class="content">
-      <div class="card">
-        <h2>🗣️ Foro de Miembros</h2>
-        <div id="postsList" class="" style="display:grid;gap:12px"></div>
-        <details class="forum-toggle" id="newPostToggle">
-          <summary><span class="rotate">▸</span><span>Crear una publicación</span></summary>
-          <form id="forumForm" style="margin-top:12px">
-            <label>Escribe una publicación (máx. 500 caracteres)</label>
-            <textarea id="forumInput" maxlength="500"
-              placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
-            <div class="row">
-              <label style="font-size:13px">Categoría</label>
-              <select id="forumCategory">
-                <option>Avisos</option>
-                <option selected>Asuntos Generales</option>
-                <option>Convivencia</option>
-              </select>
-            </div>
-            <button class="btn" type="submit">➕ Publicar</button>
-            <div class="status meta" id="forumStatus"></div>
-          </form>
-        </details>
-      </div>
-    </section>
-
-    <section id="videollamadas" class="content">
-      <div class="card">
-        <h2>📞 Videollamadas</h2>
-        <p class="muted">Realiza videollamadas 1 a 1 con otros miembros desde esta misma plataforma.</p>
-        <iframe src="videollamadas.html"
-          style="width:100%;min-height:650px;border:0;border-radius:12px;margin-top:12px" loading="lazy"></iframe>
-      </div>
-    </section>
-
-    <section id="biblioteca" class="content">
-      <div class="card">
-        <h2>📚 Biblioteca de Recursos</h2>
-        <p class="muted">Consulta y explora materiales digitales de la Plataforma Sindical CG.</p>
-        <iframe src="biblioteca.html"
-          style="width:100%;min-height:650px;border:0;border-radius:12px;margin-top:12px" loading="lazy"></iframe>
-      </div>
-    </section>
-
     <section id="personaliza" class="content">
       <div class="card">
         <h2>⚙️ Edita tu información</h2>
-        <div class="row" style="margin-top:10px">
-          <div class="avatar" id="avatarPreview">🧑</div>
+        <p class="muted">Actualiza tus datos para mantener a la red informada y conectada.</p>
+        
+        <div class="row" style="margin-top:20px; margin-bottom: 10px;">
+          <div class="avatar" id="avatarPreview" style="width: 80px; height: 80px; font-size: 24px;">🧑</div>
           <div>
-            <label>Foto de perfil (PNG/JPG/WebP, máx 2MB)</label>
+            <label style="color: var(--txt); margin-bottom: 4px; display: block;">Foto de perfil (PNG/JPG/WebP, máx 2MB)</label>
             <input type="file" id="fAvatar" accept="image/png,image/jpeg,image/webp">
-            <div class="meta">Se previsualiza al seleccionar; se sube al guardar.</div>
+            <div class="meta" style="margin-top: 4px;">Se previsualiza al seleccionar; se sube al guardar.</div>
           </div>
         </div>
 
         <form id="editForm">
-          <label>Nombre completo</label><input id="fNombre" placeholder="Tu nombre completo">
-          <label>Matrícula</label><input id="fMatricula" placeholder="Ej. 12345678" inputmode="numeric">
-          <label>Teléfono</label><input id="fTelefono" placeholder="Ej. 5532120000">
-          <label style="display:flex;align-items:center;gap:8px;">
-            <input type="checkbox" id="fTelefonoPublico">
+          <label>Nombre completo</label>
+          <input id="fNombre" placeholder="Tu nombre completo">
+          
+          <label>Matrícula</label>
+          <input id="fMatricula" placeholder="Ej. 12345678" inputmode="numeric">
+          
+          <label>Teléfono</label>
+          <input id="fTelefono" placeholder="Ej. 5532120000">
+          
+          <label style="display:flex;align-items:center;gap:8px; cursor: pointer;">
+            <input type="checkbox" id="fTelefonoPublico" style="width: 16px; height: 16px;">
             <span>Mostrar mi número de teléfono a otros miembros</span>
           </label>
-          <label>Fecha de cumpleaños</label><input id="fCumple" type="date">
-          <label>Categoría</label><input id="fCategoria" placeholder="Ej. Enfermera General A">
+          
+          <label>Fecha de cumpleaños</label>
+          <input id="fCumple" type="date">
+          
+          <label>Categoría</label>
+          <input id="fCategoria" placeholder="Ej. Enfermera General A">
 
           <label>Adscripción (Michoacán)</label>
           <select id="fAdscripcion" required>
@@ -870,56 +456,21 @@
               <option value="UMF No. 3 Quiroga">UMF No. 3 Quiroga</option>
               <option value="UMF No. 6 Jiquilpan">UMF No. 6 Jiquilpan</option>
               <option value="UMF No. 10 Jungapeo">UMF No. 10 Jungapeo</option>
-              <option value="UMF No. 11 Nueva Italia">UMF No. 11 Nueva Italia</option>
-              <option value="UMF No. 13 Cotija">UMF No. 13 Cotija</option>
-              <option value="UMF No. 18 Zitácuaro">UMF No. 18 Zitácuaro</option>
-              <option value="UMF No. 19 Ciudad Hidalgo">UMF No. 19 Ciudad Hidalgo</option>
-              <option value="UMF No. 20 Pátzcuaro">UMF No. 20 Pátzcuaro</option>
-              <option value="UMF No. 21 Jacona">UMF No. 21 Jacona</option>
-              <option value="UMF No. 23 Infiernillo">UMF No. 23 Infiernillo</option>
-              <option value="UMF No. 25 Puruarán">UMF No. 25 Puruarán</option>
-              <option value="UMF No. 26 Taretan">UMF No. 26 Taretan</option>
-              <option value="UMF No. 28 Santa Clara">UMF No. 28 Santa Clara</option>
-              <option value="UMF No. 37 Mineral de Angangueo">UMF No. 37 Mineral de Angangueo</option>
-              <option value="UMF No. 40 Coalcomán">UMF No. 40 Coalcomán</option>
-              <option value="UMF No. 42 Cuitzeo">UMF No. 42 Cuitzeo</option>
-              <option value="UMF No. 43 Churumuco">UMF No. 43 Churumuco</option>
-              <option value="UMF No. 46 La Huacana">UMF No. 46 La Huacana</option>
-              <option value="UMF No. 48 Huetamo">UMF No. 48 Huetamo</option>
-              <option value="UMF No. 52 Nuevo Urecho">UMF No. 52 Nuevo Urecho</option>
-              <option value="UMF No. 54 Purépero">UMF No. 54 Purépero</option>
-              <option value="UMF No. 64 Puruándiro">UMF No. 64 Puruándiro</option>
-              <option value="UMF No. 65 Villa Madero">UMF No. 65 Villa Madero</option>
-              <option value="UMF No. 66 Villamar">UMF No. 66 Villamar</option>
-              <option value="UMF No. 70 Zinapécuaro">UMF No. 70 Zinapécuaro</option>
-              <option value="UMF No. 71 Morelia">UMF No. 71 Morelia</option>
-              <option value="UMF No. 74 Tacámbaro">UMF No. 74 Tacámbaro</option>
-              <option value="UMF No. 75 Morelia (Camelinas)">UMF No. 75 Morelia (Camelinas)</option>
-              <option value="UMF No. 76 Uruapan">UMF No. 76 Uruapan</option>
-              <option value="UMF No. 77 La Piedad">UMF No. 77 La Piedad</option>
-              <option value="UMF No. 78 Lázaro Cárdenas">UMF No. 78 Lázaro Cárdenas</option>
-              <option value="UMF No. 80 Morelia (Centro)">UMF No. 80 Morelia (Centro)</option>
-              <option value="UMF No. 81 Uruapan">UMF No. 81 Uruapan</option>
-              <option value="UMF No. 82 Zamora">UMF No. 82 Zamora</option>
-              <option value="UMF No. 84 Morelia (Tacícuaro)">UMF No. 84 Morelia (Tacícuaro)</option>
               <option value="UMF No. 85 Tarímbaro">UMF No. 85 Tarímbaro</option>
             </optgroup>
             <optgroup label="IMSS-Bienestar — Hospitales Rurales (HR)">
               <option value="HR No. 30 Ario de Rosales">HR No. 30 Ario de Rosales</option>
-              <option value="HR No. 31 Huetamo">HR No. 31 Huetamo</option>
-              <option value="HR No. 33 Paracho">HR No. 33 Paracho</option>
-              <option value="HR No. 35 Buenavista Tomatlán">HR No. 35 Buenavista Tomatlán</option>
-              <option value="HR No. 50 Tuxpan">HR No. 50 Tuxpan</option>
-              <option value="HR No. 51 Villamar">HR No. 51 Villamar</option>
               <option value="HR No. 59 Coalcomán">HR No. 59 Coalcomán</option>
             </optgroup>
           </select>
 
-          <label>Biografía corta</label><textarea id="fBio" placeholder="Cuéntanos algo breve"></textarea>
+          <label>Biografía corta</label>
+          <textarea id="fBio" placeholder="Cuéntanos algo breve sobre ti"></textarea>
+          
           <label>Servicios / habilidades que ofreces</label>
-          <textarea id="fServicios"
-            placeholder="Ej. Asesoría jurídica, apoyo en organización de eventos, diseño gráfico, etc."></textarea>
-          <button class="btn" type="submit">💾 Guardar cambios</button>
+          <textarea id="fServicios" placeholder="Ej. Asesoría jurídica, diseño gráfico, etc."></textarea>
+          
+          <button class="btn" type="submit" style="justify-self: start;">💾 Guardar cambios</button>
           <div class="status meta" id="status"></div>
         </form>
       </div>
@@ -927,18 +478,13 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
   <script>
-    /* ====== Config ====== */
+    /* ====== Configuración ====== */
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
     const LOGIN_URL = "login.html";
-    const SCANNER_REDIRECT_URL = "https://chronosbvrx.github.io/InnovacionSindical/scanner";
-    const GOOGLE_API_KEY = "AIzaSyDdtYPPE-jTvw_Gypxrq2c5UePpbK9ZxZ0";
-    const CALENDAR_ID = "redunidadenaccion@gmail.com";
 
-    /* ====== Cliente ====== */
     const supabaseClient = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_ANON_KEY,
@@ -946,14 +492,9 @@
     );
 
     const $ = (id) => document.getElementById(id);
+    let CURRENT_USER = null;
 
-    let CURRENT_USER = null, IS_ADMIN = false, MEMBERS_CACHE = [], ONLINE_SET = new Set();
-
-    /* ====== Debounce / Tokens ====== */
-    const debounce = (fn, ms = 200) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
-    let POSTS_TOKEN = 0;
-
-    /* ====== DIAGNOSTICO ====== */
+    /* ====== Diagnóstico UI ====== */
     function diag(msg, extra) {
       console.log("[DIAG]", msg, extra || "");
       const box = $("diagBox");
@@ -961,177 +502,9 @@
       box.style.display = "block";
       box.textContent = String(msg) + (extra ? "\n\n" + (typeof extra === "string" ? extra : JSON.stringify(extra, null, 2)) : "");
     }
-
     function clearDiag() {
       const box = $("diagBox");
-      if (!box) return;
-      box.style.display = "none";
-      box.textContent = "";
-    }
-
-    /* ====== Tabs ====== */
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll(".tab").forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          const id = btn.dataset.tab;
-
-          if (id === 'scanner') {
-            if (!IS_ADMIN) { alert('Necesitas rol admin para acceder al Scanner.'); return; }
-            window.location.assign(SCANNER_REDIRECT_URL);
-            return;
-          }
-
-          if (id === 'miembros' && !IS_ADMIN) {
-            alert('Solo administradores pueden ver el directorio.');
-            return;
-          }
-
-          document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-          document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-
-          btn.classList.add('active');
-          $(id).classList.add('active');
-
-          location.hash = id;
-
-          if (id === 'miembros') renderMembers();
-          if (id === 'foro') loadPostsDeb();
-        });
-      });
-
-      $("btnLogout").addEventListener('click', async () => {
-        await supabaseClient.auth.signOut();
-        location.href = LOGIN_URL;
-      });
-
-      $("btnRefreshMembers")?.addEventListener('click', () => loadMembers(true));
-      $("qMembers")?.addEventListener('input', () => renderMembers());
-      $("chkOnlineOnly")?.addEventListener('change', () => renderMembers());
-      $("editForm")?.addEventListener('submit', onSaveProfile);
-      $("fAvatar")?.addEventListener('change', (e) => {
-        const f = e.target.files?.[0];
-        if (f) {
-          const u = URL.createObjectURL(f);
-          $("avatarPreview").innerHTML = `<img src="${u}">`;
-        }
-      });
-
-      initApp();
-    });
-
-    /* ====== App init ====== */
-    async function initApp() {
-      clearDiag();
-
-      // 1) sesión
-      const { data: { session }, error: sessErr } = await supabaseClient.auth.getSession();
-      if (sessErr) diag("Error obteniendo sesión (auth.getSession).", sessErr);
-
-      if (!session) {
-        diag("No hay sesión activa. Se redirige a login.html");
-        location.href = LOGIN_URL;
-        return;
-      }
-
-      CURRENT_USER = session.user;
-      IS_ADMIN = false; // se define desde profiles.role en loadProfile()
-
-      // ✅ PASO 4: asegurar que exista fila en profiles (bootstrap)
-      await ensureProfileRow();
-
-      // 2) cargar datos
-      await loadProfile();
-      initPerfilExtras(); // ✅ aquí ya carga frases desde SUPABASE + valor
-
-      // Members/presence: solo admins verán la pestaña y podrán cargar listado completo
-      if (IS_ADMIN) await loadMembers(true);
-
-      initPresence();
-      initForum();
-
-      // ✅ CARGAR VERIFICACIÓN (QR) EN PERFIL
-      await initVerification();
-
-      // 3) tabs hash
-      const wanted = (location.hash || '#perfil').slice(1);
-
-      if (wanted === 'verificacion') {
-        (document.querySelector('.tab[data-tab="perfil"]'))?.click();
-        return;
-      }
-
-      if (wanted === 'scanner') {
-        if (IS_ADMIN) window.location.replace(SCANNER_REDIRECT_URL);
-        else (document.querySelector('.tab[data-tab="perfil"]'))?.click();
-      } else if (wanted === 'miembros' && !IS_ADMIN) {
-        (document.querySelector('.tab[data-tab="perfil"]'))?.click();
-      } else {
-        (document.querySelector(`.tab[data-tab="${wanted}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click();
-      }
-    }
-
-    /* ====== PASO 4 (Bootstrap profiles) ======
-       Si el usuario existe en Auth pero NO tiene fila en profiles,
-       la creamos con sus user_metadata.
-    */
-    async function ensureProfileRow() {
-      if (!CURRENT_USER?.id) return;
-
-      try {
-        const { data: prof, error } = await supabaseClient
-          .from('profiles')
-          .select('user_id')
-          .eq('user_id', CURRENT_USER.id)
-          .maybeSingle();
-
-        if (error) diag("Error consultando profiles (ensureProfileRow).", error);
-
-        if (prof?.user_id) return;
-
-        const md = CURRENT_USER.user_metadata || {};
-        const display_name = (md.display_name || md.nombre || '').toString().trim() || null;
-
-        const telefono = (md.telefono || md.phone || '').toString().trim() || null;
-
-        // ✅ NUEVO: matrícula desde metadata (si existe)
-        const matricula = (md.matricula || md.matrícula || '').toString().trim() || null;
-
-        let cumple = md.cumple || md.birthdate || null;
-        if (cumple) {
-          try {
-            const d = new Date(String(cumple).length <= 10 ? String(cumple) + "T00:00:00" : String(cumple));
-            cumple = d.toISOString().slice(0, 10);
-          } catch { }
-        }
-
-        const categoria = (md.categoria || '').toString().trim() || null;
-        const adscripcion = (md.adscripcion || '').toString().trim() || null;
-        const avatar_url = (md.avatar_url || null);
-
-        const payload = {
-          user_id: CURRENT_USER.id,
-          display_name,
-          matricula, // ✅ guardamos en profiles
-          telefono,
-          telefono_publico: (md.telefono_publico === true),
-          cumple,
-          categoria,
-          adscripcion,
-          avatar_url,
-          bio: (md.bio || null),
-          servicios: (md.servicios || null),
-          role: 'miembro',
-          last_seen: new Date().toISOString()
-        };
-
-        const { error: insErr } = await supabaseClient.from('profiles').insert(payload);
-        if (insErr) {
-          diag("No se pudo CREAR el profile (probable RLS). Crea policy INSERT para auth.uid().", insErr);
-        }
-      } catch (e) {
-        diag("Error inesperado en ensureProfileRow()", e);
-      }
+      if (box) { box.style.display = "none"; box.textContent = ""; }
     }
 
     /* ====== Helpers ====== */
@@ -1140,85 +513,134 @@
       try {
         const d = new Date(iso.length <= 10 ? iso + "T00:00:00" : iso);
         return new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: 'long', year: 'numeric' }).format(d);
-      } catch {
-        return iso;
-      }
+      } catch { return iso; }
     }
     const nz = (v) => { if (v == null) return null; const t = String(v).trim(); return t === "" ? null : t; };
 
-    function escapeHtml(str) {
-      return (str || '').replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[s]));
-    }
+    /* ====== Inicialización ====== */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Lógica de pestañas
+      document.querySelectorAll(".tab").forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const id = btn.dataset.tab;
 
-    /* ====== Upload avatar ====== */
-    async function uploadAvatar(file) {
-      if (!file) return null;
-      if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) { alert("Formato no soportado"); return null; }
-      if (file.size > 2 * 1024 * 1024) { alert("Máx 2MB"); return null; }
+          document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
 
-      const uid = CURRENT_USER.id;
-      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-      const path = `${uid}/${Date.now()}.${ext}`;
-
-      const { error } = await supabaseClient.storage.from("avatars").upload(path, file, {
-        cacheControl: "3600",
-        upsert: false,
-        contentType: file.type
+          btn.classList.add('active');
+          $(id).classList.add('active');
+          location.hash = id;
+        });
       });
 
-      if (error) {
-        diag("No se pudo subir la imagen al bucket 'avatars'.", error);
-        alert("No se pudo subir la imagen (revisa que exista el bucket y su policy).");
-        return null;
-      }
+      // Cerrar Sesión
+      $("btnLogout").addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        location.href = LOGIN_URL;
+      });
 
-      const { data } = supabaseClient.storage.from("avatars").getPublicUrl(path);
-      return data?.publicUrl || null;
+      // Previsualizar Avatar
+      $("fAvatar")?.addEventListener('change', (e) => {
+        const f = e.target.files?.[0];
+        if (f) {
+          const u = URL.createObjectURL(f);
+          $("avatarPreview").innerHTML = `<img src="${u}">`;
+        }
+      });
+
+      // Formulario
+      $("editForm")?.addEventListener('submit', onSaveProfile);
+
+      initApp();
+    });
+
+    async function initApp() {
+      clearDiag();
+      const { data: { session }, error: sessErr } = await supabaseClient.auth.getSession();
+      
+      if (sessErr) diag("Error obteniendo sesión.", sessErr);
+      if (!session) {
+        location.href = LOGIN_URL;
+        return;
+      }
+      CURRENT_USER = session.user;
+
+      await ensureProfileRow();
+      await loadProfile();
+      initPerfilExtras();
+
+      // Leer Hash de URL
+      const wanted = (location.hash || '#perfil').slice(1);
+      (document.querySelector(`.tab[data-tab="${wanted}"]`) || document.querySelector('.tab[data-tab="perfil"]'))?.click();
     }
 
-    /* ====== Perfil ====== */
+    /* ====== Bootstrap del Perfil ====== */
+    async function ensureProfileRow() {
+      if (!CURRENT_USER?.id) return;
+      try {
+        const { data: prof, error } = await supabaseClient
+          .from('profiles').select('user_id').eq('user_id', CURRENT_USER.id).maybeSingle();
+
+        if (error) diag("Error consultando profiles.", error);
+        if (prof?.user_id) return;
+
+        const md = CURRENT_USER.user_metadata || {};
+        const display_name = (md.display_name || md.nombre || '').toString().trim() || null;
+        const telefono = (md.telefono || md.phone || '').toString().trim() || null;
+        const matricula = (md.matricula || md.matrícula || '').toString().trim() || null;
+        
+        let cumple = md.cumple || md.birthdate || null;
+        if (cumple) {
+          try {
+            const d = new Date(String(cumple).length <= 10 ? String(cumple) + "T00:00:00" : String(cumple));
+            cumple = d.toISOString().slice(0, 10);
+          } catch { }
+        }
+
+        const payload = {
+          user_id: CURRENT_USER.id,
+          display_name, matricula, telefono,
+          telefono_publico: (md.telefono_publico === true),
+          cumple, categoria: md.categoria || null, adscripcion: md.adscripcion || null,
+          avatar_url: md.avatar_url || null, bio: md.bio || null, servicios: md.servicios || null,
+          role: 'miembro', last_seen: new Date().toISOString()
+        };
+
+        await supabaseClient.from('profiles').insert(payload);
+      } catch (e) { diag("Error en ensureProfileRow", e); }
+    }
+
+    /* ====== Cargar Datos en Interfaz ====== */
     async function loadProfile() {
       try {
         $("pfEmail").textContent = CURRENT_USER.email || "—";
 
         const { data: prof, error } = await supabaseClient
           .from('profiles')
-          .select('display_name, avatar_url, categoria, adscripcion, bio, cumple, telefono, telefono_publico, servicios, role, matricula')
+          .select('display_name, avatar_url, categoria, adscripcion, bio, cumple, telefono, telefono_publico, servicios, matricula')
           .eq('user_id', CURRENT_USER.id)
           .maybeSingle();
 
-        if (error) diag("Error leyendo tabla 'profiles'. (Probable RLS / policy)", error);
-
-        const myRole = (prof?.role || 'miembro');
-        IS_ADMIN = (myRole === 'admin');
-
-        const tabMiembros = document.getElementById("tabMiembros");
-        if (tabMiembros) tabMiembros.style.display = IS_ADMIN ? "" : "none";
-
-        if (IS_ADMIN) $("tabScanner").style.removeProperty('display');
-        else $("tabScanner").style.display = "none";
+        if (error) diag("Error leyendo tabla 'profiles'.", error);
 
         const md = CURRENT_USER.user_metadata || {};
-
-        // ✅ NUEVO: matrícula (profiles o metadata)
-        const matriculaAny = prof?.matricula ?? md.matricula ?? md.matrícula ?? null;
-        $("pfMatricula").textContent = matriculaAny ? String(matriculaAny) : "—";
-
-        const telRaw = prof?.telefono || md.telefono || md.phone || null;
+        const matriculaAny = prof?.matricula ?? md.matricula ?? null;
+        const telRaw = prof?.telefono || md.telefono || null;
         const telPublicFlag = (prof?.telefono_publico ?? md.telefono_publico) === true;
         const serviciosRaw = (prof?.servicios ?? md.servicios) || "";
+        const nombreDisplay = prof?.display_name || md.display_name || "Sin nombre";
 
-        $("pfName").textContent = prof?.display_name || md.display_name || "Sin nombre";
+        $("headerName").textContent = nombreDisplay.split(' ')[0]; // Solo el primer nombre para el saludo
+        $("pfName").textContent = nombreDisplay;
+        $("pfMatricula").textContent = matriculaAny ? String(matriculaAny) : "—";
         $("pfTelefono").textContent = telRaw || "—";
-        if (!telRaw) {
-          $("pfTelefonoVis").textContent = "No has capturado un número de teléfono.";
-        } else {
-          $("pfTelefonoVis").textContent = telPublicFlag
-            ? "Tu teléfono es visible para otros miembros."
-            : "Tu teléfono NO es visible para otros miembros.";
-        }
+        
+        $("pfTelefonoVis").textContent = !telRaw 
+            ? "No has capturado un número de teléfono." 
+            : (telPublicFlag ? "Tu teléfono es visible para otros miembros." : "Tu teléfono NO es visible para otros miembros.");
 
-        const cumpleAny = prof?.cumple || md.cumple || md.birthdate || null;
+        const cumpleAny = prof?.cumple || md.cumple || null;
         $("pfCumple").textContent = formatDateISOtoMX(cumpleAny);
         $("pfCategoria").textContent = (prof?.categoria ?? md.categoria) || "—";
         $("pfAdscripcion").textContent = (prof?.adscripcion ?? md.adscripcion) || "—";
@@ -1229,24 +651,20 @@
           $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`;
           $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`;
         } else {
-          const ini = (prof?.display_name || CURRENT_USER.email || "?")[0].toUpperCase();
+          const ini = (nombreDisplay || CURRENT_USER.email || "?")[0].toUpperCase();
           $("userAvatar").textContent = ini;
           $("avatarPreview").textContent = ini;
         }
 
-        // Prefill form
-        $("fNombre").value = prof?.display_name || md.display_name || "";
+        // Llenar Formulario de Edición
+        $("fNombre").value = nombreDisplay || "";
         $("fMatricula").value = matriculaAny ? String(matriculaAny) : "";
         $("fTelefono").value = telRaw || "";
         $("fTelefonoPublico").checked = !!telPublicFlag;
 
-        try {
-          const c = cumpleAny;
-          if (c) {
-            const d = new Date(String(c).length <= 10 ? String(c) + "T00:00:00" : String(c));
-            $("fCumple").value = d.toISOString().slice(0, 10);
-          }
-        } catch { }
+        if (cumpleAny) {
+          try { $("fCumple").value = new Date(String(cumpleAny).length <= 10 ? String(cumpleAny) + "T00:00:00" : String(cumpleAny)).toISOString().slice(0, 10); } catch { }
+        }
 
         $("fCategoria").value = prof?.categoria || md.categoria || "";
         $("fAdscripcion").value = prof?.adscripcion || md.adscripcion || "";
@@ -1254,34 +672,41 @@
         $("fServicios").value = serviciosRaw || "";
 
         buildNextActionsFromProfile(telRaw, serviciosRaw.trim(), cumpleAny, matriculaAny);
-
-        await loadAsistenciaPerfil();
-        await loadMiniTopPerfil();
-      } catch (e) {
-        diag("Error inesperado en loadProfile()", e);
-      }
+      } catch (e) { diag("Error en loadProfile()", e); }
     }
 
-    /* ====== Guardar perfil (propio) ====== */
+    /* ====== Subir Avatar ====== */
+    async function uploadAvatar(file) {
+      if (!file) return null;
+      if (file.size > 2 * 1024 * 1024) { alert("Máx 2MB"); return null; }
+
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+      const path = `${CURRENT_USER.id}/${Date.now()}.${ext}`;
+
+      const { error } = await supabaseClient.storage.from("avatars").upload(path, file, { contentType: file.type });
+      if (error) { alert("Error al subir la imagen."); return null; }
+
+      const { data } = supabaseClient.storage.from("avatars").getPublicUrl(path);
+      return data?.publicUrl || null;
+    }
+
+    /* ====== Guardar Cambios ====== */
     async function onSaveProfile(e) {
       e.preventDefault();
       $("status").textContent = "Guardando…";
 
       try {
         const file = $("fAvatar").files?.[0];
-        let avatar_url = null;
-        if (file) avatar_url = await uploadAvatar(file);
+        let avatar_url = await uploadAvatar(file);
 
         const rawCumple = $("fCumple").value;
         const cumple = nz(rawCumple) ? new Date(rawCumple).toISOString().slice(0, 10) : null;
-
-        // ✅ normalización simple de matrícula
         const mat = nz($("fMatricula").value);
         const matricula = mat ? String(mat).replace(/\s+/g, '') : null;
 
         const updates = {
           display_name: nz($("fNombre").value),
-          matricula, // ✅ NUEVO
+          matricula,
           telefono: nz($("fTelefono").value),
           telefono_publico: $("fTelefonoPublico").checked,
           cumple,
@@ -1292,967 +717,91 @@
         };
         if (avatar_url) updates.avatar_url = avatar_url;
 
-        // 1) auth metadata
-        const { error: authErr } = await supabaseClient.auth.updateUser({ data: updates });
-        if (authErr) { diag("Error en auth.updateUser (metadata).", authErr); throw authErr; }
+        // Actualizar Metadata
+        await supabaseClient.auth.updateUser({ data: updates });
 
-        // 2) profiles table
+        // Actualizar Tabla
         const { error: upErr } = await supabaseClient.from('profiles').upsert({
           user_id: CURRENT_USER.id,
-          display_name: updates.display_name,
+          ...updates,
           avatar_url: updates.avatar_url || CURRENT_USER.user_metadata?.avatar_url || null,
-          matricula: updates.matricula,
-          telefono: updates.telefono,
-          telefono_publico: updates.telefono_publico,
-          cumple: updates.cumple,
-          categoria: updates.categoria,
-          adscripcion: updates.adscripcion,
-          bio: updates.bio,
-          servicios: updates.servicios,
           last_seen: new Date().toISOString()
         }, { onConflict: 'user_id' });
 
-        if (upErr) {
-          diag("Error haciendo upsert en 'profiles'. (Probable RLS/policy)", upErr);
-          $("status").textContent = "❌ Error al guardar en profiles (revisa políticas RLS).";
-          return;
-        }
+        if (upErr) throw upErr;
 
         $("status").textContent = "✅ Cambios guardados.";
         await loadProfile();
-        await initVerification();
-
-        // ✅ refrescar frases desde BD (por si cambiaste algo y quieres recargar UI)
-        await initPerfilExtras(true);
+        
       } catch (e) {
-        console.error(e);
         $("status").textContent = "❌ Ocurrió un error guardando tu perfil.";
       }
     }
 
-    /* ====== Miembros (solo admin) ====== */
-    async function loadMembers(force = false) {
-      if (!IS_ADMIN) return;
-      if (!force && MEMBERS_CACHE.length) return;
-
-      const wrap = $("membersList");
-      if (wrap) wrap.innerHTML = '<div class="meta">Cargando miembros…</div>';
-
-      const { data, error } = await supabaseClient
-        .from('profiles')
-        .select('user_id, display_name, avatar_url, categoria, adscripcion, last_seen, telefono, telefono_publico, servicios, role, matricula')
-        .order('last_seen', { ascending: false })
-        .limit(1000);
-
-      if (error) {
-        diag("Error cargando lista de miembros desde 'profiles'. (Probable RLS/policy)", error);
-        if (wrap) wrap.innerHTML = '<div class="meta">❌ No se pudieron cargar los miembros. Revisa diagnóstico y consola.</div>';
-        return;
-      }
-
-      MEMBERS_CACHE = data || [];
-      renderMembers();
-    }
-
-    function renderMembers() {
-      const wrap = $("membersList");
-      if (!wrap) return;
-
-      if (!IS_ADMIN) {
-        wrap.innerHTML = '<div class="meta">Solo administradores pueden ver este listado.</div>';
-        return;
-      }
-
-      const q = ($("qMembers")?.value || "").trim().toLowerCase();
-      const onlyOnline = $("chkOnlineOnly")?.checked;
-
-      let list = MEMBERS_CACHE.slice();
-
-      if (q) {
-        list = list.filter(p =>
-          (p.display_name || '').toLowerCase().includes(q) ||
-          (p.adscripcion || '').toLowerCase().includes(q) ||
-          (p.categoria || '').toLowerCase().includes(q) ||
-          (p.servicios || '').toLowerCase().includes(q) ||
-          String(p.matricula || '').toLowerCase().includes(q)
-        );
-      }
-
-      if (onlyOnline) list = list.filter(p => ONLINE_SET.has(p.user_id));
-
-      const online = [];
-      const offline = [];
-      list.forEach(p => (ONLINE_SET.has(p.user_id) ? online : offline).push(p));
-      list = [...online, ...offline];
-
-      wrap.innerHTML = '';
-      if (!list.length) { wrap.innerHTML = '<div class="meta">No se encontraron miembros.</div>'; return; }
-
-      list.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'card';
-
-        const dot = ONLINE_SET.has(p.user_id) ? '🟢 Online' : '⚪ Offline';
-        const tel = (p.telefono || '').toString().trim();
-        const telPublic = !!p.telefono_publico;
-        const telDisplay = !tel ? 'Sin teléfono' : (telPublic ? tel : 'No visible');
-        const serviciosText = (p.servicios || '').trim();
-        const role = p.role || 'miembro';
-        const matricula = (p.matricula || '').toString().trim();
-
-        card.innerHTML = `
-          <div class="row" style="align-items:flex-start">
-            <div class="avatar" style="width:64px;height:64px">
-              ${p.avatar_url ? `<img src="${p.avatar_url}">` : (escapeHtml(p.display_name || '?')[0] || '?').toUpperCase()}
-            </div>
-
-            <div style="flex:1;min-width:220px">
-              <div class="row" style="justify-content:space-between;gap:10px;align-items:center">
-                <div style="font-weight:800">${escapeHtml(p.display_name || '—')}</div>
-                <span class="pill">🛡️ ${escapeHtml(role)}</span>
-              </div>
-
-              <div class="meta">${escapeHtml(p.categoria || '—')} • ${escapeHtml(p.adscripcion || '—')}</div>
-              <div class="meta" style="margin-top:4px">🪪 Matrícula: ${matricula ? escapeHtml(matricula) : '—'}</div>
-              <div class="meta" style="margin-top:4px">📱 ${escapeHtml(telDisplay)}</div>
-              ${serviciosText ? `<div class="meta" style="margin-top:4px">🤝 ${escapeHtml(serviciosText)}</div>` : ''}
-
-              <div class="row" style="margin-top:10px;gap:10px;align-items:center;justify-content:space-between">
-                <span class="pill">${dot}</span>
-                <button class="subtle-btn btn-edit-member" data-uid="${p.user_id}">✏️ Editar</button>
-              </div>
-
-              <div class="edit-member-box" data-uid="${p.user_id}" style="display:none;margin-top:10px">
-                <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
-                  <label class="meta">Rol</label>
-                  <select class="m-role">
-                    <option value="miembro" ${role === 'miembro' ? 'selected' : ''}>miembro</option>
-                    <option value="admin" ${role === 'admin' ? 'selected' : ''}>admin</option>
-                  </select>
-                </div>
-
-                <div class="row" style="margin-top:8px;gap:10px;flex-wrap:wrap">
-                  <input class="m-name" placeholder="Nombre" value="${escapeHtml(p.display_name || '')}">
-                  <input class="m-mat" placeholder="Matrícula" value="${escapeHtml(matricula)}" inputmode="numeric">
-                </div>
-
-                <div class="row" style="margin-top:8px;gap:10px;flex-wrap:wrap">
-                  <input class="m-cat" placeholder="Categoría" value="${escapeHtml(p.categoria || '')}">
-                  <input class="m-ads" placeholder="Adscripción" value="${escapeHtml(p.adscripcion || '')}">
-                </div>
-
-                <div class="row" style="margin-top:8px;gap:10px;flex-wrap:wrap">
-                  <input class="m-tel" placeholder="Teléfono" value="${escapeHtml(p.telefono || '')}">
-                  <label class="row" style="gap:8px">
-                    <input type="checkbox" class="m-telpub" ${p.telefono_publico ? 'checked' : ''}>
-                    <span class="meta">Teléfono público</span>
-                  </label>
-                </div>
-
-                <div style="margin-top:8px;display:grid;gap:8px">
-                  <textarea class="m-serv" placeholder="Servicios / habilidades">${escapeHtml(p.servicios || '')}</textarea>
-                </div>
-
-                <div class="row" style="margin-top:10px;gap:10px;flex-wrap:wrap">
-                  <button class="btn btn-save-member" data-uid="${p.user_id}">💾 Guardar</button>
-                  <button class="subtle-btn btn-cancel-member" data-uid="${p.user_id}">Cancelar</button>
-                  <span class="meta m-status" style="margin-left:auto"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-
-        wrap.appendChild(card);
-      });
-
-      wrap.querySelectorAll('.btn-edit-member').forEach(b => {
-        b.onclick = (e) => {
-          e.preventDefault();
-          const uid = b.dataset.uid;
-          const box = wrap.querySelector(`.edit-member-box[data-uid="${uid}"]`);
-          if (box) box.style.display = (box.style.display === 'none' ? 'block' : 'none');
-        };
-      });
-
-      wrap.querySelectorAll('.btn-cancel-member').forEach(b => {
-        b.onclick = (e) => {
-          e.preventDefault();
-          const uid = b.dataset.uid;
-          const box = wrap.querySelector(`.edit-member-box[data-uid="${uid}"]`);
-          if (box) box.style.display = 'none';
-        };
-      });
-
-      wrap.querySelectorAll('.btn-save-member').forEach(b => {
-        b.onclick = async (e) => {
-          e.preventDefault();
-          const uid = b.dataset.uid;
-          const box = wrap.querySelector(`.edit-member-box[data-uid="${uid}"]`);
-          if (!box) return;
-
-          const statusEl = box.querySelector('.m-status');
-          statusEl.textContent = 'Guardando…';
-
-          const mat = nz(box.querySelector('.m-mat')?.value);
-          const matricula = mat ? String(mat).replace(/\s+/g, '') : null;
-
-          const updates = {
-            display_name: nz(box.querySelector('.m-name')?.value),
-            matricula,
-            categoria: nz(box.querySelector('.m-cat')?.value),
-            adscripcion: nz(box.querySelector('.m-ads')?.value),
-            telefono: nz(box.querySelector('.m-tel')?.value),
-            telefono_publico: !!box.querySelector('.m-telpub')?.checked,
-            servicios: nz(box.querySelector('.m-serv')?.value),
-            role: box.querySelector('.m-role')?.value || 'miembro',
-            last_seen: new Date().toISOString()
-          };
-
-          Object.keys(updates).forEach(k => { if (updates[k] === undefined) delete updates[k]; });
-
-          const { error } = await supabaseClient
-            .from('profiles')
-            .update(updates)
-            .eq('user_id', uid);
-
-          if (error) {
-            diag("Error admin editando miembro (profiles.update).", error);
-            statusEl.textContent = '❌ No se pudo guardar.';
-            return;
-          }
-
-          statusEl.textContent = '✅ Guardado';
-          await loadMembers(true);
-        };
-      });
-    }
-
-    /* ====== Presencia ====== */
-    function initPresence() {
-      try {
-        const ch = supabaseClient.channel('presence:members', { config: { presence: { key: CURRENT_USER.id } } });
-
-        ch.on('presence', { event: 'sync' }, () => {
-          ONLINE_SET = new Set(Object.keys(ch.presenceState()));
-          try { if (IS_ADMIN) renderMembers(); } catch { }
-        });
-
-        ch.subscribe(async (status) => {
-          if (status === 'SUBSCRIBED') {
-            ch.track({ last_active: Date.now() });
-            const { error } = await supabaseClient.from('profiles')
-              .update({ last_seen: new Date().toISOString() })
-              .eq('user_id', CURRENT_USER.id);
-            if (error) diag("Error actualizando last_seen en profiles (RLS/policy).", error);
-          }
-        });
-      } catch (e) {
-        diag("Error iniciando Presence (Realtime).", e);
-      }
-    }
-
-    /* ====== Foro ====== */
-    const loadPostsDeb = debounce(loadPosts, 200);
-
-    function initForum() {
-      loadPostsDeb();
-
-      supabaseClient
-        .channel('realtime-foro')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPostsDeb)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, loadPostsDeb)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, loadPostsDeb)
-        .subscribe();
-
-      $("forumForm")?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const text = ($("forumInput").value || '').trim();
-        if (!text) return;
-
-        $("forumStatus").textContent = "Publicando…";
-        const cat = $("forumCategory").value || "Asuntos Generales";
-
-        const { error } = await supabaseClient.from('posts').insert({ content: text, user_id: CURRENT_USER.id, category: cat });
-        if (error) diag("Error insertando en posts (RLS/policy).", error);
-
-        $("forumStatus").textContent = error ? "❌ No se pudo publicar: " + (error.message || '') : "✅ Publicado";
-        if (!error) { $("forumInput").value = ""; loadPostsDeb(); }
-      });
-    }
-
-    function fmtDate(iso) {
-      try { return new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso)); }
-      catch { return iso; }
-    }
-    function canEditPost(postUserId) { return IS_ADMIN || (postUserId === CURRENT_USER.id); }
-    function canDeletePost(postUserId) { return IS_ADMIN || (postUserId === CURRENT_USER.id); }
-    function canDeleteComment(commentUserId) { return IS_ADMIN || (commentUserId === CURRENT_USER.id); }
-
-    async function loadPosts() {
-      const myToken = ++POSTS_TOKEN;
-      const wrap = $("postsList");
-
-      let loading = document.getElementById('postsLoadingMsg');
-      if (!loading) {
-        loading = document.createElement('div');
-        loading.id = 'postsLoadingMsg';
-        loading.className = 'meta';
-        loading.textContent = 'Cargando publicaciones…';
-        wrap.prepend(loading);
-      }
-
-      const { data: posts, error } = await supabaseClient
-        .from('posts')
-        .select('id, content, category, created_at, user_id')
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      if (myToken !== POSTS_TOKEN) return;
-
-      wrap.innerHTML = "";
-      if (error) {
-        diag("Error leyendo posts (RLS/policy o tabla no existe).", error);
-        wrap.innerHTML = `<div class="meta">❌ Error cargando posts. Revisa diagnóstico.</div>`;
-        return;
-      }
-      if (!posts?.length) { wrap.innerHTML = `<div class="meta">Aún no hay publicaciones.</div>`; return; }
-
-      const ids = posts.map(p => p.id);
-      const [{ data: allLikes, error: e1 }, { data: myLikes, error: e2 }, { data: comments, error: e3 }] = await Promise.all([
-        supabaseClient.from('likes').select('post_id, user_id').in('post_id', ids),
-        supabaseClient.from('likes').select('post_id').in('post_id', ids).eq('user_id', CURRENT_USER.id),
-        supabaseClient.from('comments').select('id, post_id, user_id, content, created_at').in('post_id', ids).order('created_at', { ascending: true })
-      ]);
-
-      if (e1) diag("Error leyendo likes (RLS/policy).", e1);
-      if (e2) diag("Error leyendo likes del usuario (RLS/policy).", e2);
-      if (e3) diag("Error leyendo comments (RLS/policy).", e3);
-
-      if (myToken !== POSTS_TOKEN) return;
-
-      const likeCount = new Map(); (allLikes || []).forEach(l => likeCount.set(l.post_id, (likeCount.get(l.post_id) || 0) + 1));
-      const myLiked = new Set((myLikes || []).map(l => l.post_id));
-      const commentsByPost = new Map();
-      (comments || []).forEach(c => { if (!commentsByPost.has(c.post_id)) commentsByPost.set(c.post_id, []); commentsByPost.get(c.post_id).push(c); });
-
-      posts.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.dataset.postId = p.id;
-
-        const liked = myLiked.has(p.id);
-        const count = likeCount.get(p.id) || 0;
-        const postComments = commentsByPost.get(p.id) || [];
-
-        card.innerHTML = `
-          <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
-            <div class="meta">${p.user_id === CURRENT_USER.id ? 'Tú' : 'Miembro'} • ${fmtDate(p.created_at)}</div>
-            <div class="pill">🏷️ ${escapeHtml(p.category || 'Asuntos Generales')}</div>
-          </div>
-
-          <div class="post-content" style="margin-top:8px;white-space:pre-wrap;line-height:1.45">${escapeHtml(p.content)}</div>
-
-          <div class="row" style="margin-top:10px;gap:10px">
-            <button class="subtle-btn btn-like" data-id="${p.id}" aria-pressed="${liked}">
-              ${liked ? '❤️' : '🤍'} Me gusta <span class="meta">(${count})</span>
-            </button>
-
-            <details class="forum-toggle" style="margin:0">
-              <summary><span class="rotate">▸</span><span>Comentarios (${postComments.length})</span></summary>
-              <div class="comments" style="margin-top:10px; display:grid; gap:10px">
-                ${postComments.map(c => `
-                  <div class="card" style="padding:12px">
-                    <div class="meta">${c.user_id === CURRENT_USER.id ? 'Tú' : 'Miembro'} • ${fmtDate(c.created_at)}</div>
-                    <div style="margin-top:6px;white-space:pre-wrap">${escapeHtml(c.content)}</div>
-                    ${canDeleteComment(c.user_id) ? `<button class="subtle-btn btn-del-comment" data-cid="${c.id}" data-pid="${p.id}">🗑️ Borrar comentario</button>` : ``}
-                  </div>
-                `).join('')}
-
-                <form class="comment-form" data-id="${p.id}">
-                  <label class="meta">Añadir comentario</label>
-                  <textarea rows="2" class="comment-input" placeholder="Escribe algo..."></textarea>
-                  <button class="btn" type="submit">Comentar</button>
-                  <div class="meta comment-status"></div>
-                </form>
-              </div>
-            </details>
-
-            ${canEditPost(p.user_id) ? `<button class="subtle-btn btn-edit" data-id="${p.id}">✏️ Editar</button>` : ``}
-            ${canDeletePost(p.user_id) ? `<button class="subtle-btn btn-del-post" data-id="${p.id}">🗑️ Borrar</button>` : ``}
-          </div>
-        `;
-
-        wrap.appendChild(card);
-      });
-
-      wrap.querySelectorAll('.btn-like').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          e.preventDefault(); e.stopPropagation();
-          const postId = btn.dataset.id;
-          const isLiked = btn.getAttribute('aria-pressed') === 'true';
-
-          const meta = btn.querySelector('.meta');
-          const numMatch = (meta?.textContent.match(/\d+/) || [0])[0];
-          let count = parseInt(numMatch, 10) || 0;
-
-          btn.disabled = true;
-
-          if (isLiked) {
-            const { error } = await supabaseClient.from('likes').delete().match({ post_id: postId, user_id: CURRENT_USER.id });
-            if (!error) {
-              btn.setAttribute('aria-pressed', 'false');
-              btn.innerHTML = btn.innerHTML.replace('❤️', '🤍');
-              if (meta) meta.textContent = `(${Math.max(0, count - 1)})`;
-            } else {
-              diag("Error borrando like (RLS/policy).", error);
-              alert('❌ No se pudo quitar el like: ' + (error.message || ''));
-            }
-          } else {
-            const { error } = await supabaseClient.from('likes')
-              .upsert({ post_id: postId, user_id: CURRENT_USER.id }, { onConflict: 'post_id,user_id' });
-
-            if (!error) {
-              btn.setAttribute('aria-pressed', 'true');
-              btn.innerHTML = btn.innerHTML.replace('🤍', '❤️');
-              if (meta) meta.textContent = `(${count + 1})`;
-            } else {
-              diag("Error dando like (RLS/policy).", error);
-              alert('❌ No se pudo dar like: ' + (error.message || ''));
-            }
-          }
-
-          btn.disabled = false;
-        });
-      });
-
-      wrap.querySelectorAll('.comment-form').forEach(form => {
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault(); e.stopPropagation();
-          const postId = form.dataset.id;
-          const ta = form.querySelector('.comment-input');
-          const status = form.querySelector('.comment-status');
-          const text = (ta.value || '').trim();
-          if (!text) return;
-
-          status.textContent = 'Enviando…';
-          const { error } = await supabaseClient.from('comments').insert({ post_id: postId, user_id: CURRENT_USER.id, content: text });
-          if (error) diag("Error insertando comentario (RLS/policy).", error);
-
-          status.textContent = error ? '❌ No se pudo comentar: ' + (error.message || '') : '✅ Comentado';
-          if (!error) ta.value = '';
-          loadPostsDeb();
-        });
-      });
-
-      wrap.querySelectorAll('.btn-edit').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.preventDefault(); e.stopPropagation();
-
-          const postId = btn.dataset.id;
-          const card = btn.closest('.card');
-          const contentEl = card.querySelector('.post-content');
-          const original = contentEl.textContent;
-
-          contentEl.outerHTML = `
-            <div class="edit-wrap" style="margin-top:8px;display:grid;gap:8px">
-              <textarea class="edit-textarea" style="min-height:120px;background:#1b2e45;border:1px solid rgba(77, 161, 168, .3);color:#f0fdfa;padding:9px 11px;border-radius:10px"></textarea>
-              <div class="row">
-                <button class="btn btn-save-edit" data-id="${postId}">💾 Guardar</button>
-                <button class="subtle-btn btn-cancel-edit">Cancelar</button>
-                <span class="meta edit-status"></span>
-              </div>
-            </div>
-          `;
-
-          const ta = card.querySelector('.edit-textarea');
-          ta.value = original;
-
-          const saveBtn = card.querySelector('.btn-save-edit');
-          const cancelBtn = card.querySelector('.btn-cancel-edit');
-          const status = card.querySelector('.edit-status');
-
-          cancelBtn.addEventListener('click', (e) => { e.preventDefault(); loadPostsDeb(); });
-
-          saveBtn.addEventListener('click', async () => {
-            const newText = (ta.value || '').trim();
-            if (!newText) { status.textContent = 'El contenido no puede estar vacío.'; return; }
-
-            status.textContent = 'Guardando…';
-            const { error } = await supabaseClient.from('posts').update({ content: newText }).eq('id', postId);
-            if (error) diag("Error editando post (RLS/policy).", error);
-
-            status.textContent = error ? '❌ No se pudo guardar: ' + (error.message || '') : '✅ Guardado';
-            if (!error) loadPostsDeb();
-          });
-        });
-      });
-
-      wrap.querySelectorAll('.btn-del-post').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const postId = btn.dataset.id;
-          if (!confirm('¿Seguro que deseas borrar esta publicación? Esta acción no se puede deshacer.')) return;
-
-          try { await supabaseClient.from('comments').delete().eq('post_id', postId); } catch (_) { }
-          try { await supabaseClient.from('likes').delete().eq('post_id', postId); } catch (_) { }
-
-          const { error } = await supabaseClient.from('posts').delete().eq('id', postId);
-          if (error) {
-            diag("Error borrando post (RLS/policy).", error);
-            alert('❌ No se pudo borrar: ' + (error.message || ''));
-            return;
-          }
-          loadPostsDeb();
-        });
-      });
-
-      wrap.querySelectorAll('.btn-del-comment').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const commentId = btn.dataset.cid;
-          if (!confirm('¿Borrar este comentario?')) return;
-
-          const { error } = await supabaseClient.from('comments').delete().eq('id', commentId);
-          if (error) {
-            diag("Error borrando comentario (RLS/policy).", error);
-            alert('❌ No se pudo borrar: ' + (error.message || ''));
-            return;
-          }
-          loadPostsDeb();
-        });
-      });
-    }
-
-    /* ====== Verificación (QR) ====== */
-    function formatDateFancy(d) {
-      try { return new Intl.DateTimeFormat('es-MX', { dateStyle: 'full', timeStyle: 'short' }).format(new Date(d)); }
-      catch { return d; }
-    }
-
-    async function fetchNextEvent() {
-      if (!GOOGLE_API_KEY) return null;
-      const timeMin = new Date().toISOString();
-      const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?singleEvents=true&orderBy=startTime&timeMin=${encodeURIComponent(timeMin)}&maxResults=1&key=${encodeURIComponent(GOOGLE_API_KEY)}`;
-      try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const json = await res.json();
-        const evt = (json.items || [])[0];
-        if (!evt) return null;
-        return {
-          uid: evt.id,
-          title: evt.summary || 'Evento',
-          start: evt.start?.dateTime || evt.start?.date,
-          location: evt.location || '',
-          description: (evt.description || '').replace(/<[^>]*>/g, '')
-        };
-      } catch (e) {
-        diag("Error consultando Google Calendar API.", String(e));
-        return null;
-      }
-    }
-
-    async function initVerification() {
-      if (!$("rsvpBox") || !$("eventBox")) return;
-
-      $("rsvpBox").style.display = CURRENT_USER ? 'block' : 'none';
-      $("rsvpStatus").textContent = '';
-      $("qrWrap").style.display = 'none';
-
-      const adminPanel = $("adminRSVPPanel");
-      if (adminPanel && !IS_ADMIN) adminPanel.style.display = "none";
-
-      const evt = await fetchNextEvent();
-      if (!evt) {
-        $("eventBox").textContent = "No hay eventos próximos o no fue posible consultarlos.";
-        $("rsvpBox").style.display = 'none';
-        if (adminPanel) adminPanel.style.display = "none";
-        return;
-      }
-
-      $("eventBox").innerHTML = `<div><strong>${escapeHtml(evt.title)}</strong></div>
-        <div class="meta">🗓️ ${formatDateFancy(evt.start)} ${evt.location ? ' • 📍 ' + escapeHtml(evt.location) : ''}</div>
-        ${evt.description ? `<div class="muted" style="white-space:pre-wrap;margin-top:6px">${escapeHtml(evt.description)}</div>` : ''}`;
-
-      window.__NEXT_EVENT__ = evt;
-
-      if (IS_ADMIN) loadAdminRSVPStats(evt.uid);
-
-      const { data, error } = await supabaseClient.from('rsvps')
-        .select('status, qr_payload')
-        .eq('user_id', CURRENT_USER.id)
-        .eq('event_uid', evt.uid)
-        .maybeSingle();
-
-      if (error) diag("Error leyendo rsvps (RLS/policy).", error);
-
-      updateRSVPUI(data?.status || null, data?.qr_payload || null);
-
-      $("btnYes").onclick = () => setRSVP('yes');
-      $("btnNo").onclick = () => setRSVP('no');
-    }
-
-    function buildQRPayload(evtUid) { return JSON.stringify({ v: 1, event: evtUid, user: CURRENT_USER.id, ts: Date.now() }); }
-
-    async function setRSVP(status) {
-      const evt = window.__NEXT_EVENT__;
-      if (!evt) return;
-
-      let qrPayload = null;
-      if (status === 'yes') {
-        qrPayload = buildQRPayload(evt.uid);
-        $("qrWrap").style.display = 'block';
-        try { await QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel: 'M' }); } catch { }
-      } else {
-        $("qrWrap").style.display = 'none';
-      }
-
-      const { error } = await supabaseClient.from('rsvps').upsert({
-        user_id: CURRENT_USER.id,
-        event_uid: evt.uid,
-        status,
-        qr_payload: qrPayload,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id,event_uid' });
-
-      if (error) diag("Error guardando rsvp (RLS/policy).", error);
-
-      $("rsvpStatus").textContent = error ? 'No se pudo guardar tu respuesta.' : (status === 'yes' ? 'Confirmado ✔️' : 'Registrado como no asistente.');
-      updateRSVPUI(status, qrPayload);
-
-      if (IS_ADMIN && window.__NEXT_EVENT__) loadAdminRSVPStats(window.__NEXT_EVENT__.uid);
-    }
-
-    function updateRSVPUI(status, qrPayload) {
-      const yesBtn = $("btnYes"), noBtn = $("btnNo");
-      if (status === 'yes') {
-        yesBtn.disabled = true; noBtn.disabled = false;
-        $("qrWrap").style.display = 'block';
-        if (qrPayload) QRCode.toCanvas($("qrCanvas"), qrPayload, { errorCorrectionLevel: 'M' }).catch(() => { });
-      } else if (status === 'no') {
-        yesBtn.disabled = false; noBtn.disabled = true;
-        $("qrWrap").style.display = 'none';
-      } else {
-        yesBtn.disabled = false; noBtn.disabled = false;
-        $("qrWrap").style.display = 'none';
-        $("rsvpStatus").textContent = '';
-      }
-    }
-
-    async function loadAdminRSVPStats(evtUid) {
-      if (!IS_ADMIN || !evtUid) return;
-
-      const panel = $("adminRSVPPanel");
-      const txt = $("adminRSVPText");
-      const listWrap = $("adminRSVPListWrap");
-      const listEl = $("adminRSVPList");
-      const moreEl = $("adminRSVPMore");
-
-      if (!panel || !txt || !listWrap || !listEl || !moreEl) return;
-
-      panel.style.display = "block";
-      listWrap.style.display = "none";
-      listEl.innerHTML = "";
-      moreEl.style.display = "none";
-      txt.textContent = "Cargando…";
-
-      const { data, error } = await supabaseClient
-        .from('rsvps')
-        .select('status, user_id')
-        .eq('event_uid', evtUid);
-
-      if (error) {
-        diag("Error leyendo rsvps admin (RLS/policy).", error);
-        txt.textContent = "❌ No se pudieron cargar las confirmaciones.";
-        return;
-      }
-
-      const total = data.length;
-      const siReg = data.filter(r => r.status === 'yes');
-      const noReg = data.filter(r => r.status === 'no');
-      const si = siReg.length;
-      const no = noReg.length;
-      const otros = total - si - no;
-
-      txt.textContent =
-        `Confirmados: ${si} ✔️ • No asistirán: ${no} ✖️ • Registros totales: ${total}` +
-        (otros > 0 ? ` • Otros estados: ${otros}` : '');
-
-      if (!si) { listWrap.style.display = "none"; return; }
-
-      const yesIds = siReg.map(r => r.user_id).filter(Boolean);
-      const { data: perfiles, error: perfErr } = await supabaseClient
-        .from('profiles')
-        .select('user_id, display_name, categoria, adscripcion')
-        .in('user_id', yesIds);
-
-      if (perfErr) {
-        diag("Error leyendo profiles para admin RSVP (RLS/policy).", perfErr);
-        listWrap.style.display = "none";
-        return;
-      }
-
-      const MAX_SHOW = 15;
-      const ordenados = [...(perfiles || [])].sort((a, b) => (a.display_name || '').localeCompare(b.display_name || '', 'es', { sensitivity: 'base' }));
-
-      listEl.innerHTML = "";
-      ordenados.slice(0, MAX_SHOW).forEach(p => {
-        const li = document.createElement('li');
-        const nombre = p.display_name || 'Miembro sin nombre';
-        const cat = p.categoria || '';
-        const ads = p.adscripcion || '';
-        const extra = (cat && ads) ? ` — ${cat} • ${ads}` : (cat ? ` — ${cat}` : (ads ? ` — ${ads}` : ''));
-        li.textContent = `${nombre}${extra}`;
-        listEl.appendChild(li);
-      });
-
-      if (ordenados.length > MAX_SHOW) {
-        moreEl.textContent = `…y ${ordenados.length - MAX_SHOW} más confirmados.`;
-        moreEl.style.display = "block";
-      } else {
-        moreEl.style.display = "none";
-      }
-
-      listWrap.style.display = "block";
-    }
-
-    /* ====== Asistencia / ranking ====== */
-    function seasonOf(dateLike) {
-      const d = new Date(dateLike);
-      const year = d.toLocaleString('en-CA', { timeZone: 'America/Mexico_City', year: 'numeric' });
-      const m = +d.toLocaleString('en-CA', { timeZone: 'America/Mexico_City', month: 'numeric' });
-      const q = Math.ceil(m / 3);
-      return `${year}-Q${q}`;
-    }
-
-    function fmtMX(iso) {
-      try { return new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso)); }
-      catch { return iso; }
-    }
-
-    async function loadAsistenciaPerfil() {
-      if (!CURRENT_USER) return;
-
-      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
-
-      const { data: scans, error } = await supabaseClient
-        .from('attendance_scans')
-        .select('event_uid, scanned_at')
-        .eq('attendee_id', CURRENT_USER.id)
-        .order('scanned_at', { ascending: false })
-        .limit(200);
-
-      const info = document.getElementById('asistData');
-
-      if (error) {
-        diag("Error leyendo attendance_scans (tabla/policy).", error);
-        info.textContent = "No se pudieron cargar tus datos.";
-        return;
-      }
-
-      if (!scans || scans.length === 0) { info.textContent = "Aún no has registrado asistencias."; return; }
-
-      info.textContent = `Último check-in: ${fmtMX(scans[0].scanned_at)}`;
-
-      const currentSeason = seasonOf(new Date());
-      const seasonScans = scans.filter(s => seasonOf(s.scanned_at) === currentSeason);
-
-      const seasonDays = [...new Set(seasonScans.map(s => s.scanned_at.slice(0, 10)))];
-      const totalTemporada = seasonDays.length;
-
-      const allDays = [...new Set(scans.map(s => s.scanned_at.slice(0, 10)))].sort();
-      let racha = 0;
-      if (allDays.length) {
-        let cur = new Date(); cur.setHours(0, 0, 0, 0);
-        if (!allDays.includes(cur.toISOString().slice(0, 10))) cur.setDate(cur.getDate() - 1);
-        while (allDays.includes(cur.toISOString().slice(0, 10))) { racha++; cur.setDate(cur.getDate() - 1); }
-      }
-
-      let puntos = totalTemporada * 10;
-      try {
-        const { data: pts, error: epts } = await supabaseClient
-          .from('attendance_points')
-          .select('points')
-          .eq('user_id', CURRENT_USER.id)
-          .eq('season', currentSeason)
-          .maybeSingle();
-        if (epts) diag("Error leyendo attendance_points (policy).", epts);
-        if (pts?.points != null) puntos = pts.points;
-      } catch { }
-
-      let puesto = '—';
-      try {
-        const { data: lb, error: elb } = await supabaseClient
-          .from('attendance_leaderboard')
-          .select('user_id, display_name, avatar_url, points, total_scans, season')
-          .eq('season', currentSeason)
-          .order('points', { ascending: false })
-          .limit(100);
-        if (elb) diag("Error leyendo leaderboard (policy).", elb);
-        const pos = (lb || []).findIndex(row => row.user_id === CURRENT_USER.id);
-        if (pos >= 0) puesto = `#${pos + 1}`;
-      } catch { }
-
-      set('asistTotal', totalTemporada);
-      set('asistRacha', racha);
-      set('asistPuntos', puntos);
-      set('asistTop', puesto);
-    }
-
-    async function loadMiniTopPerfil() {
-      const meta = document.getElementById('miniTopMeta');
-      const box = document.getElementById('miniTopList');
-      if (!meta || !box) return;
-      meta.textContent = 'Cargando…'; box.innerHTML = '';
-
-      const currentSeason = seasonOf(new Date());
-      try {
-        const { data, error } = await supabaseClient
-          .from('attendance_leaderboard')
-          .select('user_id, display_name, avatar_url, points, total_scans, season')
-          .eq('season', currentSeason)
-          .order('points', { ascending: false })
-          .limit(5);
-
-        if (error) diag("Error leyendo miniTop leaderboard (policy).", error);
-
-        if (!data || !data.length) { meta.textContent = 'Aún no hay datos en esta temporada.'; return; }
-        meta.textContent = `Temporada: ${currentSeason}`;
-
-        data.forEach((r, idx) => {
-          const el = document.createElement('div');
-          const isMe = r.user_id === CURRENT_USER.id;
-          el.className = 'row';
-          el.innerHTML = `
-            <div style="width:28px;text-align:right;font-weight:800">${idx + 1}</div>
-            <div class="avatar" style="width:36px;height:36px;margin-left:8px">${r.avatar_url ? `<img src="${r.avatar_url}">` : (r.display_name || '?')[0]?.toUpperCase()}</div>
-            <div style="flex:1;min-width:160px;margin-left:8px">
-              <div style="font-weight:700">${escapeHtml(r.display_name || 'Miembro')}${isMe ? ' <span class="pill">Tú</span>' : ''}</div>
-              <div class="meta">Asistencias: ${r.total_scans} • Puntos: ${r.points}</div>
-            </div>`;
-          box.appendChild(el);
-        });
-      } catch (e) {
-        meta.textContent = 'No fue posible cargar el ranking.';
-      }
-    }
-
-    /* ====== Valor y próximas acciones ====== */
+    /* ====== Extras: Frases y Acciones ====== */
     const VALOR_PERFIL = [
       "Comparte tu perfil con compañeros que puedan apoyarte en tu zona o servicio.",
-      "Registra tus participaciones en asambleas o actividades para que tu liderazgo quede documentado.",
-      "Revisa periódicamente la biblioteca sindical para conocer nuevos materiales de formación.",
       "Mantén actualizado tu teléfono y habilidades para que puedan contactarte cuando más se necesita.",
-      "Agenda recordatorios para fechas clave: asambleas, informes, cursos de formación y vencimiento de comisiones.",
       "Consulta los lineamientos y el estatuto antes de cada negociación importante."
     ];
 
     function aplicarValorPerfil() {
-      const ul = document.getElementById('perfilValorList');
+      const ul = $("perfilValorList");
       if (!ul) return;
       ul.innerHTML = "";
-      const usados = new Set();
-      for (let i = 0; i < 3 && i < VALOR_PERFIL.length; i++) {
-        let idx;
-        do { idx = Math.floor(Math.random() * VALOR_PERFIL.length); } while (usados.has(idx));
-        usados.add(idx);
-        const li = document.createElement('li');
-        li.textContent = VALOR_PERFIL[idx];
-        ul.appendChild(li);
-      }
-    }
-
-    function buildNextActionsFromProfile(tel, servicios, cumple, matricula) {
-      const ul = document.getElementById('perfilAccionesList');
-      const empty = document.getElementById('perfilAccionesEmpty');
-      if (!ul || !empty) return;
-      ul.innerHTML = "";
-      empty.style.display = "none";
-
-      const acciones = [];
-      if (!matricula) acciones.push("Agrega tu matrícula para que la plataforma pueda vincularte con trámites y procesos internos.");
-      if (!tel) acciones.push("Agrega tu teléfono de contacto para que otros compañeros puedan localizarte cuando se necesite apoyo.");
-      if (!servicios) acciones.push("Describe tus servicios o habilidades (por ejemplo: programación, asesoría, formación, difusión, etc.).");
-      if (!cumple) acciones.push("Captura tu fecha de cumpleaños para poder considerar reconocimientos y detalles en tu día.");
-
-      if (acciones.length === 0) { empty.style.display = "block"; return; }
-
-      acciones.forEach(txt => {
+      VALOR_PERFIL.forEach(txt => {
         const li = document.createElement('li');
         li.textContent = txt;
         ul.appendChild(li);
       });
     }
 
-    /* ================================
-       FRASES DINÁMICAS DESDE SUPABASE
-       Aleatorias cada 5 minutos
-    ================================ */
-    let FRASES_DB = [];
-    let LAST_INDEX = -1;
-    let FRASES_INTERVAL = null;
+    function buildNextActionsFromProfile(tel, servicios, cumple, matricula) {
+      const ul = $("perfilAccionesList"), empty = $("perfilAccionesEmpty");
+      if (!ul || !empty) return;
+      ul.innerHTML = ""; empty.style.display = "none";
+
+      const acciones = [];
+      if (!matricula) acciones.push("Agrega tu matrícula para vincularte con trámites.");
+      if (!tel) acciones.push("Agrega tu teléfono de contacto.");
+      if (!servicios) acciones.push("Describe tus habilidades (ej: asesoría, difusión).");
+      if (!cumple) acciones.push("Captura tu fecha de cumpleaños.");
+
+      if (acciones.length === 0) { empty.style.display = "block"; return; }
+      acciones.forEach(txt => { const li = document.createElement('li'); li.textContent = txt; ul.appendChild(li); });
+    }
+
+    let FRASES_DB = [], LAST_INDEX = -1, FRASES_INTERVAL = null;
 
     async function cargarFrasesPerfil() {
-      const { data, error } = await supabaseClient
-        .from('phrases')
-        .select('text, category')
-        .eq('is_active', true);
-
-      if (error) {
-        console.error("Error cargando frases:", error);
+      const { data, error } = await supabaseClient.from('phrases').select('text, category').eq('is_active', true);
+      if (error || !data?.length) {
+        $("perfilQuoteText").textContent = "El sindicato es la defensa de nuestros derechos.";
         return;
       }
-
-      if (!data || !data.length) {
-        document.getElementById('perfilQuoteText').textContent = "No hay frases activas.";
-        document.getElementById('perfilQuoteTag').textContent = "";
-        return;
-      }
-
       FRASES_DB = data;
-
-      // Mostrar una al cargar
       mostrarFraseAleatoria();
-
-      // Cambiar cada 5 minutos (300000 ms). Evita acumulaciones limpiando si ya existe.
       if (FRASES_INTERVAL) clearInterval(FRASES_INTERVAL);
       FRASES_INTERVAL = setInterval(mostrarFraseAleatoria, 300000);
     }
 
     function mostrarFraseAleatoria() {
       if (!FRASES_DB.length) return;
-
-      let randomIndex;
-
-      // Evita repetir la misma frase consecutiva
-      do {
-        randomIndex = Math.floor(Math.random() * FRASES_DB.length);
-      } while (randomIndex === LAST_INDEX && FRASES_DB.length > 1);
-
-      LAST_INDEX = randomIndex;
-
-      const item = FRASES_DB[randomIndex];
-
-      const texto = document.getElementById('perfilQuoteText');
-      const tag = document.getElementById('perfilQuoteTag');
-
-      if (texto) texto.textContent = `"${item.text}"`;
-      if (tag) tag.textContent = item.category || "";
+      let rand;
+      do { rand = Math.floor(Math.random() * FRASES_DB.length); } while (rand === LAST_INDEX && FRASES_DB.length > 1);
+      LAST_INDEX = rand;
+      
+      const item = FRASES_DB[rand];
+      $("perfilQuoteText").textContent = `"${item.text}"`;
+      $("perfilQuoteTag").textContent = item.category || "";
     }
 
-    // Botón "Otra frase"
-    function cambiarFrasePerfil() {
-      mostrarFraseAleatoria();
-    }
-
-    // Inicializador general del panel "extras"
-    async function initPerfilExtras(forceReload = false) {
-      // Valores
+    function cambiarFrasePerfil() { mostrarFraseAleatoria(); }
+    
+    async function initPerfilExtras() {
       aplicarValorPerfil();
-
-      // Frases (usando tu nueva función)
       await cargarFrasesPerfil();
     }
   </script>
 </body>
-
 </html>
