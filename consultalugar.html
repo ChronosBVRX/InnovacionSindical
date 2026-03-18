@@ -11,7 +11,7 @@
   
   <style>
     :root {
-      --bg-body: #1b2e45;
+      --bg-body: transparent; /* Fondo transparente para que se mezcle con el Index */
       --panel-base: 46, 79, 119;
       --primary: #4da1a8; 
       --primary-light: #7ad1d6;
@@ -29,7 +29,6 @@
       color: var(--text-main);
       font-family: 'Inter', sans-serif;
       box-sizing: border-box;
-      min-height: 100vh;
     }
 
     * { box-sizing: border-box; }
@@ -47,14 +46,7 @@
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
 
-    .card h3 {
-      margin: 0 0 16px 0;
-      font-size: 18px;
-      color: var(--primary-light);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .card h3 { margin: 0 0 16px 0; font-size: 18px; color: var(--primary-light); display: flex; align-items: center; gap: 8px; }
 
     /* --- LOADING STATE --- */
     .loading-state {
@@ -86,65 +78,30 @@
     .auth-wall p { margin: 0 0 24px 0; color: var(--text-muted); max-width: 400px; line-height: 1.5; }
 
     /* --- EFECTO BLUR Y PROMOCIÓN DE CAMPAÑA --- */
-    .blur-container {
-      background: rgba(0, 0, 0, 0.25);
-      border-radius: 12px;
-      position: relative;
-      overflow: hidden;
-      border: 1px solid var(--ring);
-    }
-    .blur-content {
-      filter: blur(6px);
-      opacity: 0.4;
-      pointer-events: none;
-      user-select: none;
-    }
+    .blur-container { background: rgba(0, 0, 0, 0.25); border-radius: 12px; position: relative; overflow: hidden; border: 1px solid var(--ring); }
+    .blur-content { filter: blur(6px); opacity: 0.4; pointer-events: none; user-select: none; }
     .promo-overlay {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: rgba(27, 46, 69, 0.8);
-      text-align: center;
-      padding: 24px;
-      z-index: 10;
+      position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: rgba(27, 46, 69, 0.8); text-align: center; padding: 24px; z-index: 10;
     }
     .promo-overlay i { font-size: 42px; color: var(--primary-light); margin-bottom: 12px; }
     .promo-overlay p { margin: 0 0 8px 0; font-size: 16px; font-weight: 500; line-height: 1.4; color: var(--text-main); }
     .promo-overlay .highlight { color: var(--primary-light); font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-top: 4px;}
     
-    .tramite-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
+    .tramite-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
     .tramite-item:last-child { border-bottom: none; }
     .tramite-info h4 { margin: 0 0 6px 0; font-size: 16px; color: var(--text-main); }
     .tramite-info p { margin: 0; font-size: 13px; color: var(--text-muted); }
     .tramite-rank {
       font-size: 28px; font-weight: 800; color: var(--primary-light);
-      background: rgba(77, 161, 168, 0.15); padding: 10px 20px; border-radius: 12px;
-      text-align: center;
+      background: rgba(77, 161, 168, 0.15); padding: 10px 20px; border-radius: 12px; text-align: center;
     }
     .tramite-rank span { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; }
 
-    /* --- LISTA DE PDFS --- */
     .pdf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
     .pdf-card {
-      background: rgba(var(--panel-base), 0.5);
-      border: 1px solid var(--ring);
-      border-radius: 12px;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      text-decoration: none;
-      color: var(--text-main);
-      transition: all 0.2s ease;
+      background: rgba(var(--panel-base), 0.5); border: 1px solid var(--ring); border-radius: 12px; padding: 16px;
+      display: flex; align-items: center; gap: 16px; text-decoration: none; color: var(--text-main); transition: all 0.2s ease;
     }
     .pdf-card:hover { transform: translateY(-2px); border-color: var(--primary-light); background: rgba(var(--panel-base), 0.7); }
     .pdf-icon { font-size: 32px; color: #ff7b7b; }
@@ -154,15 +111,13 @@
     .btn-delete-pdf { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; transition: color 0.2s; }
     .btn-delete-pdf:hover { color: var(--danger); }
 
-    /* --- PANEL DE ADMIN --- */
     .admin-panel { border-color: rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.05); }
     .admin-panel h3 { color: var(--success); }
     
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
     .form-control {
-      width: 100%; padding: 10px 12px; border-radius: 8px;
-      border: 1px solid var(--ring); background: rgba(21, 35, 54, 0.8);
+      width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--ring); background: rgba(21, 35, 54, 0.8);
       color: var(--text-main); font-family: 'Inter', sans-serif;
     }
     .form-control:focus { outline: none; border-color: var(--primary-light); }
@@ -173,8 +128,6 @@
     }
     .btn:hover { background: var(--primary-light); transform: translateY(-2px); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-    .hide { display: none !important; }
   </style>
 </head>
 <body>
@@ -184,14 +137,14 @@
     <p>Conectando con la Plataforma...</p>
   </div>
 
-  <div id="auth-wall" class="auth-wall hide">
+  <div id="auth-wall" class="auth-wall" style="display: none;">
     <i class="ph-fill ph-lock-key"></i>
     <h2>Acceso Restringido</h2>
     <p>Inicia sesión en la Plataforma Sindical Digital para consultar tu lugar en el escalafón y la bolsa de trabajo.</p>
     <button class="btn" onclick="openLogin()">Iniciar Sesión</button>
   </div>
 
-  <div id="main-content" class="hide">
+  <div id="main-content" style="display: none;">
     <div class="header">
       <h2><i class="ph-duotone ph-list-numbers" style="color: var(--primary-light);"></i> Bolsa de Trabajo y Escalafón</h2>
       <p>Consulta tu posición actual en los listados oficiales de la Sección XX Michoacán.</p>
@@ -199,7 +152,6 @@
 
     <div class="card">
       <h3><i class="ph-duotone ph-user-focus"></i> Mis Movimientos Registrados</h3>
-      
       <div class="blur-container">
         <div class="blur-content">
           <div class="tramite-item">
@@ -236,7 +188,7 @@
       </div>
     </div>
 
-    <div class="card admin-panel hide" id="admin-section">
+    <div class="card admin-panel" id="admin-section" style="display: none;">
       <h3><i class="ph-duotone ph-shield-check"></i> Carga de Listados (Solo Administradores)</h3>
       <form id="upload-form">
         <div class="form-group">
@@ -253,79 +205,65 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // --- Configuración de Supabase ---
-    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    
-    let supabase;
+    let supabaseApp = null;
     let isAdmin = false;
-    let initCalled = false;
 
     async function init() {
-      if (initCalled) return;
-      initCalled = true;
-
       try {
-        // Validar si la librería CDN cargó correctamente
-        if (typeof window.supabase === 'undefined') {
-          throw new Error("No se pudo cargar la librería de conexión.");
+        // HACK DE VELOCIDAD: Si la página principal (Index) ya cargó Supabase, tomamos su conexión.
+        if (window.parent && window.parent.supabaseClient) {
+          supabaseApp = window.parent.supabaseClient;
+        } 
+        // Si por alguna razón se abre directo, usamos su propia librería (necesita el CDN)
+        else if (window.supabase) {
+          supabaseApp = window.supabase.createClient(
+            "https://axsncdwshdvsysrpikwj.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs"
+          );
+        } else {
+          throw new Error("Conexión no disponible.");
         }
 
-        // 1. Instanciar Supabase dentro del bloque seguro
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // 2. Control anti-congelamiento: 8 segundos máximo para conectar
-        const sessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Tiempo de espera agotado al conectar.")), 8000)
-        );
-
-        const result = await Promise.race([sessionPromise, timeoutPromise]);
-        const session = result?.data?.session;
-        const sessionError = result?.error;
-
-        // --- ¡LLEGAMOS! Ocultamos la pantalla de carga ---
-        document.getElementById('loading-state').classList.add('hide');
+        // Revisamos la sesión instantáneamente
+        const { data: { session }, error: sessionError } = await supabaseApp.auth.getSession();
+        
+        // Ocultar pantalla de carga
+        document.getElementById('loading-state').style.display = 'none';
 
         if (sessionError) throw sessionError;
         
-        // Si no hay sesión, mostrar muro de auth y detener ejecución
+        // Si NO hay sesión, mostramos el muro
         if (!session) {
-          document.getElementById('auth-wall').classList.remove('hide');
+          document.getElementById('auth-wall').style.display = 'flex';
           return;
         }
         
-        // Si hay sesión, mostrar contenido principal
-        document.getElementById('main-content').classList.remove('hide');
+        // Si SÍ hay sesión, mostramos el contenido real
+        document.getElementById('main-content').style.display = 'block';
 
-        // 3. Obtener Perfil (con maybeSingle para evitar errores si aún no tiene perfil)
-        const { data: prof } = await supabase.from('profiles').select('role').eq('user_id', session.user.id).maybeSingle();
-        
+        // Comprobar si es Admin
+        const { data: prof } = await supabaseApp.from('profiles').select('role').eq('user_id', session.user.id).maybeSingle();
         if (prof && prof.role === 'admin') {
           isAdmin = true;
-          document.getElementById('admin-section').classList.remove('hide');
+          document.getElementById('admin-section').style.display = 'block';
         }
 
-        // 4. Cargar lista de PDFs
+        // Cargar los PDFs
         loadPDFs();
 
       } catch (error) {
-        console.error("Error al inicializar la página:", error);
-        const loadingState = document.getElementById('loading-state');
-        loadingState.classList.remove('hide');
-        // Reemplazamos el loader por un mensaje visual de error
-        loadingState.innerHTML = `
-          <i class="ph-bold ph-warning-circle" style="color: #ff7b7b; font-size: 48px; margin-bottom: 16px;"></i>
-          <p style="color: #ff7b7b; margin: 0; font-weight: 600;">Error de Conexión</p>
-          <p style="color: var(--text-muted); font-size: 12px; margin-top: 8px;">Detalle: ${error.message}</p>
-          <button class="btn" style="margin-top: 20px; padding: 8px 16px;" onclick="location.reload()">Reintentar</button>
+        console.error(error);
+        const loadState = document.getElementById('loading-state');
+        loadState.innerHTML = `
+          <i class="ph-bold ph-warning-circle" style="color: #ff7b7b;"></i>
+          <p style="color: #ff7b7b;">Error al verificar la sesión: ${error.message}</p>
         `;
       }
     }
 
     function openLogin() {
+      // Intentar abrir el popup de login del Index, si no se puede, mandar a login.html
       if (window.parent && window.parent.PSDAuth) {
         window.parent.PSDAuth.openModal();
       } else {
@@ -336,7 +274,7 @@
     async function loadPDFs() {
       const container = document.getElementById('pdf-list-container');
       try {
-        const { data: pdfs, error } = await supabase
+        const { data: pdfs, error } = await supabaseApp
           .from('listados_pdf')
           .select('*')
           .order('created_at', { ascending: false });
@@ -351,7 +289,6 @@
         container.innerHTML = '';
         pdfs.forEach(pdf => {
           const deleteBtn = isAdmin ? `<button class="btn-delete-pdf" onclick="deletePDF('${pdf.id}', event)" title="Eliminar Listado"><i class="ph-bold ph-trash"></i></button>` : '';
-
           container.innerHTML += `
             <a href="${pdf.url}" target="_blank" class="pdf-card">
               <i class="ph-duotone ph-file-pdf pdf-icon"></i>
@@ -364,14 +301,14 @@
           `;
         });
       } catch (error) {
-        console.error("Error cargando PDFs:", error);
+        console.error(error);
         container.innerHTML = `<div style="font-size: 13px; color: #ff7b7b;">No se pudieron cargar los listados.</div>`;
       }
     }
 
     document.getElementById('upload-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!isAdmin || !supabase) return;
+      if (!isAdmin || !supabaseApp) return;
 
       const titleInput = document.getElementById('docTitle').value;
       const fileInput = document.getElementById('docFile').files[0];
@@ -379,7 +316,7 @@
       const btn = document.getElementById('btnUpload');
 
       if (!fileInput || fileInput.type !== 'application/pdf') {
-        statusDiv.innerHTML = '<span style="color: var(--danger)">Por favor, selecciona un archivo PDF válido.</span>';
+        statusDiv.innerHTML = '<span style="color: var(--danger)">Solo se admiten archivos PDF.</span>';
         return;
       }
 
@@ -388,18 +325,11 @@
 
       try {
         const fileName = `escalafon/${Date.now()}_${fileInput.name.replace(/\s+/g, '_')}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('documentos')
-          .upload(fileName, fileInput);
-
+        const { error: uploadError } = await supabaseApp.storage.from('documentos').upload(fileName, fileInput);
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage.from('documentos').getPublicUrl(fileName);
-
-        const { error: dbError } = await supabase
-          .from('listados_pdf')
-          .insert([{ titulo: titleInput, url: publicUrl }]);
-
+        const { data: { publicUrl } } = supabaseApp.storage.from('documentos').getPublicUrl(fileName);
+        const { error: dbError } = await supabaseApp.from('listados_pdf').insert([{ titulo: titleInput, url: publicUrl }]);
         if (dbError) throw dbError;
 
         statusDiv.innerHTML = '<span style="color: var(--success)">✅ Documento publicado exitosamente.</span>';
@@ -416,24 +346,15 @@
 
     async function deletePDF(id, event) {
       event.preventDefault(); 
-      if (!isAdmin || !supabase || !confirm('¿Estás seguro de eliminar este listado? Esta acción no se puede deshacer.')) return;
+      if (!isAdmin || !supabaseApp || !confirm('¿Eliminar este listado?')) return;
 
-      const { error } = await supabase.from('listados_pdf').delete().eq('id', id);
-      if (!error) {
-        loadPDFs(); 
-      } else {
-        alert('Error al eliminar: ' + error.message);
-      }
+      const { error } = await supabaseApp.from('listados_pdf').delete().eq('id', id);
+      if (!error) loadPDFs(); 
+      else alert('Error: ' + error.message);
     }
 
-    // --- Arranque Seguro ---
-    // Si el DOM ya cargó antes de que esta línea se ejecute, se lanza inmediatamente.
-    // Si no, espera pacientemente al evento. Esto evita que el código se quede colgado.
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
+    // Disparador de inicio seguro
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
