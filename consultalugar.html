@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Bolsa de Trabajo: Mi Lugar para Base</title>
+  <title>Bolsa de Trabajo (08) - Mi Lugar</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
@@ -22,53 +22,37 @@
       --ring: rgba(77, 161, 168, .35);
     }
     
-    body {
-      margin: 0; padding: 24px; background-color: var(--bg-body);
-      color: var(--text-main); font-family: 'Inter', sans-serif; box-sizing: border-box;
-    }
-
+    body { margin: 0; padding: 24px; background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; box-sizing: border-box; }
     * { box-sizing: border-box; }
 
     .header { margin-bottom: 24px; border-bottom: 1px solid var(--ring); padding-bottom: 16px; }
     .header h2 { margin: 0 0 8px 0; font-size: 22px; display: flex; align-items: center; gap: 10px; }
     .header p { margin: 0; color: var(--text-muted); font-size: 14px; line-height: 1.5; }
 
-    .card {
-      background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring);
-      border-radius: 16px; padding: 20px; margin-bottom: 24px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
+    .card { background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring); border-radius: 16px; padding: 20px; margin-bottom: 24px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }
     .card h3 { margin: 0 0 16px 0; font-size: 18px; color: var(--primary-light); display: flex; align-items: center; gap: 8px; }
 
     .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; text-align: center; color: var(--primary-light); }
     .loading-state i { font-size: 48px; margin-bottom: 16px; }
 
-    .auth-wall {
-      display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center;
-      background: rgba(var(--panel-base), 0.2); border: 1px dashed var(--primary-light); border-radius: 16px; padding: 32px;
-    }
+    .auth-wall { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; background: rgba(var(--panel-base), 0.2); border: 1px dashed var(--primary-light); border-radius: 16px; padding: 32px; }
     .auth-wall i { font-size: 64px; color: var(--primary-light); margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(122,209,214,0.3)); }
     .auth-wall h2 { margin: 0 0 12px 0; font-size: 24px; }
     .auth-wall p { margin: 0 0 24px 0; color: var(--text-muted); max-width: 400px; line-height: 1.5; }
 
-    /* --- CAMPAÑA BLUR --- */
     .blur-container { background: rgba(0, 0, 0, 0.25); border-radius: 12px; position: relative; overflow: hidden; border: 1px solid var(--ring); min-height: 150px;}
-    .blur-content { filter: blur(6px); opacity: 0.4; pointer-events: none; user-select: none; transition: filter 0.3s;}
+    .blur-content { filter: blur(8px); opacity: 0.4; pointer-events: none; user-select: none; transition: filter 0.3s;}
     .blur-content.unlocked { filter: blur(0); opacity: 1; pointer-events: auto; user-select: auto; }
     
-    .promo-overlay {
-      position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background: rgba(27, 46, 69, 0.8); text-align: center; padding: 24px; z-index: 10;
-    }
+    .promo-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(27, 46, 69, 0.8); text-align: center; padding: 24px; z-index: 10; }
     .promo-overlay i { font-size: 42px; color: var(--primary-light); margin-bottom: 12px; }
     .promo-overlay p { margin: 0 0 8px 0; font-size: 16px; font-weight: 500; line-height: 1.4; color: var(--text-main); }
     .promo-overlay .highlight { color: var(--primary-light); font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-top: 4px;}
     
-    .tramite-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .tramite-item { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
     .tramite-item:last-child { border-bottom: none; }
-    .tramite-info h4 { margin: 0 0 6px 0; font-size: 16px; color: var(--text-main); }
-    .tramite-info p { margin: 0; font-size: 13px; color: var(--text-muted); }
-    .tramite-rank { font-size: 32px; font-weight: 800; color: var(--primary-light); background: rgba(77, 161, 168, 0.15); padding: 12px 24px; border-radius: 12px; text-align: center; }
-    .tramite-rank span { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; }
+    .tramite-rank { font-size: 38px; font-weight: 800; color: var(--primary-light); background: rgba(77, 161, 168, 0.15); padding: 12px 24px; border-radius: 12px; text-align: center; line-height: 1;}
+    .tramite-rank span { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-top: 4px; }
 
     .pdf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
     .pdf-card { background: rgba(var(--panel-base), 0.5); border: 1px solid var(--ring); border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 16px; text-decoration: none; color: var(--text-main); transition: all 0.2s ease; }
@@ -103,22 +87,36 @@
   <div id="auth-wall" class="auth-wall hide">
     <i class="ph-fill ph-lock-key"></i>
     <h2>Acceso Restringido</h2>
-    <p>Inicia sesión en la Plataforma Sindical Digital para consultar tu lugar exacto para la asignación de Base (Candidatos 08).</p>
+    <p>Inicia sesión en la Plataforma Sindical Digital para consultar tu lugar exacto en la Bolsa de Trabajo (Candidatos 08).</p>
     <button class="btn" onclick="openLogin()">Iniciar Sesión</button>
   </div>
 
   <div id="main-content" class="hide">
     <div class="header">
-      <h2><i class="ph-duotone ph-medal" style="color: var(--primary-light);"></i> Bolsa de Trabajo: Mi Lugar para Base</h2>
-      <p>Candidatos 08 (Suplentes) de la Sección XX Michoacán: Consulta aquí tu posición oficial y transparente para la obtención de tu base.</p>
+      <h2><i class="ph-duotone ph-medal" style="color: var(--primary-light);"></i> Bolsa de Trabajo (08)</h2>
+      <p>Candidatos Suplentes de la Sección XX Michoacán: Consulta aquí de forma oficial y transparente tu posición para la obtención de base.</p>
     </div>
 
-    <div class="card">
-      <h3><i class="ph-duotone ph-user-focus"></i> Posición Registrada</h3>
+    <div class="card" style="padding: 0; overflow: hidden; border: none; background: transparent;">
       <div class="blur-container" id="user-data-container">
         
         <div class="blur-content" id="real-data-render">
-          <div style="padding: 20px; text-align:center; color: var(--text-muted);">Buscando tu matrícula en los listados...</div>
+          <div class="tramite-item" style="display: flex; flex-direction: column; gap: 16px; background: rgba(var(--panel-base), 0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h4 style="color: var(--primary-light); font-size: 18px; margin:0 0 4px 0;">Ejemplo Categoría - Zona</h4>
+                <p style="font-size: 12px; margin: 0; color: var(--text-muted);">Actualizado: Hoy</p>
+              </div>
+              <div class="tramite-rank">#12<span>Lugar para Base</span></div>
+            </div>
+            <div style="background: rgba(21, 35, 54, 0.6); border: 1px solid var(--ring); border-radius: 12px; padding: 16px;">
+              <div style="color: var(--text-muted); font-size: 13px;">⬆️ Arriba de ti:</div>
+              <div style="font-weight: 700; color: var(--text-main); margin-bottom: 12px; padding-left: 24px;">JUAREZ/PEREZ/JUAN</div>
+              <div style="border-top: 1px dashed rgba(255,255,255,0.1); margin-bottom: 12px;"></div>
+              <div style="color: var(--text-muted); font-size: 13px;">⬇️ Debajo de ti:</div>
+              <div style="font-weight: 700; color: var(--text-main); padding-left: 24px;">LOPEZ/GOMEZ/MARIA</div>
+            </div>
+          </div>
         </div>
 
         <div class="promo-overlay" id="promo-wall">
@@ -130,9 +128,9 @@
     </div>
 
     <div class="card hide" id="pdf-section">
-      <h3><i class="ph-duotone ph-file-pdf"></i> Listados Oficiales de Nuevo Ingreso (Solo Admins)</h3>
+      <h3><i class="ph-duotone ph-file-pdf"></i> Listados Oficiales Subidos (Solo Admins)</h3>
       <p style="font-size: 13px; color: var(--text-muted); margin-top: -10px; margin-bottom: 16px;">
-        Gestiona los listados originales que respaldan los lugares procesados.
+        Gestiona los listados originales que respaldan las posiciones procesadas.
       </p>
       <div class="pdf-grid" id="pdf-list-container">
         <div style="font-size: 13px; color: var(--text-muted);">Cargando documentos...</div>
@@ -140,20 +138,20 @@
     </div>
 
     <div class="card admin-panel hide" id="admin-section">
-      <h3><i class="ph-duotone ph-shield-check"></i> Procesador de Listados 08 (Backend Integrado)</h3>
+      <h3><i class="ph-duotone ph-shield-check"></i> Procesador de Listados 08</h3>
       <p style="font-size: 13px; color: var(--text-muted); margin-top: -10px; margin-bottom: 16px;">
-        Sube el PDF oficial ("Listado de Candidatos de Nuevo Ingreso"). El sistema extraerá las matrículas y asignará el "No. Prog" como lugar definitivo en la Base de Datos.
+        Sube el PDF de "Candidatos de Nuevo Ingreso". El sistema extraerá los nombres y matrículas y calculará quién va arriba y abajo automáticamente.
       </p>
       <form id="upload-form">
         <div class="form-group">
-          <label>Categoría y Zona (Aparecerá en el panel del usuario)</label>
-          <input type="text" id="docTitle" class="form-control" placeholder="Ej. Químico Clínico - Zona 1 Lázaro Cárdenas" required>
+          <label>Categoría y Zona (Ej. Químico Clínico - Zona 1 Lázaro Cárdenas)</label>
+          <input type="text" id="docTitle" class="form-control" required>
         </div>
         <div class="form-group">
-          <label>Archivo PDF (Procesamiento Automático)</label>
+          <label>Archivo PDF (Reporte IMSS-SIAP)</label>
           <input type="file" id="docFile" class="form-control" accept="application/pdf" required>
         </div>
-        <button type="submit" class="btn" id="btnUpload"><i class="ph-bold ph-magic-wand"></i> Procesar y Subir Documento</button>
+        <button type="submit" class="btn" id="btnUpload"><i class="ph-bold ph-magic-wand"></i> Procesar PDF</button>
         <div id="upload-status" style="margin-top: 12px; font-size: 13px; font-weight: 500;"></div>
       </form>
     </div>
@@ -174,7 +172,7 @@
 
     async function init() {
       try {
-        if (!window.supabase) throw new Error("No se pudo cargar la librería de conexión.");
+        if (!window.supabase) throw new Error("Librería de conexión no encontrada.");
         supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const sessionPromise = supabaseApp.auth.getSession();
@@ -205,11 +203,9 @@
             loadPDFs();
           }
         }
-
         loadUserRank();
 
       } catch (error) {
-        console.error(error);
         document.getElementById('loading-state').innerHTML = `<i class="ph-bold ph-warning-circle" style="color: #ff7b7b;"></i><p style="color: #ff7b7b;">Error: ${error.message}</p><button class="btn" style="margin-top: 16px;" onclick="location.reload()">Reintentar</button>`;
       }
     }
@@ -219,75 +215,109 @@
       else window.open('login.html', '_top');
     }
 
-    // --- CARGAR LUGAR DEL USUARIO ---
+    // --- RENDERIZAR DATOS DEL USUARIO ---
     async function loadUserRank() {
       const container = document.getElementById('real-data-render');
       
       if (!currentUserMatricula) {
-        container.innerHTML = `<div style="padding: 20px; text-align:center; color: var(--danger);">No tienes una matrícula registrada en tu perfil. Modifica tu perfil para poder consultar.</div>`;
+        container.innerHTML = `<div style="padding: 20px; text-align:center; color: var(--danger);">No tienes una matrícula registrada en tu perfil.</div>`;
         return;
       }
 
-      const { data: tramites, error } = await supabaseApp
-        .from('movimientos_escalafon')
+      // Consultar la tabla de bolsa de trabajo
+      const { data: lugares, error } = await supabaseApp
+        .from('lugares_bolsa_trabajo')
         .select('*')
         .eq('matricula', currentUserMatricula);
 
-      if (error || !tramites || tramites.length === 0) {
+      if (error || !lugares || lugares.length === 0) {
         container.innerHTML = `
           <div style="padding: 20px; text-align:center; color: var(--text-muted);">
-            <i class="ph-duotone ph-file-dashed" style="font-size:32px; display:block; margin-bottom:8px;"></i>
-            Aún no apareces en los listados procesados para tu matrícula (${currentUserMatricula}).
+            <i class="ph-duotone ph-magnifying-glass" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+            Aún no apareces en los listados cargados para la matrícula (${currentUserMatricula}).
           </div>`;
         return;
       }
 
       container.innerHTML = '';
-      tramites.forEach(t => {
+      lugares.forEach(t => {
         container.innerHTML += `
-          <div class="tramite-item">
-            <div class="tramite-info">
-              <h4 style="color: var(--primary-light);">Candidato 08 / Suplente</h4>
-              <p style="font-size: 14px; margin-bottom: 4px; color: var(--text-main);">${t.tramite}</p>
-              <p>Estatus oficial: <strong>${t.estatus}</strong> • Actualizado: ${new Date(t.fecha).toLocaleDateString('es-MX')}</p>
+          <div class="tramite-item" style="display: flex; flex-direction: column; gap: 16px; background: rgba(var(--panel-base), 0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h4 style="color: var(--primary-light); font-size: 18px; margin:0 0 4px 0;">${t.categoria_zona}</h4>
+                <p style="font-size: 12px; margin: 0; color: var(--text-muted);">Actualizado: ${new Date(t.fecha).toLocaleDateString('es-MX')}</p>
+              </div>
+              <div class="tramite-rank">#${t.lugar}<span>Lugar para Base</span></div>
             </div>
-            <div class="tramite-rank">#${t.lugar}<span>Lugar para Base</span></div>
+
+            <div style="background: rgba(21, 35, 54, 0.6); border: 1px solid var(--ring); border-radius: 12px; padding: 16px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <i class="ph-fill ph-arrow-circle-up" style="color: var(--success); font-size: 20px;"></i>
+                <span style="color: var(--text-muted); font-size: 13px;">Arriba de ti:</span>
+              </div>
+              <div style="font-weight: 700; color: var(--text-main); margin-bottom: 16px; padding-left: 28px;">${t.nombre_arriba}</div>
+              
+              <div style="border-top: 1px dashed rgba(255,255,255,0.1); margin-bottom: 16px;"></div>
+
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <i class="ph-fill ph-arrow-circle-down" style="color: var(--danger); font-size: 20px;"></i>
+                <span style="color: var(--text-muted); font-size: 13px;">Debajo de ti:</span>
+              </div>
+              <div style="font-weight: 700; color: var(--text-main); padding-left: 28px;">${t.nombre_abajo}</div>
+            </div>
           </div>
         `;
       });
     }
 
-    // --- PROCESADOR DE PDFs ---
+    // --- PROCESADOR INTELIGENTE DE PDFs ---
     async function extractDataFromPDF(file) {
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
-      let extractedData = [];
+      let rawRecords = [];
       const tramiteTitulo = document.getElementById('docTitle').value;
       
-      let lugarCounter = 1;
+      // Busca Nombres en formato APELLIDO/APELLIDO/NOMBRE y Matrículas exactas de 8 dígitos
+      const nameRegex = /[A-ZÑ ]+\/[A-ZÑ ]+\/[A-ZÑ ]+/;
+      const matRegex = /\b\d{8}\b/; 
       
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
+        let currentName = null;
         
-        const textItems = content.items.map(item => item.str);
-        const pageText = textItems.join(' ');
-        
-        // Busca específicamente números de 8 a 9 dígitos (Matrículas).
-        const regexMatricula = /\b\d{8,9}\b/g;
-        let match;
-        
-        while ((match = regexMatricula.exec(pageText)) !== null) {
-          extractedData.push({
-            matricula: match[0],
-            lugar: lugarCounter.toString(),
-            tramite: tramiteTitulo,
-            estatus: 'Candidato Vigente'
-          });
-          lugarCounter++; 
+        for (let item of content.items) {
+          let text = item.str.trim().replace(/,/g, ' '); 
+          
+          let foundName = text.match(nameRegex);
+          let foundMat = text.match(matRegex);
+
+          if (foundName) currentName = foundName[0].trim();
+          
+          if (foundMat && currentName) {
+            rawRecords.push({ nombre: currentName, matricula: foundMat[0] });
+            currentName = null; 
+          }
         }
       }
-      return extractedData;
+
+      let finalData = [];
+      for (let i = 0; i < rawRecords.length; i++) {
+        let nArriba = i > 0 ? rawRecords[i - 1].nombre : 'Nadie (Eres el #1 de la lista)';
+        let nAbajo = i < rawRecords.length - 1 ? rawRecords[i + 1].nombre : 'Nadie (Último de la lista)';
+
+        finalData.push({
+          matricula: rawRecords[i].matricula,
+          nombre: rawRecords[i].nombre,
+          categoria_zona: tramiteTitulo,
+          lugar: i + 1,
+          nombre_arriba: nArriba,
+          nombre_abajo: nAbajo
+        });
+      }
+
+      return finalData;
     }
 
     document.getElementById('upload-form').addEventListener('submit', async (e) => {
@@ -300,36 +330,33 @@
       const btn = document.getElementById('btnUpload');
 
       if (!fileInput || fileInput.type !== 'application/pdf') {
-        statusDiv.innerHTML = '<span style="color: var(--danger)">Solo se admiten archivos PDF.</span>';
-        return;
+        statusDiv.innerHTML = '<span style="color: var(--danger)">Solo se admiten archivos PDF.</span>'; return;
       }
 
       btn.disabled = true;
-      statusDiv.innerHTML = '<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Paso 1: Leyendo listado IMSS-SIAP...</span>';
+      statusDiv.innerHTML = '<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Analizando posiciones en el PDF...</span>';
 
       try {
-        const extractedRecords = await extractDataFromPDF(fileInput);
+        const finalRecords = await extractDataFromPDF(fileInput);
         
-        if (extractedRecords.length === 0) {
-          throw new Error("No se encontraron matrículas válidas en este PDF.");
+        if (finalRecords.length === 0) {
+          throw new Error("No se encontraron matrículas o nombres legibles en este PDF.");
         }
 
-        statusDiv.innerHTML = `<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Paso 2: Asignando bases a ${extractedRecords.length} matrículas...</span>`;
+        statusDiv.innerHTML = `<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Guardando ${finalRecords.length} lugares oficiales...</span>`;
 
-        const { error: dbInsertError } = await supabaseApp.from('movimientos_escalafon').insert(extractedRecords);
+        // Insertamos en la nueva tabla lugares_bolsa_trabajo
+        const { error: dbInsertError } = await supabaseApp.from('lugares_bolsa_trabajo').insert(finalRecords);
         if (dbInsertError) throw dbInsertError;
 
-        statusDiv.innerHTML = '<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Paso 3: Guardando listado original...</span>';
-
-        const fileName = `escalafon/${Date.now()}_${fileInput.name.replace(/\s+/g, '_')}`;
+        const fileName = `bolsa_trabajo/${Date.now()}_${fileInput.name.replace(/\s+/g, '_')}`;
         const { error: uploadError } = await supabaseApp.storage.from('documentos').upload(fileName, fileInput);
         if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabaseApp.storage.from('documentos').getPublicUrl(fileName);
-        const { error: pdfRecordError } = await supabaseApp.from('listados_pdf').insert([{ titulo: titleInput, url: publicUrl }]);
-        if (pdfRecordError) throw pdfRecordError;
+        await supabaseApp.from('listados_pdf').insert([{ titulo: titleInput, url: publicUrl }]);
 
-        statusDiv.innerHTML = `<span style="color: var(--success)">✅ ¡Éxito! Se publicaron ${extractedRecords.length} lugares en la plataforma.</span>`;
+        statusDiv.innerHTML = `<span style="color: var(--success)">✅ ¡Éxito! Se procesaron ${finalRecords.length} lugares para la bolsa de trabajo.</span>`;
         document.getElementById('upload-form').reset();
         
         loadPDFs(); 
@@ -346,9 +373,7 @@
     async function loadPDFs() {
       const container = document.getElementById('pdf-list-container');
       try {
-        const { data: pdfs, error } = await supabaseApp.from('listados_pdf').select('*').order('created_at', { ascending: false });
-        if (error) throw error;
-
+        const { data: pdfs } = await supabaseApp.from('listados_pdf').select('*').order('created_at', { ascending: false });
         if (!pdfs || pdfs.length === 0) { container.innerHTML = `<div style="color: var(--text-muted);">Sin archivos subidos.</div>`; return; }
 
         container.innerHTML = '';
@@ -356,19 +381,16 @@
           container.innerHTML += `
             <a href="${pdf.url}" target="_blank" class="pdf-card">
               <i class="ph-duotone ph-file-pdf pdf-icon"></i>
-              <div class="pdf-info">
-                <h4>${pdf.titulo}</h4><p>${new Date(pdf.created_at).toLocaleDateString('es-MX')}</p>
-              </div>
+              <div class="pdf-info"><h4>${pdf.titulo}</h4><p>${new Date(pdf.created_at).toLocaleDateString('es-MX')}</p></div>
               <button class="btn-delete-pdf" onclick="deletePDF('${pdf.id}', event)"><i class="ph-bold ph-trash"></i></button>
-            </a>
-          `;
+            </a>`;
         });
       } catch (error) { console.error(error); }
     }
 
     async function deletePDF(id, event) {
       event.preventDefault(); 
-      if (!isAdmin || !supabaseApp || !confirm('¿Eliminar este PDF del registro? (Esto no borra los lugares en BD, solo el archivo físico)')) return;
+      if (!isAdmin || !confirm('¿Eliminar este PDF del registro? (Esto no borra los lugares en BD, solo el archivo)')) return;
       await supabaseApp.from('listados_pdf').delete().eq('id', id);
       loadPDFs(); 
     }
