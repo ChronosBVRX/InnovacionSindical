@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Bolsa de Trabajo y Escalafón</title>
+  <title>Bolsa de Trabajo: Mi Lugar para Base</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
@@ -23,63 +23,38 @@
     }
     
     body {
-      margin: 0;
-      padding: 24px;
-      background-color: var(--bg-body);
-      color: var(--text-main);
-      font-family: 'Inter', sans-serif;
-      box-sizing: border-box;
+      margin: 0; padding: 24px; background-color: var(--bg-body);
+      color: var(--text-main); font-family: 'Inter', sans-serif; box-sizing: border-box;
     }
 
     * { box-sizing: border-box; }
 
     .header { margin-bottom: 24px; border-bottom: 1px solid var(--ring); padding-bottom: 16px; }
     .header h2 { margin: 0 0 8px 0; font-size: 22px; display: flex; align-items: center; gap: 10px; }
-    .header p { margin: 0; color: var(--text-muted); font-size: 14px; }
+    .header p { margin: 0; color: var(--text-muted); font-size: 14px; line-height: 1.5; }
 
     .card {
-      background: rgba(var(--panel-base), 0.3);
-      border: 1px solid var(--ring);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 24px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring);
+      border-radius: 16px; padding: 20px; margin-bottom: 24px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
-
     .card h3 { margin: 0 0 16px 0; font-size: 18px; color: var(--primary-light); display: flex; align-items: center; gap: 8px; }
 
-    /* --- LOADING STATE --- */
-    .loading-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 60vh;
-      text-align: center;
-      color: var(--primary-light);
-    }
+    .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; text-align: center; color: var(--primary-light); }
     .loading-state i { font-size: 48px; margin-bottom: 16px; }
 
-    /* --- AUTH WALL (Muro de inicio de sesión) --- */
     .auth-wall {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 70vh;
-      text-align: center;
-      background: rgba(var(--panel-base), 0.2);
-      border: 1px dashed var(--primary-light);
-      border-radius: 16px;
-      padding: 32px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center;
+      background: rgba(var(--panel-base), 0.2); border: 1px dashed var(--primary-light); border-radius: 16px; padding: 32px;
     }
     .auth-wall i { font-size: 64px; color: var(--primary-light); margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(122,209,214,0.3)); }
     .auth-wall h2 { margin: 0 0 12px 0; font-size: 24px; }
     .auth-wall p { margin: 0 0 24px 0; color: var(--text-muted); max-width: 400px; line-height: 1.5; }
 
-    /* --- EFECTO BLUR Y PROMOCIÓN DE CAMPAÑA --- */
-    .blur-container { background: rgba(0, 0, 0, 0.25); border-radius: 12px; position: relative; overflow: hidden; border: 1px solid var(--ring); }
-    .blur-content { filter: blur(6px); opacity: 0.4; pointer-events: none; user-select: none; }
+    /* --- CAMPAÑA BLUR --- */
+    .blur-container { background: rgba(0, 0, 0, 0.25); border-radius: 12px; position: relative; overflow: hidden; border: 1px solid var(--ring); min-height: 150px;}
+    .blur-content { filter: blur(6px); opacity: 0.4; pointer-events: none; user-select: none; transition: filter 0.3s;}
+    .blur-content.unlocked { filter: blur(0); opacity: 1; pointer-events: auto; user-select: auto; }
+    
     .promo-overlay {
       position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
       background: rgba(27, 46, 69, 0.8); text-align: center; padding: 24px; z-index: 10;
@@ -92,17 +67,11 @@
     .tramite-item:last-child { border-bottom: none; }
     .tramite-info h4 { margin: 0 0 6px 0; font-size: 16px; color: var(--text-main); }
     .tramite-info p { margin: 0; font-size: 13px; color: var(--text-muted); }
-    .tramite-rank {
-      font-size: 28px; font-weight: 800; color: var(--primary-light);
-      background: rgba(77, 161, 168, 0.15); padding: 10px 20px; border-radius: 12px; text-align: center;
-    }
+    .tramite-rank { font-size: 32px; font-weight: 800; color: var(--primary-light); background: rgba(77, 161, 168, 0.15); padding: 12px 24px; border-radius: 12px; text-align: center; }
     .tramite-rank span { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; }
 
     .pdf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-    .pdf-card {
-      background: rgba(var(--panel-base), 0.5); border: 1px solid var(--ring); border-radius: 12px; padding: 16px;
-      display: flex; align-items: center; gap: 16px; text-decoration: none; color: var(--text-main); transition: all 0.2s ease;
-    }
+    .pdf-card { background: rgba(var(--panel-base), 0.5); border: 1px solid var(--ring); border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 16px; text-decoration: none; color: var(--text-main); transition: all 0.2s ease; }
     .pdf-card:hover { transform: translateY(-2px); border-color: var(--primary-light); background: rgba(var(--panel-base), 0.7); }
     .pdf-icon { font-size: 32px; color: #ff7b7b; }
     .pdf-info { flex: 1; overflow: hidden; }
@@ -113,21 +82,15 @@
 
     .admin-panel { border-color: rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.05); }
     .admin-panel h3 { color: var(--success); }
-    
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
-    .form-control {
-      width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--ring); background: rgba(21, 35, 54, 0.8);
-      color: var(--text-main); font-family: 'Inter', sans-serif;
-    }
+    .form-control { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--ring); background: rgba(21, 35, 54, 0.8); color: var(--text-main); font-family: 'Inter', sans-serif; }
     .form-control:focus { outline: none; border-color: var(--primary-light); }
     
-    .btn {
-      background: var(--primary); color: var(--bg-body); border: none; padding: 12px 24px;
-      border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: all 0.2s;
-    }
+    .btn { background: var(--primary); color: var(--bg-body); border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: all 0.2s; }
     .btn:hover { background: var(--primary-light); transform: translateY(-2px); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .hide { display: none !important; }
   </style>
 </head>
 <body>
@@ -137,176 +100,202 @@
     <p>Conectando con la Plataforma...</p>
   </div>
 
-  <div id="auth-wall" class="auth-wall" style="display: none;">
+  <div id="auth-wall" class="auth-wall hide">
     <i class="ph-fill ph-lock-key"></i>
     <h2>Acceso Restringido</h2>
-    <p>Inicia sesión en la Plataforma Sindical Digital para consultar tu lugar en el escalafón y la bolsa de trabajo.</p>
+    <p>Inicia sesión en la Plataforma Sindical Digital para consultar tu lugar exacto para la asignación de Base (Candidatos 08).</p>
     <button class="btn" onclick="openLogin()">Iniciar Sesión</button>
   </div>
 
-  <div id="main-content" style="display: none;">
+  <div id="main-content" class="hide">
     <div class="header">
-      <h2><i class="ph-duotone ph-list-numbers" style="color: var(--primary-light);"></i> Bolsa de Trabajo y Escalafón</h2>
-      <p>Consulta tu posición actual en los listados oficiales de la Sección XX Michoacán.</p>
+      <h2><i class="ph-duotone ph-medal" style="color: var(--primary-light);"></i> Bolsa de Trabajo: Mi Lugar para Base</h2>
+      <p>Candidatos 08 (Suplentes) de la Sección XX Michoacán: Consulta aquí tu posición oficial y transparente para la obtención de tu base.</p>
     </div>
 
     <div class="card">
-      <h3><i class="ph-duotone ph-user-focus"></i> Mis Movimientos Registrados</h3>
-      <div class="blur-container">
-        <div class="blur-content">
-          <div class="tramite-item">
-            <div class="tramite-info">
-              <h4>Cambio de Adscripción - HGR1</h4>
-              <p>Estatus: <strong>En revisión subcomisión</strong> • Actualizado: Hoy</p>
-            </div>
-            <div class="tramite-rank">#12<span>Lugar</span></div>
-          </div>
-          <div class="tramite-item">
-            <div class="tramite-info">
-              <h4>Bolsa de Trabajo - Enfermería General</h4>
-              <p>Estatus: <strong>Aceptado / En espera</strong> • Actualizado: Ayer</p>
-            </div>
-            <div class="tramite-rank">#45<span>Lugar</span></div>
-          </div>
+      <h3><i class="ph-duotone ph-user-focus"></i> Posición Registrada</h3>
+      <div class="blur-container" id="user-data-container">
+        
+        <div class="blur-content" id="real-data-render">
+          <div style="padding: 20px; text-align:center; color: var(--text-muted);">Buscando tu matrícula en los listados...</div>
         </div>
 
-        <div class="promo-overlay">
+        <div class="promo-overlay" id="promo-wall">
           <i class="ph-fill ph-lock-key"></i>
-          <p>Esta información estará disponible y transparente para ti a partir del <strong>16 de abril</strong>.</p>
+          <p>La transparencia en Bolsa de Trabajo estará disponible para ti a partir del <strong>16 de abril</strong>.</p>
           <p>¡Vota por la <span class="highlight">Planilla Azul</span> para hacerlo realidad!</p>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <h3><i class="ph-duotone ph-file-pdf"></i> Listados Oficiales Publicados</h3>
+    <div class="card hide" id="pdf-section">
+      <h3><i class="ph-duotone ph-file-pdf"></i> Listados Oficiales de Nuevo Ingreso (Solo Admins)</h3>
       <p style="font-size: 13px; color: var(--text-muted); margin-top: -10px; margin-bottom: 16px;">
-        Descarga los PDF con los escalafones generales y convocatorias de bolsa de trabajo vigentes.
+        Gestiona los listados originales que respaldan los lugares procesados.
       </p>
       <div class="pdf-grid" id="pdf-list-container">
         <div style="font-size: 13px; color: var(--text-muted);">Cargando documentos...</div>
       </div>
     </div>
 
-    <div class="card admin-panel" id="admin-section" style="display: none;">
-      <h3><i class="ph-duotone ph-shield-check"></i> Carga de Listados (Solo Administradores)</h3>
+    <div class="card admin-panel hide" id="admin-section">
+      <h3><i class="ph-duotone ph-shield-check"></i> Procesador de Listados 08 (Backend Integrado)</h3>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: -10px; margin-bottom: 16px;">
+        Sube el PDF oficial ("Listado de Candidatos de Nuevo Ingreso"). El sistema extraerá las matrículas y asignará el "No. Prog" como lugar definitivo en la Base de Datos.
+      </p>
       <form id="upload-form">
         <div class="form-group">
-          <label>Título del Documento</label>
-          <input type="text" id="docTitle" class="form-control" placeholder="Ej. Listado Escalafón Rama Médica - Marzo 2026" required>
+          <label>Categoría y Zona (Aparecerá en el panel del usuario)</label>
+          <input type="text" id="docTitle" class="form-control" placeholder="Ej. Químico Clínico - Zona 1 Lázaro Cárdenas" required>
         </div>
         <div class="form-group">
-          <label>Archivo PDF</label>
+          <label>Archivo PDF (Procesamiento Automático)</label>
           <input type="file" id="docFile" class="form-control" accept="application/pdf" required>
         </div>
-        <button type="submit" class="btn" id="btnUpload"><i class="ph-bold ph-upload-simple"></i> Subir Documento</button>
-        <div id="upload-status" style="margin-top: 10px; font-size: 13px;"></div>
+        <button type="submit" class="btn" id="btnUpload"><i class="ph-bold ph-magic-wand"></i> Procesar y Subir Documento</button>
+        <div id="upload-status" style="margin-top: 12px; font-size: 13px; font-weight: 500;"></div>
       </form>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
   <script>
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
     
     let supabaseApp = null;
     let isAdmin = false;
+    let currentUserMatricula = null;
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     async function init() {
       try {
-        // Inicializamos Supabase localmente para este archivo
         if (!window.supabase) throw new Error("No se pudo cargar la librería de conexión.");
         supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Pedimos la sesión
-        const { data: { session }, error: sessionError } = await supabaseApp.auth.getSession();
-        
-        // Ocultamos pantalla de carga
-        document.getElementById('loading-state').style.display = 'none';
+        const sessionPromise = supabaseApp.auth.getSession();
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Tiempo de espera agotado.")), 8000));
 
-        if (sessionError) throw sessionError;
+        const result = await Promise.race([sessionPromise, timeoutPromise]);
+        const session = result?.data?.session;
+
+        document.getElementById('loading-state').classList.add('hide');
+
+        if (result?.error) throw result.error;
+        if (!session) { document.getElementById('auth-wall').classList.remove('hide'); return; }
         
-        // Si no hay sesión, se muestra la pantalla de bloqueo
-        if (!session) {
-          document.getElementById('auth-wall').style.display = 'flex';
-          return;
+        document.getElementById('main-content').classList.remove('hide');
+
+        const { data: prof } = await supabaseApp.from('profiles').select('role, matricula').eq('user_id', session.user.id).maybeSingle();
+        
+        if (prof) {
+          currentUserMatricula = prof.matricula;
+          if (prof.role === 'admin') {
+            isAdmin = true;
+            document.getElementById('admin-section').classList.remove('hide');
+            document.getElementById('pdf-section').classList.remove('hide');
+            
+            document.getElementById('promo-wall').style.display = 'none';
+            document.getElementById('real-data-render').classList.add('unlocked');
+            
+            loadPDFs();
+          }
         }
-        
-        // Si sí hay, mostramos la info
-        document.getElementById('main-content').style.display = 'block';
 
-        // Comprobar si el usuario es Admin
-        const { data: prof } = await supabaseApp.from('profiles').select('role').eq('user_id', session.user.id).maybeSingle();
-        if (prof && prof.role === 'admin') {
-          isAdmin = true;
-          document.getElementById('admin-section').style.display = 'block';
-        }
-
-        loadPDFs();
+        loadUserRank();
 
       } catch (error) {
         console.error(error);
-        const loadState = document.getElementById('loading-state');
-        loadState.style.display = 'flex';
-        loadState.innerHTML = `
-          <i class="ph-bold ph-warning-circle" style="color: #ff7b7b;"></i>
-          <p style="color: #ff7b7b; margin-top: 16px;">Error de conexión: ${error.message}</p>
-          <button class="btn" style="margin-top: 16px;" onclick="location.reload()">Reintentar</button>
-        `;
+        document.getElementById('loading-state').innerHTML = `<i class="ph-bold ph-warning-circle" style="color: #ff7b7b;"></i><p style="color: #ff7b7b;">Error: ${error.message}</p><button class="btn" style="margin-top: 16px;" onclick="location.reload()">Reintentar</button>`;
       }
     }
 
     function openLogin() {
-      if (window.parent && window.parent.PSDAuth) {
-        window.parent.PSDAuth.openModal();
-      } else {
-        window.open('login.html', '_top');
-      }
+      if (window.parent && window.parent.PSDAuth) window.parent.PSDAuth.openModal();
+      else window.open('login.html', '_top');
     }
 
-    async function loadPDFs() {
-      const container = document.getElementById('pdf-list-container');
-      try {
-        const { data: pdfs, error } = await supabaseApp
-          .from('listados_pdf')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        if (!pdfs || pdfs.length === 0) {
-          container.innerHTML = `<div style="font-size: 13px; color: var(--text-muted);">Aún no hay listados publicados.</div>`;
-          return;
-        }
-
-        container.innerHTML = '';
-        pdfs.forEach(pdf => {
-          const deleteBtn = isAdmin ? `<button class="btn-delete-pdf" onclick="deletePDF('${pdf.id}', event)" title="Eliminar Listado"><i class="ph-bold ph-trash"></i></button>` : '';
-          container.innerHTML += `
-            <a href="${pdf.url}" target="_blank" class="pdf-card">
-              <i class="ph-duotone ph-file-pdf pdf-icon"></i>
-              <div class="pdf-info">
-                <h4>${pdf.titulo}</h4>
-                <p>Publicado: ${new Date(pdf.created_at).toLocaleDateString('es-MX')}</p>
-              </div>
-              ${deleteBtn}
-            </a>
-          `;
-        });
-      } catch (error) {
-        console.error(error);
-        container.innerHTML = `<div style="font-size: 13px; color: #ff7b7b;">No se pudieron cargar los listados.</div>`;
+    // --- CARGAR LUGAR DEL USUARIO ---
+    async function loadUserRank() {
+      const container = document.getElementById('real-data-render');
+      
+      if (!currentUserMatricula) {
+        container.innerHTML = `<div style="padding: 20px; text-align:center; color: var(--danger);">No tienes una matrícula registrada en tu perfil. Modifica tu perfil para poder consultar.</div>`;
+        return;
       }
+
+      const { data: tramites, error } = await supabaseApp
+        .from('movimientos_escalafon')
+        .select('*')
+        .eq('matricula', currentUserMatricula);
+
+      if (error || !tramites || tramites.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 20px; text-align:center; color: var(--text-muted);">
+            <i class="ph-duotone ph-file-dashed" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+            Aún no apareces en los listados procesados para tu matrícula (${currentUserMatricula}).
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      tramites.forEach(t => {
+        container.innerHTML += `
+          <div class="tramite-item">
+            <div class="tramite-info">
+              <h4 style="color: var(--primary-light);">Candidato 08 / Suplente</h4>
+              <p style="font-size: 14px; margin-bottom: 4px; color: var(--text-main);">${t.tramite}</p>
+              <p>Estatus oficial: <strong>${t.estatus}</strong> • Actualizado: ${new Date(t.fecha).toLocaleDateString('es-MX')}</p>
+            </div>
+            <div class="tramite-rank">#${t.lugar}<span>Lugar para Base</span></div>
+          </div>
+        `;
+      });
+    }
+
+    // --- PROCESADOR DE PDFs ---
+    async function extractDataFromPDF(file) {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+      let extractedData = [];
+      const tramiteTitulo = document.getElementById('docTitle').value;
+      
+      let lugarCounter = 1;
+      
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        
+        const textItems = content.items.map(item => item.str);
+        const pageText = textItems.join(' ');
+        
+        // Busca específicamente números de 8 a 9 dígitos (Matrículas).
+        const regexMatricula = /\b\d{8,9}\b/g;
+        let match;
+        
+        while ((match = regexMatricula.exec(pageText)) !== null) {
+          extractedData.push({
+            matricula: match[0],
+            lugar: lugarCounter.toString(),
+            tramite: tramiteTitulo,
+            estatus: 'Candidato Vigente'
+          });
+          lugarCounter++; 
+        }
+      }
+      return extractedData;
     }
 
     document.getElementById('upload-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!isAdmin || !supabaseApp) return;
 
-      const titleInput = document.getElementById('docTitle').value;
       const fileInput = document.getElementById('docFile').files[0];
+      const titleInput = document.getElementById('docTitle').value;
       const statusDiv = document.getElementById('upload-status');
       const btn = document.getElementById('btnUpload');
 
@@ -316,36 +305,72 @@
       }
 
       btn.disabled = true;
-      statusDiv.innerHTML = '<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Subiendo documento...</span>';
+      statusDiv.innerHTML = '<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Paso 1: Leyendo listado IMSS-SIAP...</span>';
 
       try {
+        const extractedRecords = await extractDataFromPDF(fileInput);
+        
+        if (extractedRecords.length === 0) {
+          throw new Error("No se encontraron matrículas válidas en este PDF.");
+        }
+
+        statusDiv.innerHTML = `<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Paso 2: Asignando bases a ${extractedRecords.length} matrículas...</span>`;
+
+        const { error: dbInsertError } = await supabaseApp.from('movimientos_escalafon').insert(extractedRecords);
+        if (dbInsertError) throw dbInsertError;
+
+        statusDiv.innerHTML = '<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Paso 3: Guardando listado original...</span>';
+
         const fileName = `escalafon/${Date.now()}_${fileInput.name.replace(/\s+/g, '_')}`;
         const { error: uploadError } = await supabaseApp.storage.from('documentos').upload(fileName, fileInput);
         if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabaseApp.storage.from('documentos').getPublicUrl(fileName);
-        const { error: dbError } = await supabaseApp.from('listados_pdf').insert([{ titulo: titleInput, url: publicUrl }]);
-        if (dbError) throw dbError;
+        const { error: pdfRecordError } = await supabaseApp.from('listados_pdf').insert([{ titulo: titleInput, url: publicUrl }]);
+        if (pdfRecordError) throw pdfRecordError;
 
-        statusDiv.innerHTML = '<span style="color: var(--success)">✅ Documento publicado exitosamente.</span>';
+        statusDiv.innerHTML = `<span style="color: var(--success)">✅ ¡Éxito! Se publicaron ${extractedRecords.length} lugares en la plataforma.</span>`;
         document.getElementById('upload-form').reset();
+        
         loadPDFs(); 
+        loadUserRank();
 
       } catch (err) {
         console.error(err);
-        statusDiv.innerHTML = `<span style="color: var(--danger)">❌ Error al subir: ${err.message}</span>`;
+        statusDiv.innerHTML = `<span style="color: var(--danger)">❌ Error: ${err.message}</span>`;
       } finally {
         btn.disabled = false;
       }
     });
 
+    async function loadPDFs() {
+      const container = document.getElementById('pdf-list-container');
+      try {
+        const { data: pdfs, error } = await supabaseApp.from('listados_pdf').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+
+        if (!pdfs || pdfs.length === 0) { container.innerHTML = `<div style="color: var(--text-muted);">Sin archivos subidos.</div>`; return; }
+
+        container.innerHTML = '';
+        pdfs.forEach(pdf => {
+          container.innerHTML += `
+            <a href="${pdf.url}" target="_blank" class="pdf-card">
+              <i class="ph-duotone ph-file-pdf pdf-icon"></i>
+              <div class="pdf-info">
+                <h4>${pdf.titulo}</h4><p>${new Date(pdf.created_at).toLocaleDateString('es-MX')}</p>
+              </div>
+              <button class="btn-delete-pdf" onclick="deletePDF('${pdf.id}', event)"><i class="ph-bold ph-trash"></i></button>
+            </a>
+          `;
+        });
+      } catch (error) { console.error(error); }
+    }
+
     async function deletePDF(id, event) {
       event.preventDefault(); 
-      if (!isAdmin || !supabaseApp || !confirm('¿Eliminar este listado?')) return;
-
-      const { error } = await supabaseApp.from('listados_pdf').delete().eq('id', id);
-      if (!error) loadPDFs(); 
-      else alert('Error: ' + error.message);
+      if (!isAdmin || !supabaseApp || !confirm('¿Eliminar este PDF del registro? (Esto no borra los lugares en BD, solo el archivo físico)')) return;
+      await supabaseApp.from('listados_pdf').delete().eq('id', id);
+      loadPDFs(); 
     }
 
     document.addEventListener('DOMContentLoaded', init);
