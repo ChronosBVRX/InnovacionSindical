@@ -11,7 +11,7 @@
   
   <style>
     :root {
-      --bg-body: transparent; /* Fondo transparente para que se mezcle con el Index */
+      --bg-body: transparent;
       --panel-base: 46, 79, 119;
       --primary: #4da1a8; 
       --primary-light: #7ad1d6;
@@ -205,65 +205,60 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   <script>
+    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    
     let supabaseApp = null;
     let isAdmin = false;
 
     async function init() {
       try {
-        // HACK DE VELOCIDAD: Si la página principal (Index) ya cargó Supabase, tomamos su conexión.
-        if (window.parent && window.parent.supabaseClient) {
-          supabaseApp = window.parent.supabaseClient;
-        } 
-        // Si por alguna razón se abre directo, usamos su propia librería (necesita el CDN)
-        else if (window.supabase) {
-          supabaseApp = window.supabase.createClient(
-            "https://axsncdwshdvsysrpikwj.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs"
-          );
-        } else {
-          throw new Error("Conexión no disponible.");
-        }
+        // Inicializamos Supabase localmente para este archivo
+        if (!window.supabase) throw new Error("No se pudo cargar la librería de conexión.");
+        supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Revisamos la sesión instantáneamente
+        // Pedimos la sesión
         const { data: { session }, error: sessionError } = await supabaseApp.auth.getSession();
         
-        // Ocultar pantalla de carga
+        // Ocultamos pantalla de carga
         document.getElementById('loading-state').style.display = 'none';
 
         if (sessionError) throw sessionError;
         
-        // Si NO hay sesión, mostramos el muro
+        // Si no hay sesión, se muestra la pantalla de bloqueo
         if (!session) {
           document.getElementById('auth-wall').style.display = 'flex';
           return;
         }
         
-        // Si SÍ hay sesión, mostramos el contenido real
+        // Si sí hay, mostramos la info
         document.getElementById('main-content').style.display = 'block';
 
-        // Comprobar si es Admin
+        // Comprobar si el usuario es Admin
         const { data: prof } = await supabaseApp.from('profiles').select('role').eq('user_id', session.user.id).maybeSingle();
         if (prof && prof.role === 'admin') {
           isAdmin = true;
           document.getElementById('admin-section').style.display = 'block';
         }
 
-        // Cargar los PDFs
         loadPDFs();
 
       } catch (error) {
         console.error(error);
         const loadState = document.getElementById('loading-state');
+        loadState.style.display = 'flex';
         loadState.innerHTML = `
           <i class="ph-bold ph-warning-circle" style="color: #ff7b7b;"></i>
-          <p style="color: #ff7b7b;">Error al verificar la sesión: ${error.message}</p>
+          <p style="color: #ff7b7b; margin-top: 16px;">Error de conexión: ${error.message}</p>
+          <button class="btn" style="margin-top: 16px;" onclick="location.reload()">Reintentar</button>
         `;
       }
     }
 
     function openLogin() {
-      // Intentar abrir el popup de login del Index, si no se puede, mandar a login.html
       if (window.parent && window.parent.PSDAuth) {
         window.parent.PSDAuth.openModal();
       } else {
@@ -353,7 +348,6 @@
       else alert('Error: ' + error.message);
     }
 
-    // Disparador de inicio seguro
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
