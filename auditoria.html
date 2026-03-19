@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Auditoría Sindical - PSD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+  
+  <style>
+    :root {
+      --bg-body: transparent;
+      --panel-base: 46, 79, 119;
+      --primary: #4da1a8; 
+      --primary-light: #7ad1d6;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --danger: #ff7b7b;
+      --text-main: #f0fdfa; 
+      --text-muted: #bce9eb;
+      --ring: rgba(77, 161, 168, .35);
+    }
+    
+    body { margin: 0; padding: 24px; background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; box-sizing: border-box; }
+    * { box-sizing: border-box; }
+
+    .header { margin-bottom: 24px; border-bottom: 1px solid var(--ring); padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;}
+    .header h2 { margin: 0 0 8px 0; font-size: 24px; display: flex; align-items: center; gap: 10px; font-weight: 800;}
+    .header p { margin: 0; color: var(--text-muted); font-size: 14px; line-height: 1.5; }
+
+    .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; text-align: center; color: var(--primary-light); }
+    .loading-state i { font-size: 48px; margin-bottom: 16px; }
+
+    .auth-wall { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; background: rgba(var(--panel-base), 0.2); border: 1px dashed var(--danger); border-radius: 16px; padding: 32px; }
+    .auth-wall i { font-size: 64px; color: var(--danger); margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(255,123,123,0.3)); }
+    .auth-wall h2 { margin: 0 0 12px 0; font-size: 24px; color: var(--danger);}
+    .auth-wall p { margin: 0; color: var(--text-muted); max-width: 400px; line-height: 1.5; }
+
+    /* --- TARJETAS GLOBALES --- */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .stat-card { background: rgba(var(--panel-base), 0.4); border: 1px solid var(--ring); border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+    .stat-card .icon { font-size: 42px; padding: 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .stat-card.total .icon { color: var(--primary-light); background: rgba(77, 161, 168, 0.15); }
+    .stat-card.pending .icon { color: var(--danger); background: rgba(255, 123, 123, 0.15); }
+    .stat-card.resolved .icon { color: var(--success); background: rgba(74, 222, 128, 0.15); }
+    
+    .stat-info h3 { margin: 0 0 4px 0; font-size: 32px; font-weight: 800; color: var(--text-main); line-height: 1; }
+    .stat-info p { margin: 0; font-size: 13px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
+
+    /* --- LISTA DE CARTERAS --- */
+    .cartera-list { display: flex; flex-direction: column; gap: 12px; }
+    .cartera-item { background: rgba(21, 35, 54, 0.6); border: 1px solid var(--ring); border-radius: 12px; padding: 20px; transition: all 0.2s; position: relative; overflow: hidden; }
+    .cartera-item:hover { background: rgba(var(--panel-base), 0.5); border-color: var(--primary-light); transform: translateX(4px); }
+    
+    .cartera-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;}
+    .cartera-title { margin: 0; font-size: 16px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;}
+    
+    .cartera-badges { display: flex; gap: 8px; }
+    .c-badge { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .c-badge.total { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); }
+    .c-badge.warn { background: rgba(255, 123, 123, 0.1); border: 1px solid rgba(255, 123, 123, 0.3); color: var(--danger); }
+    .c-badge.good { background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.3); color: var(--success); }
+    .c-badge.proc { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); color: var(--warning); }
+
+    /* BARRA DE PROGRESO */
+    .progress-container { width: 100%; height: 8px; background: rgba(0,0,0,0.3); border-radius: 4px; overflow: hidden; display: flex; margin-top: 8px; }
+    .progress-bar.success { background: var(--success); height: 100%; transition: width 0.5s ease; }
+    .progress-bar.warning { background: var(--warning); height: 100%; transition: width 0.5s ease; }
+    .progress-bar.danger { background: var(--danger); height: 100%; transition: width 0.5s ease; }
+
+    .hide { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div id="loading-state" class="loading-state">
+    <i class="ph-bold ph-spinner-gap ph-spin"></i>
+    <p>Auditando Base de Datos...</p>
+  </div>
+
+  <div id="auth-wall" class="auth-wall hide">
+    <i class="ph-fill ph-shield-warning"></i>
+    <h2>Acceso Denegado</h2>
+    <p>Este módulo es de uso exclusivo para la <strong>Alta Dirección Sindical</strong> (Secretaría General y del Interior). Tu cuenta no tiene los privilegios necesarios para auditar las métricas.</p>
+  </div>
+
+  <div id="main-content" class="hide">
+    <div class="header">
+      <div>
+        <h2><i class="ph-duotone ph-chart-line-up" style="color: var(--primary-light);"></i> Auditoría y Desempeño</h2>
+        <p>Centro de control. Monitorea la eficiencia de respuesta de todas las Secretarías y Comisiones.</p>
+      </div>
+      <button class="c-badge total" onclick="loadMetrics()" style="cursor:pointer; border:1px solid var(--ring);"><i class="ph-bold ph-arrows-clockwise"></i> Actualizar Datos</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card total">
+        <div class="icon"><i class="ph-fill ph-files"></i></div>
+        <div class="stat-info">
+          <h3 id="g-total">0</h3>
+          <p>Trámites Totales</p>
+        </div>
+      </div>
+      <div class="stat-card pending">
+        <div class="icon"><i class="ph-fill ph-warning-circle"></i></div>
+        <div class="stat-info">
+          <h3 id="g-pendientes">0</h3>
+          <p>Sin Atender / Rezago</p>
+        </div>
+      </div>
+      <div class="stat-card resolved">
+        <div class="icon"><i class="ph-fill ph-check-circle"></i></div>
+        <div class="stat-info">
+          <h3 id="g-atendidos">0</h3>
+          <p>Atendidos / Resueltos</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin: 0 0 16px 0; font-size: 18px; color: var(--primary-light); display: flex; align-items: center; gap: 8px;">
+      <i class="ph-duotone ph-users-three"></i> Desglose por Cartera Sindical
+    </h3>
+    
+    <div class="cartera-list" id="lista-carteras">
+      </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    
+    let supabaseApp = null;
+
+    async function init() {
+      try {
+        if (window.parent && window.parent.supabaseClient) { supabaseApp = window.parent.supabaseClient; } 
+        else if (window.supabase) { supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } 
+        
+        const { data: { session }, error } = await supabaseApp.auth.getSession();
+        
+        if (error || !session) {
+          mostrarBloqueo();
+          return;
+        }
+
+        // VERIFICACIÓN DE SEGURIDAD ESTRICTA
+        const email = session.user.email;
+        const correosAutorizados = ['s.general@seccionxx.mx', 's.interior@seccionxx.mx', 'c.vigilancia@seccionxx.mx'];
+        
+        // Revisamos si es un correo autorizado o si es el super admin (cuenta sin dominio seccionxx)
+        const { data: prof } = await supabaseApp.from('profiles').select('role').eq('user_id', session.user.id).maybeSingle();
+        
+        const isSuperAdmin = prof && prof.role === 'admin' && !email.includes('@seccionxx.mx');
+        const isAuthorizedEmail = correosAutorizados.includes(email);
+
+        if (!isSuperAdmin && !isAuthorizedEmail) {
+          mostrarBloqueo();
+          return;
+        }
+
+        // Si pasa la seguridad, mostramos la UI y cargamos datos
+        document.getElementById('loading-state').classList.add('hide');
+        document.getElementById('main-content').classList.remove('hide');
+        loadMetrics();
+
+      } catch (err) {
+        console.error(err);
+        mostrarBloqueo();
+      }
+    }
+
+    function mostrarBloqueo() {
+      document.getElementById('loading-state').classList.add('hide');
+      document.getElementById('auth-wall').classList.remove('hide');
+    }
+
+    async function loadMetrics() {
+      const contenedor = document.getElementById('lista-carteras');
+      contenedor.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);"><i class="ph-bold ph-spinner ph-spin" style="font-size: 24px;"></i> Calculando métricas...</div>';
+
+      try {
+        // Al tener los permisos RLS, esta consulta nos traerá TODOS los escritos del sindicato
+        const { data, error } = await supabaseApp.from('escritos_buzon').select('area_destino, estatus');
+        if (error) throw error;
+
+        let totalGlobal = 0, atendidosGlobal = 0, pendientesGlobal = 0;
+        const mapCarteras = {};
+
+        // Procesar los datos crudos
+        data.forEach(item => {
+          totalGlobal++;
+          const area = item.area_destino || 'Área Desconocida';
+          
+          if(!mapCarteras[area]) {
+            mapCarteras[area] = { total: 0, enviado: 0, proceso: 0, atendido: 0 };
+          }
+          
+          mapCarteras[area].total++;
+          
+          if(item.estatus === 'Atendido') {
+            mapCarteras[area].atendido++;
+            atendidosGlobal++;
+          } else if (item.estatus === 'En proceso') {
+            mapCarteras[area].proceso++;
+            pendientesGlobal++; // Se cuenta como pendiente de resolución final
+          } else {
+            // Estado "Enviado" (Nadie lo ha tocado)
+            mapCarteras[area].enviado++;
+            pendientesGlobal++;
+          }
+        });
+
+        // Actualizar Tarjetas Globales
+        document.getElementById('g-total').innerText = totalGlobal;
+        document.getElementById('g-pendientes').innerText = pendientesGlobal;
+        document.getElementById('g-atendidos').innerText = atendidosGlobal;
+
+        // Convertir el mapa a un array y ordenarlo (Peor desempeño primero, o sea, más pendientes)
+        const arrayCarteras = Object.keys(mapCarteras).map(key => {
+          return { nombre: key, stats: mapCarteras[key] };
+        }).sort((a, b) => {
+          const rezagoA = a.stats.enviado + a.stats.proceso;
+          const rezagoB = b.stats.enviado + b.stats.proceso;
+          return rezagoB - rezagoA; // Orden descendente por rezago
+        });
+
+        if (arrayCarteras.length === 0) {
+          contenedor.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);">Aún no hay oficios registrados en el sistema.</div>';
+          return;
+        }
+
+        // Renderizar la lista
+        contenedor.innerHTML = '';
+        arrayCarteras.forEach(c => {
+          const s = c.stats;
+          const rezago = s.enviado + s.proceso;
+          
+          // Porcentajes para la barra
+          const pctAtendido = s.total > 0 ? (s.atendido / s.total) * 100 : 0;
+          const pctProceso = s.total > 0 ? (s.proceso / s.total) * 100 : 0;
+          const pctEnviado = s.total > 0 ? (s.enviado / s.total) * 100 : 0;
+
+          // Si el rezago es más del 50%, pintamos el ícono en rojo
+          const iconColor = (pctAtendido < 50 && s.total > 0) ? 'var(--danger)' : 'var(--primary-light)';
+
+          contenedor.innerHTML += `
+            <div class="cartera-item">
+              <div class="cartera-header">
+                <h4 class="cartera-title">
+                  <i class="ph-fill ph-briefcase" style="color: ${iconColor};"></i> 
+                  ${c.nombre}
+                </h4>
+                <div class="cartera-badges">
+                  <span class="c-badge total">Total: ${s.total}</span>
+                  ${s.atendido > 0 ? `<span class="c-badge good"><i class="ph-bold ph-check"></i> ${s.atendido} Resueltos</span>` : ''}
+                  ${s.proceso > 0 ? `<span class="c-badge proc"><i class="ph-bold ph-clock"></i> ${s.proceso} En Proceso</span>` : ''}
+                  ${s.enviado > 0 ? `<span class="c-badge warn"><i class="ph-bold ph-warning"></i> ${s.enviado} Sin Leer</span>` : ''}
+                </div>
+              </div>
+              
+              <div style="display:flex; justify-content:space-between; font-size: 11px; color: var(--text-muted); font-weight:600; text-transform:uppercase;">
+                <span>Eficiencia de Respuesta: ${pctAtendido.toFixed(1)}%</span>
+                ${rezago > 0 ? `<span style="color: var(--danger);"><i class="ph-bold ph-trend-down"></i> ${rezago} en Rezago</span>` : '<span style="color: var(--success);"><i class="ph-bold ph-trend-up"></i> Al corriente</span>'}
+              </div>
+              <div class="progress-container">
+                <div class="progress-bar success" style="width: ${pctAtendido}%" title="Resueltos"></div>
+                <div class="progress-bar warning" style="width: ${pctProceso}%" title="En Proceso"></div>
+                <div class="progress-bar danger" style="width: ${pctEnviado}%" title="Sin Leer"></div>
+              </div>
+            </div>
+          `;
+        });
+
+      } catch (err) {
+        console.error(err);
+        contenedor.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--danger);">Error cargando auditoría: ${err.message}</div>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
