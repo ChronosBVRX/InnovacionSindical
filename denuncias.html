@@ -119,51 +119,13 @@
     .modal-h .btn { flex: 1; padding: 8px; font-size: 11px; }
   }
 
-  /* =========================================
-     ESTILOS EXCLUSIVOS PARA IMPRESIÓN 
-     ========================================= */
+  /* IMPRESIÓN */
   @media print {
-    .wrap, .modal-h, #status, #modal-firma, #alerta-perfil { 
-      display: none !important; 
-    }
-    
-    body, #modal, .modal-card, .modal-b { 
-      background: transparent !important; 
-      position: static !important; 
-      padding: 0 !important; 
-      margin: 0 !important; 
-      box-shadow: none !important; 
-      display: block !important; 
-      width: 100% !important; 
-      height: auto !important; 
-      overflow: visible !important; 
-    }
-    
-    .page.carta { 
-      width: 100% !important; 
-      height: auto !important; 
-      transform: none !important; 
-      box-shadow: none !important; 
-      margin: 0 !important; 
-    }
-    
-    .sheet { 
-      padding: 2cm !important; 
-      height: auto !important; 
-    }
-    
-    /* CENTRADO ABSOLUTO EN MODO IMPRESIÓN */
-    .sheet .pie { 
-      position: relative !important; 
-      bottom: auto !important; 
-      left: 0 !important;
-      right: 0 !important;
-      width: 100% !important;
-      margin-top: 60px !important; 
-      page-break-inside: avoid !important; 
-      text-align: center !important;
-    }
-    
+    .wrap, .modal-h, #status, #modal-firma, #alerta-perfil { display: none !important; }
+    body, #modal, .modal-card, .modal-b { background: transparent !important; position: static !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; display: block !important; width: 100% !important; height: auto !important; overflow: visible !important; }
+    .page.carta { width: 100% !important; height: auto !important; transform: none !important; box-shadow: none !important; margin: 0 !important; }
+    .sheet { padding: 2cm !important; height: auto !important; }
+    .sheet .pie { position: relative !important; bottom: auto !important; left: 0 !important; right: 0 !important; width: 100% !important; margin-top: 60px !important; page-break-inside: avoid !important; text-align: center !important; }
     @page { size: letter; margin: 0; }
   }
 </style>
@@ -278,7 +240,7 @@
         </div>
 
         <div class="grid-full" style="display: flex; gap: 12px; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
-          <span style="font-size: 12px; color: var(--text-muted);">Redacción impulsada por IA.</span>
+          <span style="font-size: 12px; color: var(--text-muted);">Redacción impulsada por IA con Generación de Folio.</span>
           <button type="submit" class="btn primary" id="btnGenerarPrincipal">🚀 Generar Documento</button>
         </div>
       </form>
@@ -330,6 +292,7 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
     const supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     let currentUser = null;
+    let currentFolio = ""; // Guarda el folio generado en memoria
 
     const API_BASE = "https://sinos-api.onrender.com";
     const $ = s => document.querySelector(s);
@@ -341,7 +304,6 @@
       setTimeout(() => s.classList.remove('visible'), 4000);
     };
 
-    // Ajuste de escala para el preview
     const ajustarEscala = () => {
       const modalB = $('#modalBody');
       if (!modalB) return;
@@ -354,7 +316,7 @@
     };
     window.addEventListener('resize', ajustarEscala);
 
-    // --- OBTENER DATOS DEL USUARIO DESDE SUPABASE ---
+    // --- INICIALIZAR USUARIO ---
     async function initUser() {
       const { data: { session } } = await supabaseApp.auth.getSession();
       if (!session) {
@@ -372,23 +334,81 @@
         $('#categoria').value = prof.categoria || '';
         $('#lugar').value = prof.adscripcion || '';
 
-        // Si falta algún dato importante, mostrar alerta
         if (!prof.display_name || !prof.matricula || !prof.categoria || !prof.adscripcion) {
           $('#alerta-perfil').classList.remove('hide');
         }
       }
-      
       $('#fecha').value = new Date().toISOString().slice(0,10);
     }
 
-    // Evento al seleccionar secretaría
     $('#puestoCatalogo').addEventListener('change', (e) => {
       const [cargo, nombre] = e.target.value.split('|');
       $('#cargo').value = cargo || '';
       $('#destinatario').value = nombre || '';
     });
 
-    // --- GENERACIÓN CON IA ---
+    // --- SISTEMA DE FOLIOS INTELIGENTES ---
+    function obtenerAcronimo(area) {
+      const mapa = {
+        "Secretaría General": "SG",
+        "Secretaría de Interior y Propaganda": "SIP",
+        "Secretaría de Conflictos": "SC",
+        "Secretaría de Trabajo": "ST",
+        "Secretaría del Exterior": "SE",
+        "Tesorería": "TES",
+        "Secretaría de Previsión Social": "SPS",
+        "Secretaría de Igualdad Sustantiva": "SIS",
+        "Secretaría de Asuntos Técnicos": "SAT",
+        "Secretaría de Actas y Acuerdos": "SAA",
+        "Secretaría de Prensa": "SP",
+        "Secretaría de Puestos Periféricos": "SPP",
+        "Secretaría de Admisión y Cambios": "SAC",
+        "Secretaría de Capacitación y Adiestramiento": "SCA",
+        "Secretaría de Calidad y Modernización": "SCM",
+        "Secretaría de Acción Social": "SAS",
+        "Honor y Justicia — Presidencia": "CHJ",
+        "Vigilancia — Presidencia": "CV",
+        "Fomento a la Seg. Social — Presidencia": "CFSS",
+        "Hacienda — Presidencia": "CH",
+        "Deportes — Presidencia": "CD",
+        "Acción Política — Presidencia": "CAP",
+        "Becas": "SMB",
+        "Bolsa de Trabajo": "BT",
+        "Puestos de Confianza 'B'": "SMCB",
+        "Capacitación y Adiestramiento": "SMCA",
+        "Seguridad e Higiene": "SMSH",
+        "Disciplinaria": "SMD",
+        "Escalafón": "SME",
+        "Protección al Salario": "SMPS",
+        "Pasajes": "SMP",
+        "Ropa de Trabajo y Uniformes": "SMRT",
+        "Cambios de Rama": "SMCR",
+        "Tiendas": "SMT",
+        "Jubilaciones y Pensiones": "SMJP",
+        "Revisión de Plantillas": "SMRP"
+      };
+      return mapa[area] || "SNTSS"; 
+    }
+
+    async function generarFolio(area) {
+      const year = new Date().getFullYear();
+      const acronimo = obtenerAcronimo(area);
+      const startOfYear = `${year}-01-01T00:00:00Z`;
+      
+      // Contar cuántos trámites ha recibido ESTA secretaría en ESTE año
+      const { count } = await supabaseApp
+        .from('escritos_buzon')
+        .select('*', { count: 'exact', head: true })
+        .eq('area_destino', area)
+        .gte('fecha_envio', startOfYear);
+        
+      let nextNum = (count || 0) + 1;
+      let sequence = nextNum.toString().padStart(4, '0'); // Ej: 0001
+      
+      return `${acronimo}-${year}-${sequence}`;
+    }
+
+    // --- GENERACIÓN CON IA Y HTML ---
     async function redactarIA(prob) {
       showStatus("🧠 Analizando caso y redactando con IA...");
       try {
@@ -409,10 +429,13 @@
       }
     }
 
-    const generarContenido = (d, cuerpo) => {
+    const generarContenido = (d, cuerpo, folio) => {
       const fLarga = new Date(d.fecha + 'T12:00:00').toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
       return `
-        <header>${d.ciudad}, a ${fLarga}</header>
+        <header>
+          <div style="text-align: right; color: #991b1b; font-size: 13pt; margin-bottom: 16px;">Folio Oficial: <strong>${folio}</strong></div>
+          ${d.ciudad}, a ${fLarga}
+        </header>
         <div class="dest">${d.destinatario}</div>
         <div style="font-weight:bold; margin-bottom:5px;">${d.cargo}</div>
         <div>Presente.</div>
@@ -432,8 +455,15 @@
     $('#fDenuncia').addEventListener('submit', async (e) => { 
       e.preventDefault(); 
       const btnSubmit = $('#btnGenerarPrincipal');
-      btnSubmit.innerHTML = "⏳ Generando documento...";
+      btnSubmit.innerHTML = "⏳ Generando Folio y Documento...";
       btnSubmit.disabled = true;
+
+      // Obtener el nombre del área seleccionada (Ej: "Secretaría General")
+      const targetSelect = $('#puestoCatalogo');
+      const areaTexto = targetSelect.options[targetSelect.selectedIndex].text;
+      
+      // 1. Generar el Folio en tiempo real
+      currentFolio = await generarFolio(areaTexto);
 
       const d = {
         ciudad: $('#ciudad').value, fecha: $('#fecha').value,
@@ -442,8 +472,9 @@
         categoria: $('#categoria').value, lugar: $('#lugar').value
       };
       
+      // 2. Redactar y plasmar folio en la hoja
       const cuerpoIA = await redactarIA($('#problematica').value);
-      $('#sheet').innerHTML = generarContenido(d, cuerpoIA);
+      $('#sheet').innerHTML = generarContenido(d, cuerpoIA, currentFolio);
 
       btnSubmit.innerHTML = "🚀 Generar Documento";
       btnSubmit.disabled = false;
@@ -454,21 +485,15 @@
 
     $('#btnClose').addEventListener('click', () => $('#modal').classList.remove('show'));
 
-    // ==========================================
-    // IMPRESIÓN (SOLUCIÓN NUCLEAR APLICADA)
-    // ==========================================
     $('#btnPrint').addEventListener('click', () => {
       const originalTitle = document.title;
-      document.title = "Oficio_Sindical_" + $('#matricula').value;
+      document.title = `${currentFolio}_${$('#matricula').value}`; // Nombra el archivo con el folio si imprimen a PDF
 
-      // Desaparecer físicamente el panel de firmas antes de mandar a imprimir
       $('#modal-firma').style.display = 'none';
       $('#mainWrap').style.display = 'none';
 
-      // Abrir el diálogo de impresión (el navegador se pausa aquí)
       window.print();
 
-      // Restaurar todo a la normalidad en cuanto se cierra la ventana de impresión
       $('#modal-firma').style.display = '';
       $('#mainWrap').style.display = '';
       document.title = originalTitle;
@@ -555,7 +580,7 @@
         
         const pdfBlob = doc.output('blob');
 
-        const fileName = `escritos/${Date.now()}_${$('#matricula').value}.pdf`;
+        const fileName = `escritos/${currentFolio}_${$('#matricula').value}.pdf`;
         const { error: uploadError } = await supabaseApp.storage.from('documentos').upload(fileName, pdfBlob);
         
         if (uploadError) throw uploadError;
@@ -565,10 +590,12 @@
         const targetSelect = $('#puestoCatalogo');
         const areaDestino = targetSelect.options[targetSelect.selectedIndex].text;
 
+        // 3. Registrar en Supabase guardando el Folio en la nueva columna
         const { error: buzonError } = await supabaseApp.from('escritos_buzon').insert({
           user_id: currentUser.id,
           area_destino: areaDestino,
-          asunto: "Trámite Oficial Firmado Digitalmente",
+          folio: currentFolio,
+          asunto: `[${currentFolio}] Trámite Oficial Firmado`,
           contenido: `Se adjunta solicitud oficial generada y firmada digitalmente a través de la PSD.\n\n📄 Ver Documento: ${publicUrl}`
         });
 
@@ -578,7 +605,7 @@
         $('#modal').classList.remove('show');
         $('#fDenuncia').reset();
         
-        alert("✅ Tu escrito ha sido firmado y enviado oficialmente a " + areaDestino + ". Revisa tu Buzón Sindical para conocer la respuesta.");
+        alert(`✅ Trámite enviado a ${areaDestino}.\nTu folio de seguimiento es: ${currentFolio}\n\nRevisa tu Buzón Sindical para conocer la respuesta.`);
         window.location.href = "index.html#buzon"; 
 
       } catch (e) {
