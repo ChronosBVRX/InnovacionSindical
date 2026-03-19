@@ -1,623 +1,715 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Asistente Generador de Escritos — Plataforma Sindical CG</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-<style>
-  :root {
-    --bg-dark: #0f172a;
-    --bg-gradient: radial-gradient(circle at top center, #1e293b, #0f172a);
-    --panel-bg: rgba(30, 41, 59, 0.7);
-    --panel-border: rgba(148, 163, 184, 0.1);
-    --primary: #38bdf8;
-    --primary-hover: #0ea5e9;
-    --accent: #7dd3fc;
-    --success: #4ade80;
-    --warning: #fbbf24;
-    --text-main: #f1f5f9;
-    --text-muted: #94a3b8;
-    --input-bg: rgba(15, 23, 42, 0.6);
-    --input-border: rgba(148, 163, 184, 0.2);
-    --radius: 12px;
-  }
+  <title>Plataforma Sindical Digital (PSD)</title>
+  <meta name="description" content="Plataforma Sindical Digital (PSD) - Panel de Control y Gestión Sindical." />
+  <meta property="og:title" content="Plataforma Sindical Digital (PSD)" />
+  <meta property="og:description" content="Panel de Control y Gestión Sindical para la base trabajadora." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" />
 
-  * { box-sizing: border-box; }
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' https://connect.facebook.net https://cdn.jsdelivr.net;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
+      font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:;
+      img-src 'self' data: https://raw.githubusercontent.com https://*.facebook.com https://*.fbcdn.net https://ui-avatars.com https://*.supabase.co;
+      frame-src 'self' https://chronosbvrx.github.io https://trascendencia-sindical-7t85.onrender.com https://rh.imss.gob.mx https://tuperfil.imss.gob.mx https://www.facebook.com;
+      connect-src 'self' https://connect.facebook.net https://www.facebook.com https://raw.githubusercontent.com https://*.supabase.co;
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      frame-ancestors 'self';
+      upgrade-insecure-requests;
+    "
+  />
 
-  html, body {
-    height: 100%; margin: 0;
-    background: var(--bg-dark);
-    background-image: var(--bg-gradient);
-    color: var(--text-main);
-    font-family: 'Inter', system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
 
-  .wrap { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  .header-group { margin-bottom: 30px; text-align: center; }
-  h1 {
-    margin: 10px 0; font-size: 28px; font-weight: 700;
-    background: linear-gradient(90deg, #fff, var(--primary));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  p.muted { color: var(--text-muted); font-size: 15px; margin-top: 5px; line-height: 1.5; }
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
 
-  /* ALERTA DE PERFIL */
-  .profile-alert {
-    background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4);
-    color: var(--warning); padding: 16px; border-radius: 12px; margin-bottom: 24px;
-    display: flex; align-items: center; gap: 12px; font-size: 14px; line-height: 1.5;
-  }
-  .profile-alert i { font-size: 24px; }
-  .profile-alert.hide { display: none; }
+  <link rel="icon" href="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" />
 
-  .card {
-    background: var(--panel-bg); border: 1px solid var(--panel-border);
-    border-radius: 24px; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(16px);
-  }
+  <style>
+    :root {
+      --bg-body: #1b2e45; --bg-body-end: #152336;
+      --panel-base: 46, 79, 119;
+      --primary: #4da1a8; --primary-light: #7ad1d6;
+      --success: #4ade80;
+      --danger: #ff7b7b;
+      --text-main: #f0fdfa; --text-muted: #bce9eb;
+      --ring: rgba(77, 161, 168, .35);
+      --topbar: 64px; --radius: 16px;
+      --glass-bg: rgba(var(--panel-base), 0.35);
+    }
 
-  form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  label { display: block; font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 8px; }
-  input, select, textarea {
-    width: 100%; padding: 12px 16px; border-radius: var(--radius);
-    border: 1px solid var(--input-border); background: var(--input-bg);
-    color: #fff; font-size: 15px; font-family: inherit; transition: all 0.2s ease;
-  }
-  input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; background: rgba(30, 41, 59, 0.9); }
-  input[readonly] { opacity: 0.7; cursor: not-allowed; }
-  textarea { min-height: 140px; resize: vertical; grid-column: 1/-1; line-height: 1.6; }
-  .grid-full { grid-column: 1/-1; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
 
-  .highlight-section { grid-column: 1/-1; background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.15); padding: 20px; border-radius: 16px; }
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%);
+    }
 
-  .btn {
-    appearance: none; border: 1px solid var(--panel-border);
-    background: rgba(255, 255, 255, 0.05); color: var(--text-main);
-    border-radius: 50px; padding: 12px 24px; font-size: 14px;
-    cursor: pointer; font-weight: 600; transition: all 0.2s ease;
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    text-decoration: none;
-  }
-  .btn:hover { background: rgba(255, 255, 255, 0.1); }
-  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-  .btn.primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); border: none; color: #0f172a; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4); }
-  .btn.success { background: linear-gradient(135deg, #22c55e, #16a34a); border: none; color: #fff; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); }
+    .ambient-bg::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .06;
+      background-image:
+        linear-gradient(to right, var(--primary) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--primary) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
 
-  /* MODALES */
-  .modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); display: none; align-items: center; justify-content: center; z-index: 1000; }
-  .modal.show { display: flex; }
-  .modal-card { width: 95vw; height: 95vh; background: #1e293b; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; }
-  
-  .modal-h { padding: 16px; background: #0f172a; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .modal-b { flex: 1; overflow: auto; padding: 40px 20px; display: flex; justify-content: center; align-items: flex-start; background: #334155; }
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: var(--topbar);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(var(--panel-base), 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--ring);
+      z-index: 30;
+    }
 
-  /* HOJA OFICIO */
-  .page.carta { width: 816px; height: 1056px; background: #fff; color: #111; box-shadow: 0 10px 40px rgba(0,0,0,0.5); flex-shrink: 0; transform-origin: top center; }
-  .sheet { padding: 72px 64px; font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; position: relative; height: 100%; color: #000; }
-  .sheet header { text-align: right; font-weight: bold; margin-bottom: 30px; }
-  .sheet .dest { font-weight: bold; text-transform: uppercase; }
-  .sheet .cuerpo { text-align: justify; white-space: pre-wrap; margin-top: 20px; }
-  .sheet .pie { position: absolute; bottom: 80px; left: 0; right: 0; text-align: center; font-weight: bold; width: 100%; }
+    .mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(77, 161, 168, .15);
+      border: 1px solid var(--ring);
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
 
-  /* FIRMA DIGITAL */
-  .signature-container { background: #fff; border-radius: 12px; padding: 20px; text-align: center; width: 100%; max-width: 500px; margin: auto; }
-  canvas#firmaPad { border: 2px dashed #cbd5e1; border-radius: 8px; background: #f8fafc; cursor: crosshair; touch-action: none; width: 100%; height: 200px; margin-bottom: 16px;}
+    .mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-  #status { position: fixed; bottom: 20px; right: 20px; background: #1e293b; border-left: 4px solid var(--primary); color: #fff; padding: 12px 20px; border-radius: 8px; transform: translateY(100px); transition: 0.3s; z-index: 2000; }
-  #status.visible { transform: translateY(0); }
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      font-size: 16px;
+    }
 
-  @media (max-width: 768px) {
-    form { grid-template-columns: 1fr; }
-    .page.carta { transform: scale(0.4); } 
-    .modal-h .btn { flex: 1; padding: 8px; font-size: 11px; }
-  }
+    .title span { color: var(--primary-light); }
 
-  /* IMPRESIÓN */
-  @media print {
-    .wrap, .modal-h, #status, #modal-firma, #alerta-perfil { display: none !important; }
-    body, #modal, .modal-card, .modal-b { background: transparent !important; position: static !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; display: block !important; width: 100% !important; height: auto !important; overflow: visible !important; }
-    .page.carta { width: 100% !important; height: auto !important; transform: none !important; box-shadow: none !important; margin: 0 !important; }
-    .sheet { padding: 2cm !important; height: auto !important; }
-    .sheet .pie { position: relative !important; bottom: auto !important; left: 0 !important; right: 0 !important; width: 100% !important; margin-top: 60px !important; page-break-inside: avoid !important; text-align: center !important; }
-    @page { size: letter; margin: 0; }
-  }
-</style>
+    .clock-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      background: rgba(var(--panel-base), 0.4);
+      padding: 6px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--ring);
+    }
+
+    .secure-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--success);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      border-right: 1px solid var(--ring);
+      padding-right: 8px;
+    }
+
+    .secure-badge i { font-size: 14px; }
+
+    /* --- HEADER AUTH STYLES --- */
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .btn-auth { background: var(--primary); color: var(--bg-body); border: none; padding: 6px 16px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
+    .btn-auth:hover { background: var(--primary-light); transform: translateY(-1px); }
+    
+    .user-widget { display: flex; align-items: center; gap: 10px; cursor: pointer; background: rgba(var(--panel-base), 0.4); padding: 4px 12px 4px 4px; border-radius: 20px; border: 1px solid var(--ring); transition: all 0.2s ease; }
+    .user-widget:hover { border-color: var(--primary-light); background: rgba(var(--panel-base), 0.6); }
+    .user-widget img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--ring); background: var(--bg-body); }
+    .user-widget .name { font-size: 13px; font-weight: 600; color: var(--text-main); max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 4px; }
+    
+    .btn-logout { background: transparent; color: #ff7b7b; border: 1px solid rgba(255,123,123,0.3); padding: 6px 10px; border-radius: 8px; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; }
+    .btn-logout:hover { background: rgba(255,123,123,0.1); }
+
+    /* --- NOTIFICATION BELL STYLES --- */
+    .notification-icon {
+      position: relative;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+    }
+    .notification-icon:hover { color: var(--primary-light); }
+    .notification-icon i { font-size: 24px; }
+    .notification-badge {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      background-color: var(--danger);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 50%;
+      min-width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+      box-shadow: 0 0 0 2px var(--bg-body);
+      animation: popIn 0.3s ease;
+    }
+
+    /* --- LOGIN MODAL STYLES --- */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(10, 20, 29, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-content { background: linear-gradient(180deg, rgba(46,79,119,.95), rgba(27,46,69,.95)); border: 1px solid var(--ring); border-radius: 16px; padding: 24px; width: 90%; max-width: 340px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: translateY(20px); transition: transform 0.3s ease; }
+    .modal-overlay.active .modal-content { transform: translateY(0); }
+    
+    .modal-input { width: 100%; padding: 10px 12px; margin-bottom: 16px; border-radius: 12px; border: 1px solid var(--ring); background: rgba(21,35,54,.85); color: var(--text-main); box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; transition: all 0.2s; }
+    .modal-input:focus { border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(77,161,168,.18); }
+    .modal-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+
+    .layer { position: fixed; inset: 0; top: var(--topbar); overflow-y: auto; display: flex; flex-direction: column; }
+    .wrap { padding: 32px 24px; max-width: 1200px; margin: 0 auto; flex: 1; width: 100%; box-sizing: border-box; }
+
+    .brand { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--ring); }
+    .brand h1 { margin: 0; font-size: 28px; font-weight: 700; color: var(--text-main); }
+
+    .text-gradient { background: linear-gradient(to right, var(--primary-light), var(--text-main)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    .badge { background: rgba(77, 161, 168, .15); border: 1px solid var(--ring); color: var(--primary-light); padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+
+    /* --- CAMPAIGN BANNER STYLES --- */
+    .campaign-banner { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.6)); border: 1px solid var(--primary-light); border-radius: var(--radius); padding: 24px 32px; margin-bottom: 32px; cursor: pointer; box-shadow: 0 8px 24px rgba(77, 161, 168, 0.15); transition: all 0.3s ease; position: relative; overflow: hidden; }
+    .campaign-banner:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(77, 161, 168, 0.3); background: linear-gradient(135deg, rgba(77, 161, 168, 0.3), rgba(var(--panel-base), 0.8)); }
+    .campaign-banner::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(122, 209, 214, 0.1) 0%, transparent 60%); pointer-events: none; }
+    .campaign-content { display: flex; align-items: center; gap: 24px; z-index: 1; }
+    .campaign-icon { font-size: 52px; color: var(--primary-light); filter: drop-shadow(0 4px 8px rgba(77, 161, 168, 0.4)); animation: float 3s ease-in-out infinite; }
+    .campaign-text h2 { margin: 0 0 6px 0; font-size: 24px; color: var(--text-main); font-weight: 700; }
+    .campaign-text p { margin: 0; color: var(--text-muted); font-size: 15px; }
+    .campaign-btn { background: var(--primary); color: var(--bg-body); border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; z-index: 1; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(77, 161, 168, 0.3); }
+    .campaign-banner:hover .campaign-btn { background: var(--primary-light); transform: scale(1.05); }
+
+    @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0px); } }
+    @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+    .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding-bottom: 20px; }
+    .tile { position: relative; display: flex; flex-direction: column; min-height: 180px; padding: 24px; cursor: pointer; background: var(--glass-bg); backdrop-filter: blur(8px); border: 1px solid var(--ring); border-radius: var(--radius); transition: all 0.3s ease; overflow: hidden; }
+    .tile:hover { transform: translateY(-4px); border-color: var(--primary); background: rgba(var(--panel-base), 0.6); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25); }
+    .tile.featured { background: linear-gradient(145deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.45)); border: 1px solid var(--primary-light); box-shadow: 0 0 15px rgba(77, 161, 168, 0.15); }
+    .tile-icon-integrated { font-size: 48px; color: var(--primary-light); margin-bottom: 16px; transition: all 0.3s ease; filter: drop-shadow(0 4px 6px rgba(77, 161, 168, 0.4)); }
+    .tile:hover .tile-icon-integrated { transform: scale(1.1) rotate(-2deg); color: #fff; filter: drop-shadow(0 6px 12px rgba(122, 209, 214, 0.7)); }
+    .tile h3 { margin: 0 0 8px 0; font-size: 18px; }
+    .tile p { margin: 0; color: var(--text-muted); font-size: 14px; line-height: 1.5; }
+
+    .badge-ia { position: absolute; top: 14px; right: 14px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; color: var(--primary-light); background: rgba(77, 161, 168, .14); border: 1px solid var(--ring); box-shadow: 0 0 8px rgba(122, 209, 214, 0.2); }
+
+    .security-section { margin-top: 20px; padding-top: 32px; padding-bottom: 40px; border-top: 1px solid var(--ring); }
+    .security-header { margin-bottom: 24px; }
+    .security-header h2 { font-size: 20px; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin: 0 0 8px 0; }
+    .security-header h2 i { color: var(--success); filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.4)); }
+    .security-header p { color: var(--text-muted); font-size: 14px; margin: 0; line-height: 1.6; max-width: 850px; }
+
+    .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .tech-card { background: rgba(var(--panel-base), 0.25); border: 1px solid var(--ring); border-radius: 12px; padding: 16px; display: flex; gap: 16px; align-items: flex-start; transition: all 0.3s ease; }
+    .tech-card:hover { border-color: var(--primary-light); background: rgba(var(--panel-base), 0.4); transform: translateY(-2px); }
+    .tech-icon { font-size: 32px; color: var(--primary-light); background: rgba(77, 161, 168, 0.1); padding: 8px; border-radius: 8px; flex-shrink: 0; border: 1px solid rgba(122, 209, 214, 0.2); filter: drop-shadow(0 4px 8px rgba(77, 161, 168, 0.3)); }
+    .tech-info h4 { margin: 0 0 6px 0; font-size: 15px; color: var(--text-main); }
+    .tech-info p { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.4; }
+
+    .psd-footer { margin-top: 40px; padding: 24px 0; border-top: 1px solid rgba(77, 161, 168, 0.1); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; color: var(--text-muted); font-size: 12px; }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { color: var(--primary-light); text-decoration: none; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease; font-weight: 500; }
+    .footer-links a:hover { color: var(--text-main); text-shadow: 0 0 8px rgba(122, 209, 214, 0.4); }
+
+    .app-wrap { width: 100%; max-width: 100%; margin: 0; padding: 0; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; position: relative; }
+    .app-head { position: absolute; top: 16px; right: 24px; z-index: 50; display: flex; align-items: center; gap: 8px; background: rgba(var(--panel-base), 0.75); backdrop-filter: blur(10px); padding: 8px; border-radius: 12px; border: 1px solid var(--ring); margin: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+    .app-head > div:first-child { display: none !important; }
+    .app-body { flex: 1; background: transparent; border-radius: 0; border: none; overflow: hidden; position: relative; width: 100%; height: 100%; }
+    .iframe { width: 100%; height: 100%; border: none; display: block; }
+    .btn { background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring); color: var(--primary); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
+    .btn i { font-size: 18px; }
+    .btn:hover { background: rgba(77, 161, 168, .15); color: var(--text-main); border-color: var(--primary-light); box-shadow: 0 0 10px rgba(122, 209, 214, 0.2); }
+    .hide { display: none !important; }
+
+    .boot { position: fixed; inset: 0; display: grid; place-items: center; z-index: 100; background: radial-gradient(circle at center, #1b2e45 0%, #0a141d 100%); transition: opacity 0.6s ease; }
+    .logo-boot { width: 100px; height: 100px; border-radius: 22px; border: 1px solid var(--ring); overflow: hidden; box-shadow: 0 0 30px rgba(77,161,168,0.3); }
+    .logo-boot img { width: 100%; height: 100%; object-fit: cover; }
+    .bar { height: 3px; width: 200px; background: rgba(255,255,255,0.05); overflow: hidden; position: relative; border-radius: 10px; }
+    .bar span { display: block; height: 100%; width: 30%; background: var(--primary-light); position: absolute; animation: load 2s infinite; box-shadow: 0 0 10px var(--primary-light); }
+
+    @media (max-width: 768px) {
+      .hide-mobile { display: none !important; }
+      .wrap { padding: 20px 16px; }
+      .app-head { right: 16px; top: 12px; }
+      .tiles { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .tile { min-height: 120px; padding: 16px; }
+      .clock-container { padding: 4px 8px; font-size: 11px; }
+      .secure-badge span { display: none; }
+      .tech-grid { grid-template-columns: 1fr; }
+      .campaign-banner { flex-direction: column; text-align: center; padding: 20px; gap: 16px; }
+      .campaign-content { flex-direction: column; gap: 12px; }
+      .psd-footer { flex-direction: column; text-align: center; gap: 12px; }
+      .footer-links { justify-content: center; }
+    }
+
+    @keyframes load { 0% { left: -30%; } 100% { left: 100%; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .tile-enter { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+  </style>
+
+  <script>
+    // Prevenir que el index.html se cargue dentro del iframe (Fallback de error 404)
+    if (window.top !== window.self) {
+      document.documentElement.innerHTML = `
+        <body style="background-color: #1b2e45; color: #bce9eb; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: 'Inter', sans-serif;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#ff7b7b" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z"></path></svg>
+          <h2 style="color: #f0fdfa; margin: 16px 0 8px 0;">Módulo en Construcción o No Encontrado</h2>
+          <p style="text-align: center; max-width: 80%;">El archivo correspondiente a esta herramienta aún no se ha subido al servidor o la ruta es incorrecta.</p>
+        </body>
+      `;
+    }
+  </script>
 </head>
 
 <body>
-  <div class="wrap" id="mainWrap">
-    <div style="margin-bottom: 20px;">
-      <a class="btn" href="#" onclick="window.history.back(); return false;">⬅ Regresar</a>
-    </div>
-
-    <div class="header-group">
-      <h1>Generador de Escritos y Oficios</h1>
-      <p class="muted">Redacta, firma y envía oficios oficiales a las Secretarías sin usar papel.</p>
-    </div>
-
-    <div id="alerta-perfil" class="profile-alert hide">
-      <i class="ph-bold ph-warning-circle"></i>
-      <div>
-        <strong>Faltan datos en tu perfil.</strong><br>
-        Para enviar documentos oficiales, necesitamos tu Matrícula, Categoría y Adscripción. Ve a la pestaña "Personaliza tu perfil" para llenarlos.
-      </div>
-    </div>
-
-    <div class="card">
-      <form id="fDenuncia">
-        <div class="highlight-section">
-          <label for="puestoCatalogo">1. ¿A qué Secretaría o Comisión va dirigido?</label>
-          <select id="puestoCatalogo" required>
-            <option value="">— Selecciona la Secretaría o Comisión —</option>
-            <optgroup label="Secretarías">
-              <option value="Secretaría General|Dr. Juan Gerardo García González">Secretaría General</option>
-              <option value="Secretaría de Interior y Propaganda|M.N.F. Amin Uriel Morales Sánchez">Secretaría de Interior y Propaganda</option>
-              <option value="Secretaría de Conflictos|J.G.E. Arturo Ochoa Huacuz">Secretaría de Conflictos</option>
-              <option value="Secretaría de Trabajo|E.G. Cándido Mora Alcauter">Secretaría de Trabajo</option>
-              <option value="Secretaría del Exterior|M.N.F. Ignacio Agustín Orozco Pérez">Secretaría del Exterior</option>
-              <option value="Tesorería|EST. Azucena Herrera Martínez">Tesorería</option>
-              <option value="Secretaría de Previsión Social|A.M. Fabiola Farías Ambriz">Secretaría de Previsión Social</option>
-              <option value="Secretaría de Igualdad Sustantiva|M.F. Gabriela Durán Negrete">Secretaría de Igualdad Sustantiva</option>
-              <option value="Secretaría de Asuntos Técnicos|M.N.F. Horacio Peña Alfaro">Secretaría de Asuntos Técnicos</option>
-              <option value="Secretaría de Actas y Acuerdos|M.G. César Augusto Contreras Flores">Secretaría de Actas y Acuerdos</option>
-              <option value="Secretaría de Prensa|A.M. Yolanda Morelos Palomares">Secretaría de Prensa</option>
-              <option value="Secretaría de Puestos Periféricos|M.N.F. Alejandra Johnson Aguirre">Secretaría de Puestos Periféricos</option>
-              <option value="Secretaría de Admisión y Cambios|C.C. Uriel Tapia Pérez">Secretaría de Admisión y Cambios</option>
-              <option value="Secretaría de Capacitación y Adiestramiento|O.P. América Hilda Reyes Reyes">Secretaría de Capacitación y Adiestramiento</option>
-              <option value="Secretaría de Calidad y Modernización|Q.C. Gerardo Ordaz Salazar">Secretaría de Calidad y Modernización</option>
-              <option value="Secretaría de Acción Social|E.E. Claudia Denisse Torres Rangel">Secretaría de Acción Social</option>
-            </optgroup>
-            <optgroup label="Comisiones">
-              <option value="Comisión de Honor y Justicia — Presidencia|J.G.S.T. José Francisco Ruiz Domínguez">Honor y Justicia — Presidencia</option>
-              <option value="Comisión de Vigilancia — Presidencia|T.R. Eduardo Bolaños Vázquez">Vigilancia — Presidencia</option>
-              <option value="Comisión de Fomento a la Seguridad Social — Presidencia|M.N.F. Carlos Mojica Rodríguez">Fomento a la Seg. Social — Presidencia</option>
-              <option value="Comisión de Hacienda — Presidencia|A.L. Ángeles Alejandra Ledesma Torres">Hacienda — Presidencia</option>
-              <option value="Comisión de Deportes — Presidencia|J.G.P. Roberto Carlos Reyes Ortiz">Deportes — Presidencia</option>
-              <option value="Comisión de Acción Política — Presidencia|M.N.F. Verónica Diosdado Minguela">Acción Política — Presidencia</option>
-            </optgroup>
-            <optgroup label="Subcomisiones Mixtas">
-              <option value="Subcomisión Mixta de Becas — Representación Sindical|M.F. Jorge Héctor Zaragoza Palacios">Becas</option>
-              <option value="Bolsa de Trabajo|C.C. M. Guadalupe Calderón Ayala">Bolsa de Trabajo</option>
-              <option value="Subcomisión Mixta de Puestos de Confianza 'B' — Representación Sindical|M.F. Jorge Hugo Ruiz Saenz">Puestos de Confianza 'B'</option>
-              <option value="Subcomisión Mixta de Capacitación y Adiestramiento — Representación Sindical|A.E.G. Juan Onofre Baez">Capacitación y Adiestramiento</option>
-              <option value="Subcomisión Mixta de Seguridad e Higiene — Representación Sindical|A.U.O Betsabe Hernández Flores">Seguridad e Higiene</option>
-              <option value="Subcomisión Mixta Disciplinaria — Representación Sindical|Cont. Juan Carlos Servín Juárez">Disciplinaria</option>
-              <option value="Subcomisión Mixta de Escalafón — Representación Sindical|E.G. Hilda Ontiveros Cuellar">Escalafón</option>
-              <option value="Subcomisión Mixta Paritaria de Protección al Salario — Representación Sindical|E.E. Dinorah Alduenda Guiza">Protección al Salario</option>
-              <option value="Subcomisión Mixta de Pasajes — Representación Sindical|O.A. José Antonio Carrillo Bejarano">Pasajes</option>
-              <option value="Subcomisión Mixta de Ropa de Trabajo y Uniformes — Representación Sindical|A.A. Julio Cesar García Salgado">Ropa de Trabajo y Uniformes</option>
-              <option value="Subcomisión Mixta de Selec. Recursos Humanos para Cambios de Rama — Representación Sindical|C.C. Alicia Martínez Correa">Cambios de Rama</option>
-              <option value="Subcomisión Mixta de Tiendas — Representación Sindical|P.E.F.B. Humberto Guerrero Linares">Tiendas</option>
-              <option value="Subcomisión Mixta de Jubilaciones y Pensiones — Representación Sindical|E.G.C. Maricela Navarrete Mora">Jubilaciones y Pensiones</option>
-              <option value="Subcomisión Mixta de Revisión de Plantillas — Representación Sindical|E.G. Luis Fernando García Cervantes">Revisión de Plantillas</option>
-            </optgroup>
-          </select>
-        </div>
-
-        <input type="hidden" id="cargo">
-        <div>
-          <label>Nombre del titular a dirigirse</label>
-          <input id="destinatario" readonly placeholder="Se llena automático...">
-        </div>
-        <div>
-          <label>Fecha del escrito</label>
-          <input id="fecha" type="date">
-        </div>
-
-        <div class="grid-full"><hr style="border:0; border-top:1px solid var(--panel-border);"></div>
-
-        <div>
-          <label>Nombre del trabajador</label>
-          <input id="nombre" required readonly placeholder="Autocompletado...">
-        </div>
-        <div>
-          <label>Matrícula</label>
-          <input id="matricula" required readonly placeholder="Autocompletado...">
-        </div>
-        <div>
-          <label>Categoría</label>
-          <input id="categoria" required readonly placeholder="Autocompletado...">
-        </div>
-        <div>
-          <label>Adscripción</label>
-          <input id="lugar" required readonly placeholder="Autocompletado...">
-        </div>
-        <div class="grid-full">
-          <label>Ciudad / Municipio donde te encuentras</label>
-          <input id="ciudad" placeholder="Ej. Lázaro Cárdenas, Michoacán" required>
-        </div>
-
-        <div class="grid-full">
-          <label>2. Descripción de los hechos (La IA redactará tu solicitud formalmente)</label>
-          <textarea id="problematica" required placeholder="Explica qué sucedió, qué solicitas o cuál es tu trámite..."></textarea>
-        </div>
-
-        <div class="grid-full" style="display: flex; gap: 12px; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
-          <span style="font-size: 12px; color: var(--text-muted);">Redacción impulsada por IA con Generación de Folio.</span>
-          <button type="submit" class="btn primary" id="btnGenerarPrincipal">🚀 Generar Documento</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div id="status"></div>
-
-  <div id="modal" class="modal">
-    <div class="modal-card">
-      <div class="modal-h">
-        <span style="color:white; font-weight:bold;">Vista Previa del Oficio</span>
-        <div style="display:flex; gap:8px;">
-          <button class="btn" id="btnPrint">🖨️ Imprimir Hoja</button>
-          <button class="btn success" id="btnSign" style="color:white;">✍️ Firmar y Enviar a Buzón</button>
-          <button class="btn" id="btnClose" style="color:#ef4444; border-color:rgba(239,68,68,0.3);">✖ Cancelar</button>
-        </div>
-      </div>
-      <div class="modal-b" id="modalBody">
-        <div id="page" class="page carta">
-          <div id="sheet" class="sheet"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="modal-firma" class="modal">
-    <div class="signature-container">
-      <h3 style="color: #0f172a; margin-top:0;">Firma Digital</h3>
-      <p style="color: #64748b; font-size: 14px;">Dibuja tu firma en el recuadro de abajo. Este documento será enviado oficialmente a la Secretaría correspondiente.</p>
-      
-      <canvas id="firmaPad"></canvas>
-      
-      <div style="display: flex; gap: 10px; justify-content: center; margin-top: 16px;">
-        <button class="btn" id="btnClearSignature" style="color: #0f172a; border-color: #cbd5e1;">Borrar</button>
-        <button class="btn success" id="btnConfirmSignature" style="color: white;">Confirmar y Enviar Trámite</button>
-      </div>
-      <button class="btn" onclick="document.getElementById('modal-firma').classList.remove('show')" style="margin-top: 10px; color: #ef4444; width: 100%; border: none;">Cancelar</button>
-    </div>
-  </div>
-
+  <div id="fb-root"></div>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v24.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <div class="ambient-bg"></div>
+
+  <div id="boot" class="boot" onclick="PSD.skipBoot()">
+    <div style="text-align: center;">
+      <div class="logo-boot" style="margin: 0 auto 20px;">
+        <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo SNTSS" />
+      </div>
+      <h1 style="font-size: 20px; letter-spacing: 2px;">PLATAFORMA SINDICAL DIGITAL</h1>
+      <div class="bar" style="margin: 20px auto;"><span></span></div>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(77, 161, 168, 0.2);">
+        <i class="ph-fill ph-shield-check" style="color: var(--success); font-size: 20px; filter: drop-shadow(0 0 5px rgba(74, 222, 128, 0.5));"></i>
+        <div id="security-status" style="font-size: 12px; color: var(--success); font-family: monospace; transition: opacity 0.2s ease; text-align: left; min-width: 220px;">Inicializando entorno...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="topbar">
+    <div class="title">
+      <div class="mark"><img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo" /></div>
+      <div><span>Plataforma</span> Sindical Digital (PSD)</div>
+    </div>
+    
+    <div class="topbar-right">
+      <div class="clock-container hide-mobile">
+        <div class="secure-badge"><i class="ph-fill ph-lock-key"></i> <span>Seguro</span></div>
+        <div id="clock">--:--</div>
+      </div>
+
+      <div id="auth-unlogged">
+        <button class="btn-auth" onclick="PSDAuth.openModal()">Iniciar Sesión</button>
+      </div>
+      
+      <div id="auth-logged" class="hide" style="display: flex; gap: 12px; align-items: center;">
+        
+        <div class="notification-icon" onclick="PSD.openApp('buzon')" title="Notificaciones (Buzón Sindical)">
+          <i class="ph-duotone ph-bell"></i>
+          <span id="notif-badge" class="notification-badge hide">0</span>
+        </div>
+
+        <div class="user-widget" onclick="PSD.openSafeExternal('miembros.html')" title="Ir a mi perfil">
+          <img id="header-avatar" src="" alt="Avatar">
+          <span id="header-name" class="name">Cargando...</span>
+        </div>
+        <button class="btn-logout" onclick="PSDAuth.logout()" title="Cerrar sesión"><i class="ph-bold ph-sign-out"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="login-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;">
+        <h2 style="margin:0; font-size:18px; color:var(--text-main);">Acceso a Miembros</h2>
+        <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:24px; padding:0;" onclick="PSDAuth.closeModal()">&times;</button>
+      </div>
+      <form id="header-login-form">
+        <label class="modal-label">Matrícula o Correo</label>
+        <input id="hl-user" class="modal-input" placeholder="Ej. 12345678" required autocomplete="username">
+
+        <label class="modal-label">Contraseña</label>
+        <input id="hl-pass" type="password" class="modal-input" placeholder="••••••••" required autocomplete="current-password">
+
+        <button type="submit" style="width:100%; padding:12px; margin-top:8px;" class="btn-auth">Entrar a la Plataforma</button>
+        <div id="hl-error" style="color:#ff7b7b; font-size:13px; margin-top:12px; text-align:center; min-height: 15px;"></div>
+      </form>
+      <div style="margin-top:20px; text-align:center; font-size:13px; border-top: 1px solid var(--ring); padding-top: 16px;">
+        <a href="#" onclick="PSD.openSafeExternal('login.html'); return false;" style="color:var(--primary-light); text-decoration:none; font-weight:500;">¿Nuevo ingreso? Regístrate aquí</a>
+      </div>
+    </div>
+  </div>
+
+  <main id="home" class="layer hide">
+    <section class="wrap">
+      <section class="brand">
+        <div>
+          <h1>Bienvenido, <span class="text-gradient">Compañero</span></h1>
+          <p>Panel de Control y Gestión Sindical.</p>
+        </div>
+        <div class="badge"><i class="ph-bold ph-identification-badge"></i> SNTSS Secc. XX</div>
+      </section>
+
+      <section class="campaign-banner" onclick="PSD.openSafeExternal('campaña-carlos-guerrero.html')">
+        <div class="campaign-content">
+          <i class="ph-duotone ph-presentation-chart campaign-icon"></i>
+          <div class="campaign-text">
+            <h2>Planilla Azul</h2>
+            <p>Conoce nuestro proyecto y súmate al cambio.</p>
+          </div>
+        </div>
+        <button class="campaign-btn">Ver Propuestas <i class="ph-bold ph-arrow-right"></i></button>
+      </section>
+
+      <section class="tiles" id="tiles"></section>
+
+      <section class="security-section">
+        <div class="security-header">
+          <h2><i class="ph-fill ph-shield-check"></i> Infraestructura y Seguridad</h2>
+          <p>La protección de la información es nuestra prioridad.</p>
+        </div>
+
+        <div class="tech-grid">
+          <div class="tech-card">
+            <div class="tech-icon"><i class="ph-duotone ph-server"></i></div>
+            <div class="tech-info">
+              <h4>Alojamiento Empresarial</h4>
+              <p>Respaldado por <strong>Microsoft</strong>. Alta disponibilidad global y protección contra ataques (DDoS).</p>
+            </div>
+          </div>
+          
+          <div class="tech-card">
+            <div class="tech-icon"><i class="ph-duotone ph-database"></i></div>
+            <div class="tech-info">
+              <h4>Privacidad Absoluta</h4>
+              <p>Gestión por <strong>Supabase</strong>. Cifrado de extremo a extremo (E2E) para máxima confidencialidad.</p>
+            </div>
+          </div>
+
+          <div class="tech-card">
+            <div class="tech-icon"><i class="ph-duotone ph-shield-check"></i></div>
+            <div class="tech-info">
+              <h4>Conexiones 100% Seguras</h4>
+              <p>Despliegue en <strong>Render</strong>. Tránsito de datos protegido por túneles HTTPS y certificados SSL/TLS.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="psd-footer">
+        <div>&copy; 2026 SNTSS Sección XX Michoacán | <strong>PSD</strong></div>
+        <div class="footer-links">
+          <a href="#" onclick="PSD.openApp('privacidad'); return false;">
+            <i class="ph-bold ph-shield-check"></i> Aviso de Privacidad
+          </a>
+          <a href="mailto:contacto@seccionxxmich.org.mx">
+            <i class="ph-bold ph-envelope"></i> Soporte
+          </a>
+        </div>
+      </footer>
+    </section>
+  </main>
+
+  <section id="app" class="layer hide">
+    <div class="app-wrap">
+      <div class="app-head">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div id="app-ic" style="font-size:32px; color:var(--primary-light);"></div>
+          <div>
+            <h2 id="app-title" style="margin:0; font-size:18px;">Módulo</h2>
+            <p id="app-desc" style="margin:0; font-size:12px; color:var(--text-muted);"></p>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" onclick="PSD.goHome()"><i class="ph-duotone ph-house"></i></button>
+          <button class="btn" onclick="PSD.closeApp()"><i class="ph-bold ph-x"></i></button>
+        </div>
+      </div>
+      <div class="app-body">
+        <iframe id="app-iframe" class="iframe"></iframe>
+        <div id="app-internal" style="height:100%; overflow:auto;"></div>
+      </div>
+    </div>
+  </section>
 
   <script>
-    // Configuración de Supabase
-    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    const supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    let currentUser = null;
-    let currentFolio = ""; // Guarda el folio generado en memoria
+    const SAFE_ORIGINS = new Set([
+      window.location.origin,
+      'https://chronosbvrx.github.io',
+      'https://trascendencia-sindical-7t85.onrender.com',
+      'https://rh.imss.gob.mx',
+      'https://tuperfil.imss.gob.mx',
+      'https://www.facebook.com'
+    ]);
 
-    const API_BASE = "https://sinos-api.onrender.com";
-    const $ = s => document.querySelector(s);
+    const APPS = [
+      { id: 'trascendencia', title: 'TrascendencIA - Orientacion del CCT por medio de Inteligencia Artificial', desc: 'Asistente Virtual.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true, newTab: true },
+      { id: 'buzon', title: 'Buzón Sindical', desc: 'Trámites y Respuestas.', iconClass: 'ph-duotone ph-envelope-open', iframe: 'buzon.html', featured: true },
+      { id: 'escalafon', title: 'Consulta tu lugar', desc: 'Bolsa de trabajo y Escalafon', iconClass: 'ph-duotone ph-list-numbers', iframe: 'consultalugar.html', featured: true },
+            { id: 'denuncias', title: 'Gestor de Escritos', desc: 'IA.', iconClass: 'ph-duotone ph-pen-nib', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
+      { id: 'noticias', title: 'Noticias', desc: 'Comunicados.', iconClass: 'ph-duotone ph-broadcast', iframe: 'noticias.html' },
+      { id: 'biblioteca', title: 'Biblioteca', desc: 'Recursos digitales.', iconClass: 'ph-duotone ph-books', iframe: 'biblioteca.html' },
+      { id: 'calendario', title: 'Calendario', desc: 'Eventos sindicales.', iconClass: 'ph-duotone ph-calendar-blank', iframe: 'calendario.html' },
+      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Defensa.', iconClass: 'ph-duotone ph-scales', href: 'nucleo.html', featured: true, newTab: true },
+      { id: 'comite', title: 'Comité Seccional', desc: 'Planilla Azul.', iconClass: 'ph-duotone ph-users-three',  iframe: 'comite.html' },
+      { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción.', iconClass: 'ph-duotone ph-scan-smiley', href: 'kiosko.html', featured: true, newTab: true },
+      { id: 'directorio', title: 'Directorio', desc: 'Contactos.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
+      { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo.', iconClass: 'ph-duotone ph-hand-coins', iframe: 'prestaciones.html' },
+      { id: 'tramites', title: 'Catálogo de Trámites', desc: 'Requisitos y Procesos.', iconClass: 'ph-duotone ph-file-text', iframe: 'requisitos_tramites.html', featured: true },
+      { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga.', iconClass: 'ph-duotone ph-file-pdf', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/', secure: true },
+      { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Cuenta.', iconClass: 'ph-duotone ph-hospital', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true },
+      { id: 'privacidad', title: 'Aviso de Privacidad', desc: 'Documento Legal.', iconClass: 'ph-bold ph-shield-check', iframe: 'avisoprivacidad.html' }
+    ];
 
-    const showStatus = (t) => {
-      const s = $('#status');
-      s.textContent = t;
-      s.classList.add('visible');
-      setTimeout(() => s.classList.remove('visible'), 4000);
+    const PSD = {
+      init() {
+        this.renderTiles();
+        this.runSecurityBoot();
+        this.tickClock();
+        setInterval(() => this.tickClock(), 1000);
+      },
+
+      tickClock() {
+        document.getElementById('clock').textContent = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+      },
+
+      runSecurityBoot() {
+        const messages = ["Verificando integridad...", "Conexión TLS...", "Privacidad habilitada...", "Entorno Seguro."];
+        const statusEl = document.getElementById('security-status');
+        let currentMsg = 0;
+        const bootInterval = setInterval(() => {
+          if (currentMsg < messages.length) {
+            statusEl.style.opacity = '0';
+            setTimeout(() => {
+              statusEl.textContent = messages[currentMsg];
+              statusEl.style.opacity = '1';
+              currentMsg++;
+            }, 150);
+          } else {
+            clearInterval(bootInterval);
+            setTimeout(() => this.hideBoot(), 600);
+          }
+        }, 700);
+      },
+
+      hideBoot() {
+        const boot = document.getElementById('boot');
+        boot.style.opacity = '0';
+        setTimeout(() => {
+          boot.style.display = 'none';
+          document.getElementById('home').classList.remove('hide');
+          document.querySelectorAll('.tile').forEach((t, i) => {
+            t.style.animationDelay = `${i * 0.05}s`;
+            t.classList.add('tile-enter');
+          });
+        }, 600);
+      },
+
+      skipBoot() { this.hideBoot(); },
+
+      openSafeExternal(url) {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      },
+
+      renderTiles() {
+        const wrap = document.getElementById('tiles');
+        APPS.forEach(a => {
+          if(a.id === 'privacidad') return; 
+
+          const tile = document.createElement('div');
+          tile.className = `tile ${a.featured ? 'featured' : ''}`;
+          tile.onclick = () => {
+            const url = a.href || a.iframe;
+            if (a.newTab || (url && url.includes('imss.gob.mx'))) this.openSafeExternal(url);
+            else this.openApp(a.id);
+          };
+          if (a.ia) tile.innerHTML = `<div class="badge-ia"><i class="ph-bold ph-sparkle"></i> IA</div>`;
+          tile.innerHTML += `<i class="${a.iconClass} tile-icon-integrated"></i><h3>${a.title}</h3><p>${a.desc}</p>`;
+          wrap.appendChild(tile);
+        });
+      },
+
+      openApp(id) {
+        const app = APPS.find(x => x.id === id);
+        if (!app) return;
+        document.getElementById('home').classList.add('hide');
+        document.getElementById('app').classList.remove('hide');
+        document.getElementById('app-title').textContent = app.title;
+        document.getElementById('app-desc').textContent = app.desc;
+        const iconWrap = document.getElementById('app-ic');
+        iconWrap.innerHTML = `<i class="${app.iconClass}"></i>`;
+        const ifr = document.getElementById('app-iframe');
+        ifr.src = app.iframe || app.href;
+      },
+
+      goHome() {
+        document.getElementById('app').classList.add('hide');
+        document.getElementById('home').classList.remove('hide');
+        document.getElementById('app-iframe').src = "";
+      },
+
+      closeApp() { this.goHome(); }
     };
 
-    const ajustarEscala = () => {
-      const modalB = $('#modalBody');
-      if (!modalB) return;
-      const availableWidth = modalB.clientWidth - 40;
-      const sheetWidth = 816;
-      const scale = availableWidth < sheetWidth ? availableWidth / sheetWidth : 1;
-      const page = $('#page');
-      page.style.transform = `scale(${scale})`;
-      page.style.marginBottom = availableWidth < sheetWidth ? `-${1056 * (1 - scale)}px` : "0";
-    };
-    window.addEventListener('resize', ajustarEscala);
+    // --- CONFIGURACIÓN DE AUTENTICACIÓN SUPABASE PARA EL HEADER ---
+    const supabaseClient = window.supabase.createClient(
+      "https://axsncdwshdvsysrpikwj.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs"
+    );
 
-    // --- INICIALIZAR USUARIO ---
-    async function initUser() {
-      const { data: { session } } = await supabaseApp.auth.getSession();
-      if (!session) {
-        alert("Debes iniciar sesión en la plataforma para usar el generador.");
-        window.location.href = "login.html";
-        return;
-      }
-      currentUser = session.user;
+    const PSDAuth = {
+      async init() {
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+          this.updateUI(session);
+        });
 
-      const { data: prof } = await supabaseApp.from('profiles').select('*').eq('user_id', currentUser.id).single();
-      
-      if (prof) {
-        $('#nombre').value = prof.display_name || '';
-        $('#matricula').value = prof.matricula || '';
-        $('#categoria').value = prof.categoria || '';
-        $('#lugar').value = prof.adscripcion || '';
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        this.updateUI(session);
 
-        if (!prof.display_name || !prof.matricula || !prof.categoria || !prof.adscripcion) {
-          $('#alerta-perfil').classList.remove('hide');
+        document.getElementById('header-login-form').addEventListener('submit', (e) => this.handleLogin(e));
+      },
+
+      async updateUI(session) {
+        const unloggedDiv = document.getElementById('auth-unlogged');
+        const loggedDiv = document.getElementById('auth-logged');
+
+        if (session) {
+          unloggedDiv.classList.add('hide');
+          loggedDiv.classList.remove('hide');
+          this.closeModal();
+
+          const { data: prof } = await supabaseClient
+            .from('profiles')
+            .select('display_name, avatar_url')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+
+          const name = prof?.display_name || session.user.user_metadata?.display_name || 'Compañero';
+          const avatar = prof?.avatar_url || session.user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e4f77&color=fff`;
+
+          document.getElementById('header-name').textContent = name.split(' ')[0];
+          document.getElementById('header-avatar').src = avatar;
+
+          // Revisamos las notificaciones del usuario al loguearse
+          this.checkNotifications(session.user.id);
+        } else {
+          unloggedDiv.classList.remove('hide');
+          loggedDiv.classList.add('hide');
         }
-      }
-      $('#fecha').value = new Date().toISOString().slice(0,10);
-    }
+      },
 
-    $('#puestoCatalogo').addEventListener('change', (e) => {
-      const [cargo, nombre] = e.target.value.split('|');
-      $('#cargo').value = cargo || '';
-      $('#destinatario').value = nombre || '';
-    });
+      async checkNotifications(userId) {
+        try {
+          // Buscamos cuántos trámites del usuario tienen estado diferente a 'Enviado' (ej. En proceso o Atendido)
+          const { count, error } = await supabaseClient
+            .from('escritos_buzon')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId)
+            .in('estatus', ['Atendido', 'En proceso']);
 
-    // --- SISTEMA DE FOLIOS INTELIGENTES ---
-    function obtenerAcronimo(area) {
-      const mapa = {
-        "Secretaría General": "SG",
-        "Secretaría de Interior y Propaganda": "SIP",
-        "Secretaría de Conflictos": "SC",
-        "Secretaría de Trabajo": "ST",
-        "Secretaría del Exterior": "SE",
-        "Tesorería": "TES",
-        "Secretaría de Previsión Social": "SPS",
-        "Secretaría de Igualdad Sustantiva": "SIS",
-        "Secretaría de Asuntos Técnicos": "SAT",
-        "Secretaría de Actas y Acuerdos": "SAA",
-        "Secretaría de Prensa": "SP",
-        "Secretaría de Puestos Periféricos": "SPP",
-        "Secretaría de Admisión y Cambios": "SAC",
-        "Secretaría de Capacitación y Adiestramiento": "SCA",
-        "Secretaría de Calidad y Modernización": "SCM",
-        "Secretaría de Acción Social": "SAS",
-        "Honor y Justicia — Presidencia": "CHJ",
-        "Vigilancia — Presidencia": "CV",
-        "Fomento a la Seg. Social — Presidencia": "CFSS",
-        "Hacienda — Presidencia": "CH",
-        "Deportes — Presidencia": "CD",
-        "Acción Política — Presidencia": "CAP",
-        "Becas": "SMB",
-        "Bolsa de Trabajo": "BT",
-        "Puestos de Confianza 'B'": "SMCB",
-        "Capacitación y Adiestramiento": "SMCA",
-        "Seguridad e Higiene": "SMSH",
-        "Disciplinaria": "SMD",
-        "Escalafón": "SME",
-        "Protección al Salario": "SMPS",
-        "Pasajes": "SMP",
-        "Ropa de Trabajo y Uniformes": "SMRT",
-        "Cambios de Rama": "SMCR",
-        "Tiendas": "SMT",
-        "Jubilaciones y Pensiones": "SMJP",
-        "Revisión de Plantillas": "SMRP"
-      };
-      return mapa[area] || "SNTSS"; 
-    }
+          const badge = document.getElementById('notif-badge');
+          if (count && count > 0) {
+            badge.textContent = count;
+            badge.classList.remove('hide');
+          } else {
+            badge.classList.add('hide');
+          }
+        } catch (err) {
+          console.error("Error al consultar notificaciones:", err);
+        }
+      },
 
-    async function generarFolio(area) {
-      const year = new Date().getFullYear();
-      const acronimo = obtenerAcronimo(area);
-      const startOfYear = `${year}-01-01T00:00:00Z`;
-      
-      // Contar cuántos trámites ha recibido ESTA secretaría en ESTE año
-      const { count } = await supabaseApp
-        .from('escritos_buzon')
-        .select('*', { count: 'exact', head: true })
-        .eq('area_destino', area)
-        .gte('fecha_envio', startOfYear);
+      openModal() {
+        document.getElementById('login-modal').classList.add('active');
+        document.getElementById('hl-user').focus();
+      },
+
+      closeModal() {
+        document.getElementById('login-modal').classList.remove('active');
+        document.getElementById('hl-error').textContent = '';
+      },
+
+      async handleLogin(e) {
+        e.preventDefault();
+        const errDiv = document.getElementById('hl-error');
+        const userVal = document.getElementById('hl-user').value.trim();
+        const passVal = document.getElementById('hl-pass').value;
+
+        errDiv.textContent = 'Verificando credenciales...';
+        let emailToLogin = userVal;
+
+        if (/^[0-9]{4,12}$/.test(userVal)) {
+          const { data: email, error: rpcErr } = await supabaseClient.rpc('get_email_by_matricula', { p_matricula: userVal });
+          if (rpcErr || !email) {
+            errDiv.textContent = 'Matrícula no encontrada.';
+            return;
+          }
+          emailToLogin = email;
+        }
+
+        const { error } = await supabaseClient.auth.signInWithPassword({ email: emailToLogin, password: passVal });
         
-      let nextNum = (count || 0) + 1;
-      let sequence = nextNum.toString().padStart(4, '0'); // Ej: 0001
-      
-      return `${acronimo}-${year}-${sequence}`;
-    }
+        if (error) {
+          errDiv.textContent = 'Error: ' + (error.message.includes('Invalid') ? 'Credenciales incorrectas' : error.message);
+        } else {
+          errDiv.textContent = '';
+          document.getElementById('header-login-form').reset();
+        }
+      },
 
-    // --- GENERACIÓN CON IA Y HTML ---
-    async function redactarIA(prob) {
-      showStatus("🧠 Analizando caso y redactando con IA...");
-      try {
-        const res = await fetch(`${API_BASE}/escritor`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            tema: "Oficio sindical de petición o trámite",
-            hechos: [prob],
-            extras: "Tono formal, profesional, máximo 3 párrafos, directo al grano.",
-            incluirDespedida: false
-          })
-        });
-        const data = await res.json();
-        return data.cuerpo || "No se pudo generar el texto.";
-      } catch (e) {
-        return "Por medio de la presente, expongo ante usted la siguiente solicitud: \n\n" + prob;
+      async logout() {
+        await supabaseClient.auth.signOut();
       }
-    }
-
-    const generarContenido = (d, cuerpo, folio) => {
-      const fLarga = new Date(d.fecha + 'T12:00:00').toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
-      return `
-        <header>
-          <div style="text-align: right; color: #991b1b; font-size: 13pt; margin-bottom: 16px;">Folio Oficial: <strong>${folio}</strong></div>
-          ${d.ciudad}, a ${fLarga}
-        </header>
-        <div class="dest">${d.destinatario}</div>
-        <div style="font-weight:bold; margin-bottom:5px;">${d.cargo}</div>
-        <div>Presente.</div>
-        <div class="cuerpo">${cuerpo}</div>
-        <div class="pie">
-          ATENTAMENTE<br>
-          <img id="img-firma-oficial" style="display:none; max-height:80px; margin: 10px auto 5px auto;">
-          <div id="linea-firma" style="margin: 50px auto 5px auto; width: 250px; border-top: 1px solid black;"></div>
-          ${d.nombre}<br>
-          Matrícula: ${d.matricula}<br>
-          ${d.categoria}<br>
-          ${d.lugar}
-        </div>
-      `;
     };
 
-    $('#fDenuncia').addEventListener('submit', async (e) => { 
-      e.preventDefault(); 
-      const btnSubmit = $('#btnGenerarPrincipal');
-      btnSubmit.innerHTML = "⏳ Generando Folio y Documento...";
-      btnSubmit.disabled = true;
-
-      // Obtener el nombre del área seleccionada (Ej: "Secretaría General")
-      const targetSelect = $('#puestoCatalogo');
-      const areaTexto = targetSelect.options[targetSelect.selectedIndex].text;
-      
-      // 1. Generar el Folio en tiempo real
-      currentFolio = await generarFolio(areaTexto);
-
-      const d = {
-        ciudad: $('#ciudad').value, fecha: $('#fecha').value,
-        destinatario: $('#destinatario').value, cargo: $('#cargo').value,
-        nombre: $('#nombre').value, matricula: $('#matricula').value,
-        categoria: $('#categoria').value, lugar: $('#lugar').value
-      };
-      
-      // 2. Redactar y plasmar folio en la hoja
-      const cuerpoIA = await redactarIA($('#problematica').value);
-      $('#sheet').innerHTML = generarContenido(d, cuerpoIA, currentFolio);
-
-      btnSubmit.innerHTML = "🚀 Generar Documento";
-      btnSubmit.disabled = false;
-
-      $('#modal').classList.add('show');
-      ajustarEscala();
+    document.addEventListener('DOMContentLoaded', () => { 
+      PSD.init();
+      PSDAuth.init(); 
     });
-
-    $('#btnClose').addEventListener('click', () => $('#modal').classList.remove('show'));
-
-    $('#btnPrint').addEventListener('click', () => {
-      const originalTitle = document.title;
-      document.title = `${currentFolio}_${$('#matricula').value}`; // Nombra el archivo con el folio si imprimen a PDF
-
-      $('#modal-firma').style.display = 'none';
-      $('#mainWrap').style.display = 'none';
-
-      window.print();
-
-      $('#modal-firma').style.display = '';
-      $('#mainWrap').style.display = '';
-      document.title = originalTitle;
-    });
-
-    // --- SISTEMA DE FIRMA DIGITAL ---
-    const canvasFirma = $('#firmaPad');
-    const ctx = canvasFirma.getContext('2d');
-    let isDrawing = false;
-
-    function resizeCanvas() {
-      const rect = canvasFirma.getBoundingClientRect();
-      canvasFirma.width = rect.width;
-      canvasFirma.height = rect.height;
-      ctx.lineWidth = 3;
-      ctx.lineCap = "round";
-      ctx.strokeStyle = "#000080"; 
-    }
-
-    const startDrawing = (e) => { 
-      isDrawing = true; 
-      ctx.beginPath(); 
-      const pos = getPos(e);
-      ctx.moveTo(pos.x, pos.y);
-      e.preventDefault();
-    };
-    const draw = (e) => { 
-      if (!isDrawing) return; 
-      const pos = getPos(e);
-      ctx.lineTo(pos.x, pos.y); 
-      ctx.stroke(); 
-      e.preventDefault();
-    };
-    const stopDrawing = () => { isDrawing = false; ctx.closePath(); };
-
-    function getPos(e) {
-      const rect = canvasFirma.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      return { x: clientX - rect.left, y: clientY - rect.top };
-    }
-
-    canvasFirma.addEventListener('mousedown', startDrawing);
-    canvasFirma.addEventListener('mousemove', draw);
-    canvasFirma.addEventListener('mouseup', stopDrawing);
-    canvasFirma.addEventListener('mouseout', stopDrawing);
-    canvasFirma.addEventListener('touchstart', startDrawing, {passive: false});
-    canvasFirma.addEventListener('touchmove', draw, {passive: false});
-    canvasFirma.addEventListener('touchend', stopDrawing);
-
-    $('#btnClearSignature').addEventListener('click', () => {
-      ctx.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
-    });
-
-    $('#btnSign').addEventListener('click', () => {
-      $('#modal-firma').classList.add('show');
-      resizeCanvas();
-    });
-
-    // --- PROCESAR FIRMA, PDF Y ENVIAR AL BUZÓN ---
-    $('#btnConfirmSignature').addEventListener('click', async () => {
-      const btn = $('#btnConfirmSignature');
-      btn.disabled = true;
-      btn.innerHTML = "⏳ Procesando Envío...";
-      showStatus("Generando expediente digital...");
-
-      const firmaDataUrl = canvasFirma.toDataURL('image/png');
-      $('#img-firma-oficial').src = firmaDataUrl;
-      $('#img-firma-oficial').style.display = 'block';
-      $('#linea-firma').style.display = 'none';
-
-      const pageEl = $('#page');
-      const originalTransform = pageEl.style.transform;
-      pageEl.style.transform = 'scale(1)'; 
-      
-      try {
-        const canvasDoc = await html2canvas(pageEl, { scale: 2, backgroundColor: '#ffffff' });
-        pageEl.style.transform = originalTransform;
-
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ unit: 'pt', format: 'letter' });
-        const imgData = canvasDoc.toDataURL('image/jpeg', 1.0);
-        doc.addImage(imgData, 'JPEG', 0, 0, doc.internal.pageSize.getWidth(), doc.internal.pageSize.getHeight());
-        
-        const pdfBlob = doc.output('blob');
-
-        const fileName = `escritos/${currentFolio}_${$('#matricula').value}.pdf`;
-        const { error: uploadError } = await supabaseApp.storage.from('documentos').upload(fileName, pdfBlob);
-        
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabaseApp.storage.from('documentos').getPublicUrl(fileName);
-
-        const targetSelect = $('#puestoCatalogo');
-        const areaDestino = targetSelect.options[targetSelect.selectedIndex].text;
-
-        // 3. Registrar en Supabase guardando el Folio en la nueva columna
-        const { error: buzonError } = await supabaseApp.from('escritos_buzon').insert({
-          user_id: currentUser.id,
-          area_destino: areaDestino,
-          folio: currentFolio,
-          asunto: `[${currentFolio}] Trámite Oficial Firmado`,
-          contenido: `Se adjunta solicitud oficial generada y firmada digitalmente a través de la PSD.\n\n📄 Ver Documento: ${publicUrl}`
-        });
-
-        if (buzonError) throw buzonError;
-
-        $('#modal-firma').classList.remove('show');
-        $('#modal').classList.remove('show');
-        $('#fDenuncia').reset();
-        
-        alert(`✅ Trámite enviado a ${areaDestino}.\nTu folio de seguimiento es: ${currentFolio}\n\nRevisa tu Buzón Sindical para conocer la respuesta.`);
-        window.location.href = "index.html#buzon"; 
-
-      } catch (e) {
-        console.error(e);
-        alert("Ocurrió un error al enviar el documento: " + e.message);
-        btn.disabled = false;
-        btn.innerHTML = "Confirmar y Enviar Trámite";
-        pageEl.style.transform = originalTransform; 
-      }
-    });
-
-    document.addEventListener('DOMContentLoaded', initUser);
   </script>
 </body>
 </html>
