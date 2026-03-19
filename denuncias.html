@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
 
 <style>
   :root {
@@ -17,11 +18,12 @@
     --primary: #38bdf8;
     --primary-hover: #0ea5e9;
     --accent: #7dd3fc;
+    --success: #4ade80;
+    --warning: #fbbf24;
     --text-main: #f1f5f9;
     --text-muted: #94a3b8;
     --input-bg: rgba(15, 23, 42, 0.6);
     --input-border: rgba(148, 163, 184, 0.2);
-    --focus-ring: rgba(56, 189, 248, 0.5);
     --radius: 12px;
   }
 
@@ -46,36 +48,34 @@
   }
   p.muted { color: var(--text-muted); font-size: 15px; margin-top: 5px; line-height: 1.5; }
 
+  /* ALERTA DE PERFIL */
+  .profile-alert {
+    background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4);
+    color: var(--warning); padding: 16px; border-radius: 12px; margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px; font-size: 14px; line-height: 1.5;
+  }
+  .profile-alert i { font-size: 24px; }
+  .profile-alert.hide { display: none; }
+
   .card {
-    background: var(--panel-bg);
-    border: 1px solid var(--panel-border);
-    border-radius: 24px;
-    padding: 32px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    background: var(--panel-bg); border: 1px solid var(--panel-border);
+    border-radius: 24px; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(16px);
   }
 
   form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
   label { display: block; font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 8px; }
-
   input, select, textarea {
     width: 100%; padding: 12px 16px; border-radius: var(--radius);
     border: 1px solid var(--input-border); background: var(--input-bg);
     color: #fff; font-size: 15px; font-family: inherit; transition: all 0.2s ease;
   }
-
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--primary); outline: none; background: rgba(30, 41, 59, 0.9);
-  }
-
+  input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; background: rgba(30, 41, 59, 0.9); }
+  input[readonly] { opacity: 0.7; cursor: not-allowed; }
   textarea { min-height: 140px; resize: vertical; grid-column: 1/-1; line-height: 1.6; }
   .grid-full { grid-column: 1/-1; }
 
-  .highlight-section {
-    grid-column: 1/-1; background: rgba(56, 189, 248, 0.05);
-    border: 1px solid rgba(56, 189, 248, 0.15); padding: 20px; border-radius: 16px;
-  }
+  .highlight-section { grid-column: 1/-1; background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.15); padding: 20px; border-radius: 16px; }
 
   .btn {
     appearance: none; border: 1px solid var(--panel-border);
@@ -85,65 +85,32 @@
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     text-decoration: none;
   }
+  .btn:hover { background: rgba(255, 255, 255, 0.1); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn.primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); border: none; color: #0f172a; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4); }
+  .btn.success { background: linear-gradient(135deg, #22c55e, #16a34a); border: none; color: #fff; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); }
 
-  .btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .btn.primary {
-    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-    border: none; color: #0f172a; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
-  }
-
-  /* MODAL Y PREVIEW */
-  .modal {
-    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98);
-    display: none; align-items: center; justify-content: center; z-index: 1000;
-  }
+  /* MODALES */
+  .modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); display: none; align-items: center; justify-content: center; z-index: 1000; }
   .modal.show { display: flex; }
+  .modal-card { width: 95vw; height: 95vh; background: #1e293b; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; }
+  
+  .modal-h { padding: 16px; background: #0f172a; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .modal-b { flex: 1; overflow: auto; padding: 40px 20px; display: flex; justify-content: center; align-items: flex-start; background: #334155; }
 
-  .modal-card {
-    width: 95vw; height: 95vh; background: #1e293b; border-radius: 20px;
-    display: flex; flex-direction: column; overflow: hidden;
-  }
-
-  .modal-h {
-    padding: 16px; background: #0f172a; display: flex; 
-    justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
-  }
-
-  .modal-b {
-    flex: 1; overflow: auto; padding: 40px 20px;
-    display: flex; justify-content: center; align-items: flex-start;
-    background: #334155;
-  }
-
-  .page.carta {
-    width: 816px; height: 1056px; background: #fff; color: #111;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5); flex-shrink: 0;
-    transform-origin: top center;
-  }
-
-  .sheet {
-    padding: 72px 64px; font-family: "Times New Roman", Times, serif;
-    font-size: 12pt; line-height: 1.5; position: relative; height: 100%;
-    color: #000;
-  }
-
+  /* HOJA OFICIO */
+  .page.carta { width: 816px; height: 1056px; background: #fff; color: #111; box-shadow: 0 10px 40px rgba(0,0,0,0.5); flex-shrink: 0; transform-origin: top center; }
+  .sheet { padding: 72px 64px; font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; position: relative; height: 100%; color: #000; }
   .sheet header { text-align: right; font-weight: bold; margin-bottom: 30px; }
   .sheet .dest { font-weight: bold; text-transform: uppercase; }
   .sheet .cuerpo { text-align: justify; white-space: pre-wrap; margin-top: 20px; }
-  .sheet .pie {
-    position: absolute; bottom: 80px; left: 64px; right: 64px;
-    text-align: center; font-weight: bold;
-  }
+  .sheet .pie { position: absolute; bottom: 80px; left: 64px; right: 64px; text-align: center; font-weight: bold; display: flex; flex-direction: column; align-items: center; }
 
-  #status {
-    position: fixed; bottom: 20px; right: 20px; background: #1e293b;
-    border-left: 4px solid var(--primary); color: #fff; padding: 12px 20px;
-    border-radius: 8px; transform: translateY(100px); transition: 0.3s; z-index: 2000;
-  }
+  /* FIRMA DIGITAL */
+  .signature-container { background: #fff; border-radius: 12px; padding: 20px; text-align: center; width: 100%; max-width: 500px; margin: auto; }
+  canvas#firmaPad { border: 2px dashed #cbd5e1; border-radius: 8px; background: #f8fafc; cursor: crosshair; touch-action: none; width: 100%; height: 200px; margin-bottom: 16px;}
+
+  #status { position: fixed; bottom: 20px; right: 20px; background: #1e293b; border-left: 4px solid var(--primary); color: #fff; padding: 12px 20px; border-radius: 8px; transform: translateY(100px); transition: 0.3s; z-index: 2000; }
   #status.visible { transform: translateY(0); }
 
   @media (max-width: 768px) {
@@ -152,52 +119,14 @@
     .modal-h .btn { flex: 1; padding: 8px; font-size: 11px; }
   }
 
-  /* =========================================
-     ESTILOS EXCLUSIVOS PARA IMPRESIÓN
-     ========================================= */
+  /* IMPRESIÓN */
   @media print {
-    .wrap, .modal-h, #status {
-      display: none !important;
-    }
-    
-    body, .modal, .modal-card, .modal-b {
-      background: transparent !important;
-      position: static !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      box-shadow: none !important;
-      display: block !important;
-      width: 100% !important;
-      height: auto !important;
-      overflow: visible !important;
-    }
-
-    .page.carta {
-      width: 100% !important;
-      height: auto !important;
-      transform: none !important; 
-      box-shadow: none !important;
-      margin: 0 !important;
-    }
-
-    .sheet {
-      padding: 2cm !important;
-      height: auto !important;
-    }
-
-    .sheet .pie {
-      position: relative !important;
-      bottom: auto !important;
-      left: auto !important;
-      right: auto !important;
-      margin-top: 60px !important;
-      page-break-inside: avoid !important;
-    }
-
-    @page {
-      size: letter;
-      margin: 0;
-    }
+    .wrap, .modal-h, #status { display: none !important; }
+    body, .modal, .modal-card, .modal-b { background: transparent !important; position: static !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; display: block !important; width: 100% !important; height: auto !important; overflow: visible !important; }
+    .page.carta { width: 100% !important; height: auto !important; transform: none !important; box-shadow: none !important; margin: 0 !important; }
+    .sheet { padding: 2cm !important; height: auto !important; }
+    .sheet .pie { position: relative !important; bottom: auto !important; margin-top: 60px !important; page-break-inside: avoid !important; }
+    @page { size: letter; margin: 0; }
   }
 </style>
 </head>
@@ -205,21 +134,26 @@
 <body>
   <div class="wrap">
     <div style="margin-bottom: 20px;">
-      <a class="btn" href="https://chronosbvrx.github.io/InnovacionSindical/">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Regresar al menú
-      </a>
+      <a class="btn" href="#" onclick="window.history.back(); return false;">⬅ Regresar</a>
     </div>
 
     <div class="header-group">
-      <h1>Asistente Generador de Escritos</h1>
-      <p class="muted">Redacta oficios profesionales con IA. Universal para PC y Móvil.</p>
+      <h1>Generador de Escritos y Oficios</h1>
+      <p class="muted">Redacta, firma y envía oficios oficiales a las Secretarías sin usar papel.</p>
+    </div>
+
+    <div id="alerta-perfil" class="profile-alert hide">
+      <i class="ph-bold ph-warning-circle"></i>
+      <div>
+        <strong>Faltan datos en tu perfil.</strong><br>
+        Para enviar documentos oficiales, necesitamos tu Matrícula, Categoría y Adscripción. Ve a la pestaña "Personaliza tu perfil" para llenarlos.
+      </div>
     </div>
 
     <div class="card">
       <form id="fDenuncia">
         <div class="highlight-section">
-          <label for="puestoCatalogo">1. ¿A quién va dirigido el escrito?</label>
+          <label for="puestoCatalogo">1. ¿A qué Secretaría o Comisión va dirigido?</label>
           <select id="puestoCatalogo" required>
             <option value="">— Selecciona la Secretaría o Comisión —</option>
             <optgroup label="Secretarías">
@@ -250,7 +184,7 @@
             </optgroup>
             <optgroup label="Subcomisiones Mixtas">
               <option value="Subcomisión Mixta de Becas — Representación Sindical|M.F. Jorge Héctor Zaragoza Palacios">Becas</option>
-              <option value="Subcomisión Mixta de Bolsa de Trabajo — Representación Sindical|C.C. M. Guadalupe Calderón Ayala">Bolsa de Trabajo</option>
+              <option value="Bolsa de Trabajo|C.C. M. Guadalupe Calderón Ayala">Bolsa de Trabajo</option>
               <option value="Subcomisión Mixta de Puestos de Confianza 'B' — Representación Sindical|M.F. Jorge Hugo Ruiz Saenz">Puestos de Confianza 'B'</option>
               <option value="Subcomisión Mixta de Capacitación y Adiestramiento — Representación Sindical|A.E.G. Juan Onofre Baez">Capacitación y Adiestramiento</option>
               <option value="Subcomisión Mixta de Seguridad e Higiene — Representación Sindical|A.U.O Betsabe Hernández Flores">Seguridad e Higiene</option>
@@ -269,8 +203,8 @@
 
         <input type="hidden" id="cargo">
         <div>
-          <label>Nombre del titular (Automático)</label>
-          <input id="destinatario" readonly placeholder="Se llena al elegir puesto...">
+          <label>Nombre del titular a dirigirse</label>
+          <input id="destinatario" readonly placeholder="Se llena automático...">
         </div>
         <div>
           <label>Fecha del escrito</label>
@@ -281,32 +215,32 @@
 
         <div>
           <label>Nombre del trabajador</label>
-          <input id="nombre" required placeholder="Nombre completo">
+          <input id="nombre" required readonly placeholder="Autocompletado...">
         </div>
         <div>
           <label>Matrícula</label>
-          <input id="matricula" required placeholder="Ej. 123456" inputmode="numeric">
+          <input id="matricula" required readonly placeholder="Autocompletado...">
         </div>
         <div>
           <label>Categoría</label>
-          <input id="categoria" required placeholder="Ej. Enfermera General A">
+          <input id="categoria" required readonly placeholder="Autocompletado...">
         </div>
         <div>
           <label>Adscripción</label>
-          <input id="lugar" placeholder="Ej. HGZ No. XX">
+          <input id="lugar" required readonly placeholder="Autocompletado...">
         </div>
         <div class="grid-full">
-          <label>Ciudad / Municipio</label>
+          <label>Ciudad / Municipio donde te encuentras</label>
           <input id="ciudad" placeholder="Ej. Lázaro Cárdenas, Michoacán" required>
         </div>
 
         <div class="grid-full">
-          <label>Descripción de los hechos (La IA redactará formalmente)</label>
-          <textarea id="problematica" required placeholder="Explica qué sucedió y qué solicitas..."></textarea>
+          <label>2. Descripción de los hechos (La IA redactará tu solicitud formalmente)</label>
+          <textarea id="problematica" required placeholder="Explica qué sucedió, qué solicitas o cuál es tu trámite..."></textarea>
         </div>
 
         <div class="grid-full" style="display: flex; gap: 12px; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
-          <span style="font-size: 12px; color: var(--text-muted);">Formato Carta garantizado.</span>
+          <span style="font-size: 12px; color: var(--text-muted);">Redacción impulsada por IA.</span>
           <button type="submit" class="btn primary" id="btnGenerarPrincipal">🚀 Generar Documento</button>
         </div>
       </form>
@@ -320,10 +254,9 @@
       <div class="modal-h">
         <span style="color:white; font-weight:bold;">Vista Previa del Oficio</span>
         <div style="display:flex; gap:8px;">
-          <button class="btn" id="btnCopy">📋 Copiar</button>
-          <button class="btn" id="btnDownload">⬇️ Descargar PDF</button>
-          <button class="btn primary" id="btnPrint">🖨️ Imprimir</button>
-          <button class="btn" id="btnClose" style="color:#ef4444; border-color:rgba(239,68,68,0.3);">✖ Cerrar</button>
+          <button class="btn" id="btnPrint">🖨️ Imprimir Hoja</button>
+          <button class="btn success" id="btnSign" style="color:white;">✍️ Firmar y Enviar a Buzón</button>
+          <button class="btn" id="btnClose" style="color:#ef4444; border-color:rgba(239,68,68,0.3);">✖ Cancelar</button>
         </div>
       </div>
       <div class="modal-b" id="modalBody">
@@ -334,261 +267,284 @@
     </div>
   </div>
 
+  <div id="modal-firma" class="modal">
+    <div class="signature-container">
+      <h3 style="color: #0f172a; margin-top:0;">Firma Digital</h3>
+      <p style="color: #64748b; font-size: 14px;">Dibuja tu firma en el recuadro de abajo. Este documento será enviado oficialmente a la Secretaría correspondiente.</p>
+      
+      <canvas id="firmaPad"></canvas>
+      
+      <div style="display: flex; gap: 10px; justify-content: center; margin-top: 16px;">
+        <button class="btn" id="btnClearSignature" style="color: #0f172a; border-color: #cbd5e1;">Borrar</button>
+        <button class="btn success" id="btnConfirmSignature" style="color: white;">Confirmar y Enviar Trámite</button>
+      </div>
+      <button class="btn" onclick="document.getElementById('modal-firma').classList.remove('show')" style="margin-top: 10px; color: #ef4444; width: 100%; border: none;">Cancelar</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const API_BASE = "https://sinos-api.onrender.com";
-      const FORM_KEY = 'sinos_denuncias_v1';
-      const $ = s => document.querySelector(s);
+    // Configuración de Supabase
+    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    const supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentUser = null;
 
-      const showStatus = (t) => {
-        const s = $('#status');
-        s.textContent = t;
-        s.classList.add('visible');
-        setTimeout(() => s.classList.remove('visible'), 4000);
-      };
+    const API_BASE = "https://sinos-api.onrender.com";
+    const $ = s => document.querySelector(s);
 
-      // Ajuste de escala dinámico para móviles
-      const ajustarEscala = () => {
-        const modalB = $('#modalBody');
-        if (!modalB) return;
-        const availableWidth = modalB.clientWidth - 40;
-        const sheetWidth = 816;
-        const scale = availableWidth < sheetWidth ? availableWidth / sheetWidth : 1;
-        const page = $('#page');
-        page.style.transform = `scale(${scale})`;
-        page.style.marginBottom = availableWidth < sheetWidth ? `-${1056 * (1 - scale)}px` : "0";
-      };
+    const showStatus = (t) => {
+      const s = $('#status');
+      s.textContent = t;
+      s.classList.add('visible');
+      setTimeout(() => s.classList.remove('visible'), 4000);
+    };
 
-      window.addEventListener('resize', ajustarEscala);
+    // Ajuste de escala para el preview
+    const ajustarEscala = () => {
+      const modalB = $('#modalBody');
+      if (!modalB) return;
+      const availableWidth = modalB.clientWidth - 40;
+      const sheetWidth = 816;
+      const scale = availableWidth < sheetWidth ? availableWidth / sheetWidth : 1;
+      const page = $('#page');
+      page.style.transform = `scale(${scale})`;
+      page.style.marginBottom = availableWidth < sheetWidth ? `-${1056 * (1 - scale)}px` : "0";
+    };
+    window.addEventListener('resize', ajustarEscala);
 
-      // Cargar/Guardar datos locales
-      const saveLocal = () => {
-        const d = {
-          puesto: $('#puestoCatalogo').value,
-          dest: $('#destinatario').value,
-          cargo: $('#cargo').value,
-          fecha: $('#fecha').value,
-          nombre: $('#nombre').value,
-          mat: $('#matricula').value,
-          cat: $('#categoria').value,
-          lug: $('#lugar').value,
-          ciu: $('#ciudad').value,
-          prob: $('#problematica').value
-        };
-        localStorage.setItem(FORM_KEY, JSON.stringify(d));
-      };
+    // --- OBTENER DATOS DEL USUARIO DESDE SUPABASE ---
+    async function initUser() {
+      const { data: { session } } = await supabaseApp.auth.getSession();
+      if (!session) {
+        alert("Debes iniciar sesión en la plataforma para usar el generador.");
+        window.location.href = "login.html";
+        return;
+      }
+      currentUser = session.user;
 
-      const loadLocal = () => {
-        const raw = localStorage.getItem(FORM_KEY);
-        if (!raw) return;
-        const d = JSON.parse(raw);
-        $('#puestoCatalogo').value = d.puesto || '';
-        $('#destinatario').value = d.dest || '';
-        $('#cargo').value = d.cargo || '';
-        $('#fecha').value = d.fecha || new Date().toISOString().slice(0,10);
-        $('#nombre').value = d.nombre || '';
-        $('#matricula').value = d.mat || '';
-        $('#categoria').value = d.cat || '';
-        $('#lugar').value = d.lug || '';
-        $('#ciudad').value = d.ciu || '';
-        $('#problematica').value = d.prob || '';
-      };
-
-      // --- FUNCIÓN DE LIMPIEZA TOTAL PARA KIOSKO ---
-      const limpiarKiosco = () => {
-        localStorage.removeItem(FORM_KEY); // Borrar memoria
-        $('#fDenuncia').reset(); // Limpiar formulario
-        
-        // Limpiar campos controlados por código
-        $('#cargo').value = '';
-        $('#destinatario').value = '';
-        $('#fecha').value = new Date().toISOString().slice(0,10);
-        
-        // Cerrar modal si está abierto
-        $('#modal').classList.remove('show');
-        
-        // Redirigir al inicio para garantizar privacidad al siguiente usuario
-        window.location.href = "https://chronosbvrx.github.io/InnovacionSindical/";
-      };
-
-      // --- SISTEMA DE INACTIVIDAD (2 MINUTOS) ---
-      let tiempoInactividad;
-      const TIEMPO_LIMITE = 120000; // 120,000 milisegundos = 2 minutos
-
-      const reiniciarTemporizador = () => {
-        clearTimeout(tiempoInactividad);
-        tiempoInactividad = setTimeout(() => {
-          showStatus("🔒 Sesión cerrada por inactividad.");
-          setTimeout(limpiarKiosco, 1500); // Pequeña pausa para que se lea el mensaje
-        }, TIEMPO_LIMITE);
-      };
-
-      // Escuchar actividad del usuario para reiniciar el reloj
-      window.addEventListener('mousemove', reiniciarTemporizador);
-      window.addEventListener('touchstart', reiniciarTemporizador);
-      window.addEventListener('keypress', reiniciarTemporizador);
-      window.addEventListener('click', reiniciarTemporizador);
+      const { data: prof } = await supabaseApp.from('profiles').select('*').eq('user_id', currentUser.id).single();
       
-      // Iniciar el temporizador al cargar la página
-      reiniciarTemporizador();
-      // ------------------------------------------
+      if (prof) {
+        $('#nombre').value = prof.display_name || '';
+        $('#matricula').value = prof.matricula || '';
+        $('#categoria').value = prof.categoria || '';
+        $('#lugar').value = prof.adscripcion || '';
 
-      $('#puestoCatalogo').addEventListener('change', (e) => {
-        const [cargo, nombre] = e.target.value.split('|');
-        $('#cargo').value = cargo || '';
-        $('#destinatario').value = nombre || '';
-        saveLocal();
-      });
-
-      $('form').addEventListener('input', saveLocal);
-
-      async function redactarIA(prob) {
-        showStatus("🧠 Redactando escrito formal...");
-        try {
-          const res = await fetch(`${API_BASE}/escritor`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              tema: "Oficio sindical de hechos o denuncia",
-              hechos: [prob],
-              extras: "Tono formal, profesional, máximo 3 párrafos, incluye una despedida de respeto.",
-              incluirDespedida: true
-            })
-          });
-          const data = await res.json();
-          return data.cuerpo || "No se pudo generar el texto.";
-        } catch (e) {
-          return "Por medio de la presente, expongo ante usted los siguientes hechos: \n\n" + prob;
+        // Si falta algún dato importante, mostrar alerta
+        if (!prof.display_name || !prof.matricula || !prof.categoria || !prof.adscripcion) {
+          $('#alerta-perfil').classList.remove('hide');
         }
       }
+      
+      $('#fecha').value = new Date().toISOString().slice(0,10);
+    }
 
-      const generarContenido = (d, cuerpo) => {
-        const fLarga = new Date(d.fecha + 'T12:00:00').toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
-        return `
-          <header>${d.ciudad}, a ${fLarga}</header>
-          <div class="dest">${d.destinatario}</div>
-          <div style="font-weight:bold; margin-bottom:5px;">${d.cargo}</div>
-          <div>Presente.</div>
-          <div class="cuerpo">${cuerpo}</div>
-          <div class="pie">
-            ATENTAMENTE<br><br><br><br>
-            ${d.nombre}<br>
-            Matrícula: ${d.matricula}<br>
-            ${d.categoria}<br>
-            ${d.lugar}
-          </div>
-        `;
-      };
-
-      $('#btnClose').addEventListener('click', () => $('#modal').classList.remove('show'));
-
-      async function crearPDF(btnElement) {
-        showStatus("📄 Generando PDF...");
-        
-        let originalText = "";
-        if (btnElement) {
-          originalText = btnElement.innerHTML;
-          btnElement.innerHTML = "⏳ Procesando...";
-          btnElement.disabled = true;
-        }
-        
-        const pageEl = $('#page');
-        const originalTransform = pageEl.style.transform;
-        
-        pageEl.style.transform = 'scale(1)'; 
-        
-        try {
-          const canvas = await html2canvas(pageEl, {
-            scale: 2, 
-            useCORS: true,
-            backgroundColor: '#ffffff'
-          });
-
-          pageEl.style.transform = originalTransform;
-
-          const { jsPDF } = window.jspdf;
-          const doc = new jsPDF({ unit: 'pt', format: 'letter' });
-          
-          const imgData = canvas.toDataURL('image/jpeg', 1.0);
-          const pdfWidth = doc.internal.pageSize.getWidth();
-          const pdfHeight = doc.internal.pageSize.getHeight();
-          
-          doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-          
-          const matricula = $('#matricula').value || 'Generado';
-          doc.save(`Oficio_${matricula}.pdf`);
-          
-          showStatus("✅ Descargado con éxito.");
-          
-          // Limpiar el kiosco después de una descarga exitosa
-          setTimeout(limpiarKiosco, 2000);
-
-        } catch (error) {
-          console.error("Error al generar PDF:", error);
-          showStatus("❌ Error al generar el PDF.");
-          pageEl.style.transform = originalTransform; 
-        } finally {
-          if (btnElement) {
-            btnElement.innerHTML = originalText;
-            btnElement.disabled = false;
-          }
-        }
-      }
-
-      $('#btnDownload').addEventListener('click', function() { 
-        crearPDF(this); 
-      });
-
-      $('#fDenuncia').addEventListener('submit', async (e) => { 
-        e.preventDefault(); 
-        
-        const btnSubmit = $('#btnGenerarPrincipal');
-        const btnText = btnSubmit.innerHTML;
-        btnSubmit.innerHTML = "⏳ Generando documento...";
-        btnSubmit.disabled = true;
-
-        const d = {
-          ciudad: $('#ciudad').value,
-          fecha: $('#fecha').value,
-          destinatario: $('#destinatario').value,
-          cargo: $('#cargo').value,
-          nombre: $('#nombre').value,
-          matricula: $('#matricula').value,
-          categoria: $('#categoria').value,
-          lugar: $('#lugar').value
-        };
-        const cuerpoIA = await redactarIA($('#problematica').value);
-        $('#sheet').innerHTML = generarContenido(d, cuerpoIA);
-
-        btnSubmit.innerHTML = btnText;
-        btnSubmit.disabled = false;
-
-        $('#modal').classList.add('show');
-        ajustarEscala();
-      });
-
-      $('#btnPrint').addEventListener('click', () => {
-        const originalTitle = document.title;
-        document.title = "Oficio_Sindical";
-        window.print();
-        document.title = originalTitle;
-        
-        // Limpiar el kiosco después de mandar a imprimir
-        showStatus("🖨️ Documento enviado a la impresora.");
-        setTimeout(limpiarKiosco, 2000);
-      });
-
-      $('#btnCopy').addEventListener('click', () => {
-        navigator.clipboard.writeText($('#sheet').innerText);
-        showStatus("📋 Copiado al portapapeles.");
-      });
-
-      loadLocal();
-      if (!$('#fecha').value) $('#fecha').value = new Date().toISOString().slice(0,10);
+    // Evento al seleccionar secretaría
+    $('#puestoCatalogo').addEventListener('change', (e) => {
+      const [cargo, nombre] = e.target.value.split('|');
+      $('#cargo').value = cargo || '';
+      $('#destinatario').value = nombre || '';
     });
+
+    // --- GENERACIÓN CON IA ---
+    async function redactarIA(prob) {
+      showStatus("🧠 Analizando caso y redactando con IA...");
+      try {
+        const res = await fetch(`${API_BASE}/escritor`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tema: "Oficio sindical de petición o trámite",
+            hechos: [prob],
+            extras: "Tono formal, profesional, máximo 3 párrafos, directo al grano.",
+            incluirDespedida: false
+          })
+        });
+        const data = await res.json();
+        return data.cuerpo || "No se pudo generar el texto.";
+      } catch (e) {
+        return "Por medio de la presente, expongo ante usted la siguiente solicitud: \n\n" + prob;
+      }
+    }
+
+    const generarContenido = (d, cuerpo) => {
+      const fLarga = new Date(d.fecha + 'T12:00:00').toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
+      return `
+        <header>${d.ciudad}, a ${fLarga}</header>
+        <div class="dest">${d.destinatario}</div>
+        <div style="font-weight:bold; margin-bottom:5px;">${d.cargo}</div>
+        <div>Presente.</div>
+        <div class="cuerpo">${cuerpo}</div>
+        <div class="pie">
+          ATENTAMENTE<br>
+          <img id="img-firma-oficial" style="display:none; max-height:80px; margin-top: 10px; margin-bottom: 5px;">
+          <div id="linea-firma" style="margin-top: 50px; width: 250px; border-top: 1px solid black; margin-bottom: 5px;"></div>
+          ${d.nombre}<br>
+          Matrícula: ${d.matricula}<br>
+          ${d.categoria}<br>
+          ${d.lugar}
+        </div>
+      `;
+    };
+
+    $('#fDenuncia').addEventListener('submit', async (e) => { 
+      e.preventDefault(); 
+      const btnSubmit = $('#btnGenerarPrincipal');
+      btnSubmit.innerHTML = "⏳ Generando documento...";
+      btnSubmit.disabled = true;
+
+      const d = {
+        ciudad: $('#ciudad').value, fecha: $('#fecha').value,
+        destinatario: $('#destinatario').value, cargo: $('#cargo').value,
+        nombre: $('#nombre').value, matricula: $('#matricula').value,
+        categoria: $('#categoria').value, lugar: $('#lugar').value
+      };
+      
+      const cuerpoIA = await redactarIA($('#problematica').value);
+      $('#sheet').innerHTML = generarContenido(d, cuerpoIA);
+
+      btnSubmit.innerHTML = "🚀 Generar Documento";
+      btnSubmit.disabled = false;
+
+      $('#modal').classList.add('show');
+      ajustarEscala();
+    });
+
+    $('#btnClose').addEventListener('click', () => $('#modal').classList.remove('show'));
+
+    $('#btnPrint').addEventListener('click', () => {
+      const originalTitle = document.title;
+      document.title = "Oficio_Sindical_" + $('#matricula').value;
+      window.print();
+      document.title = originalTitle;
+    });
+
+    // --- SISTEMA DE FIRMA DIGITAL ---
+    const canvasFirma = $('#firmaPad');
+    const ctx = canvasFirma.getContext('2d');
+    let isDrawing = false;
+
+    // Configurar Canvas para alta resolución
+    function resizeCanvas() {
+      const rect = canvasFirma.getBoundingClientRect();
+      canvasFirma.width = rect.width;
+      canvasFirma.height = rect.height;
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#000080"; // Tinta azul oficial
+    }
+
+    const startDrawing = (e) => { 
+      isDrawing = true; 
+      ctx.beginPath(); 
+      const pos = getPos(e);
+      ctx.moveTo(pos.x, pos.y);
+      e.preventDefault();
+    };
+    const draw = (e) => { 
+      if (!isDrawing) return; 
+      const pos = getPos(e);
+      ctx.lineTo(pos.x, pos.y); 
+      ctx.stroke(); 
+      e.preventDefault();
+    };
+    const stopDrawing = () => { isDrawing = false; ctx.closePath(); };
+
+    function getPos(e) {
+      const rect = canvasFirma.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    canvasFirma.addEventListener('mousedown', startDrawing);
+    canvasFirma.addEventListener('mousemove', draw);
+    canvasFirma.addEventListener('mouseup', stopDrawing);
+    canvasFirma.addEventListener('mouseout', stopDrawing);
+    canvasFirma.addEventListener('touchstart', startDrawing, {passive: false});
+    canvasFirma.addEventListener('touchmove', draw, {passive: false});
+    canvasFirma.addEventListener('touchend', stopDrawing);
+
+    $('#btnClearSignature').addEventListener('click', () => {
+      ctx.clearRect(0, 0, canvasFirma.width, canvasFirma.height);
+    });
+
+    $('#btnSign').addEventListener('click', () => {
+      $('#modal-firma').classList.add('show');
+      resizeCanvas();
+    });
+
+    // --- PROCESAR FIRMA, PDF Y ENVIAR AL BUZÓN ---
+    $('#btnConfirmSignature').addEventListener('click', async () => {
+      const btn = $('#btnConfirmSignature');
+      btn.disabled = true;
+      btn.innerHTML = "⏳ Procesando Envío...";
+      showStatus("Generando expediente digital...");
+
+      // 1. Poner firma en el documento visual
+      const firmaDataUrl = canvasFirma.toDataURL('image/png');
+      $('#img-firma-oficial').src = firmaDataUrl;
+      $('#img-firma-oficial').style.display = 'block';
+      $('#linea-firma').style.display = 'none';
+
+      // 2. Tomar foto del documento completo (PDF base)
+      const pageEl = $('#page');
+      const originalTransform = pageEl.style.transform;
+      pageEl.style.transform = 'scale(1)'; 
+      
+      try {
+        const canvasDoc = await html2canvas(pageEl, { scale: 2, backgroundColor: '#ffffff' });
+        pageEl.style.transform = originalTransform;
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+        const imgData = canvasDoc.toDataURL('image/jpeg', 1.0);
+        doc.addImage(imgData, 'JPEG', 0, 0, doc.internal.pageSize.getWidth(), doc.internal.pageSize.getHeight());
+        
+        const pdfBlob = doc.output('blob');
+
+        // 3. Subir PDF a Supabase Storage (Bucket 'documentos')
+        const fileName = `escritos/${Date.now()}_${$('#matricula').value}.pdf`;
+        const { error: uploadError } = await supabaseApp.storage.from('documentos').upload(fileName, pdfBlob);
+        
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabaseApp.storage.from('documentos').getPublicUrl(fileName);
+
+        // 4. Registrar en la tabla Buzón Sindical (`escritos_buzon`)
+        const targetSelect = $('#puestoCatalogo');
+        const areaDestino = targetSelect.options[targetSelect.selectedIndex].text;
+
+        const { error: buzonError } = await supabaseApp.from('escritos_buzon').insert({
+          user_id: currentUser.id,
+          area_destino: areaDestino,
+          asunto: "Trámite Oficial Firmado Digitalmente",
+          contenido: `Se adjunta solicitud oficial generada y firmada digitalmente a través de la PSD.\n\n📄 Ver Documento: ${publicUrl}`
+        });
+
+        if (buzonError) throw buzonError;
+
+        $('#modal-firma').classList.remove('show');
+        $('#modal').classList.remove('show');
+        $('#fDenuncia').reset();
+        
+        alert("✅ Tu escrito ha sido firmado y enviado oficialmente a " + areaDestino + ". Revisa tu Buzón Sindical para conocer la respuesta.");
+        window.location.href = "index.html#buzon"; // Redirigir al buzón
+
+      } catch (e) {
+        console.error(e);
+        alert("Ocurrió un error al enviar el documento: " + e.message);
+        btn.disabled = false;
+        btn.innerHTML = "Confirmar y Enviar Trámite";
+        pageEl.style.transform = originalTransform; 
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', initUser);
   </script>
 </body>
 </html>
