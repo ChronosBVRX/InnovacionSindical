@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Buzón Sindical Digital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+  
+  <style>
+    :root {
+      --bg-body: transparent;
+      --panel-base: 46, 79, 119;
+      --primary: #4da1a8; 
+      --primary-light: #7ad1d6;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --danger: #ff7b7b;
+      --text-main: #f0fdfa; 
+      --text-muted: #bce9eb;
+      --ring: rgba(77, 161, 168, .35);
+    }
+    
+    body { margin: 0; padding: 24px; background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; box-sizing: border-box; }
+    * { box-sizing: border-box; }
+
+    .header { margin-bottom: 24px; border-bottom: 1px solid var(--ring); padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;}
+    .header h2 { margin: 0 0 8px 0; font-size: 22px; display: flex; align-items: center; gap: 10px; }
+    .header p { margin: 0; color: var(--text-muted); font-size: 14px; line-height: 1.5; }
+
+    .card { background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring); border-radius: 16px; padding: 20px; margin-bottom: 24px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }
+    .card h3 { margin: 0 0 16px 0; font-size: 18px; color: var(--primary-light); display: flex; align-items: center; gap: 8px; }
+
+    .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; text-align: center; color: var(--primary-light); }
+    .loading-state i { font-size: 48px; margin-bottom: 16px; }
+
+    .auth-wall { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; background: rgba(var(--panel-base), 0.2); border: 1px dashed var(--primary-light); border-radius: 16px; padding: 32px; }
+    .auth-wall i { font-size: 64px; color: var(--primary-light); margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(122,209,214,0.3)); }
+    .auth-wall h2 { margin: 0 0 12px 0; font-size: 24px; }
+    .auth-wall p { margin: 0 0 24px 0; color: var(--text-muted); max-width: 400px; line-height: 1.5; }
+
+    .btn { background: var(--primary); color: var(--bg-body); border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: all 0.2s; }
+    .btn:hover { background: var(--primary-light); transform: translateY(-2px); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    
+    .btn-secondary { background: transparent; border: 1px solid var(--primary-light); color: var(--primary-light); }
+    .btn-secondary:hover { background: rgba(77, 161, 168, 0.1); }
+
+    /* --- FORMULARIOS Y ETIQUETAS --- */
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+    .form-control { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--ring); background: rgba(21, 35, 54, 0.8); color: var(--text-main); font-family: 'Inter', sans-serif; }
+    .form-control:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(77, 161, 168, 0.2); }
+    textarea.form-control { min-height: 120px; resize: vertical; }
+
+    .badge { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge.enviado { background: rgba(77, 161, 168, 0.15); color: var(--primary-light); border: 1px solid var(--ring); }
+    .badge.proceso { background: rgba(251, 191, 36, 0.15); color: var(--warning); border: 1px solid rgba(251, 191, 36, 0.3); }
+    .badge.atendido { background: rgba(74, 222, 128, 0.15); color: var(--success); border: 1px solid rgba(74, 222, 128, 0.3); }
+
+    /* --- LISTA DE ESCRITOS --- */
+    .escrito-item { background: rgba(21, 35, 54, 0.5); border: 1px solid var(--ring); border-radius: 12px; padding: 16px; margin-bottom: 12px; transition: all 0.2s; cursor: pointer; }
+    .escrito-item:hover { border-color: var(--primary-light); background: rgba(var(--panel-base), 0.4); }
+    .escrito-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 12px; flex-wrap: wrap;}
+    .escrito-title { font-size: 16px; font-weight: 600; color: var(--text-main); margin: 0; }
+    .escrito-meta { font-size: 12px; color: var(--text-muted); margin: 4px 0 0 0; display: flex; align-items: center; gap: 6px;}
+
+    /* --- MODAL DE LECTURA/RESPUESTA --- */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(10, 20, 29, 0.85); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 20px; }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-content { background: linear-gradient(180deg, rgba(46,79,119,.95), rgba(27,46,69,.95)); border: 1px solid var(--ring); border-radius: 16px; padding: 24px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: translateY(20px); transition: transform 0.3s ease; }
+    .modal-overlay.active .modal-content { transform: translateY(0); }
+    
+    .respuesta-box { background: rgba(74, 222, 128, 0.05); border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 12px; padding: 16px; margin-top: 16px; }
+    .respuesta-box h4 { margin: 0 0 8px 0; color: var(--success); font-size: 14px; display: flex; align-items: center; gap: 6px;}
+    .respuesta-box p { margin: 0; font-size: 14px; line-height: 1.5; white-space: pre-wrap; color: var(--text-main);}
+
+    .hide { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div id="loading-state" class="loading-state">
+    <i class="ph-bold ph-spinner-gap ph-spin"></i>
+    <p>Sincronizando Bandeja...</p>
+  </div>
+
+  <div id="auth-wall" class="auth-wall hide">
+    <i class="ph-fill ph-lock-key"></i>
+    <h2>Acceso Restringido</h2>
+    <p>Inicia sesión para enviar escritos a las comisiones y recibir respuestas oficiales.</p>
+    <button class="btn" onclick="openLogin()">Iniciar Sesión</button>
+  </div>
+
+  <div id="main-content" class="hide">
+    <div class="header">
+      <div>
+        <h2><i class="ph-duotone ph-envelope-open" style="color: var(--primary-light);"></i> Buzón Sindical</h2>
+        <p>Envía tus trámites a las Secretarías y dale seguimiento a tus respuestas.</p>
+      </div>
+      <button class="btn" id="btn-nuevo-escrito" onclick="abrirFormulario()"><i class="ph-bold ph-paper-plane-tilt"></i> Redactar Escrito</button>
+    </div>
+
+    <div class="card hide" id="form-section">
+      <h3><i class="ph-duotone ph-pencil-simple"></i> Nuevo Escrito</h3>
+      <form id="enviar-form">
+        <div class="form-group">
+          <label>¿A quién va dirigido?</label>
+          <select id="f-destino" class="form-control" required>
+            <option value="">Selecciona la Secretaría o Comisión...</option>
+            <option value="Secretaría General">Secretaría General</option>
+            <option value="Secretaría de Conflictos">Secretaría de Conflictos</option>
+            <option value="Secretaría de Admisión y Cambios">Secretaría de Admisión y Cambios</option>
+            <option value="Subcomisión Mixta de Escalafón">Subcomisión Mixta de Escalafón</option>
+            <option value="Bolsa de Trabajo">Bolsa de Trabajo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Asunto del Trámite</label>
+          <input type="text" id="f-asunto" class="form-control" placeholder="Ej. Solicitud de Cambio de Adscripción" required>
+        </div>
+        <div class="form-group">
+          <label>Cuerpo del Escrito (Puedes pegarlo desde el Generador con IA)</label>
+          <textarea id="f-contenido" class="form-control" placeholder="Por medio de la presente, solicito de la manera más atenta..." required></textarea>
+        </div>
+        <div style="display: flex; gap: 12px; margin-top: 20px;">
+          <button type="submit" class="btn" id="btnSubmitForm">Enviar Escrito</button>
+          <button type="button" class="btn btn-secondary" onclick="cerrarFormulario()">Cancelar</button>
+        </div>
+        <div id="form-status" style="margin-top: 12px; font-size: 13px;"></div>
+      </form>
+    </div>
+
+    <div class="card" id="bandeja-section">
+      <h3 id="bandeja-titulo"><i class="ph-duotone ph-tray"></i> Mis Escritos Enviados</h3>
+      <div id="lista-escritos">
+        <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;">Cargando historial...</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="escrito-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 16px;">
+        <div style="flex:1;">
+          <span id="m-badge" class="badge"></span>
+          <h2 id="m-asunto" style="margin: 8px 0 4px 0; font-size: 20px; color: var(--text-main);"></h2>
+          <p id="m-meta" style="margin: 0; font-size: 12px; color: var(--text-muted);"></p>
+        </div>
+        <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:24px; padding:0;" onclick="cerrarModal()">&times;</button>
+      </div>
+
+      <div style="background: rgba(21, 35, 54, 0.4); padding: 16px; border-radius: 8px; font-size: 14px; white-space: pre-wrap; line-height: 1.6; border: 1px solid rgba(255,255,255,0.05); max-height: 300px; overflow-y: auto;" id="m-contenido"></div>
+
+      <div id="m-respuesta-view" class="respuesta-box hide">
+        <h4><i class="ph-fill ph-check-circle"></i> Respuesta Oficial</h4>
+        <p id="m-respuesta-text"></p>
+        <p id="m-respuesta-fecha" style="font-size: 11px; margin-top: 8px; color: rgba(74, 222, 128, 0.7);"></p>
+      </div>
+
+      <form id="admin-reply-form" class="hide" style="margin-top: 24px; border-top: 1px solid var(--ring); padding-top: 16px;">
+        <h4 style="margin: 0 0 12px 0; color: var(--primary-light);">Panel de Administración</h4>
+        <input type="hidden" id="m-id">
+        <div class="form-group">
+          <label>Actualizar Estatus</label>
+          <select id="m-estatus" class="form-control">
+            <option value="Enviado">Enviado (Sin ver)</option>
+            <option value="En proceso">En proceso (En revisión)</option>
+            <option value="Atendido">Atendido (Resuelto)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Escribir Respuesta Oficial</label>
+          <textarea id="m-respuesta-input" class="form-control" placeholder="Escribe aquí la respuesta que verá el trabajador..."></textarea>
+        </div>
+        <button type="submit" class="btn" id="btnSaveReply" style="width: 100%;">Guardar y Notificar</button>
+        <div id="reply-status" style="margin-top: 12px; font-size: 13px; text-align: center;"></div>
+      </form>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    
+    let supabaseApp = null;
+    let currentUser = null;
+    let isAdmin = false;
+    let currentEscritos = []; // Guardar en memoria para abrir rápido el modal
+
+    async function init() {
+      try {
+        if (window.parent && window.parent.supabaseClient) { supabaseApp = window.parent.supabaseClient; } 
+        else if (window.supabase) { supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } 
+        else { throw new Error("Conexión no disponible."); }
+
+        const { data: { session }, error: sessionError } = await supabaseApp.auth.getSession();
+        document.getElementById('loading-state').classList.add('hide');
+
+        if (sessionError) throw sessionError;
+        if (!session) { document.getElementById('auth-wall').classList.remove('hide'); return; }
+        
+        currentUser = session.user;
+        document.getElementById('main-content').classList.remove('hide');
+
+        // Comprobar rol
+        const { data: prof } = await supabaseApp.from('profiles').select('role, display_name').eq('user_id', currentUser.id).maybeSingle();
+        if (prof && prof.role === 'admin') {
+          isAdmin = true;
+          document.getElementById('bandeja-titulo').innerHTML = `<i class="ph-duotone ph-inbox"></i> Bandeja de Entrada (Administración)`;
+          document.getElementById('btn-nuevo-escrito').classList.add('hide'); // Admins responden, no se envían a sí mismos
+        }
+
+        loadBandeja();
+
+      } catch (error) {
+        console.error(error);
+        document.getElementById('loading-state').innerHTML = `<i class="ph-bold ph-warning-circle" style="color:#ff7b7b;"></i><p style="color:#ff7b7b;">Error: ${error.message}</p>`;
+      }
+    }
+
+    function openLogin() {
+      if (window.parent && window.parent.PSDAuth) window.parent.PSDAuth.openModal();
+      else window.open('login.html', '_top');
+    }
+
+    // --- FORMULARIO DE ENVÍO DE ESCRITOS ---
+    function abrirFormulario() {
+      document.getElementById('form-section').classList.remove('hide');
+      document.getElementById('bandeja-section').classList.add('hide');
+    }
+    function cerrarFormulario() {
+      document.getElementById('form-section').classList.add('hide');
+      document.getElementById('bandeja-section').classList.remove('hide');
+      document.getElementById('enviar-form').reset();
+      document.getElementById('form-status').innerHTML = '';
+    }
+
+    document.getElementById('enviar-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if(!supabaseApp) return;
+
+      const destino = document.getElementById('f-destino').value;
+      const asunto = document.getElementById('f-asunto').value;
+      const contenido = document.getElementById('f-contenido').value;
+      const btn = document.getElementById('btnSubmitForm');
+      const statusDiv = document.getElementById('form-status');
+
+      btn.disabled = true;
+      statusDiv.innerHTML = '<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Enviando escrito oficial...</span>';
+
+      try {
+        const { error } = await supabaseApp.from('escritos_buzon').insert([{
+          user_id: currentUser.id,
+          area_destino: destino,
+          asunto: asunto,
+          contenido: contenido
+        }]);
+
+        if (error) throw error;
+
+        statusDiv.innerHTML = '<span style="color: var(--success)">✅ Escrito enviado exitosamente. Te notificaremos la respuesta.</span>';
+        setTimeout(() => { cerrarFormulario(); loadBandeja(); }, 2000);
+
+      } catch (err) {
+        console.error(err);
+        statusDiv.innerHTML = `<span style="color: var(--danger)">❌ Error al enviar: ${err.message}</span>`;
+        btn.disabled = false;
+      }
+    });
+
+    // --- CARGAR BANDEJA ---
+    async function loadBandeja() {
+      const list = document.getElementById('lista-escritos');
+      list.innerHTML = `<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;"><i class="ph-bold ph-spinner ph-spin"></i> Sincronizando...</div>`;
+
+      try {
+        // La RLS de Supabase hace la magia: 
+        // Si es admin, le devuelve todos. Si es usuario, le devuelve solo los suyos.
+        // Agregué el JOIN con profiles para que el Admin vea quién lo mandó.
+        const query = supabaseApp
+          .from('escritos_buzon')
+          .select(`*, profiles:user_id(display_name, matricula)`)
+          .order('fecha_envio', { ascending: false });
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        currentEscritos = data;
+
+        if (!data || data.length === 0) {
+          list.innerHTML = `<div style="padding: 30px; text-align:center; color: var(--text-muted);"><i class="ph-duotone ph-envelope-simple" style="font-size:48px; display:block; margin-bottom:12px;"></i>No hay escritos en la bandeja.</div>`;
+          return;
+        }
+
+        list.innerHTML = '';
+        data.forEach(item => {
+          // Asignar color al estatus
+          let badgeClass = 'enviado';
+          if(item.estatus === 'En proceso') badgeClass = 'proceso';
+          if(item.estatus === 'Atendido') badgeClass = 'atendido';
+
+          // Si es Admin, mostramos quién lo envió. Si es usuario, a quién va dirigido.
+          let metaText = isAdmin 
+            ? `De: <strong>${item.profiles?.display_name || 'Compañero'}</strong> (Matrícula: ${item.profiles?.matricula || 'N/A'}) • Para: ${item.area_destino}`
+            : `Destino: <strong>${item.area_destino}</strong>`;
+
+          list.innerHTML += `
+            <div class="escrito-item" onclick="abrirModal('${item.id}')">
+              <div class="escrito-header">
+                <h4 class="escrito-title">${item.asunto}</h4>
+                <span class="badge ${badgeClass}">${item.estatus}</span>
+              </div>
+              <p class="escrito-meta"><i class="ph-bold ph-calendar-blank"></i> ${new Date(item.fecha_envio).toLocaleDateString('es-MX')} • ${metaText}</p>
+            </div>
+          `;
+        });
+
+      } catch (err) {
+        console.error(err);
+        list.innerHTML = `<div style="color: var(--danger); font-size: 13px; text-align: center; padding: 20px;">Error cargando la bandeja.</div>`;
+      }
+    }
+
+    // --- MODAL Y RESPUESTAS ---
+    function abrirModal(id) {
+      const item = currentEscritos.find(x => x.id === id);
+      if(!item) return;
+
+      let badgeClass = 'enviado';
+      if(item.estatus === 'En proceso') badgeClass = 'proceso';
+      if(item.estatus === 'Atendido') badgeClass = 'atendido';
+
+      document.getElementById('m-badge').className = `badge ${badgeClass}`;
+      document.getElementById('m-badge').textContent = item.estatus;
+      document.getElementById('m-asunto').textContent = item.asunto;
+      
+      let metaText = isAdmin ? `De: ${item.profiles?.display_name || 'Compañero'} • Fecha: ${new Date(item.fecha_envio).toLocaleString('es-MX')}` : `Enviado a: ${item.area_destino} • Fecha: ${new Date(item.fecha_envio).toLocaleString('es-MX')}`;
+      document.getElementById('m-meta').textContent = metaText;
+      document.getElementById('m-contenido').textContent = item.contenido;
+
+      // Reseteamos las vistas de respuesta
+      const userReplyView = document.getElementById('m-respuesta-view');
+      const adminReplyForm = document.getElementById('admin-reply-form');
+      document.getElementById('reply-status').innerHTML = '';
+
+      if (isAdmin) {
+        adminReplyForm.classList.remove('hide');
+        userReplyView.classList.add('hide');
+        document.getElementById('m-id').value = item.id;
+        document.getElementById('m-estatus').value = item.estatus;
+        document.getElementById('m-respuesta-input').value = item.respuesta || '';
+      } else {
+        adminReplyForm.classList.add('hide');
+        if (item.respuesta) {
+          userReplyView.classList.remove('hide');
+          document.getElementById('m-respuesta-text').textContent = item.respuesta;
+          document.getElementById('m-respuesta-fecha').textContent = `Respondido el: ${new Date(item.fecha_respuesta).toLocaleString('es-MX')}`;
+        } else {
+          userReplyView.classList.add('hide');
+        }
+      }
+
+      document.getElementById('escrito-modal').classList.add('active');
+    }
+
+    function cerrarModal() {
+      document.getElementById('escrito-modal').classList.remove('active');
+    }
+
+    // Guardar respuesta del Admin
+    document.getElementById('admin-reply-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('m-id').value;
+      const estatus = document.getElementById('m-estatus').value;
+      const respuestaText = document.getElementById('m-respuesta-input').value;
+      const btn = document.getElementById('btnSaveReply');
+      const statusDiv = document.getElementById('reply-status');
+
+      btn.disabled = true;
+      statusDiv.innerHTML = '<span style="color: var(--primary-light)">Guardando respuesta...</span>';
+
+      try {
+        const updateData = { estatus: estatus };
+        
+        if (respuestaText.trim() !== '') {
+          updateData.respuesta = respuestaText;
+          // Si no tenía fecha de respuesta registrada, se la ponemos ahora
+          const oldItem = currentEscritos.find(x => x.id === id);
+          if (!oldItem.fecha_respuesta) {
+            updateData.fecha_respuesta = new Date().toISOString();
+          }
+          updateData.respondido_por = currentUser.id;
+        }
+
+        const { error } = await supabaseApp.from('escritos_buzon').update(updateData).eq('id', id);
+        if (error) throw error;
+
+        statusDiv.innerHTML = '<span style="color: var(--success)">✅ Guardado exitosamente.</span>';
+        
+        // Recargar fondo
+        loadBandeja();
+        setTimeout(() => cerrarModal(), 1500);
+
+      } catch (err) {
+        console.error(err);
+        statusDiv.innerHTML = `<span style="color: var(--danger)">❌ Error: ${err.message}</span>`;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
