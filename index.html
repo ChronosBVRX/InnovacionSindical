@@ -486,11 +486,13 @@
       'https://www.facebook.com'
     ]);
 
+    // AQUÍ ESTÁ EL MÓDULO DE AUDITORÍA CON LA ETIQUETA "adminOnly: true"
     const APPS = [
       { id: 'trascendencia', title: 'TrascendencIA - Orientacion del CCT por medio de Inteligencia Artificial', desc: 'Asistente Virtual.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true, newTab: true },
       { id: 'buzon', title: 'Buzón Sindical', desc: 'Trámites y Respuestas.', iconClass: 'ph-duotone ph-envelope-open', iframe: 'buzon.html', featured: true },
+      { id: 'auditoria', title: 'Auditoría Sindical', desc: 'Monitor de desempeño.', iconClass: 'ph-duotone ph-chart-line-up', iframe: 'auditoria.html', featured: true, adminOnly: true },
       { id: 'escalafon', title: 'Consulta tu lugar', desc: 'Bolsa de trabajo y Escalafon', iconClass: 'ph-duotone ph-list-numbers', iframe: 'consultalugar.html', featured: true },
-            { id: 'denuncias', title: 'Gestor de Escritos', desc: 'IA.', iconClass: 'ph-duotone ph-pen-nib', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
+      { id: 'denuncias', title: 'Gestor de Escritos', desc: 'IA.', iconClass: 'ph-duotone ph-pen-nib', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados.', iconClass: 'ph-duotone ph-broadcast', iframe: 'noticias.html' },
       { id: 'biblioteca', title: 'Biblioteca', desc: 'Recursos digitales.', iconClass: 'ph-duotone ph-books', iframe: 'biblioteca.html' },
       { id: 'calendario', title: 'Calendario', desc: 'Eventos sindicales.', iconClass: 'ph-duotone ph-calendar-blank', iframe: 'calendario.html' },
@@ -555,10 +557,23 @@
         window.open(url, '_blank', 'noopener,noreferrer');
       },
 
-      renderTiles() {
+      // --- FILTRO INTELIGENTE PARA DIBUJAR LAS TARJETAS ---
+      renderTiles(userEmail = null, userRole = null) {
         const wrap = document.getElementById('tiles');
+        wrap.innerHTML = ''; 
+        
+        const correosAutorizados = ['s.general@seccionxx.mx', 's.interior@seccionxx.mx', 'c.vigilancia@seccionxx.mx'];
+
         APPS.forEach(a => {
           if(a.id === 'privacidad') return; 
+
+          // Ocultar tarjetas de Admin a los usuarios normales
+          if (a.adminOnly) {
+            const isSuperAdmin = userRole === 'admin' && userEmail && !userEmail.includes('@seccionxx.mx');
+            const isAuthorizedEmail = userEmail && correosAutorizados.includes(userEmail);
+            
+            if (!isSuperAdmin && !isAuthorizedEmail) return; // Si no tiene permisos, no dibuja la tarjeta
+          }
 
           const tile = document.createElement('div');
           tile.className = `tile ${a.featured ? 'featured' : ''}`;
@@ -569,6 +584,10 @@
           };
           if (a.ia) tile.innerHTML = `<div class="badge-ia"><i class="ph-bold ph-sparkle"></i> IA</div>`;
           tile.innerHTML += `<i class="${a.iconClass} tile-icon-integrated"></i><h3>${a.title}</h3><p>${a.desc}</p>`;
+          
+          tile.style.animationDelay = `${wrap.children.length * 0.05}s`;
+          tile.classList.add('tile-enter');
+
           wrap.appendChild(tile);
         });
       },
@@ -595,7 +614,6 @@
       closeApp() { this.goHome(); }
     };
 
-    // --- CONFIGURACIÓN DE AUTENTICACIÓN SUPABASE PARA EL HEADER ---
     const supabaseClient = window.supabase.createClient(
       "https://axsncdwshdvsysrpikwj.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs"
@@ -624,7 +642,7 @@
 
           const { data: prof } = await supabaseClient
             .from('profiles')
-            .select('display_name, avatar_url')
+            .select('display_name, avatar_url, role')
             .eq('user_id', session.user.id)
             .maybeSingle();
 
@@ -634,17 +652,20 @@
           document.getElementById('header-name').textContent = name.split(' ')[0];
           document.getElementById('header-avatar').src = avatar;
 
-          // Revisamos las notificaciones del usuario al loguearse
+          // RE-DIBUJAR TARJETAS PASÁNDOLE EL ROL Y CORREO PARA APLICAR FILTROS
+          PSD.renderTiles(session.user.email, prof?.role);
           this.checkNotifications(session.user.id);
         } else {
           unloggedDiv.classList.remove('hide');
           loggedDiv.classList.add('hide');
+          
+          // Si nadie ha iniciado sesión, dibujar las tarjetas normales ocultando las de Admin
+          PSD.renderTiles();
         }
       },
 
       async checkNotifications(userId) {
         try {
-          // Buscamos cuántos trámites del usuario tienen estado diferente a 'Enviado' (ej. En proceso o Atendido)
           const { count, error } = await supabaseClient
             .from('escritos_buzon')
             .select('*', { count: 'exact', head: true })
