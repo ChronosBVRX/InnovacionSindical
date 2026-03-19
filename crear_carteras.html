@@ -7,8 +7,10 @@
     body { font-family: system-ui, sans-serif; background: #1b2e45; color: white; padding: 40px; text-align: center; }
     button { background: #4da1a8; color: #1b2e45; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-bottom: 20px;}
     button:hover { background: #7ad1d6; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
     #log { background: #152336; padding: 20px; border-radius: 8px; text-align: left; height: 400px; overflow-y: auto; font-family: monospace; font-size: 14px; border: 1px solid rgba(77, 161, 168, .35); }
-    .success { color: #4ade80; } .error { color: #ff7b7b; }
+    .success { color: #4ade80; margin-bottom: 4px; } 
+    .error { color: #ff7b7b; margin-bottom: 4px; }
   </style>
 </head>
 <body>
@@ -21,7 +23,9 @@
   <script>
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // CAMBIO CLAVE: Usamos supabaseApp en lugar de supabase para evitar el choque de variables
+    const supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const carteras = [
       { email: 's.general@seccionxx.mx', name: 'Secretaría General', mat: 'COMITE-01' },
@@ -72,12 +76,13 @@
 
     async function iniciarCreacion() {
       document.getElementById('btnStart').disabled = true;
+      logEl.innerHTML = '';
       logMsg("Iniciando creación de cuentas...");
 
       for (let i = 0; i < carteras.length; i++) {
         const c = carteras[i];
         try {
-          const { data, error } = await supabase.auth.signUp({
+          const { data, error } = await supabaseApp.auth.signUp({
             email: c.email,
             password: pass,
             options: { data: { display_name: c.name, matricula: c.mat, role: 'admin' } }
@@ -86,7 +91,7 @@
           if (error) throw error;
 
           if (data.user) {
-            await supabase.from('profiles').upsert({
+            await supabaseApp.from('profiles').upsert({
               user_id: data.user.id,
               display_name: c.name,
               matricula: c.mat,
@@ -99,10 +104,10 @@
         } catch (e) {
           logMsg(`[${i+1}/${carteras.length}] ❌ Error en ${c.name}: ${e.message}`, 'error');
         }
-        await delay(1000);
+        await delay(800);
       }
       logMsg("🎉 PROCESO TERMINADO. Ya puedes borrar este archivo.", 'success');
-      await supabase.auth.signOut();
+      await supabaseApp.auth.signOut();
     }
   </script>
 </body>
