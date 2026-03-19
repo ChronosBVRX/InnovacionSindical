@@ -104,7 +104,7 @@
   .sheet header { text-align: right; font-weight: bold; margin-bottom: 30px; }
   .sheet .dest { font-weight: bold; text-transform: uppercase; }
   .sheet .cuerpo { text-align: justify; white-space: pre-wrap; margin-top: 20px; }
-  .sheet .pie { position: absolute; bottom: 80px; left: 64px; right: 64px; text-align: center; font-weight: bold; display: flex; flex-direction: column; align-items: center; }
+  .sheet .pie { position: absolute; bottom: 80px; left: 0; right: 0; text-align: center; font-weight: bold; width: 100%; }
 
   /* FIRMA DIGITAL */
   .signature-container { background: #fff; border-radius: 12px; padding: 20px; text-align: center; width: 100%; max-width: 500px; margin: auto; }
@@ -120,10 +120,9 @@
   }
 
   /* =========================================
-     ESTILOS EXCLUSIVOS PARA IMPRESIÓN (BLINDADO)
+     ESTILOS EXCLUSIVOS PARA IMPRESIÓN 
      ========================================= */
   @media print {
-    /* Ocultar elementos visuales de la interfaz */
     .wrap, .modal-h, #status, #modal-firma, #alerta-perfil { 
       display: none !important; 
     }
@@ -153,11 +152,16 @@
       height: auto !important; 
     }
     
+    /* CENTRADO ABSOLUTO EN MODO IMPRESIÓN */
     .sheet .pie { 
       position: relative !important; 
       bottom: auto !important; 
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
       margin-top: 60px !important; 
       page-break-inside: avoid !important; 
+      text-align: center !important;
     }
     
     @page { size: letter; margin: 0; }
@@ -415,8 +419,8 @@
         <div class="cuerpo">${cuerpo}</div>
         <div class="pie">
           ATENTAMENTE<br>
-          <img id="img-firma-oficial" style="display:none; max-height:80px; margin-top: 10px; margin-bottom: 5px;">
-          <div id="linea-firma" style="margin-top: 50px; width: 250px; border-top: 1px solid black; margin-bottom: 5px;"></div>
+          <img id="img-firma-oficial" style="display:none; max-height:80px; margin: 10px auto 5px auto;">
+          <div id="linea-firma" style="margin: 50px auto 5px auto; width: 250px; border-top: 1px solid black;"></div>
           ${d.nombre}<br>
           Matrícula: ${d.matricula}<br>
           ${d.categoria}<br>
