@@ -348,7 +348,7 @@
       
       <div id="auth-logged" class="hide" style="display: flex; gap: 12px; align-items: center;">
         
-        <div class="notification-icon" onclick="PSD.openApp('buzon')" title="Notificaciones (Buzón Sindical)">
+        <div class="notification-icon" onclick="PSDAuth.markNotificationsAsRead(); PSD.openApp('buzon');" title="Notificaciones (Buzón Sindical)">
           <i class="ph-duotone ph-bell"></i>
           <span id="notif-badge" class="notification-badge hide">0</span>
         </div>
@@ -581,6 +581,11 @@
             const url = a.href || a.iframe;
             if (a.newTab || (url && url.includes('imss.gob.mx'))) this.openSafeExternal(url);
             else this.openApp(a.id);
+            
+            // Si el usuario hace clic en el tile del buzón, marcamos las notificaciones como leídas
+            if(a.id === 'buzon') {
+              PSDAuth.markNotificationsAsRead();
+            }
           };
           if (a.ia) tile.innerHTML = `<div class="badge-ia"><i class="ph-bold ph-sparkle"></i> IA</div>`;
           tile.innerHTML += `<i class="${a.iconClass} tile-icon-integrated"></i><h3>${a.title}</h3><p>${a.desc}</p>`;
@@ -652,35 +657,65 @@
           document.getElementById('header-name').textContent = name.split(' ')[0];
           document.getElementById('header-avatar').src = avatar;
 
-          // RE-DIBUJAR TARJETAS PASÁNDOLE EL ROL Y CORREO PARA APLICAR FILTROS
           PSD.renderTiles(session.user.email, prof?.role);
           this.checkNotifications(session.user.id);
         } else {
           unloggedDiv.classList.remove('hide');
           loggedDiv.classList.add('hide');
           
-          // Si nadie ha iniciado sesión, dibujar las tarjetas normales ocultando las de Admin
           PSD.renderTiles();
         }
       },
 
       async checkNotifications(userId) {
         try {
-          const { count, error } = await supabaseClient
+          // Buscamos TODOS los trámites del usuario que hayan sido respondidos o procesados
+          const { data, error } = await supabaseClient
             .from('escritos_buzon')
-            .select('*', { count: 'exact', head: true })
+            .select('id, estatus, updated_at')
             .eq('user_id', userId)
             .in('estatus', ['Atendido', 'En proceso']);
-
-          const badge = document.getElementById('notif-badge');
-          if (count && count > 0) {
-            badge.textContent = count;
-            badge.classList.remove('hide');
+            
+          if (error) throw error;
+          
+          if (data && data.length > 0) {
+            // Obtenemos la fecha de la última vez que el usuario abrió el buzón
+            const lastRead = localStorage.getItem(`buzon_last_read_${userId}`);
+            let unreadCount = 0;
+            
+            if (!lastRead) {
+              // Si nunca lo ha abierto, todos son "no leídos"
+              unreadCount = data.length;
+            } else {
+              // Si ya lo abrió antes, contamos solo los oficios que se actualizaron DESPUÉS de esa fecha
+              const lastReadDate = new Date(lastRead).getTime();
+              unreadCount = data.filter(oficio => new Date(oficio.updated_at).getTime() > lastReadDate).length;
+            }
+            
+            const badge = document.getElementById('notif-badge');
+            if (unreadCount > 0) {
+              badge.textContent = unreadCount;
+              badge.classList.remove('hide');
+            } else {
+              badge.classList.add('hide');
+            }
           } else {
-            badge.classList.add('hide');
+            document.getElementById('notif-badge').classList.add('hide');
           }
         } catch (err) {
           console.error("Error al consultar notificaciones:", err);
+        }
+      },
+
+      // Función que se dispara al hacer clic en la campanita o en el tile del buzón
+      async markNotificationsAsRead() {
+        const badge = document.getElementById('notif-badge');
+        badge.classList.add('hide'); // Oculta visualmente el globo de inmediato
+        
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+          // Guarda la fecha actual como la última vez que revisó el buzón
+          localStorage.setItem(`buzon_last_read_${session.user.id}`, new Date().toISOString());
         }
       },
 
