@@ -4,6 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Biblioteca — Plataforma Sindical CG</title>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+
   <style>
     :root {
       /* Paleta actualizada */
@@ -21,12 +26,24 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
     body {
-      /* Transparente para que se funda si se usa en iframe, 
-         pero definimos el color por si se abre sola */
       background: transparent; 
       color: var(--txt);
       min-height: 100vh;
+      padding: 24px; /* Añadido padding similar al buzón */
     }
+    
+    .hide { display: none !important; }
+
+    /* --- ESTADO DE CARGA --- */
+    .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; text-align: center; color: var(--sky); }
+    .loading-state i { font-size: 48px; margin-bottom: 16px; }
+
+    /* --- MURO DE ACCESO (AUTH WALL) --- */
+    .auth-wall { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; background: rgba(46, 79, 119, 0.2); border: 1px dashed var(--sky); border-radius: 16px; padding: 32px; }
+    .auth-wall i { font-size: 64px; color: var(--sky); margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(122,209,214,0.3)); }
+    .auth-wall h2 { margin: 0 0 12px 0; font-size: 24px; color: var(--txt); }
+    .auth-wall p { margin: 0 0 24px 0; color: var(--muted); max-width: 400px; line-height: 1.5; font-size: 15px;}
+
     .wrap {
       padding: 4px 0 16px;
     }
@@ -67,6 +84,11 @@
       border: 1px solid rgba(77, 161, 168, .4);
       font-size: 14px;
     }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--sky);
+      box-shadow: 0 0 0 3px rgba(77, 161, 168, 0.2);
+    }
     textarea {
       resize: vertical;
       min-height: 80px;
@@ -75,21 +97,22 @@
     .btn {
       background: linear-gradient(90deg, var(--primary), var(--sky));
       color: #0f2638;
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-weight: 600;
+      padding: 10px 20px; /* Ajustado para que parezca botón principal */
+      border-radius: 8px; /* Ajustado al diseño del buzón */
+      font-weight: 700;
       cursor: pointer;
       border: none;
       text-decoration: none;
       display: inline-flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
       justify-content: center;
       font-size: 14px;
-      transition: filter .15s ease;
+      transition: all 0.2s ease;
     }
     .btn:hover {
       filter: brightness(1.1);
+      transform: translateY(-2px); /* Añadida animación del buzón */
     }
 
     .subtle-btn {
@@ -129,7 +152,6 @@
 
     /* TARJETAS DE RECURSO */
     .resource-card {
-      /* Fondo ligeramente más oscuro que el panel principal para contraste */
       background: radial-gradient(circle at top left, rgba(77, 161, 168, .15), transparent 55%), #233b5c;
       padding: 12px;
       border-radius: 14px;
@@ -186,14 +208,15 @@
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(21, 35, 54, .85);
+      background: rgba(10, 20, 29, 0.85); /* Oscurecido ligeramente */
+      backdrop-filter: blur(8px); /* Añadido blur como en el buzón */
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 16px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity .18s ease;
+      transition: opacity .3s ease; /* Transición más suave */
       z-index: 9999;
     }
     .modal-backdrop.visible {
@@ -202,20 +225,23 @@
     }
 
     .modal-panel {
-      background: #1b2e45;
-      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(46,79,119,.95), rgba(27,46,69,.95)); /* Gradiente como buzón */
+      border-radius: 16px; /* Ajustado al buzón */
       width: 100%;
       max-width: 640px;
       border: 1px solid rgba(77, 161, 168, .5);
-      padding: 18px;
+      padding: 24px; /* Un poco más despacio interior */
       max-height: 90vh;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, .6);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5); /* Sombra como buzón */
+      transform: translateY(20px); /* Animación de entrada */
+      transition: transform 0.3s ease;
     }
+    .modal-backdrop.visible .modal-panel { transform: translateY(0); }
 
     .modal-title {
-      font-size: 17px;
+      font-size: 20px; /* Un poco más grande */
       font-weight: 700;
       color: #d1f5f7;
     }
@@ -223,43 +249,57 @@
     .modal-body {
       overflow-y: auto;
       font-size: 14px;
-      color: var(--muted);
-      margin-top: 8px;
+      color: var(--txt); /* Texto más claro */
+      margin-top: 12px;
       white-space: pre-wrap;
+      background: rgba(21, 35, 54, 0.4); /* Fondo sutil para el texto */
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.05);
     }
 
     .modal-tags {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      margin-top: 10px;
+      margin-top: 12px;
     }
 
     .modal-close-btn {
       background: none;
       border: none;
-      font-size: 22px;
-      color: #bce9eb;
+      font-size: 24px; /* Más grande */
+      color: var(--muted);
       cursor: pointer;
       line-height: 1;
       border-radius: 999px;
-      padding: 2px 4px;
+      padding: 0; /* Ajustado */
     }
     .modal-close-btn:hover {
-      background: rgba(77, 161, 168, .2);
       color: #fff;
     }
 
     @media (max-width: 600px) {
-      .wrap {
-        padding: 0;
-      }
+      body { padding: 12px; }
+      .wrap { padding: 0; }
     }
   </style>
 </head>
 <body>
 
-  <div class="wrap">
+  <div id="loading-state" class="loading-state">
+    <i class="ph-bold ph-spinner-gap ph-spin"></i>
+    <p>Verificando acceso a Biblioteca...</p>
+  </div>
+
+  <div id="auth-wall" class="auth-wall hide">
+    <i class="ph-fill ph-lock-key"></i>
+    <h2>Acceso Restringido</h2>
+    <p>Inicia sesión para consultar materiales, documentos y guías oficiales de la Sección XX.</p>
+    <button class="btn" onclick="openLogin()">Iniciar Sesión</button>
+  </div>
+
+  <div id="main-content" class="wrap hide">
     <div class="card">
       <h2>📚 Biblioteca de Recursos</h2>
       <p class="muted">Consulta materiales, documentos, guías y recursos digitales de la Plataforma Sindical CG.</p>
@@ -324,18 +364,18 @@
           <div id="modalTitle" class="modal-title">Recurso</div>
           <div id="modalMeta" class="meta" style="margin-top:4px"></div>
         </div>
-        <button id="modalCloseBtn" class="modal-close-btn" aria-label="Cerrar">✕</button>
+        <button id="modalCloseBtn" class="modal-close-btn" aria-label="Cerrar">&times;</button>
       </div>
 
       <div id="modalDesc" class="modal-body"></div>
       <div id="modalTags" class="modal-tags"></div>
 
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px;flex-wrap:wrap">
-        <span class="meta">Haz clic fuera del recuadro o en ✕ para cerrar.</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:8px;flex-wrap:wrap">
+        <span class="meta">Haz clic fuera del recuadro o en &times; para cerrar.</span>
         <div style="display:flex;gap:8px;align-items:center">
-          <button id="modalDeleteBtn" class="subtle-btn" style="display:none;">🗑️ Eliminar</button>
+          <button id="modalDeleteBtn" class="subtle-btn" style="display:none; color: #ff7b7b; border-color: rgba(255,123,123,0.3);">🗑️ Eliminar</button>
           <a id="modalOpenLink" href="#" class="btn" target="_blank" rel="noopener" style="display:none">
-            Abrir recurso
+            <i class="ph-bold ph-arrow-square-out"></i> Abrir recurso
           </a>
         </div>
       </div>
@@ -347,14 +387,9 @@
     /* ========== CONFIG SUPABASE ========== */
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    const LOGIN_URL = "login.html";
-
-    const supabaseClient = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY,
-      { auth: { persistSession: true, autoRefreshToken: true } }
-    );
-
+    
+    // Objeto Supabase global
+    let supabaseApp = null;
     let CURRENT_USER = null;
     let IS_ADMIN = false;
     let LIBRARY_CACHE = [];
@@ -366,29 +401,60 @@
     document.addEventListener("DOMContentLoaded", initApp);
 
     async function initApp() {
-      // Refresca sesión por si está en iframe
-      await supabaseClient.auth.refreshSession();
-      const { data: { session } } = await supabaseClient.auth.getSession();
+      try {
+        // Soporte para iframe o standalone (Igual que en buzón)
+        if (window.parent && window.parent.supabaseClient) { 
+          supabaseApp = window.parent.supabaseClient; 
+        } 
+        else if (window.supabase) { 
+          supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); 
+        } 
+        else { throw new Error("Conexión no disponible."); }
 
-      if (!session) {
-        try { window.top.location.href = LOGIN_URL; } catch { window.location.href = LOGIN_URL; }
-        return;
+        // Validar sesión activa
+        const { data: { session }, error: sessionError } = await supabaseApp.auth.getSession();
+        
+        // Ocultar spinner
+        $("loading-state").classList.add("hide");
+
+        if (sessionError) throw sessionError;
+
+        // SI NO ESTÁ LOGUEADO -> Muestra el muro
+        if (!session) { 
+          $("auth-wall").classList.remove("hide"); 
+          return; 
+        }
+
+        // SI ESTÁ LOGUEADO -> Muestra contenido
+        CURRENT_USER = session.user;
+        $("main-content").classList.remove("hide");
+
+        // Checar rol de admin en la tabla perfiles (o metadata)
+        const { data: prof } = await supabaseApp.from('profiles').select('role').eq('user_id', CURRENT_USER.id).maybeSingle();
+        if (prof && prof.role === 'admin') {
+          IS_ADMIN = true;
+          $("adminBlock").style.display = "block";
+        }
+
+        // Listeners
+        $("btnRefreshLibrary").addEventListener("click", () => loadLibrary(true));
+        $("qLibrary").addEventListener("input", debounce(() => renderLibrary(), 150));
+        $("libCategory").addEventListener("change", () => renderLibrary());
+        $("adminForm").addEventListener("submit", onAdminSave);
+
+        setupModalHandlers();
+        loadLibrary(true);
+
+      } catch (error) {
+        console.error("Error inicializando app:", error);
+        $("loading-state").innerHTML = `<i class="ph-bold ph-warning-circle" style="color:#ff7b7b;"></i><p style="color:#ff7b7b;">Error: ${error.message}</p>`;
       }
+    }
 
-      CURRENT_USER = session.user;
-      IS_ADMIN = CURRENT_USER.app_metadata?.role === "admin";
-
-      if (IS_ADMIN) {
-        $("adminBlock").style.display = "block";
-      }
-
-      $("btnRefreshLibrary").addEventListener("click", () => loadLibrary(true));
-      $("qLibrary").addEventListener("input", debounce(() => renderLibrary(), 150));
-      $("libCategory").addEventListener("change", () => renderLibrary());
-      $("adminForm").addEventListener("submit", onAdminSave);
-
-      setupModalHandlers();
-      loadLibrary(true);
+    // Función universal para abrir login
+    function openLogin() {
+      if (window.parent && window.parent.PSDAuth) window.parent.PSDAuth.openModal();
+      else window.open('login.html', '_top');
     }
 
     /* ========== CARGAR BIBLIOTECA ========== */
@@ -399,9 +465,9 @@
       }
 
       const stats = $("libStats");
-      if (stats) stats.textContent = "Cargando recursos…";
+      if (stats) stats.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Sincronizando catálogo...';
 
-      const { data, error } = await supabaseClient
+      const { data, error } = await supabaseApp
         .from("library_items")
         .select("id, title, description, url, category, tags, file_type, created_at")
         .order("created_at", { ascending: false })
@@ -409,7 +475,7 @@
 
       if (error) {
         console.error(error);
-        if (stats) stats.textContent = "❌ No se pudieron cargar los recursos.";
+        if (stats) stats.innerHTML = '<span style="color:#ff7b7b">❌ No se pudieron cargar los recursos.</span>';
         return;
       }
 
@@ -469,7 +535,7 @@
       listEl.innerHTML = "";
 
       if (!items.length) {
-        listEl.innerHTML = `<div class="meta">No se encontraron recursos con esos criterios.</div>`;
+        listEl.innerHTML = `<div style="padding: 30px; text-align:center; color: var(--muted); grid-column: 1 / -1;"><i class="ph-duotone ph-magnifying-glass" style="font-size:48px; display:block; margin-bottom:12px;"></i>No se encontraron recursos con esos criterios.</div>`;
         return;
       }
 
@@ -520,17 +586,15 @@
               </div>
               ${IS_ADMIN ? `
                 <div style="margin-top:8px;display:flex;justify-content:flex-end">
-                  <button type="button" class="subtle-btn btn-delete">🗑️ Eliminar</button>
+                  <button type="button" class="subtle-btn btn-delete" style="color:#ff7b7b; border-color: rgba(255,123,123,0.3);">🗑️ Eliminar</button>
                 </div>
               ` : ""}
             </div>
           </div>
         `;
 
-        // Click tarjeta → abrir modal
         card.addEventListener("click", () => openResourceModal(item));
 
-        // Botón eliminar (solo admin)
         if (IS_ADMIN) {
           const delBtn = card.querySelector(".btn-delete");
           if (delBtn) {
@@ -549,7 +613,7 @@
     async function onAdminSave(e) {
       e.preventDefault();
       if (!IS_ADMIN) {
-        $("adminStatus").textContent = "No tienes permisos para crear recursos.";
+        $("adminStatus").innerHTML = '<span style="color:#ff7b7b">No tienes permisos.</span>';
         return;
       }
 
@@ -561,40 +625,29 @@
       const type = $("aType").value || "otro";
 
       if (!title || !url) {
-        $("adminStatus").textContent = "Título y URL son obligatorios.";
+        $("adminStatus").innerHTML = '<span style="color:#ff7b7b">Título y URL obligatorios.</span>';
         return;
       }
 
-      const tags = tagsRaw
-        ? tagsRaw.split(",").map(t => t.trim()).filter(Boolean)
-        : [];
+      const tags = tagsRaw ? tagsRaw.split(",").map(t => t.trim()).filter(Boolean) : [];
 
-      $("adminStatus").textContent = "Guardando…";
+      $("adminStatus").innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Guardando...';
 
-      const { error } = await supabaseClient
+      const { error } = await supabaseApp
         .from("library_items")
         .insert([{
-          title,
-          description: description || null,
-          url,
-          category: category || null,
-          tags: tags.length ? tags : null,
-          file_type: type || null,
-          created_by: CURRENT_USER.id
+          title, description: description || null, url, category: category || null,
+          tags: tags.length ? tags : null, file_type: type || null, created_by: CURRENT_USER.id
         }]);
 
       if (error) {
         console.error(error);
-        $("adminStatus").textContent = "❌ No se pudo guardar: " + (error.message || "");
+        $("adminStatus").innerHTML = `<span style="color:#ff7b7b">❌ Error: ${error.message}</span>`;
         return;
       }
 
-      $("adminStatus").textContent = "✅ Recurso guardado.";
-      $("aTitle").value = "";
-      $("aDesc").value = "";
-      $("aUrl").value = "";
-      $("aCat").value = "";
-      $("aTags").value = "";
+      $("adminStatus").innerHTML = '<span style="color:#4ade80">✅ Recurso guardado.</span>';
+      $("adminForm").reset();
 
       loadLibrary(true);
     }
@@ -608,22 +661,19 @@
       if (!ok) return;
 
       const stats = $("libStats");
-      if (stats) stats.textContent = "Eliminando recurso…";
+      if (stats) stats.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Eliminando...';
 
-      const { error } = await supabaseClient
-        .from("library_items")
-        .delete()
-        .eq("id", item.id);
+      const { error } = await supabaseApp.from("library_items").delete().eq("id", item.id);
 
       if (error) {
         console.error(error);
-        if (stats) stats.textContent = "❌ Error al eliminar el recurso.";
+        if (stats) stats.innerHTML = '<span style="color:#ff7b7b">❌ Error al eliminar.</span>';
         return;
       }
 
-      if (stats) stats.textContent = "✅ Recurso eliminado.";
+      if (stats) stats.innerHTML = '<span style="color:#4ade80">✅ Recurso eliminado.</span>';
       if (fromModal) closeResourceModal();
-      // Actualiza cache local y re-renderiza
+      
       LIBRARY_CACHE = LIBRARY_CACHE.filter(r => r.id !== item.id);
       renderLibrary();
     }
@@ -636,26 +686,18 @@
       if (!modal) return;
 
       modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
-          closeResourceModal();
-        }
+        if (e.target === modal) closeResourceModal();
       });
 
-      closeBtn?.addEventListener("click", () => {
-        closeResourceModal();
-      });
+      closeBtn?.addEventListener("click", () => closeResourceModal());
 
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          closeResourceModal();
-        }
+        if (e.key === "Escape") closeResourceModal();
       });
 
       if (delBtn) {
         delBtn.addEventListener("click", () => {
-          if (CURRENT_MODAL_ITEM) {
-            onDeleteResource(CURRENT_MODAL_ITEM, true);
-          }
+          if (CURRENT_MODAL_ITEM) onDeleteResource(CURRENT_MODAL_ITEM, true);
         });
       }
     }
@@ -677,19 +719,18 @@
       const created = item.created_at ? fmtDate(item.created_at) : "";
 
       titleEl.textContent = item.title || "Recurso";
-      metaEl.textContent =
-        `${created ? "📅 " + created : ""}${created && catLabel ? " · " : ""}${catLabel ? "🏷️ " + catLabel : ""}`;
+      metaEl.textContent = `${created ? "📅 " + created : ""}${created && catLabel ? " · " : ""}${catLabel ? "🏷️ " + catLabel : ""}`;
 
-      descEl.textContent = item.description || "Sin descripción disponible.";
+      // FORMATEADOR DE LINKS PARA DESCRIPCIÓN (Igual que Buzón)
+      let contenidoSeguro = escapeHtml(item.description || "Sin descripción disponible.");
+      contenidoSeguro = contenidoSeguro.replace(
+          /(https?:\/\/[^\s]+)/g, 
+          '<div style="margin-top:10px;"><a href="$1" target="_blank" style="color:var(--sky);">Ver enlace extra</a></div>'
+      );
+      descEl.innerHTML = contenidoSeguro;
 
-      const tagsArr = Array.isArray(item.tags)
-        ? item.tags
-        : (item.tags ? String(item.tags).split(",") : []);
-      tagsEl.innerHTML = tagsArr
-        .map(t => String(t).trim())
-        .filter(Boolean)
-        .map(t => `<span class="pill">${escapeHtml(t)}</span>`)
-        .join("");
+      const tagsArr = Array.isArray(item.tags) ? item.tags : (item.tags ? String(item.tags).split(",") : []);
+      tagsEl.innerHTML = tagsArr.map(t => String(t).trim()).filter(Boolean).map(t => `<span class="pill">${escapeHtml(t)}</span>`).join("");
 
       if (item.url) {
         linkEl.href = item.url;
@@ -699,11 +740,8 @@
         linkEl.style.display = "none";
       }
 
-      if (IS_ADMIN && delBtn) {
-        delBtn.style.display = "inline-flex";
-      } else if (delBtn) {
-        delBtn.style.display = "none";
-      }
+      if (IS_ADMIN && delBtn) delBtn.style.display = "inline-flex";
+      else if (delBtn) delBtn.style.display = "none";
 
       modal.classList.add("visible");
     }
@@ -717,24 +755,13 @@
 
     /* ========== UTILIDADES ========== */
     function escapeHtml(str) {
-      return (str || "").replace(/[&<>\"']/g, s => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        "\"": "&quot;",
-        "'": "&#39;"
-      }[s]));
+      return (str || "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[s]));
     }
 
     function fmtDate(iso) {
       try {
-        return new Intl.DateTimeFormat("es-MX", {
-          dateStyle: "medium",
-          timeStyle: "short"
-        }).format(new Date(iso));
-      } catch {
-        return iso || "";
-      }
+        return new Intl.DateTimeFormat("es-MX", { dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));
+      } catch { return iso || ""; }
     }
   </script>
 </body>
