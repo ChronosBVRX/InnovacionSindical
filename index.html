@@ -192,7 +192,7 @@
       align-items: center;
       justify-content: center;
       padding: 0 4px;
-      box-shadow: 0 0 0 2px var(--bg-body); /* Resalta sobre el fondo */
+      box-shadow: 0 0 0 2px var(--bg-body);
       animation: popIn 0.3s ease;
     }
 
@@ -294,6 +294,19 @@
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .tile-enter { animation: fadeUp 0.5s ease forwards; opacity: 0; }
   </style>
+
+  <script>
+    // Prevenir que el index.html se cargue dentro del iframe (Fallback de error 404)
+    if (window.top !== window.self) {
+      document.documentElement.innerHTML = `
+        <body style="background-color: #1b2e45; color: #bce9eb; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: 'Inter', sans-serif;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#ff7b7b" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z"></path></svg>
+          <h2 style="color: #f0fdfa; margin: 16px 0 8px 0;">Módulo en Construcción o No Encontrado</h2>
+          <p style="text-align: center; max-width: 80%;">El archivo correspondiente a esta herramienta aún no se ha subido al servidor o la ruta es incorrecta.</p>
+        </body>
+      `;
+    }
+  </script>
 </head>
 
 <body>
