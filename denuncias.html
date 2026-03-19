@@ -120,12 +120,14 @@
   }
 
   /* =========================================
-     ESTILOS EXCLUSIVOS PARA IMPRESIÓN (CORREGIDOS)
+     ESTILOS EXCLUSIVOS PARA IMPRESIÓN (BLINDADO)
      ========================================= */
   @media print {
-    .wrap, .modal-h, #status, #modal-firma { 
+    /* Ocultar elementos visuales de la interfaz */
+    .wrap, .modal-h, #status, #modal-firma, #alerta-perfil { 
       display: none !important; 
     }
+    
     body, #modal, .modal-card, .modal-b { 
       background: transparent !important; 
       position: static !important; 
@@ -137,6 +139,7 @@
       height: auto !important; 
       overflow: visible !important; 
     }
+    
     .page.carta { 
       width: 100% !important; 
       height: auto !important; 
@@ -144,23 +147,26 @@
       box-shadow: none !important; 
       margin: 0 !important; 
     }
+    
     .sheet { 
       padding: 2cm !important; 
       height: auto !important; 
     }
+    
     .sheet .pie { 
       position: relative !important; 
       bottom: auto !important; 
       margin-top: 60px !important; 
       page-break-inside: avoid !important; 
     }
+    
     @page { size: letter; margin: 0; }
   }
 </style>
 </head>
 
 <body>
-  <div class="wrap">
+  <div class="wrap" id="mainWrap">
     <div style="margin-bottom: 20px;">
       <a class="btn" href="#" onclick="window.history.back(); return false;">⬅ Regresar</a>
     </div>
@@ -444,10 +450,23 @@
 
     $('#btnClose').addEventListener('click', () => $('#modal').classList.remove('show'));
 
+    // ==========================================
+    // IMPRESIÓN (SOLUCIÓN NUCLEAR APLICADA)
+    // ==========================================
     $('#btnPrint').addEventListener('click', () => {
       const originalTitle = document.title;
       document.title = "Oficio_Sindical_" + $('#matricula').value;
+
+      // Desaparecer físicamente el panel de firmas antes de mandar a imprimir
+      $('#modal-firma').style.display = 'none';
+      $('#mainWrap').style.display = 'none';
+
+      // Abrir el diálogo de impresión (el navegador se pausa aquí)
       window.print();
+
+      // Restaurar todo a la normalidad en cuanto se cierra la ventana de impresión
+      $('#modal-firma').style.display = '';
+      $('#mainWrap').style.display = '';
       document.title = originalTitle;
     });
 
@@ -456,14 +475,13 @@
     const ctx = canvasFirma.getContext('2d');
     let isDrawing = false;
 
-    // Configurar Canvas para alta resolución
     function resizeCanvas() {
       const rect = canvasFirma.getBoundingClientRect();
       canvasFirma.width = rect.width;
       canvasFirma.height = rect.height;
       ctx.lineWidth = 3;
       ctx.lineCap = "round";
-      ctx.strokeStyle = "#000080"; // Tinta azul oficial
+      ctx.strokeStyle = "#000080"; 
     }
 
     const startDrawing = (e) => { 
@@ -513,13 +531,11 @@
       btn.innerHTML = "⏳ Procesando Envío...";
       showStatus("Generando expediente digital...");
 
-      // 1. Poner firma en el documento visual
       const firmaDataUrl = canvasFirma.toDataURL('image/png');
       $('#img-firma-oficial').src = firmaDataUrl;
       $('#img-firma-oficial').style.display = 'block';
       $('#linea-firma').style.display = 'none';
 
-      // 2. Tomar foto del documento completo (PDF base)
       const pageEl = $('#page');
       const originalTransform = pageEl.style.transform;
       pageEl.style.transform = 'scale(1)'; 
@@ -535,7 +551,6 @@
         
         const pdfBlob = doc.output('blob');
 
-        // 3. Subir PDF a Supabase Storage (Bucket 'documentos')
         const fileName = `escritos/${Date.now()}_${$('#matricula').value}.pdf`;
         const { error: uploadError } = await supabaseApp.storage.from('documentos').upload(fileName, pdfBlob);
         
@@ -543,7 +558,6 @@
 
         const { data: { publicUrl } } = supabaseApp.storage.from('documentos').getPublicUrl(fileName);
 
-        // 4. Registrar en la tabla Buzón Sindical (`escritos_buzon`)
         const targetSelect = $('#puestoCatalogo');
         const areaDestino = targetSelect.options[targetSelect.selectedIndex].text;
 
@@ -561,7 +575,7 @@
         $('#fDenuncia').reset();
         
         alert("✅ Tu escrito ha sido firmado y enviado oficialmente a " + areaDestino + ". Revisa tu Buzón Sindical para conocer la respuesta.");
-        window.location.href = "index.html#buzon"; // Redirigir al buzón
+        window.location.href = "index.html#buzon"; 
 
       } catch (e) {
         console.error(e);
