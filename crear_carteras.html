@@ -27,44 +27,10 @@
     // CAMBIO CLAVE: Usamos supabaseApp en lugar de supabase para evitar el choque de variables
     const supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const carteras = [
-      { email: 's.general@seccionxx.mx', name: 'Secretaría General', mat: 'COMITE-01' },
-      { email: 's.interior@seccionxx.mx', name: 'Interior y Propaganda', mat: 'COMITE-02' },
-      { email: 's.conflictos@seccionxx.mx', name: 'Conflictos', mat: 'COMITE-03' },
-      { email: 's.trabajo@seccionxx.mx', name: 'Trabajo', mat: 'COMITE-04' },
-      { email: 's.exterior@seccionxx.mx', name: 'Exterior', mat: 'COMITE-05' },
-      { email: 's.tesoreria@seccionxx.mx', name: 'Tesorero', mat: 'COMITE-06' },
-      { email: 's.prevision@seccionxx.mx', name: 'Previsión Social', mat: 'COMITE-07' },
-      { email: 's.igualdad@seccionxx.mx', name: 'Igualdad Sustantiva', mat: 'COMITE-08' },
-      { email: 's.tecnicos@seccionxx.mx', name: 'Asuntos Técnicos', mat: 'COMITE-09' },
-      { email: 's.actas@seccionxx.mx', name: 'Actas y Acuerdos', mat: 'COMITE-10' },
-      { email: 's.prensa@seccionxx.mx', name: 'Prensa', mat: 'COMITE-11' },
-      { email: 's.perifericos@seccionxx.mx', name: 'Puestos Periféricos', mat: 'COMITE-12' },
-      { email: 's.admision@seccionxx.mx', name: 'Admisión y Cambios', mat: 'COMITE-13' },
-      { email: 's.capacitacion@seccionxx.mx', name: 'Capacitación', mat: 'COMITE-14' },
-      { email: 's.social@seccionxx.mx', name: 'Acción Social', mat: 'COMITE-15' },
-      { email: 's.calidad@seccionxx.mx', name: 'Calidad y Modernización', mat: 'COMITE-16' },
-      { email: 'c.honor@seccionxx.mx', name: 'Comisión de Honor y Justicia', mat: 'COMITE-17' },
-      { email: 'c.hacienda@seccionxx.mx', name: 'Comisión de Hacienda', mat: 'COMITE-18' },
-      { email: 'c.vigilancia@seccionxx.mx', name: 'Comisión de Vigilancia', mat: 'COMITE-19' },
-      { email: 'c.deportes@seccionxx.mx', name: 'Comisión de Deportes', mat: 'COMITE-20' },
-      { email: 'c.fomento@seccionxx.mx', name: 'Fomento de la Seguridad Social', mat: 'COMITE-21' },
-      { email: 'c.politica@seccionxx.mx', name: 'Acción Política', mat: 'COMITE-22' },
-      { email: 'sub.becas@seccionxx.mx', name: 'Subcomisión de Becas', mat: 'COMITE-23' },
-      { email: 'sub.bolsa@seccionxx.mx', name: 'Bolsa de Trabajo', mat: 'COMITE-24' },
-      { email: 'sub.confianzas@seccionxx.mx', name: 'Confianzas "B"', mat: 'COMITE-25' },
-      { email: 'sub.capacitacion@seccionxx.mx', name: 'Subcomisión de Capacitación', mat: 'COMITE-26' },
-      { email: 'sub.seguridad@seccionxx.mx', name: 'Seguridad e Higiene', mat: 'COMITE-27' },
-      { email: 'sub.disciplinaria@seccionxx.mx', name: 'Disciplinaria', mat: 'COMITE-28' },
-      { email: 'sub.escalafon@seccionxx.mx', name: 'Escalafón', mat: 'COMITE-29' },
-      { email: 'sub.paritaria@seccionxx.mx', name: 'Paritaria', mat: 'COMITE-30' },
-      { email: 'sub.pasajes@seccionxx.mx', name: 'Pasajes', mat: 'COMITE-31' },
-      { email: 'sub.ropa@seccionxx.mx', name: 'Ropa de Trabajo', mat: 'COMITE-32' },
-      { email: 'sub.cambiosrama@seccionxx.mx', name: 'Cambios de Rama', mat: 'COMITE-33' },
-      { email: 'sub.tiendas@seccionxx.mx', name: 'Tiendas', mat: 'COMITE-34' },
+   const carteras = [
       { email: 'sub.plantillas@seccionxx.mx', name: 'Revisión de Plantillas', mat: 'COMITE-35' }
     ];
-
+    
     const pass = "SNTSS.2026*";
     const delay = ms => new Promise(res => setTimeout(res, ms));
     const logEl = document.getElementById('log');
