@@ -253,10 +253,13 @@
     <div class="modal-card">
       <div class="modal-h">
         <span style="color:white; font-weight:bold;">Vista Previa del Oficio</span>
-        <div style="display:flex; gap:8px;">
-          <button class="btn" id="btnPrint">🖨️ Imprimir Hoja</button>
-          <button class="btn success" id="btnSign" style="color:white;">✍️ Firmar y Enviar a Buzón</button>
-          <button class="btn" id="btnClose" style="color:#ef4444; border-color:rgba(239,68,68,0.3);">✖ Cancelar</button>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+          <span style="color: var(--warning); font-size: 13px; font-weight: bold;">⚠️ A partir del 16 de febrero esto estará habilitado, vota planilla azul</span>
+          <div style="display:flex; gap:8px;">
+            <button class="btn" id="btnPrint">🖨️ Imprimir Hoja</button>
+            <button class="btn success" id="btnSign" style="color:white;" disabled>✍️ Firmar y Enviar a Buzón</button>
+            <button class="btn" id="btnClose" style="color:#ef4444; border-color:rgba(239,68,68,0.3);">✖ Cancelar</button>
+          </div>
         </div>
       </div>
       <div class="modal-b" id="modalBody">
@@ -549,6 +552,7 @@
     });
 
     $('#btnSign').addEventListener('click', () => {
+      // Como el botón está 'disabled', este evento no se disparará, pero se mantiene por si se rehabilita a futuro
       $('#modal-firma').classList.add('show');
       resizeCanvas();
     });
