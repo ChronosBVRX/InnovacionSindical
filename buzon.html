@@ -41,12 +41,15 @@
     .auth-wall h2 { margin: 0 0 12px 0; font-size: 24px; }
     .auth-wall p { margin: 0 0 24px 0; color: var(--text-muted); max-width: 400px; line-height: 1.5; }
 
-    .btn { background: var(--primary); color: var(--bg-body); border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: all 0.2s; }
+    .btn { background: var(--primary); color: var(--bg-body); border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: all 0.2s; text-decoration: none;}
     .btn:hover { background: var(--primary-light); transform: translateY(-2px); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     
     .btn-secondary { background: transparent; border: 1px solid var(--primary-light); color: var(--primary-light); }
     .btn-secondary:hover { background: rgba(77, 161, 168, 0.1); }
+    
+    .btn.success { background: linear-gradient(135deg, #22c55e, #16a34a); color: white;}
+    .btn.success:hover { box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); }
 
     /* --- FORMULARIOS Y ETIQUETAS --- */
     .form-group { margin-bottom: 16px; }
@@ -54,6 +57,7 @@
     .form-control { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--ring); background: rgba(21, 35, 54, 0.8); color: var(--text-main); font-family: 'Inter', sans-serif; }
     .form-control:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(77, 161, 168, 0.2); }
     textarea.form-control { min-height: 120px; resize: vertical; }
+    input[type="file"].form-control { padding: 9px 12px; background: rgba(0,0,0,0.2); cursor: pointer; }
 
     .badge { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
     .badge.enviado { background: rgba(77, 161, 168, 0.15); color: var(--primary-light); border: 1px solid var(--ring); }
@@ -157,7 +161,7 @@
       <div id="m-respuesta-view" class="respuesta-box hide">
         <h4><i class="ph-fill ph-check-circle"></i> Respuesta Oficial</h4>
         <p id="m-respuesta-text"></p>
-        <p id="m-respuesta-fecha" style="font-size: 11px; margin-top: 8px; color: rgba(74, 222, 128, 0.7);"></p>
+        <div id="m-respuesta-archivo-btn"></div> <p id="m-respuesta-fecha" style="font-size: 11px; margin-top: 12px; color: rgba(74, 222, 128, 0.7); border-top: 1px solid rgba(74, 222, 128, 0.2); padding-top: 8px;"></p>
       </div>
 
       <form id="admin-reply-form" class="hide" style="margin-top: 24px; border-top: 1px solid var(--ring); padding-top: 16px;">
@@ -172,9 +176,15 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Escribir Respuesta Oficial</label>
+          <label>Escribir Respuesta Oficial (Opcional si adjuntas PDF)</label>
           <textarea id="m-respuesta-input" class="form-control" placeholder="Escribe aquí la respuesta que verá el trabajador..."></textarea>
         </div>
+        
+        <div class="form-group">
+          <label><i class="ph-bold ph-upload-simple"></i> Adjuntar PDF de Respuesta (Opcional)</label>
+          <input type="file" id="m-respuesta-archivo" class="form-control" accept="application/pdf">
+        </div>
+
         <button type="submit" class="btn" id="btnSaveReply" style="width: 100%;">Guardar y Notificar</button>
         <div id="reply-status" style="margin-top: 12px; font-size: 13px; text-align: center;"></div>
       </form>
@@ -190,7 +200,7 @@
     let supabaseApp = null;
     let currentUser = null;
     let isAdmin = false;
-    let currentEscritos = []; // Guardar en memoria para abrir rápido el modal
+    let currentEscritos = []; 
 
     async function init() {
       try {
@@ -207,12 +217,11 @@
         currentUser = session.user;
         document.getElementById('main-content').classList.remove('hide');
 
-        // Comprobar rol
         const { data: prof } = await supabaseApp.from('profiles').select('role, display_name').eq('user_id', currentUser.id).maybeSingle();
         if (prof && prof.role === 'admin') {
           isAdmin = true;
           document.getElementById('bandeja-titulo').innerHTML = `<i class="ph-duotone ph-inbox"></i> Bandeja de Entrada (Administración)`;
-          document.getElementById('btn-nuevo-escrito').classList.add('hide'); // Admins responden, no se envían a sí mismos
+          document.getElementById('btn-nuevo-escrito').classList.add('hide'); 
         }
 
         loadBandeja();
@@ -228,7 +237,6 @@
       else window.open('login.html', '_top');
     }
 
-    // --- FORMULARIO DE ENVÍO DE ESCRITOS ---
     function abrirFormulario() {
       document.getElementById('form-section').classList.remove('hide');
       document.getElementById('bandeja-section').classList.add('hide');
@@ -273,15 +281,11 @@
       }
     });
 
-    // --- CARGAR BANDEJA ---
     async function loadBandeja() {
       const list = document.getElementById('lista-escritos');
       list.innerHTML = `<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;"><i class="ph-bold ph-spinner ph-spin"></i> Sincronizando...</div>`;
 
       try {
-        // La RLS de Supabase hace la magia: 
-        // Si es admin, le devuelve todos. Si es usuario, le devuelve solo los suyos.
-        // Agregué el JOIN con profiles para que el Admin vea quién lo mandó.
         const query = supabaseApp
           .from('escritos_buzon')
           .select(`*, profiles:user_id(display_name, matricula)`)
@@ -299,12 +303,10 @@
 
         list.innerHTML = '';
         data.forEach(item => {
-          // Asignar color al estatus
           let badgeClass = 'enviado';
           if(item.estatus === 'En proceso') badgeClass = 'proceso';
           if(item.estatus === 'Atendido') badgeClass = 'atendido';
 
-          // Si es Admin, mostramos quién lo envió. Si es usuario, a quién va dirigido.
           let metaText = isAdmin 
             ? `De: <strong>${item.profiles?.display_name || 'Compañero'}</strong> (Matrícula: ${item.profiles?.matricula || 'N/A'}) • Para: ${item.area_destino}`
             : `Destino: <strong>${item.area_destino}</strong>`;
@@ -326,7 +328,6 @@
       }
     }
 
-    // --- MODAL Y RESPUESTAS ---
     function abrirModal(id) {
       const item = currentEscritos.find(x => x.id === id);
       if(!item) return;
@@ -341,12 +342,26 @@
       
       let metaText = isAdmin ? `De: ${item.profiles?.display_name || 'Compañero'} • Fecha: ${new Date(item.fecha_envio).toLocaleString('es-MX')}` : `Enviado a: ${item.area_destino} • Fecha: ${new Date(item.fecha_envio).toLocaleString('es-MX')}`;
       document.getElementById('m-meta').textContent = metaText;
-      document.getElementById('m-contenido').textContent = item.contenido;
 
-      // Reseteamos las vistas de respuesta
+      // FORMATEADOR DE LINKS (Convierte el link crudo en un botón bonito)
+      let contenidoSeguro = item.contenido
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+          
+      // Ocultar el texto "Ver Documento:" para que se vea más limpio
+      contenidoSeguro = contenidoSeguro.replace(/📄 Ver Documento:\s*/g, '');
+      // Convertir el enlace a botón
+      contenidoSeguro = contenidoSeguro.replace(
+          /(https?:\/\/[^\s]+)/g, 
+          '<div style="margin-top:16px;"><a href="$1" target="_blank" class="btn"><i class="ph-bold ph-file-pdf"></i> Abrir Documento Original</a></div>'
+      );
+      document.getElementById('m-contenido').innerHTML = contenidoSeguro;
+
       const userReplyView = document.getElementById('m-respuesta-view');
       const adminReplyForm = document.getElementById('admin-reply-form');
       document.getElementById('reply-status').innerHTML = '';
+      document.getElementById('m-respuesta-archivo').value = ''; // Limpiar archivo previo
 
       if (isAdmin) {
         adminReplyForm.classList.remove('hide');
@@ -356,9 +371,17 @@
         document.getElementById('m-respuesta-input').value = item.respuesta || '';
       } else {
         adminReplyForm.classList.add('hide');
-        if (item.respuesta) {
+        // Mostrar respuesta si existe texto o un archivo adjunto
+        if (item.respuesta || item.archivo_respuesta) {
           userReplyView.classList.remove('hide');
-          document.getElementById('m-respuesta-text').textContent = item.respuesta;
+          document.getElementById('m-respuesta-text').textContent = item.respuesta || 'Se ha emitido un dictamen en el documento adjunto.';
+          
+          if (item.archivo_respuesta) {
+            document.getElementById('m-respuesta-archivo-btn').innerHTML = `<a href="${item.archivo_respuesta}" target="_blank" class="btn success" style="margin-top: 10px;"><i class="ph-bold ph-file-pdf"></i> Descargar Resolución Oficial</a>`;
+          } else {
+            document.getElementById('m-respuesta-archivo-btn').innerHTML = '';
+          }
+
           document.getElementById('m-respuesta-fecha').textContent = `Respondido el: ${new Date(item.fecha_respuesta).toLocaleString('es-MX')}`;
         } else {
           userReplyView.classList.add('hide');
@@ -372,28 +395,45 @@
       document.getElementById('escrito-modal').classList.remove('active');
     }
 
-    // Guardar respuesta del Admin
+    // Guardar respuesta del Admin (Con subida de Archivos)
     document.getElementById('admin-reply-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('m-id').value;
       const estatus = document.getElementById('m-estatus').value;
       const respuestaText = document.getElementById('m-respuesta-input').value;
+      const fileInput = document.getElementById('m-respuesta-archivo');
+      const file = fileInput.files[0];
+      
       const btn = document.getElementById('btnSaveReply');
       const statusDiv = document.getElementById('reply-status');
 
       btn.disabled = true;
-      statusDiv.innerHTML = '<span style="color: var(--primary-light)">Guardando respuesta...</span>';
+      statusDiv.innerHTML = '<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Procesando respuesta...</span>';
 
       try {
+        let archivoUrl = null;
+
+        // Si el admin subió un archivo, lo guardamos en Supabase Storage
+        if (file) {
+          statusDiv.innerHTML = '<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Subiendo PDF adjunto...</span>';
+          const fileName = `respuestas/${Date.now()}_${id}.pdf`;
+          
+          const { error: uploadError } = await supabaseApp.storage.from('documentos').upload(fileName, file);
+          if (uploadError) throw uploadError;
+          
+          const { data: { publicUrl } } = supabaseApp.storage.from('documentos').getPublicUrl(fileName);
+          archivoUrl = publicUrl;
+        }
+
+        // Preparamos los datos para actualizar la tabla
         const updateData = { estatus: estatus };
         
-        if (respuestaText.trim() !== '') {
-          updateData.respuesta = respuestaText;
-          // Si no tenía fecha de respuesta registrada, se la ponemos ahora
+        if (respuestaText.trim() !== '') updateData.respuesta = respuestaText;
+        if (archivoUrl) updateData.archivo_respuesta = archivoUrl;
+        
+        if (respuestaText.trim() !== '' || archivoUrl) {
           const oldItem = currentEscritos.find(x => x.id === id);
-          if (!oldItem.fecha_respuesta) {
-            updateData.fecha_respuesta = new Date().toISOString();
-          }
+          if (!oldItem.fecha_respuesta) updateData.fecha_respuesta = new Date().toISOString();
           updateData.respondido_por = currentUser.id;
         }
 
@@ -402,7 +442,6 @@
 
         statusDiv.innerHTML = '<span style="color: var(--success)">✅ Guardado exitosamente.</span>';
         
-        // Recargar fondo
         loadBandeja();
         setTimeout(() => cerrarModal(), 1500);
 
