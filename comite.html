@@ -183,6 +183,11 @@
       display: block;
       background: #17304f;
       transition: transform 0.3s ease;
+      
+      /* --- PROTECCIÓN DE IMAGEN --- */
+      pointer-events: none; /* Hace que la imagen sea "invisible" al clic del mouse */
+      user-select: none; /* Evita que la seleccionen como texto */
+      -webkit-user-drag: none; /* Evita que la arrastren al escritorio en Chrome/Safari */
     }
 
     .card:hover img {
@@ -797,6 +802,13 @@
       const map = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#039;': "'" };
       return String(str).replace(/&amp;|&lt;|&gt;|&quot;|&#039;/g, function(m) { return map[m]; });
     }
+
+    // --- BLOQUEAR CLIC DERECHO EN LAS TARJETAS ---
+    document.addEventListener('contextmenu', (e) => {
+      if (e.target.closest('.card')) {
+        e.preventDefault();
+      }
+    });
 
     await refreshUI();
   </script>
