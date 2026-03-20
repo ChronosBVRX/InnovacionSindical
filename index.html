@@ -565,7 +565,7 @@
             <p>Instala la App Oficial (APK) para un acceso directo a la plataforma desde tu dispositivo Android.</p>
           </div>
         </div>
-        <button class="ds-btn" onclick="PSD.openApp('descarga-apk')">
+        <button class="ds-btn" onclick="window.location.href='https://innovacionsindical.com.mx/descargar'">
           <i class="ph-bold ph-android-logo"></i> Ver Instalación
         </button>
       </section>
@@ -651,7 +651,6 @@
 
     const APPS = [
       { id: 'trascendencia', title: 'TrascendencIA - Orientacion del CCT por medio de Inteligencia Artificial', desc: 'Asistente Virtual.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true, newTab: true },
-      { id: 'descarga-apk', title: 'App Oficial PSD', desc: 'Instalación Segura.', iconClass: 'ph-duotone ph-android-logo', iframe: 'descarga.html', hidden: true },
       { id: 'buzon', title: 'Buzón Sindical', desc: 'Trámites y Respuestas.', iconClass: 'ph-duotone ph-envelope-open', iframe: 'buzon.html', featured: true },
       { id: 'auditoria', title: 'Auditoría Sindical', desc: 'Monitor de desempeño.', iconClass: 'ph-duotone ph-chart-line-up', iframe: 'auditoria.html', featured: true, adminOnly: true },
       { id: 'escalafon', title: 'Consulta tu lugar', desc: 'Bolsa de trabajo y Escalafon', iconClass: 'ph-duotone ph-list-numbers', iframe: 'consultalugar.html', featured: true },
@@ -729,7 +728,6 @@
 
         APPS.forEach(a => {
           if(a.id === 'privacidad') return; 
-          if(a.hidden) return; // Se omite la app si tiene la propiedad hidden: true
 
           if (a.adminOnly) {
             const isSuperAdmin = userRole === 'admin' && userEmail && !userEmail.includes('@seccionxx.mx');
