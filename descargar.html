@@ -4,90 +4,194 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Descarga Oficial - Plataforma Sindical Digital</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+
     <style>
+        :root {
+            --bg-body: #1b2e45; 
+            --bg-body-end: #152336;
+            --panel-base: 46, 79, 119;
+            --primary: #4da1a8; 
+            --primary-light: #7ad1d6;
+            --success: #4ade80;
+            --text-main: #f0fdfa; 
+            --text-muted: #bce9eb;
+            --ring: rgba(77, 161, 168, .35);
+        }
+
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #f4f7f6; 
-            color: #333; 
+            font-family: 'Inter', sans-serif; 
+            background-color: transparent; 
+            color: var(--text-main); 
             margin: 0; 
-            padding: 0; 
-        }
-        .header { 
-            background-color: #005a36; 
-            color: white; 
-            padding: 20px 0; 
-            text-align: center; 
-        }
-        .container { 
-            max-width: 800px; 
-            margin: 40px auto; 
             padding: 20px; 
-            background: white; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Fondo ambiental visible al abrirse mediante código QR o enlace directo */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%);
+        }
+        .ambient-bg::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: .06;
+            background-image:
+                linear-gradient(to right, var(--primary) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--primary) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .container { 
+            max-width: 700px; 
+            width: 100%;
+            margin: 0 auto; 
+            padding: 32px; 
+            background: rgba(var(--panel-base), 0.35); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--ring); 
+            border-radius: 16px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3); 
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .badge-sntss {
+            background: rgba(77, 161, 168, .15); 
+            border: 1px solid var(--ring); 
+            color: var(--primary-light); 
+            padding: 6px 14px; 
             border-radius: 8px; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+            font-size: 12px; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px;
         }
-        h1 { font-size: 24px; margin-bottom: 10px; }
-        p { font-size: 16px; line-height: 1.6; }
-        .download-btn { 
-            display: inline-block; 
-            background-color: #007d4e; 
-            color: white; 
-            padding: 15px 30px; 
-            text-decoration: none; 
-            font-weight: bold; 
-            border-radius: 5px; 
-            margin: 20px 0; 
-            font-size: 18px; 
-        }
-        .download-btn:hover { background-color: #005a36; }
+
+        h1 { font-size: 26px; margin: 0 0 12px 0; font-weight: 700; text-align: center; }
+        .subtitle { font-size: 15px; line-height: 1.6; color: var(--text-muted); text-align: center; margin-bottom: 24px;}
+        
         .security-badge { 
-            display: flex; 
+            display: inline-flex; 
             align-items: center; 
             justify-content: center; 
-            background-color: #e8f5e9; 
-            color: #2e7d32; 
-            padding: 15px; 
-            border-radius: 5px; 
-            margin-bottom: 20px; 
-            font-weight: bold; 
+            gap: 8px;
+            background-color: rgba(74, 222, 128, 0.1); 
+            color: var(--success); 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            margin: 0 auto 24px auto; 
+            font-weight: 600; 
+            font-size: 13px;
         }
+
+        .btn-wrapper { text-align: center; margin: 30px 0; }
+        
+        .download-btn { 
+            display: inline-flex; 
+            align-items: center;
+            gap: 10px;
+            background-color: var(--primary); 
+            color: var(--bg-body); 
+            padding: 16px 32px; 
+            text-decoration: none; 
+            font-weight: 700; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(77, 161, 168, 0.3);
+        }
+        .download-btn:hover { 
+            background-color: var(--primary-light); 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(77, 161, 168, 0.4);
+        }
+
         .steps { 
-            background-color: #fafafa; 
-            padding: 20px; 
-            border-left: 4px solid #005a36; 
+            background-color: rgba(21, 35, 54, 0.6); 
+            padding: 24px; 
+            border-left: 4px solid var(--primary); 
+            border-radius: 0 12px 12px 0;
             margin-top: 30px; 
+            border-top: 1px solid var(--ring);
+            border-right: 1px solid var(--ring);
+            border-bottom: 1px solid var(--ring);
         }
-        .steps h2 { font-size: 20px; margin-top: 0; }
-        ol { margin-bottom: 0; padding-left: 20px; }
-        li { margin-bottom: 10px; }
+        .steps h2 { font-size: 18px; margin: 0 0 16px 0; color: var(--primary-light); display: flex; align-items: center; gap: 8px;}
+        .steps p { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
+        ol { margin-bottom: 0; padding-left: 20px; color: var(--text-muted); font-size: 14px;}
+        li { margin-bottom: 12px; line-height: 1.5;}
+        li strong { color: var(--text-main); }
+        code { background: rgba(var(--panel-base), 0.5); padding: 3px 6px; border-radius: 4px; border: 1px solid var(--ring); color: var(--primary-light); font-family: monospace;}
+
         .footer { 
             text-align: center; 
             font-size: 12px; 
-            color: #777; 
+            color: var(--text-muted); 
             margin-top: 40px; 
+            border-top: 1px solid var(--ring);
+            padding-top: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 24px 16px; }
+            h1 { font-size: 22px; }
+            .download-btn { width: 100%; justify-content: center; box-sizing: border-box;}
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h2>SNTSS Sección XX Michoacán</h2>
-    </div>
+    <div class="ambient-bg"></div>
 
     <div class="container">
-        <div class="security-badge">
-            🔒 Descarga 100% Segura y Verificada
+        
+        <div style="text-align: center;">
+            <div class="security-badge">
+                <i class="ph-fill ph-shield-check" style="font-size: 18px;"></i> 
+                Descarga 100% Segura y Verificada
+            </div>
         </div>
 
-        <h1 style="text-align: center;">Plataforma Sindical Digital (PSD)</h1>
-        <p style="text-align: center;">Descarga la aplicación oficial para acceder a todas las herramientas, información y servicios de manera directa y segura en tu dispositivo Android.</p>
+        <h1>Plataforma Sindical Digital (PSD)</h1>
+        <p class="subtitle">Descarga la aplicación oficial para acceder a todas las herramientas, información y servicios de manera directa y segura en tu dispositivo Android.</p>
 
-        <div style="text-align: center;">
-            <a href="https://github.com/ChronosBVRX/InnovacionSindical/raw/refs/heads/main/comite/PSD.apk" class="download-btn">Descargar APK Oficial</a>
+        <div class="btn-wrapper">
+            <a href="https://github.com/ChronosBVRX/InnovacionSindical/raw/refs/heads/main/comite/PSD.apk" class="download-btn">
+                <i class="ph-bold ph-download-simple" style="font-size: 20px;"></i>
+                Descargar APK Oficial
+            </a>
         </div>
 
         <div class="steps">
-            <h2>Guía de Instalación Segura</h2>
+            <h2><i class="ph-duotone ph-list-numbers"></i> Guía de Instalación Segura</h2>
             <p>Para garantizar el acceso directo a los agremiados, esta aplicación se distribuye a través de nuestros servidores oficiales y no en tiendas externas. Sigue estos pasos para instalarla:</p>
             <ol>
                 <li>Haz clic en el botón <strong>"Descargar APK Oficial"</strong>.</li>
@@ -99,6 +203,9 @@
         </div>
 
         <div class="footer">
+            <div class="header-brand">
+                <div class="badge-sntss"><i class="ph-bold ph-identification-badge"></i> SNTSS Secc. XX Michoacán</div>
+            </div>
             <p>&copy; 2026 Plataforma Sindical Digital. Herramienta de Innovación Sindical.</p>
         </div>
     </div>
