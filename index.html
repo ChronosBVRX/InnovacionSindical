@@ -56,7 +56,7 @@
     }
 
     * {
-      -webkit-tap-highlight-color: transparent; /* Quita el recuadro azul nativo al tocar en móvil */
+      -webkit-tap-highlight-color: transparent;
     }
 
     html, body {
@@ -91,11 +91,10 @@
       position: fixed;
       inset: 0 0 auto 0;
       min-height: var(--topbar);
-      height: auto; /* Permite que crezca con el padding dinámico */
+      height: auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      /* CRÍTICO: Toma el margen del notch en iOS o fuerza 35px para la barra de Android */
       padding: max(env(safe-area-inset-top), 35px) 24px 10px 24px;
       background: rgba(var(--panel-base), 0.75);
       backdrop-filter: blur(16px);
@@ -211,16 +210,13 @@
     .modal-content { background: linear-gradient(180deg, rgba(46,79,119,.95), rgba(27,46,69,.95)); border: 1px solid var(--ring); border-radius: 16px; padding: 24px; width: 100%; max-width: 340px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: translateY(20px); transition: transform 0.3s ease; box-sizing: border-box;}
     .modal-overlay.active .modal-content { transform: translateY(0); }
     
-    /* Font-size 16px crítico para evitar zoom en iOS al hacer focus */
     .modal-input { width: 100%; padding: 12px; margin-bottom: 16px; border-radius: 12px; border: 1px solid var(--ring); background: rgba(21,35,54,.85); color: var(--text-main); box-sizing: border-box; font-family: 'Inter', sans-serif; font-size: 16px; outline: none; transition: all 0.2s; }
     .modal-input:focus { border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(77,161,168,.18); }
     .modal-label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; font-weight: 500;}
 
-    /* Modificado para iniciar desde arriba y fluir por debajo de la barra top dinámica */
     .layer { position: fixed; inset: 0; top: 0; overflow-y: auto; display: flex; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
     
     .wrap { 
-      /* Calculamos el padding empujando el contenido debajo de la barra */
       padding: calc(var(--topbar) + max(env(safe-area-inset-top), 35px) + 20px) 24px 32px 24px; 
       max-width: 1200px; 
       margin: 0 auto; 
@@ -261,6 +257,63 @@
     .tile p { margin: 0; color: var(--text-muted); font-size: 14px; line-height: 1.5; }
 
     .badge-ia { position: absolute; top: 14px; right: 14px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; color: var(--primary-light); background: rgba(77, 161, 168, .14); border: 1px solid var(--ring); box-shadow: 0 0 8px rgba(122, 209, 214, 0.2); }
+
+    /* --- BANDA DE DESCARGA EXTERNA --- */
+    .download-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(var(--panel-base), 0.2);
+      border: 1px dashed var(--primary-light);
+      border-radius: var(--radius);
+      padding: 16px 24px;
+      margin-bottom: 32px;
+      transition: all 0.3s ease;
+    }
+    .download-strip:hover {
+      background: rgba(var(--panel-base), 0.4);
+      border-style: solid;
+      box-shadow: 0 4px 15px rgba(77, 161, 168, 0.15);
+    }
+    .ds-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .ds-icon {
+      font-size: 36px;
+      color: var(--primary-light);
+      opacity: 0.9;
+    }
+    .ds-text h3 {
+      margin: 0;
+      font-size: 15px;
+      color: var(--text-main);
+    }
+    .ds-text p {
+      margin: 4px 0 0 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .ds-btn {
+      background: transparent;
+      color: var(--primary-light);
+      border: 1px solid var(--primary-light);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .ds-btn:hover {
+      background: var(--primary-light);
+      color: var(--bg-body);
+    }
 
     .security-section { margin-top: 20px; padding-top: 32px; padding-bottom: 40px; border-top: 1px solid var(--ring); }
     .security-header { margin-bottom: 24px; }
@@ -305,10 +358,8 @@
     @media (max-width: 768px) {
       .hide-mobile { display: none !important; }
       
-      /* Actualizamos el wrap para móviles respetando el cálculo superior de la barra de Android */
       .wrap { padding: calc(var(--topbar) + max(env(safe-area-inset-top), 35px) + 16px) 16px 20px 16px; }
       
-      /* App Head Móvil: Posicionado al centro inferior para alcance del pulgar y evitar tapar el iframe */
       .app-head { 
         top: auto; 
         bottom: 24px; 
@@ -336,17 +387,26 @@
       
       .psd-footer { flex-direction: column; text-align: center; gap: 12px; padding-bottom: 30px;}
       .footer-links { justify-content: center; flex-wrap: wrap; gap: 12px; }
+
+      .download-strip {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+      }
+      .ds-content {
+        flex-direction: column;
+        gap: 8px;
+      }
     }
 
     @media (max-width: 480px) {
-      /* Ajuste específico para que no borre el padding superior dinámico */
       .topbar { padding-left: 16px; padding-right: 16px; }
-      .title-text span:last-child { display: none; } /* Oculta "(PSD)" en celulares pequeños */
-      .title-text span.hide-mobile { display: none; } /* Oculta "Plataforma" */
+      .title-text span:last-child { display: none; } 
+      .title-text span.hide-mobile { display: none; } 
       .title { gap: 8px; font-size: 15px; }
       
       .topbar-right { gap: 12px; }
-      .user-widget { padding: 4px; border-radius: 50%; } /* Solo avatar en móvil pequeño */
+      .user-widget { padding: 4px; border-radius: 50%; } 
       .user-widget .name { display: none; }
       
       .btn-auth { font-size: 12px; padding: 8px 12px; }
@@ -497,6 +557,19 @@
 
       <section class="tiles" id="tiles"></section>
 
+      <section class="download-strip">
+        <div class="ds-content">
+          <i class="ph-duotone ph-qr-code ds-icon"></i>
+          <div class="ds-text">
+            <h3>¿Accedes desde un código QR o enlace externo?</h3>
+            <p>Instala la App Oficial (APK) para un acceso directo a la plataforma desde tu dispositivo Android.</p>
+          </div>
+        </div>
+        <button class="ds-btn" onclick="PSD.openApp('descarga-apk')">
+          <i class="ph-bold ph-android-logo"></i> Ver Instalación
+        </button>
+      </section>
+
       <section class="security-section">
         <div class="security-header">
           <h2><i class="ph-fill ph-shield-check"></i> Infraestructura y Seguridad</h2>
@@ -578,6 +651,7 @@
 
     const APPS = [
       { id: 'trascendencia', title: 'TrascendencIA - Orientacion del CCT por medio de Inteligencia Artificial', desc: 'Asistente Virtual.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true, newTab: true },
+      { id: 'descarga-apk', title: 'App Oficial PSD', desc: 'Instalación Segura.', iconClass: 'ph-duotone ph-android-logo', iframe: 'descarga.html', hidden: true },
       { id: 'buzon', title: 'Buzón Sindical', desc: 'Trámites y Respuestas.', iconClass: 'ph-duotone ph-envelope-open', iframe: 'buzon.html', featured: true },
       { id: 'auditoria', title: 'Auditoría Sindical', desc: 'Monitor de desempeño.', iconClass: 'ph-duotone ph-chart-line-up', iframe: 'auditoria.html', featured: true, adminOnly: true },
       { id: 'escalafon', title: 'Consulta tu lugar', desc: 'Bolsa de trabajo y Escalafon', iconClass: 'ph-duotone ph-list-numbers', iframe: 'consultalugar.html', featured: true },
@@ -655,6 +729,7 @@
 
         APPS.forEach(a => {
           if(a.id === 'privacidad') return; 
+          if(a.hidden) return; // Se omite la app si tiene la propiedad hidden: true
 
           if (a.adminOnly) {
             const isSuperAdmin = userRole === 'admin' && userEmail && !userEmail.includes('@seccionxx.mx');
@@ -810,7 +885,6 @@
         document.getElementById('hl-error').textContent = '';
       },
 
-      // NUEVAS FUNCIONES PARA EL PASSWORD Y RECOVERY
       togglePassword() {
         const passInput = document.getElementById('hl-pass');
         const eyeIcon = document.getElementById('hl-eye-icon');
@@ -818,11 +892,11 @@
         if (passInput.type === 'password') {
           passInput.type = 'text';
           eyeIcon.classList.remove('ph-eye');
-          eyeIcon.classList.add('ph-eye-slash'); // Icono de ojo cerrado
+          eyeIcon.classList.add('ph-eye-slash');
         } else {
           passInput.type = 'password';
           eyeIcon.classList.remove('ph-eye-slash');
-          eyeIcon.classList.add('ph-eye'); // Icono de ojo abierto
+          eyeIcon.classList.add('ph-eye');
         }
       },
 
