@@ -90,18 +90,19 @@
     .topbar {
       position: fixed;
       inset: 0 0 auto 0;
-      height: var(--topbar);
+      min-height: var(--topbar);
+      height: auto; /* Permite que crezca con el padding dinámico */
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 24px;
+      /* CRÍTICO: Toma el margen del notch en iOS o fuerza 35px para la barra de Android */
+      padding: max(env(safe-area-inset-top), 35px) 24px 10px 24px;
       background: rgba(var(--panel-base), 0.75);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--ring);
       z-index: 30;
-      /* Ajuste para notch en iOS */
-      padding-top: env(safe-area-inset-top);
+      box-sizing: border-box;
     }
 
     .mark {
@@ -215,8 +216,18 @@
     .modal-input:focus { border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(77,161,168,.18); }
     .modal-label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; font-weight: 500;}
 
-    .layer { position: fixed; inset: 0; top: var(--topbar); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
-    .wrap { padding: 32px 24px; max-width: 1200px; margin: 0 auto; flex: 1; width: 100%; box-sizing: border-box; }
+    /* Modificado para iniciar desde arriba y fluir por debajo de la barra top dinámica */
+    .layer { position: fixed; inset: 0; top: 0; overflow-y: auto; display: flex; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
+    
+    .wrap { 
+      /* Calculamos el padding empujando el contenido debajo de la barra */
+      padding: calc(var(--topbar) + max(env(safe-area-inset-top), 35px) + 20px) 24px 32px 24px; 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      flex: 1; 
+      width: 100%; 
+      box-sizing: border-box; 
+    }
 
     .brand { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--ring); }
     .brand h1 { margin: 0; font-size: 28px; font-weight: 700; color: var(--text-main); }
@@ -271,7 +282,7 @@
 
     .app-wrap { width: 100%; max-width: 100%; margin: 0; padding: 0; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; position: relative; }
     
-    .app-head { position: absolute; top: 16px; right: 24px; z-index: 50; display: flex; align-items: center; gap: 8px; background: rgba(var(--panel-base), 0.85); backdrop-filter: blur(10px); padding: 8px 12px; border-radius: 12px; border: 1px solid var(--ring); margin: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+    .app-head { position: absolute; top: calc(max(env(safe-area-inset-top), 35px) + 16px); right: 24px; z-index: 50; display: flex; align-items: center; gap: 8px; background: rgba(var(--panel-base), 0.85); backdrop-filter: blur(10px); padding: 8px 12px; border-radius: 12px; border: 1px solid var(--ring); margin: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
     .app-head > div:first-child { display: none !important; }
     
     .app-body { flex: 1; background: transparent; border-radius: 0; border: none; overflow: hidden; position: relative; width: 100%; height: 100%; }
@@ -293,9 +304,11 @@
        ========================================================= */
     @media (max-width: 768px) {
       .hide-mobile { display: none !important; }
-      .wrap { padding: 20px 16px; }
       
-      /* App Head Móvil: Posicionado al centro inferior para alcance del pulgar y evitar tapar el header del iframe */
+      /* Actualizamos el wrap para móviles respetando el cálculo superior de la barra de Android */
+      .wrap { padding: calc(var(--topbar) + max(env(safe-area-inset-top), 35px) + 16px) 16px 20px 16px; }
+      
+      /* App Head Móvil: Posicionado al centro inferior para alcance del pulgar y evitar tapar el iframe */
       .app-head { 
         top: auto; 
         bottom: 24px; 
@@ -326,7 +339,8 @@
     }
 
     @media (max-width: 480px) {
-      .topbar { padding: 0 16px; }
+      /* Ajuste específico para que no borre el padding superior dinámico */
+      .topbar { padding-left: 16px; padding-right: 16px; }
       .title-text span:last-child { display: none; } /* Oculta "(PSD)" en celulares pequeños */
       .title-text span.hide-mobile { display: none; } /* Oculta "Plataforma" */
       .title { gap: 8px; font-size: 15px; }
@@ -357,7 +371,6 @@
   </style>
 
   <script>
-    // Prevenir que el index.html se cargue dentro del iframe (Fallback de error 404)
     if (window.top !== window.self) {
       document.documentElement.innerHTML = `
         <body style="background-color: #1b2e45; color: #bce9eb; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: 'Inter', sans-serif; text-align: center; padding: 20px; box-sizing: border-box;">
@@ -773,7 +786,6 @@
 
       openModal() {
         document.getElementById('login-modal').classList.add('active');
-        // Se añade un timeout para que iOS no haga focus raro antes de que la animación termine
         setTimeout(() => document.getElementById('hl-user').focus(), 300);
       },
 
