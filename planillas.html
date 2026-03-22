@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Planillas </title>
+    <title>Generador de Planillas</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- ESTILOS DEL FORMULARIO Y LA INTERFAZ --- */
@@ -37,9 +37,10 @@
 
         label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
 
-        input[type="text"], input[type="number"], input[type="file"] {
+        input[type="text"], input[type="number"], input[type="file"], textarea {
             width: 100%; padding: 10px; margin-bottom: 10px;
             border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
         }
 
         .btn {
@@ -70,7 +71,7 @@
         :root { --dark-blue: #122c4d; --teal: #4b929b; }
 
         /* --- ENCABEZADO Y LOGOS --- */
-        .p-header { text-align: center; padding-top: 0.8in; padding-bottom: 0.2in; }
+        .p-header { text-align: center; padding-top: 0.6in; padding-bottom: 0.1in; }
         
         .p-logo-container {
             display: inline-flex; flex-direction: column; align-items: center; margin-bottom: 0.1in;
@@ -85,17 +86,37 @@
         .p-header h1 { color: var(--dark-blue); font-size: 0.55in; font-weight: 900; margin-top: 0.1in; margin-bottom: 0.05in; text-transform: uppercase; }
         .p-header h2 { color: var(--teal); font-size: 0.35in; text-transform: uppercase; margin: 0; }
 
+        /* --- UNIDAD ELECTORAL --- */
+        .p-electoral-info {
+            background-color: white;
+            border: 0.04in solid var(--teal);
+            border-radius: 15px;
+            margin: 0.1in 0.5in;
+            padding: 0.15in;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .p-electoral-info h3 {
+            color: var(--dark-blue); font-size: 0.28in; margin: 0 0 0.05in 0; text-transform: uppercase;
+        }
+        .p-electoral-info p {
+            color: #444; font-size: 0.18in; margin: 0; text-transform: uppercase; font-weight: bold;
+        }
+
+        /* --- REPRESENTANTE --- */
         .p-representante {
-            background-color: var(--dark-blue); color: white; width: 8.5in; height: 1.5in;
-            margin: 0.1in auto 0.3in auto; border-radius: 100px; display: flex; align-items: center; position: relative;
+            background-color: var(--dark-blue); color: white; width: 8.5in; height: 1.6in;
+            margin: 0.1in auto 0.2in auto; border-radius: 100px; display: flex; align-items: center; position: relative;
         }
         .p-rep-photo {
             width: 2.2in; height: 2.2in; background-color: #ccc; border-radius: 50%; 
             border: 0.08in solid var(--dark-blue); position: absolute; left: -0.5in; object-fit: cover;
         }
-        .p-rep-info { margin-left: 2in; }
-        .p-rep-title { font-size: 0.22in; font-weight: bold; }
-        .p-rep-name { font-size: 0.35in; font-weight: 900; text-transform: uppercase; }
+        .p-rep-info { margin-left: 2in; display: flex; flex-direction: column; justify-content: center; }
+        .p-rep-title { font-size: 0.20in; font-weight: bold; color: #a4c8cc; }
+        .p-rep-name { font-size: 0.32in; font-weight: 900; text-transform: uppercase; margin-bottom: 0.02in;}
+        .p-rep-role { font-size: 0.20in; text-transform: uppercase; color: #ddd;}
+        .p-rep-unit { font-size: 0.20in; font-weight: bold; color: var(--teal); text-transform: uppercase; }
         
         .p-logo-sec {
             position: absolute; right: 0.5in; width: 1.2in; height: 1.2in; border-radius: 50%;
@@ -105,7 +126,6 @@
         /* --- CUADRÍCULA DINÁMICA CON INTEGRANTES --- */
         .p-grid { 
             display: grid; padding: 0 0.5in; margin-top: 0.1in; flex-grow: 1; 
-            /* Esta línea corrige que las filas se estiren demasiado y se corten los de abajo */
             align-content: start; 
         }
         .p-card { background: white; display: flex; align-items: center; box-sizing: border-box; }
@@ -117,11 +137,11 @@
 
         /* TAMAÑOS */
         .p-grid { grid-template-columns: repeat(3, 1fr); gap: 0.25in; }
-        .p-grid .p-card { height: 1.6in; padding: 0.15in; border: 0.04in solid var(--dark-blue); border-radius: 15px; }
-        .p-grid .p-card-photo { width: 1.1in; height: 1.3in; margin-right: 0.15in; border-radius: 8px; }
-        .p-grid .p-card-name { font-size: 0.2in; margin-bottom: 0.05in; }
-        .p-grid .p-card-role { font-size: 0.18in; margin-bottom: 0.03in; }
-        .p-grid .p-card-unit { font-size: 0.18in; }
+        .p-grid .p-card { height: 1.5in; padding: 0.15in; border: 0.04in solid var(--dark-blue); border-radius: 15px; }
+        .p-grid .p-card-photo { width: 1in; height: 1.2in; margin-right: 0.15in; border-radius: 8px; }
+        .p-grid .p-card-name { font-size: 0.18in; margin-bottom: 0.05in; }
+        .p-grid .p-card-role { font-size: 0.16in; margin-bottom: 0.03in; }
+        .p-grid .p-card-unit { font-size: 0.16in; }
 
         .p-grid.size-md { gap: 0.15in; padding: 0 0.5in; }
         .p-grid.size-md .p-card { height: 1.25in; padding: 0.1in; border-radius: 12px; }
@@ -144,7 +164,7 @@
         /* --- PIE DE PÁGINA --- */
         .p-footer {
             background-color: var(--teal); color: white; text-align: center;
-            padding: 0.4in 0; position: absolute; bottom: 0; width: 100%; z-index: 10;
+            padding: 0.3in 0; position: absolute; bottom: 0; width: 100%; z-index: 10;
         }
         .p-footer h3 { font-size: 0.4in; margin: 0 0 0.1in 0; text-transform: uppercase; }
         .p-footer h4 { font-size: 0.35in; margin: 0; font-weight: normal; text-transform: uppercase; }
@@ -160,9 +180,21 @@
         <h1>Generador de Planillas - Alta Resolución</h1>
         
         <div class="form-group">
+            <h3>Información Electoral</h3>
+            <label>Unidad Electoral (Ej. Zona Morelia):</label>
+            <input type="text" id="unidadElectoral" placeholder="Escribe el nombre de la Unidad Electoral">
+            <label>Unidades que la conforman:</label>
+            <textarea id="descElectoral" rows="2" placeholder="Ej. HGR No. 1, UMF 75, Subdelegación..."></textarea>
+        </div>
+
+        <div class="form-group">
             <h3>Representante</h3>
             <label>Nombre del Representante de Planilla:</label>
             <input type="text" id="nombreRep" value="Carlos Guerrero">
+            <label>Categoría / Cargo:</label>
+            <input type="text" id="cargoRep" placeholder="Ej. Médico Especialista">
+            <label>Adscripción:</label>
+            <input type="text" id="unidadRep" placeholder="Ej. HGR No. 1">
             <label>Foto del Representante:</label>
             <input type="file" id="fotoRep" accept="image/*">
         </div>
@@ -195,11 +227,18 @@
                 <h2>XXXI Congreso Seccional Ordinario</h2>
             </div>
 
+            <div class="p-electoral-info">
+                <h3 id="render-unidad-electoral">UNIDAD ELECTORAL</h3>
+                <p id="render-desc-electoral">Descripción de las unidades</p>
+            </div>
+
             <div class="p-representante">
                 <img src="data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" id="render-foto-rep" class="p-rep-photo">
                 <div class="p-rep-info">
                     <div class="p-rep-title">REPRESENTANTE DE PLANILLA:</div>
                     <div class="p-rep-name" id="render-nombre-rep">CARLOS GUERRERO</div>
+                    <div class="p-rep-role" id="render-cargo-rep">CARGO</div>
+                    <div class="p-rep-unit" id="render-unidad-rep">UNIDAD</div>
                 </div>
                 <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" class="p-logo-sec" crossorigin="anonymous">
             </div>
@@ -210,7 +249,6 @@
                 <h3>¡Únete a nuestra visión!</h3>
                 <h4>VOTA POR LA PLANILLA AZUL</h4>
                 <h3>"UNIDOS SOMOS FUERZA"</h3>
-
             </div>
         </div>
     </div>
@@ -243,13 +281,19 @@
             document.getElementById('form-section').style.display = 'none';
             document.getElementById('poster-preview').style.display = 'block';
 
-            document.getElementById('render-nombre-rep').innerText = document.getElementById('nombreRep').value;
+            // Datos de la Unidad Electoral
+            document.getElementById('render-unidad-electoral').innerText = document.getElementById('unidadElectoral').value || 'UNIDAD ELECTORAL';
+            document.getElementById('render-desc-electoral').innerText = document.getElementById('descElectoral').value || 'Unidades que conforman esta zona';
+
+            // Datos del Representante
+            document.getElementById('render-nombre-rep').innerText = document.getElementById('nombreRep').value || 'NOMBRE DEL REPRESENTANTE';
+            document.getElementById('render-cargo-rep').innerText = document.getElementById('cargoRep').value || 'CARGO';
+            document.getElementById('render-unidad-rep').innerText = document.getElementById('unidadRep').value || 'ADSCRIPCIÓN';
 
             const fotoRepInput = document.getElementById('fotoRep');
             if(fotoRepInput.files && fotoRepInput.files[0]) {
                 document.getElementById('render-foto-rep').src = URL.createObjectURL(fotoRepInput.files[0]);
             } else {
-                // Si no suben foto del representante, se mantiene gris
                 document.getElementById('render-foto-rep').src = pixelGris;
             }
 
@@ -298,8 +342,8 @@
         function descargarComoImagen() {
             const poster = document.getElementById('poster-section');
             const options = {
-                scale: 3, // Escala de 3x para evitar desbordes de memoria en móviles pero mantener gran calidad
-                useCORS: true, // Esto obliga a la herramienta a pedir permiso para usar las imágenes de Github
+                scale: 3,
+                useCORS: true, 
                 allowTaint: true,
                 backgroundColor: '#f6f8f9', 
                 width: poster.offsetWidth,
@@ -309,7 +353,6 @@
                 }
             };
 
-            // Agregamos un texto de "Cargando..." al botón para que sepas que está procesando
             const btn = document.querySelector('.btn-print');
             const textoOriginal = btn.innerHTML;
             btn.innerHTML = '⏳ Procesando imagen...';
@@ -322,7 +365,6 @@
                 link.download = 'planilla_congresional_alta_resolucion.png';
                 link.click();
                 
-                // Restauramos el botón
                 btn.innerHTML = textoOriginal;
                 btn.disabled = false;
             }).catch(err => {
