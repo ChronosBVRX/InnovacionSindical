@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Planilla Congresional</title>
+    <title>Generador de Planillas - Alta Resolución</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- ESTILOS DEL FORMULARIO Y LA INTERFAZ --- */
         body {
@@ -58,18 +59,40 @@
         }
 
         /* --- ESTILOS DEL PÓSTER (TABLOIDE) --- */
-        #poster-preview { display: none; margin-top: 20px; }
+        #poster-preview { display: none; margin-top: 20px; text-align: center;}
         #poster-section {
             width: 11in; height: 17in; background-color: #f6f8f9; margin: 0 auto;
             position: relative; display: flex; flex-direction: column;
             overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            /* Asegurar que el póster sea visible para html2canvas */
+            visibility: visible;
         }
 
         :root { --dark-blue: #122c4d; --teal: #4b929b; }
 
+        /* --- ENCABEZADO Y LOGO MODIFICADO --- */
         .p-header { text-align: center; padding-top: 0.8in; padding-bottom: 0.3in; }
-        .p-logo-principal { width: 2.5in; margin-bottom: 0.2in; mix-blend-mode: multiply; }
-        .p-header h1 { color: var(--dark-blue); font-size: 0.55in; font-weight: 900; margin-bottom: 0.05in; }
+        
+        /* Nuevo contenedor circular para el logo principal */
+        .p-logo-container {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 0.2in;
+        }
+
+        .p-logo-circular {
+            width: 2.2in; 
+            height: 2.2in;
+            border-radius: 50%; 
+            object-fit: contain; 
+            border: 0.05in solid var(--dark-blue); 
+            background-color: white; 
+            margin: 0;
+            padding: 0.1in; 
+        }
+
+        .p-header h1 { color: var(--dark-blue); font-size: 0.55in; font-weight: 900; margin-top: 0.1in; margin-bottom: 0.05in; text-transform: uppercase; }
         .p-header h2 { color: var(--teal); font-size: 0.35in; text-transform: uppercase; margin: 0; }
 
         .p-representante {
@@ -84,11 +107,23 @@
         .p-rep-info { margin-left: 2in; }
         .p-rep-title { font-size: 0.22in; font-weight: bold; }
         .p-rep-name { font-size: 0.45in; font-weight: 900; text-transform: uppercase; }
-        .p-logo-sec { position: absolute; right: 0.5in; width: 1.2in; border-radius: 50%; }
+        
+        /* Logo secundario también circular */
+        .p-logo-sec {
+            position: absolute;
+            right: 0.5in;
+            width: 1.2in;
+            height: 1.2in;
+            border-radius: 50%;
+            object-fit: contain;
+            border: 0.03in solid white; 
+            background-color: white;
+            padding: 0.05in;
+        }
 
-        /* --- CUADRÍCULA DINÁMICA --- */
-        .p-grid { display: grid; padding: 0 0.5in; margin-top: 0.1in; }
-        .p-card { background: white; display: flex; align-items: center; }
+        /* --- CUADRÍCULA DINÁMICA CON INTEGRANTES --- */
+        .p-grid { display: grid; padding: 0 0.5in; margin-top: 0.1in; flex-grow: 1; }
+        .p-card { background: white; display: flex; align-items: center; box-sizing: border-box; }
         .p-card-photo { background-color: #ccc; object-fit: cover; }
         .p-card-info { display: flex; flex-direction: column; justify-content: center; }
         .p-card-name { color: var(--dark-blue); font-weight: bold; text-transform: uppercase; line-height: 1.1; }
@@ -136,25 +171,15 @@
         .p-line-1 { top: 3.5in; left: 0; width: 1.5in; }
         .p-line-2 { top: 1.5in; right: 0; width: 2in; }
 
-        @media print {
-            body { background: none; padding: 0; }
-            .no-print { display: none !important; }
-            @page { size: 11in 17in; margin: 0; }
-            #poster-preview { display: block !important; margin: 0; }
-            #poster-section { box-shadow: none; }
-        }
     </style>
 </head>
 <body>
 
-    <div class="app-container no-print" id="form-section">
-        <h1>Generador de Planillas</h1>
+    <div class="app-container" id="form-section">
+        <h1>Generador de Planillas - Alta Resolución</h1>
         
         <div class="form-group">
             <h3>Datos Generales y Representante</h3>
-            <label>Nombre de la Planilla (Lema):</label>
-            <input type="text" id="nombrePlanilla" value="Unidos Somos Fuerza">
-            
             <label>Nombre del Representante de Planilla:</label>
             <input type="text" id="nombreRep" value="Carlos Guerrero">
             
@@ -174,10 +199,10 @@
     </div>
 
     <div id="poster-preview">
-        <div class="no-print" style="text-align: center; margin-bottom: 20px;">
-            <button class="btn btn-print" onclick="window.print()" style="width: auto; padding: 10px 40px; margin-right: 10px;">🖨️ Exportar a PDF / Imprimir</button>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button class="btn btn-print" onclick="descargarComoImagen()" style="width: auto; padding: 10px 40px; margin-right: 10px;">📥 Descargar como Imagen</button>
             <button class="btn btn-back" onclick="volverEditar()" style="width: auto; padding: 10px 40px;">✏️ Volver a Editar</button>
-            <p style="color: #666; margin-top:10px;">Al imprimir, recuerda configurar el tamaño de papel como <b>Tabloide (11x17)</b> y los márgenes en <b>Ninguno</b>.</p>
+            <p style="color: #666; margin-top:10px;">Al descargar, obtendrás una imagen de alta resolución lista para imprimir o compartir.</p>
         </div>
 
         <div id="poster-section">
@@ -185,7 +210,9 @@
             <div class="p-line p-line-2"></div>
 
             <div class="p-header">
-                <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo SNTSS" class="p-logo-principal">
+                <div class="p-logo-container">
+                    <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo SNTSS" class="p-logo-circular">
+                </div>
                 <h1>PLANILLA CONGRESIONAL</h1>
                 <h2>CONGRESO SECCIONAL ORDINARIO</h2>
             </div>
@@ -209,7 +236,7 @@
     </div>
 
     <script>
-        // Píxel gris base64 para evitar el ícono de "imagen rota"
+        // Píxel gris base64 para evitar el ícono de "imagen rota" si no hay foto
         const pixelGris = "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
 
         function generarCamposIntegrantes() {
@@ -238,7 +265,6 @@
             document.getElementById('poster-preview').style.display = 'block';
 
             document.getElementById('render-nombre-rep').innerText = document.getElementById('nombreRep').value;
-            document.getElementById('render-lema').innerText = 'VOTA POR LA PLANILLA "' + document.getElementById('nombrePlanilla').value + '"';
 
             const fotoRepInput = document.getElementById('fotoRep');
             if(fotoRepInput.files && fotoRepInput.files[0]) {
@@ -265,7 +291,7 @@
                 let unidad = document.getElementById(`unidadInt${i}`).value || 'UNIDAD';
                 
                 let fotoInput = document.getElementById(`fotoInt${i}`);
-                let fotoSrc = pixelGris; // Usa el píxel gris por defecto
+                let fotoSrc = pixelGris; 
                 if(fotoInput.files && fotoInput.files[0]) {
                     fotoSrc = URL.createObjectURL(fotoInput.files[0]);
                 }
@@ -286,6 +312,28 @@
         function volverEditar() {
             document.getElementById('form-section').style.display = 'block';
             document.getElementById('poster-preview').style.display = 'none';
+        }
+
+        // --- FUNCIÓN PARA EXPORTAR COMO IMAGEN DE ALTA RESOLUCIÓN ---
+        function descargarComoImagen() {
+            const poster = document.getElementById('poster-section');
+            const options = {
+                scale: 4, // Escala alta para alta resolución (4x)
+                backgroundColor: '#f6f8f9', 
+                width: poster.offsetWidth,
+                height: poster.offsetHeight,
+                onclone: (clonedDoc) => {
+                    clonedDoc.getElementById('poster-section').style.display = 'flex';
+                }
+            };
+
+            html2canvas(poster, options).then(canvas => {
+                const image = canvas.toDataURL("image/png");
+                const link = document.createElement('a');
+                link.href = image;
+                link.download = 'planilla_congresional_alta_resolucion.png';
+                link.click();
+            });
         }
     </script>
 </body>
