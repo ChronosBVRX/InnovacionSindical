@@ -3,498 +3,412 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plantilla Congresional Móvil - Unidos somos fuerza</title>
+    <title>Generador de Planillas - SNTSS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* CSS Variables para colores corporativos */
         :root {
-            --primary-blue: #2c4a67; /* Azul oscuro de la 'C' */
-            --primary-teal: #49a5b0; /* Teal de la 'G' */
-            --bg-light: #f9fbfd; /* Fondo off-white muy claro */
-            --border-light: #d8e2ea; /* Bordes suaves para campos */
-            --placeholder-grey: #adb5bd; /* Gris para marcadores de posición */
+            --primary-blue: #234575;
+            --secondary-teal: #49a5b0;
+            --bg-light-grey: #f0f2f5;
+            --text-dark: #333333;
+            --card-border: #d1d9e6;
         }
 
-        /* Estilos Globales */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: 'Montserrat', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--bg-light);
-            color: #333;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* Contenedor principal móvil (centrado y responsive) */
-        .mobile-container {
-            max-width: 480px; /* Ancho máximo de teléfono moderno */
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            overflow-x: hidden;
-        }
-
-        /* Barra de Navegación */
-        .nav-bar {
+            background-color: var(--bg-light-grey);
+            color: var(--text-dark);
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            padding: 5px 0 15px 0;
-            border-bottom: 1px solid var(--border-light);
+            min-height: 100vh;
+        }
+
+        /* --- Paso 1: Pantalla de Configuración --- */
+        #config-screen {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-top: 10vh;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .logo-redondeado-config {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-blue);
             margin-bottom: 15px;
         }
 
-        .btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
-            text-decoration: none;
-            display: flex;
+        #config-screen h2 { color: var(--primary-blue); margin-top: 0; }
+        .input-group { margin: 20px 0; text-align: left; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+        .input-group input { width: 100%; padding: 12px; border: 2px solid var(--card-border); border-radius: 5px; font-size: 16px; box-sizing: border-box; }
+        .btn-primary { background-color: var(--secondary-teal); color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: 700; border-radius: 5px; cursor: pointer; width: 100%; text-transform: uppercase; }
+        .btn-primary:hover { background-color: #3a8b95; }
+
+        /* --- Paso 2: Pantalla de Edición --- */
+        #editor-screen {
+            display: none;
+            width: 100%;
+            flex-direction: column;
             align-items: center;
         }
 
-        .btn-back {
-            color: #333;
-        }
-
-        .btn-print {
-            color: var(--primary-teal);
-            font-weight: 600;
-        }
-
-        /* Cabecera y Branding */
-        header.branding {
+        .toolbar {
+            width: 100%;
+            background-color: var(--primary-blue);
+            padding: 15px 0;
             text-align: center;
-            margin-bottom: 25px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        .cg-logo-main {
-            width: 120px;
-            height: auto;
-            margin-bottom: 10px;
-        }
-
-        .header h1 {
+        .toolbar button {
+            background-color: white;
             color: var(--primary-blue);
-            font-size: 24px;
-            margin: 0;
+            border: none;
+            padding: 10px 15px;
             font-weight: 700;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
         }
 
-        .header h2 {
-            color: var(--primary-teal);
-            font-size: 16px;
-            margin: 5px 0 0;
-            font-weight: 600;
-        }
-
-        /* Tarjetas de Planilla */
-        .card {
-            background-color: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        /* --- Estilos Base (Visualización en Pantalla / Móvil) --- */
+        .preview-wrapper {
+            width: 100%;
             display: flex;
-            flex-direction: column; /* Diseño en una sola columna para móvil */
+            justify-content: center;
+            padding: 20px 10px;
+            box-sizing: border-box;
+        }
+
+        .planilla-hoja {
+            width: 100%;
+            max-width: 800px; /* Ancho máximo en pantalla */
+            background-color: #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 10px;
+        }
+
+        /* Cabecera */
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { color: var(--primary-blue); font-size: 28px; margin: 10px 0 0; text-transform: uppercase; }
+        .header h2 { color: var(--secondary-teal); font-size: 18px; margin: 5px 0 0; text-transform: uppercase; }
+        
+        /* Logo Principal Redondeado */
+        .logo-principal-redondeado {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Banner Representante (Formato Móvil por defecto) */
+        .representative-banner {
+            background-color: var(--primary-blue);
+            color: #fff;
+            display: flex;
+            flex-direction: column; /* Apilado en móvil */
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
             gap: 15px;
         }
 
-        /* Tarjeta del Representante (Especial) */
-        .representative-card {
-            border: 1px solid var(--border-light);
-        }
-
-        .representative-card .photo-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
         .photo-placeholder {
-            width: 90px;
-            height: 90px;
+            width: 100px;
+            height: 100px;
+            background-color: #f0f0f0;
             border-radius: 50%;
-            background-color: #f1f3f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+            border: 4px solid #fff;
+            overflow: hidden;
             cursor: pointer;
-        }
-
-        .photo-placeholder-content {
-            text-align: center;
-            color: var(--placeholder-grey);
-            font-size: 10px;
-        }
-
-        .photo-placeholder-content .main-text {
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .representative-card .info-area {
-            text-align: center;
-        }
-
-        .card-title {
-            color: var(--primary-blue);
-            font-size: 14px;
-            font-weight: 600;
-            margin: 0 0 10px 0;
-        }
-
-        /* Campos Editables */
-        [contenteditable] {
-            outline: none;
-            display: inline-block;
-            border-bottom: 1px dashed var(--border-light);
-            padding: 2px 5px;
-            width: 100%;
-            box-sizing: border-box;
-            transition: border-color 0.2s;
-        }
-
-        [contenteditable]:focus {
-            border-bottom-color: var(--primary-teal);
-        }
-
-        .field .field-label {
-            display: none; /* Ocultar etiquetas en pantalla, solo usarlas en impresión */
-        }
-
-        /* Campo de Nombre del Representante */
-        .name-field {
-            font-size: 18px;
-            font-weight: 700;
-            color: #333;
-        }
-
-        /* Logo CG Redondeado (Mascara) */
-        .rounded-logo-container {
             display: flex;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        .cg-logo-rounded {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%; /* Hace el contenedor circular */
-            border: 3px solid #fff; /* Marco limpio */
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            overflow: hidden; /* Corta la imagen */
-            display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+        }
+        .photo-placeholder svg { width: 60%; fill: #ccc; }
+
+        .rep-title { font-size: 16px; font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-teal); }
+        .rep-name { font-size: 24px; font-weight: 700; display: block; }
+
+        /* Logo Pequeño Redondeado (Representante) */
+        .logo-pequeno-redondeado {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fff;
+            background-color: #fff;
         }
 
-        .cg-logo-rounded img {
-            width: 100%; /* Ajusta la imagen */
-            height: auto;
-            transform: scale(1.0); /* Ajuste de escala para centrar */
-        }
-
-        /* Slogan */
-        .slogan-card {
-            background-color: transparent;
-            box-shadow: none;
-            margin-bottom: 25px;
+        /* Eslogan */
+        .slogan-banner {
             text-align: center;
+            margin-bottom: 25px;
         }
-
-        .slogan h3 {
-            color: var(--primary-teal);
-            font-size: 28px;
+        .slogan-banner h3 {
+            color: var(--secondary-teal);
+            font-size: 26px;
             font-weight: 800;
             margin: 0;
+            text-transform: uppercase;
         }
 
-        /* Lista de Integrantes Stacked (Apilada) */
-        .member-list {
-            display: flex;
-            flex-direction: column;
+        /* Cuadrícula Integrantes (1 columna en móvil) */
+        .members-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Una columna por defecto para celulares */
             gap: 15px;
         }
 
         .member-card {
-            border: 1px solid var(--border-light);
-        }
-
-        .member-card .photo-area {
-            align-items: center;
+            background-color: #fff;
+            border: 2px solid var(--card-border);
+            padding: 15px;
             display: flex;
-            flex-direction: column;
-            gap: 5px;
-            align-self: flex-start; /* Alinear a la izquierda */
+            align-items: center;
+            border-radius: 10px;
         }
 
-        .member-photo-placeholder {
-            width: 50px;
-            height: 50px;
+        .member-photo {
+            width: 70px;
+            height: 70px;
+            background-color: #f0f0f0;
             border-radius: 50%;
-            background-color: #f1f3f5;
+            overflow: hidden;
+            margin-right: 15px;
+            flex-shrink: 0;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+        }
+        .member-photo svg { width: 60%; fill: #ccc; }
+
+        .member-info { flex-grow: 1; }
+        .member-info span[contenteditable] { outline: none; display: block; border-bottom: 1px dashed #ccc; margin-bottom: 4px; padding-bottom: 2px; }
+        .member-info span[contenteditable]:focus { border-bottom: 1px solid var(--secondary-teal); }
+        
+        .member-name { font-weight: 700; font-size: 16px; }
+        .member-role { font-weight: 600; color: var(--primary-blue); font-size: 14px; }
+        .member-unit { font-weight: 400; color: var(--secondary-teal); font-size: 13px; }
+
+        .footer-banner { background-color: var(--secondary-teal); color: #fff; padding: 20px; border-radius: 10px; text-align: center; margin-top: 30px; }
+        .footer-banner h3 { font-size: 20px; margin: 0; }
+        .footer-banner p { font-size: 16px; margin: 5px 0 0; }
+
+        /* --- Media Query para Escritorio (Pantallas anchas) --- */
+        @media (min-width: 850px) {
+            .members-grid { grid-template-columns: repeat(3, 1fr); }
+            .representative-banner { flex-direction: row; text-align: left; justify-content: space-between; padding: 30px 40px; }
+            .rep-info-container { display: flex; align-items: center; gap: 20px; }
+            .rep-name { font-size: 32px; }
+            .header h1 { font-size: 36px; }
         }
 
-        .member-photo-placeholder .main-text {
-            color: var(--placeholder-grey);
-            font-size: 9px;
-            font-weight: 500;
-        }
-
-        .member-card .info-area {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            text-align: left;
-        }
-
-        .member-title {
-            color: var(--primary-blue);
-            font-size: 13px;
-            font-weight: 600;
-            margin: 0 0 5px 0;
-        }
-
-        .member-field {
-            font-size: 13px;
-            color: #555;
-            line-height: 1.4;
-        }
-
-        .member-field.name {
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        /* Ocultar elementos de impresión en pantalla */
-        .print-only {
-            display: none;
-        }
-
-        /* --- Estilos para Impresión (Optimizado para Tabloide 11x17) --- */
+        /* --- MAGIA: Configuración EXCLUSIVA para Impresión Tabloide (11x17) --- */
         @media print {
             @page {
-                size: tabloid portrait; /* 11in x 17in */
-                margin: 0.5in;
-            }
-
-            body {
-                background: white;
-                color: black;
-                font-family: serif; /* Cambiar a serif para mayor legibilidad en papel */
-            }
-
-            .mobile-container {
-                max-width: 10in; /* Ancho máximo para la hoja de 11in */
+                size: tabloid portrait; /* Fuerza el tamaño Tabloide de forma nativa */
                 margin: 0;
+            }
+            body { background: white; margin: 0; padding: 0; }
+            #config-screen, .toolbar { display: none !important; }
+            #editor-screen { display: block; padding: 0; }
+            .preview-wrapper { padding: 0; }
+            
+            /* Transforma el contenedor en una hoja Tabloide exacta */
+            .planilla-hoja {
+                width: 11in;
+                height: 17in;
+                max-width: none;
+                border-radius: 0;
                 box-shadow: none;
-                padding: 0;
+                padding: 0.5in 0.6in;
+                margin: 0 auto;
+                page-break-after: always;
             }
 
-            .nav-bar, .browser-chrome-sim, .slogan-card, .rounded-logo-container {
-                display: none !important; /* Ocultar controles y slogan */
-            }
+            /* Quita las líneas punteadas de edición al imprimir */
+            .member-info span[contenteditable] { border-bottom: none; }
 
-            [contenteditable] {
-                border-bottom: none;
-                display: block;
-                padding: 0;
-            }
-
-            .print-only {
-                display: block;
-            }
-
-            /* Mostrar etiquetas de campo */
-            .field-label {
-                display: block !important;
-                font-weight: bold;
-                font-size: 11px;
-                margin-top: 10px;
-                color: var(--primary-blue);
-            }
-
-            /* Ajustes del Representante para Impresión */
-            .representative-card {
-                flex-direction: row; /* Diseño de fila para impresión eficiente */
-                align-items: start;
-                gap: 20px;
-                page-break-inside: avoid;
-            }
-
-            .representative-card .info-area {
-                text-align: left;
-                flex: 1;
-            }
-
-            .card-title {
-                display: block !important;
-                font-size: 14px;
-            }
-
-            /* Ajustes de Integrantes para Impresión (Multi-Columna) */
-            .member-list {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr); /* Dos columnas para eficiencia */
-                gap: 20px;
-                page-break-before: always;
-            }
-
-            .member-card {
+            /* Fuerza la disposición Tabloide Horizontal para el Representante */
+            .representative-banner {
                 flex-direction: row;
-                align-items: start;
-                page-break-inside: avoid;
+                text-align: left;
+                justify-content: space-between;
+                padding: 25px 40px;
+            }
+            .rep-info-container { display: flex; align-items: center; gap: 25px; }
+            .rep-name { font-size: 36px; }
+
+            /* Fuerza la cuadrícula a 3 columnas */
+            .members-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 25px;
             }
 
-            .member-field {
-                font-size: 12px;
+            /* Ajuste de fuentes para impresión */
+            .header h1 { font-size: 42px; }
+            .header h2 { font-size: 24px; }
+            .slogan-banner h3 { font-size: 32px; margin-bottom: 20px; }
+            .footer-banner h3 { font-size: 26px; }
+            
+            /* Asegurar que las imágenes redondeadas se impriman bien */
+            .logo-principal-redondeado, .logo-pequeno-redondeado {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="mobile-container">
+    <div id="config-screen">
+        <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo CG" class="logo-redondeado-config">
         
-        <nav class="nav-bar">
-            <a href="#" class="btn btn-back">← Volver</a>
-            <button class="btn btn-print" onclick="window.print()">Imprimir / Guardar PDF (Tabloide)</button>
-        </nav>
+        <h2>Armar Planilla</h2>
+        <p>Ingresa la cantidad de integrantes. Podrás editarla desde tu celular y al guardar se generará en formato Tabloide.</p>
         
-        <header class="branding header">
-            <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo CG Carlos Guerrero" class="cg-logo-main">
-            <h1>PLANILLA CONGRESIONAL</h1>
-            <h2>CONGRESO SECCIONAL ORDINARIO</h2>
-        </header>
-        
-        <main>
-            <section class="representative">
-                <div class="card representative-card">
-                    <div class="photo-area">
-                        <div class="photo-placeholder">
-                            <div class="photo-placeholder-content">
-                                <span class="main-text">FOTO AQUÍ</span>
-                                <span>FOTO</span>
-                            </div>
+        <div class="input-group">
+            <label for="num-integrantes">¿Cuántos integrantes (sin contar al representante)?</label>
+            <input type="number" id="num-integrantes" min="1" max="30" value="9">
+        </div>
+
+        <button class="btn-primary" onclick="iniciarPlanilla()">Crear Diseño Editable</button>
+    </div>
+
+    <div id="editor-screen">
+        <div class="toolbar">
+            <button onclick="location.reload()">← Volver</button>
+            <button onclick="window.print()">Imprimir / Guardar PDF (Tabloide)</button>
+        </div>
+
+        <div class="preview-wrapper">
+            <div class="planilla-hoja">
+                
+                <div class="header">
+                    <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo CG Carlos Guerrero" class="logo-principal-redondeado">
+                    <h1 contenteditable>PLANILLA CONGRESIONAL</h1>
+                    <h2 contenteditable>CONGRESO SECCIONAL ORDINARIO</h2>
+                </div>
+
+                <div class="representative-banner">
+                    <div class="rep-info-container">
+                        <div class="photo-placeholder" id="rep-photo" onclick="triggerFileUpload('rep-file-input')">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
                         </div>
-                    </div>
-                    <div class="info-area">
-                        <h3 class="card-title field-label">REPRESENTANTE DE PLANILLA:</h3>
-                        <div class="field"><span class="name-field" contenteditable>NOMBRE DEL REPRESENTANTE</span></div>
+                        <input type="file" id="rep-file-input" accept="image/*" style="display: none;" onchange="handleFileUpload(this, 'rep-photo')">
                         
-                        <div class="rounded-logo-container">
-                            <div class="cg-logo-rounded">
-                                <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="CG">
-                            </div>
+                        <div class="rep-text-box">
+                            <span class="rep-title" contenteditable>REPRESENTANTE DE PLANILLA:</span>
+                            <span class="rep-name" contenteditable>NOMBRE DEL REPRESENTANTE</span>
                         </div>
                     </div>
+                    
+                    <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Sello CG" class="logo-pequeno-redondeado">
                 </div>
-            </section>
-            
-            <section class="slogan">
-                <div class="card slogan-card slogan">
-                    <h3>Unidos somos fuerza.</h3>
+
+                <div class="slogan-banner">
+                    <h3 contenteditable>Unidos somos fuerza.</h3>
                 </div>
-            </section>
-            
-            <section class="members">
-                <div class="member-list">
-                    
-                    <div class="card member-card">
-                        <div class="photo-area">
-                            <div class="member-photo-placeholder">
-                                <span class="main-text">FOTO</span>
-                            </div>
-                        </div>
-                        <div class="info-area">
-                            <h4 class="member-title print-only">INTEGRANTE 1:</h4>
-                            <div class="field"><span class="member-field name" contenteditable>NOMBRE DEL INTEGRANTE 1</span></div>
-                            <div class="field editable"><span class="member-field" contenteditable>CARGO / VOCAL</span></div>
-                            <div class="field editable"><span class="member-field" contenteditable>UNIDAD DE ADSCRIPCIÓN</span></div>
-                        </div>
+
+                <div class="members-grid" id="members-grid">
                     </div>
-                    
-                    <div class="card member-card">
-                        <div class="photo-area">
-                            <div class="member-photo-placeholder">
-                                <span class="main-text">FOTO</span>
-                            </div>
-                        </div>
-                        <div class="info-area">
-                            <h4 class="member-title print-only">INTEGRANTE 2:</h4>
-                            <div class="field"><span class="member-field name" contenteditable>NOMBRE DEL INTEGRANTE 2</span></div>
-                            <div class="field editable"><span class="member-field" contenteditable>CARGO / VOCAL</span></div>
-                            <div class="field editable"><span class="member-field" contenteditable>UNIDAD DE ADSCRIPCIÓN</span></div>
-                        </div>
-                    </div>
-                    
-                    <div class="card member-card">
-                        <div class="photo-area">
-                            <div class="member-photo-placeholder">
-                                <span class="main-text">FOTO</span>
-                            </div>
-                        </div>
-                        <div class="info-area">
-                            <h4 class="member-title print-only">INTEGRANTE 3:</h4>
-                            <div class="field"><span class="member-field name" contenteditable>NOMBRE DEL INTEGRANTE 3</span></div>
-                            <div class="field editable"><span class="member-field" contenteditable>CARGO / VOCAL</span></div>
-                            <div class="field editable"><span class="member-field" contenteditable>UNIDAD DE ADSCRIPCIÓN</span></div>
-                        </div>
-                    </div>
-                    
+
+                <div class="footer-banner">
+                    <h3 contenteditable>¡ÚNETE A NUESTRA VISIÓN!</h3>
+                    <p contenteditable>VOTA POR LA PLANILLA 'UNIÓN Y PROGRESO'</p>
                 </div>
-            </section>
-        </main>
-        
+            </div>
+        </div>
     </div>
 
     <script>
-        // Función para manejar la carga de fotos (preview simple)
-        const photoPlaceholders = document.querySelectorAll('.photo-placeholder, .member-photo-placeholder');
-        
-        photoPlaceholders.forEach(placeholder => {
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            fileInput.style.display = 'none';
-            placeholder.parentNode.appendChild(fileInput);
+        function iniciarPlanilla() {
+            const numIntegrantes = document.getElementById('num-integrantes').value;
+            
+            if(numIntegrantes < 1) {
+                alert("Por favor ingresa al menos 1 integrante.");
+                return;
+            }
 
-            placeholder.addEventListener('click', () => {
-                fileInput.click();
-            });
+            // Cambiar pantallas
+            document.getElementById('config-screen').style.display = 'none';
+            document.getElementById('editor-screen').style.display = 'flex';
 
-            fileInput.addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        // Cambiar la silueta por la imagen cargada
-                        placeholder.style.backgroundImage = `url(${e.target.result})`;
-                        placeholder.style.backgroundSize = 'cover';
-                        placeholder.style.backgroundPosition = 'center';
-                        
-                        // Ocultar texto/iconos del placeholder
-                        const content = placeholder.querySelector('.photo-placeholder-content, .main-text');
-                        if (content) {
-                            content.style.display = 'none';
-                        }
-                    };
-                    reader.readAsDataURL(file);
+            generarCuadricula(numIntegrantes);
+        }
+
+        function generarCuadricula(cantidad) {
+            const grid = document.getElementById('members-grid');
+            grid.innerHTML = ''; 
+            
+            const silhouette = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>`;
+
+            for (let i = 1; i <= cantidad; i++) {
+                const card = document.createElement('div');
+                card.className = 'member-card';
+                
+                const photoId = `member-photo-${i}`;
+                const fileInputId = `member-file-input-${i}`;
+
+                card.innerHTML = `
+                    <div class="member-photo" id="${photoId}" onclick="triggerFileUpload('${fileInputId}')">
+                        ${silhouette}
+                    </div>
+                    <input type="file" id="${fileInputId}" accept="image/*" style="display: none;" onchange="handleFileUpload(this, '${photoId}')">
+                    <div class="member-info">
+                        <span class="member-name" contenteditable>INTEGRANTE ${i}</span>
+                        <span class="member-role" contenteditable>CARGO / VOCAL</span>
+                        <span class="member-unit" contenteditable>UNIDAD DE ADSCRIPCIÓN</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        function triggerFileUpload(inputId) {
+            document.getElementById(inputId).click();
+        }
+
+        function handleFileUpload(input, photoContainerId) {
+            const file = input.files[0];
+            const container = document.getElementById(photoContainerId);
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    container.style.backgroundImage = `url('${e.target.result}')`;
+                    const svg = container.querySelector('svg');
+                    if(svg) svg.style.display = 'none';
                 }
-            });
-        });
+                reader.readAsDataURL(file);
+            }
+        }
     </script>
-
 </body>
 </html>
