@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Planillas - SNTSS</title>
+    <title>Generador de Planillas - Diseño Final</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-blue: #234575;
-            --secondary-teal: #49a5b0;
-            --bg-light-grey: #f0f2f5;
-            --text-dark: #333333;
-            --card-border: #d1d9e6;
+            --primary-blue: #1b365d;
+            --secondary-teal: #4b9b9b;
+            --bg-light: #f4f6f8;
+            --text-dark: #222222;
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--bg-light-grey);
+            background-color: var(--bg-light);
             color: var(--text-dark);
             display: flex;
             flex-direction: column;
@@ -26,7 +25,7 @@
             min-height: 100vh;
         }
 
-        /* --- Paso 1: Pantalla de Configuración --- */
+        /* --- PANTALLA DE CONFIGURACIÓN --- */
         #config-screen {
             background: white;
             padding: 40px;
@@ -38,311 +37,342 @@
             width: 90%;
         }
 
-        .logo-redondeado-config {
+        .logo-circle-mask {
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid var(--primary-blue);
-            margin-bottom: 15px;
+            overflow: hidden;
+            margin: 0 auto 15px;
+            border: 3px solid var(--primary-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
         }
+        .logo-circle-mask img { width: 140%; height: auto; object-fit: cover; } /* Zoom para cortar bordes */
 
         #config-screen h2 { color: var(--primary-blue); margin-top: 0; }
         .input-group { margin: 20px 0; text-align: left; }
         .input-group label { display: block; margin-bottom: 8px; font-weight: 600; }
-        .input-group input { width: 100%; padding: 12px; border: 2px solid var(--card-border); border-radius: 5px; font-size: 16px; box-sizing: border-box; }
+        .input-group input { width: 100%; padding: 12px; border: 2px solid #ccc; border-radius: 5px; font-size: 16px; box-sizing: border-box; }
         .btn-primary { background-color: var(--secondary-teal); color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: 700; border-radius: 5px; cursor: pointer; width: 100%; text-transform: uppercase; }
         .btn-primary:hover { background-color: #3a8b95; }
 
-        /* --- Paso 2: Pantalla de Edición --- */
-        #editor-screen {
-            display: none;
-            width: 100%;
-            flex-direction: column;
-            align-items: center;
-        }
+        /* --- ÁREA DE EDICIÓN --- */
+        #editor-screen { display: none; width: 100%; flex-direction: column; align-items: center; }
+        .toolbar { width: 100%; background-color: var(--primary-blue); padding: 15px 0; text-align: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .toolbar button { background-color: white; color: var(--primary-blue); border: none; padding: 10px 15px; font-weight: 700; border-radius: 5px; cursor: pointer; margin: 0 5px; }
 
-        .toolbar {
-            width: 100%;
-            background-color: var(--primary-blue);
-            padding: 15px 0;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .toolbar button {
-            background-color: white;
-            color: var(--primary-blue);
-            border: none;
-            padding: 10px 15px;
-            font-weight: 700;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 0 5px;
-        }
-
-        /* --- Estilos Base (Visualización en Pantalla / Móvil) --- */
-        .preview-wrapper {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            padding: 20px 10px;
-            box-sizing: border-box;
-        }
-
+        /* Contenedor del documento */
+        .preview-wrapper { width: 100%; display: flex; justify-content: center; padding: 20px 10px; box-sizing: border-box; }
+        
         .planilla-hoja {
             width: 100%;
-            max-width: 800px; /* Ancho máximo en pantalla */
-            background-color: #ffffff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            padding: 20px;
+            max-width: 1000px; /* Ancho para escritorio */
+            background-color: #fcfcfc;
+            position: relative;
             box-sizing: border-box;
-            border-radius: 10px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            overflow: hidden;
         }
 
-        /* Cabecera */
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h1 { color: var(--primary-blue); font-size: 28px; margin: 10px 0 0; text-transform: uppercase; }
-        .header h2 { color: var(--secondary-teal); font-size: 18px; margin: 5px 0 0; text-transform: uppercase; }
+        /* --- DECORACIONES IGUALES A LA IMAGEN --- */
+        .decor-line-top { position: absolute; top: 30px; right: 40px; width: 150px; height: 3px; background-color: var(--secondary-teal); }
+        .decor-line-top::before { content: ''; position: absolute; top: -10px; right: 0; width: 80px; height: 3px; background-color: var(--primary-blue); opacity: 0.5; }
+        .decor-dot-top-left { position: absolute; top: 80px; left: 30px; width: 8px; height: 8px; border-radius: 50%; background-color: var(--secondary-teal); box-shadow: 0 15px 0 var(--secondary-teal); }
+        .decor-dot-bottom-right { position: absolute; bottom: 120px; right: 30px; width: 8px; height: 8px; border-radius: 50%; background-color: var(--secondary-teal); box-shadow: 0 15px 0 var(--secondary-teal), 0 30px 0 var(--secondary-teal); }
+
+        /* --- CABECERA --- */
+        .header { text-align: center; margin-bottom: 40px; position: relative; z-index: 2; }
+        .header-logo-container { display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 15px; }
+        .header-logo-container .logo-circle-mask { width: 110px; height: 110px; border: none; margin-bottom: 5px; }
+        .header-logo-text { color: var(--primary-blue); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .header h1 { color: var(--primary-blue); font-size: 38px; margin: 0; text-transform: uppercase; font-weight: 800; letter-spacing: -1px; }
+        .header h2 { color: var(--secondary-teal); font-size: 22px; margin: 0; text-transform: uppercase; font-weight: 700; }
+
+        /* --- REPRESENTANTE (BANNER AZUL) --- */
+        .rep-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+            padding-left: 60px; /* Espacio para la foto que sobresale */
+        }
         
-        /* Logo Principal Redondeado */
-        .logo-principal-redondeado {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        /* Banner Representante (Formato Móvil por defecto) */
         .representative-banner {
             background-color: var(--primary-blue);
             color: #fff;
             display: flex;
-            flex-direction: column; /* Apilado en móvil */
             align-items: center;
-            text-align: center;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            gap: 15px;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 800px;
+            padding: 15px 30px 15px 80px; /* Padding izquierdo da espacio al texto */
+            border-radius: 12px;
+            position: relative;
         }
 
-        .photo-placeholder {
-            width: 100px;
-            height: 100px;
-            background-color: #f0f0f0;
+        /* Foto sobresaliente */
+        .photo-placeholder-rep {
+            width: 130px;
+            height: 130px;
+            background-color: #e0e0e0;
             border-radius: 50%;
-            border: 4px solid #fff;
-            overflow: hidden;
-            cursor: pointer;
+            border: 6px solid #fcfcfc;
+            position: absolute;
+            left: -65px; /* Mitad fuera, mitad dentro */
+            top: 50%;
+            transform: translateY(-50%);
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
             background-size: cover;
             background-position: center;
-            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .photo-placeholder svg { width: 60%; fill: #ccc; }
+        .photo-placeholder-rep svg { width: 70%; fill: #555; }
 
-        .rep-title { font-size: 16px; font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-teal); }
-        .rep-name { font-size: 24px; font-weight: 700; display: block; }
-
-        /* Logo Pequeño Redondeado (Representante) */
-        .logo-pequeno-redondeado {
-            width: 80px;
-            height: 80px;
+        /* Logo pequeño sobre la foto */
+        .mini-logo-overlap {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            width: 35px;
+            height: 35px;
+            background: white;
             border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #fff;
-            background-color: #fff;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
         }
+        .mini-logo-overlap img { width: 140%; height: auto; }
 
-        /* Eslogan */
-        .slogan-banner {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .slogan-banner h3 {
-            color: var(--secondary-teal);
-            font-size: 26px;
-            font-weight: 800;
-            margin: 0;
-            text-transform: uppercase;
-        }
+        .rep-text { display: flex; flex-direction: column; text-align: left; }
+        .rep-title { font-size: 14px; font-weight: 600; letter-spacing: 0.5px; }
+        .rep-name { font-size: 30px; font-weight: 800; text-transform: uppercase; }
 
-        /* Cuadrícula Integrantes (1 columna en móvil) */
+        /* Logo derecha banner */
+        .rep-logo-right { display: flex; flex-direction: column; align-items: center; }
+        .rep-logo-right .logo-circle-mask { width: 50px; height: 50px; border: none; margin-bottom: 2px; }
+        .rep-logo-right span { font-size: 9px; }
+
+        /* --- CUADRÍCULA DE INTEGRANTES --- */
         .members-grid {
             display: grid;
-            grid-template-columns: 1fr; /* Una columna por defecto para celulares */
-            gap: 15px;
+            grid-template-columns: repeat(3, 1fr); /* 3 columnas en desktop/impresión */
+            gap: 20px;
+            position: relative;
+            z-index: 2;
         }
 
         .member-card {
             background-color: #fff;
-            border: 2px solid var(--card-border);
-            padding: 15px;
+            border: 2px solid var(--primary-blue); /* Borde azul como en la imagen */
+            border-radius: 10px;
+            padding: 12px;
             display: flex;
             align-items: center;
-            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
 
         .member-photo {
             width: 70px;
             height: 70px;
-            background-color: #f0f0f0;
-            border-radius: 50%;
-            overflow: hidden;
+            background-color: #e0e0e0;
+            border-radius: 10px; /* Bordes redondeados pero cuadraditos */
             margin-right: 15px;
             flex-shrink: 0;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
             background-size: cover;
             background-position: center;
         }
-        .member-photo svg { width: 60%; fill: #ccc; }
+        .member-photo svg { width: 80%; fill: #555; transform: translateY(10px); }
 
-        .member-info { flex-grow: 1; }
-        .member-info span[contenteditable] { outline: none; display: block; border-bottom: 1px dashed #ccc; margin-bottom: 4px; padding-bottom: 2px; }
-        .member-info span[contenteditable]:focus { border-bottom: 1px solid var(--secondary-teal); }
+        .member-info { flex-grow: 1; display: flex; flex-direction: column; }
+        .member-info span[contenteditable] { outline: none; border-bottom: 1px dashed transparent; padding: 1px 0; }
+        .member-info span[contenteditable]:focus { border-bottom: 1px dashed var(--secondary-teal); }
         
-        .member-name { font-weight: 700; font-size: 16px; }
-        .member-role { font-weight: 600; color: var(--primary-blue); font-size: 14px; }
-        .member-unit { font-weight: 400; color: var(--secondary-teal); font-size: 13px; }
+        .member-name { font-weight: 800; font-size: 14px; color: var(--primary-blue); text-transform: uppercase; line-height: 1.1; margin-bottom: 4px; }
+        .member-role { font-weight: 600; color: var(--primary-blue); font-size: 13px; text-transform: uppercase; margin-bottom: 2px; }
+        .member-unit { font-weight: 600; color: var(--secondary-teal); font-size: 12px; text-transform: uppercase; }
 
-        .footer-banner { background-color: var(--secondary-teal); color: #fff; padding: 20px; border-radius: 10px; text-align: center; margin-top: 30px; }
-        .footer-banner h3 { font-size: 20px; margin: 0; }
-        .footer-banner p { font-size: 16px; margin: 5px 0 0; }
-
-        /* --- Media Query para Escritorio (Pantallas anchas) --- */
-        @media (min-width: 850px) {
-            .members-grid { grid-template-columns: repeat(3, 1fr); }
-            .representative-banner { flex-direction: row; text-align: left; justify-content: space-between; padding: 30px 40px; }
-            .rep-info-container { display: flex; align-items: center; gap: 20px; }
-            .rep-name { font-size: 32px; }
-            .header h1 { font-size: 36px; }
+        /* --- FOOTER (URNA Y ESLOGAN) --- */
+        .footer-banner {
+            background-color: var(--secondary-teal);
+            color: #fff;
+            padding: 20px 40px;
+            margin-top: 40px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px; /* Bordes ligeramente redondeados o rectos, ajustado al diseño */
+        }
+        .footer-banner h3 { font-size: 26px; margin: 0; font-weight: 800; text-transform: uppercase; }
+        .footer-banner p { font-size: 20px; margin: 2px 0 0; font-weight: 600; text-transform: uppercase; }
+        
+        /* Icono de urna */
+        .urna-icon {
+            position: absolute;
+            right: 40px;
+            bottom: 10px;
+            width: 60px;
+            height: 60px;
         }
 
-        /* --- MAGIA: Configuración EXCLUSIVA para Impresión Tabloide (11x17) --- */
+        /* --- COMPORTAMIENTO MÓVIL (1 Columna para editar fácil) --- */
+        @media (max-width: 768px) {
+            .members-grid { grid-template-columns: 1fr; }
+            .rep-section { padding-left: 0; flex-direction: column; }
+            .representative-banner { flex-direction: column; padding: 80px 20px 20px 20px; text-align: center; }
+            .photo-placeholder-rep { left: 50%; top: 0; transform: translate(-50%, -50%); border-width: 4px; }
+            .rep-text { align-items: center; margin-bottom: 15px; }
+            .rep-logo-right { display: none; } /* Ocultar en móvil para ahorrar espacio */
+            .header h1 { font-size: 24px; }
+            .header h2 { font-size: 16px; }
+            .footer-banner h3 { font-size: 18px; }
+            .footer-banner p { font-size: 14px; }
+            .urna-icon { display: none; }
+            .decor-line-top, .decor-dot-top-left, .decor-dot-bottom-right { display: none; }
+        }
+
+        /* --- MAGIA: IMPRESIÓN / EXPORTACIÓN A PDF EXACTA (Tabloide 11x17) --- */
         @media print {
             @page {
-                size: tabloid portrait; /* Fuerza el tamaño Tabloide de forma nativa */
+                size: tabloid portrait; /* 11in x 17in */
                 margin: 0;
             }
-            body { background: white; margin: 0; padding: 0; }
+            body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             #config-screen, .toolbar { display: none !important; }
             #editor-screen { display: block; padding: 0; }
             .preview-wrapper { padding: 0; }
             
-            /* Transforma el contenedor en una hoja Tabloide exacta */
+            /* Fuerza el lienzo Tabloide */
             .planilla-hoja {
                 width: 11in;
                 height: 17in;
                 max-width: none;
                 border-radius: 0;
                 box-shadow: none;
-                padding: 0.5in 0.6in;
-                margin: 0 auto;
+                padding: 0.8in 0.5in;
+                margin: 0;
                 page-break-after: always;
             }
 
-            /* Quita las líneas punteadas de edición al imprimir */
-            .member-info span[contenteditable] { border-bottom: none; }
-
-            /* Fuerza la disposición Tabloide Horizontal para el Representante */
-            .representative-banner {
-                flex-direction: row;
-                text-align: left;
-                justify-content: space-between;
-                padding: 25px 40px;
-            }
-            .rep-info-container { display: flex; align-items: center; gap: 25px; }
-            .rep-name { font-size: 36px; }
-
-            /* Fuerza la cuadrícula a 3 columnas */
-            .members-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 25px;
-            }
-
-            /* Ajuste de fuentes para impresión */
-            .header h1 { font-size: 42px; }
-            .header h2 { font-size: 24px; }
-            .slogan-banner h3 { font-size: 32px; margin-bottom: 20px; }
-            .footer-banner h3 { font-size: 26px; }
+            /* Desactiva los estilos responsivos móviles y fuerza el diseño de escritorio */
+            .members-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 0.25in; }
+            .rep-section { padding-left: 0.8in !important; flex-direction: row !important; }
+            .representative-banner { flex-direction: row !important; padding: 0.2in 0.3in 0.2in 1in !important; text-align: left !important; }
+            .photo-placeholder-rep { left: -0.8in !important; top: 50% !important; transform: translateY(-50%) !important; width: 1.6in; height: 1.6in; }
+            .rep-text { align-items: flex-start !important; margin-bottom: 0 !important; }
+            .rep-logo-right { display: flex !important; }
+            .urna-icon { display: block !important; }
+            .decor-line-top, .decor-dot-top-left, .decor-dot-bottom-right { display: block !important; }
             
-            /* Asegurar que las imágenes redondeadas se impriman bien */
-            .logo-principal-redondeado, .logo-pequeno-redondeado {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
+            /* Ajuste de fuentes para que llenen la hoja */
+            .header h1 { font-size: 0.5in; }
+            .header h2 { font-size: 0.28in; }
+            .rep-name { font-size: 0.4in; }
+            .footer-banner h3 { font-size: 0.35in; }
+            .footer-banner p { font-size: 0.25in; }
         }
     </style>
 </head>
 <body>
 
     <div id="config-screen">
-        <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo CG" class="logo-redondeado-config">
-        
-        <h2>Armar Planilla</h2>
-        <p>Ingresa la cantidad de integrantes. Podrás editarla desde tu celular y al guardar se generará en formato Tabloide.</p>
+        <div class="logo-circle-mask">
+            <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo CG">
+        </div>
+        <h2>Configurar Planilla</h2>
+        <p>¿Cuántos integrantes conformarán la cuadrícula?</p>
         
         <div class="input-group">
-            <label for="num-integrantes">¿Cuántos integrantes (sin contar al representante)?</label>
+            <label for="num-integrantes">Número de Integrantes:</label>
             <input type="number" id="num-integrantes" min="1" max="30" value="9">
         </div>
 
-        <button class="btn-primary" onclick="iniciarPlanilla()">Crear Diseño Editable</button>
+        <button class="btn-primary" onclick="iniciarPlanilla()">Generar Diseño</button>
     </div>
 
     <div id="editor-screen">
         <div class="toolbar">
-            <button onclick="location.reload()">← Volver</button>
+            <button onclick="location.reload()">← Nueva Planilla</button>
             <button onclick="window.print()">Imprimir / Guardar PDF (Tabloide)</button>
         </div>
 
         <div class="preview-wrapper">
             <div class="planilla-hoja">
                 
+                <div class="decor-line-top"></div>
+                <div class="decor-dot-top-left"></div>
+                <div class="decor-dot-bottom-right"></div>
+
                 <div class="header">
-                    <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo CG Carlos Guerrero" class="logo-principal-redondeado">
+                    <div class="header-logo-container">
+                        <div class="logo-circle-mask">
+                            <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo CG">
+                        </div>
+                        <div class="header-logo-text" contenteditable>Carlos Guerrero</div>
+                    </div>
                     <h1 contenteditable>PLANILLA CONGRESIONAL</h1>
                     <h2 contenteditable>CONGRESO SECCIONAL ORDINARIO</h2>
                 </div>
 
-                <div class="representative-banner">
-                    <div class="rep-info-container">
-                        <div class="photo-placeholder" id="rep-photo" onclick="triggerFileUpload('rep-file-input')">
-                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                <div class="rep-section">
+                    <div class="representative-banner">
+                        
+                        <div class="photo-placeholder-rep" id="rep-photo" onclick="triggerFileUpload('rep-file-input')">
+                            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                            <div class="mini-logo-overlap">
+                                <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="CG">
+                            </div>
                         </div>
                         <input type="file" id="rep-file-input" accept="image/*" style="display: none;" onchange="handleFileUpload(this, 'rep-photo')">
                         
-                        <div class="rep-text-box">
+                        <div class="rep-text">
                             <span class="rep-title" contenteditable>REPRESENTANTE DE PLANILLA:</span>
-                            <span class="rep-name" contenteditable>NOMBRE DEL REPRESENTANTE</span>
+                            <span class="rep-name" contenteditable>CARLOS GUERRERO</span>
                         </div>
-                    </div>
-                    
-                    <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Sello CG" class="logo-pequeno-redondeado">
-                </div>
 
-                <div class="slogan-banner">
-                    <h3 contenteditable>Unidos somos fuerza.</h3>
+                        <div class="rep-logo-right">
+                            <div class="logo-circle-mask">
+                                <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo CG">
+                            </div>
+                            <span contenteditable>CARLOS GUERRERO</span>
+                        </div>
+
+                    </div>
                 </div>
 
                 <div class="members-grid" id="members-grid">
                     </div>
 
                 <div class="footer-banner">
-                    <h3 contenteditable>¡ÚNETE A NUESTRA VISIÓN!</h3>
-                    <p contenteditable>VOTA POR LA PLANILLA 'UNIÓN Y PROGRESO'</p>
+                    <h3 contenteditable>¡UNIDOS SOMOS FUERZA!</h3>
+                    <p contenteditable>VOTA POR LA PLANILLA "UNIÓN Y PROGRESO"</p>
+                    
+                    <svg class="urna-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 8l-9-4-9 4"></path>
+                        <path d="M3 8v11c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8"></path>
+                        <path d="M12 11v6"></path>
+                        <path d="M9 14h6"></path>
+                    </svg>
                 </div>
+
             </div>
         </div>
     </div>
@@ -356,7 +386,6 @@
                 return;
             }
 
-            // Cambiar pantallas
             document.getElementById('config-screen').style.display = 'none';
             document.getElementById('editor-screen').style.display = 'flex';
 
@@ -367,7 +396,8 @@
             const grid = document.getElementById('members-grid');
             grid.innerHTML = ''; 
             
-            const silhouette = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>`;
+            const silhouetteH = `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+            const silhouetteM = `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`; // Usamos la misma silueta genérica para facilitar.
 
             for (let i = 1; i <= cantidad; i++) {
                 const card = document.createElement('div');
@@ -378,12 +408,12 @@
 
                 card.innerHTML = `
                     <div class="member-photo" id="${photoId}" onclick="triggerFileUpload('${fileInputId}')">
-                        ${silhouette}
+                        ${silhouetteH}
                     </div>
                     <input type="file" id="${fileInputId}" accept="image/*" style="display: none;" onchange="handleFileUpload(this, '${photoId}')">
                     <div class="member-info">
-                        <span class="member-name" contenteditable>INTEGRANTE ${i}</span>
-                        <span class="member-role" contenteditable>CARGO / VOCAL</span>
+                        <span class="member-name" contenteditable>NOMBRE DEL INTEGRANTE</span>
+                        <span class="member-role" contenteditable>CARGO / VOCAL ${i}</span>
                         <span class="member-unit" contenteditable>UNIDAD DE ADSCRIPCIÓN</span>
                     </div>
                 `;
@@ -403,6 +433,7 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     container.style.backgroundImage = `url('${e.target.result}')`;
+                    // Ocultar la silueta pero mantener el mini-logo si es el representante
                     const svg = container.querySelector('svg');
                     if(svg) svg.style.display = 'none';
                 }
