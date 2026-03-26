@@ -121,7 +121,7 @@
 
   /* IMPRESIÓN */
   @media print {
-    .wrap, .modal-h, #status, #modal-firma, #alerta-perfil { display: none !important; }
+    .wrap, .modal-h, #status, #modal-firma, #alerta-perfil, #modal-validacion { display: none !important; }
     body, #modal, .modal-card, .modal-b { background: transparent !important; position: static !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; display: block !important; width: 100% !important; height: auto !important; overflow: visible !important; }
     .page.carta { width: 100% !important; height: auto !important; transform: none !important; box-shadow: none !important; margin: 0 !important; }
     .sheet { padding: 2cm !important; height: auto !important; }
@@ -293,6 +293,28 @@
     </div>
   </div>
 
+  <div id="modal-validacion" class="modal">
+    <div class="signature-container" style="max-width: 600px;">
+      <h3 style="color: #0f172a; margin-top:0; display:flex; align-items:center; justify-content:center; gap:8px;">
+        <i class="ph-bold ph-warning" style="color: #ef4444;"></i> Verificación de Destinatario
+      </h3>
+      <p style="color: #64748b; font-size: 15px; text-align: left; line-height: 1.5;">
+        Detectamos que estás enviando este escrito a <strong><span id="val-actual"></span></strong>,
+        pero de acuerdo a la problemática redactada, los Estatutos del SNTSS indican que debería ir dirigido a:
+      </p>
+      <div style="background: rgba(56, 189, 248, 0.1); padding: 16px; border-radius: 8px; border: 1px solid var(--primary); color: #0f172a; margin: 15px 0; text-align: left;">
+        <strong id="val-sugerida" style="font-size: 16px;"></strong><br>
+        <span id="val-fundamento" style="font-size: 13px; color: #475569; display:block; margin-top:4px;"></span>
+      </div>
+      <p style="color: #64748b; font-size: 14px; text-align: center;">¿Qué deseas hacer?</p>
+      
+      <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+        <button class="btn" id="btn-ignorar-val" style="color: #64748b; border-color: #cbd5e1; background: #f1f5f9;">Ignorar y Continuar</button>
+        <button class="btn primary" id="btn-corregir-val" style="color: #0f172a;">Corregir Automáticamente y Generar</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -358,7 +380,6 @@
       $('#destinatario').value = nombre || '';
     });
 
-    // --- SISTEMA DE FOLIOS INTELIGENTES ---
     function obtenerAcronimo(area) {
       const mapa = {
         "Secretaría General": "SG", "Secretaría de Interior y Propaganda": "SIP",
@@ -397,7 +418,6 @@
       return `${acronimo}-${year}-${sequence}`;
     }
 
-    // --- GENERACIÓN CON IA Y HTML ---
     async function redactarIA(prob) {
       showStatus("🧠 Analizando caso y redactando con IA...");
       try {
@@ -441,8 +461,10 @@
       `;
     };
 
-    $('#fDenuncia').addEventListener('submit', async (e) => { 
-      e.preventDefault(); 
+    // --- NUEVA LÓGICA DE EJECUCIÓN SEPARADA ---
+    async function ejecutarGeneracion() {
+      $('#modal-validacion').classList.remove('show');
+      
       const btnSubmit = $('#btnGenerarPrincipal');
       btnSubmit.innerHTML = "⏳ Generando Folio y Documento...";
       btnSubmit.disabled = true;
@@ -467,7 +489,8 @@
 
       $('#modal').classList.add('show');
       ajustarEscala();
-    });
+    }
+
 
     $('#btnClose').addEventListener('click', () => $('#modal').classList.remove('show'));
 
@@ -601,7 +624,6 @@
       }
     });
 
-    // --- SISTEMA DE RECOMENDACIÓN ESTATUTARIA (Completo) ---
     const reglasSNTSS = [
       { idSelect: "Secretaría General|Dr. Juan Gerardo García González", nombre: "Secretaría General", palabras: ["representación general", "apoyo total", "amparo", "máxima autoridad", "comité de huelga", "poder judicial"], fundamento: "El Art. 76 otorga la representación general del Sindicato en todos los actos e interviene en conflictos graves o de huelga." },
       { idSelect: "Secretaría de Interior y Propaganda|M.N.F. Amin Uriel Morales Sánchez", nombre: "Secretaría de Interior y Propaganda", palabras: ["padrón", "credencial", "registro", "afiliación", "constancia", "identificación sindical", "domicilio"], fundamento: "Conforme al Art. 77, lleva el registro de los miembros del Sindicato, padrones y constancias de afiliación." },
@@ -642,6 +664,7 @@
     ];
 
     let areaSugeridaId = "";
+    let recomendacionGlobal = null;
 
     $('#problematica').addEventListener('input', (e) => {
       const texto = e.target.value.toLowerCase();
@@ -676,6 +699,47 @@
         
         $('#alerta-sugerencia').classList.add('hide');
         $('#alerta-sugerencia').style.display = 'none';
+      }
+    });
+
+    // --- MANEJO DEL FORMULARIO CON INTERCEPCIÓN ESTATUTARIA ---
+    $('#fDenuncia').addEventListener('submit', (e) => { 
+      e.preventDefault(); 
+      
+      const texto = $('#problematica').value.toLowerCase();
+      const seleccionActual = $('#puestoCatalogo').value;
+      
+      recomendacionGlobal = reglasSNTSS.find(regla => 
+        regla.palabras.some(palabra => texto.includes(palabra))
+      );
+
+      // Si el sistema detecta una recomendación que NO coincide con lo que eligió el usuario:
+      if (recomendacionGlobal && seleccionActual !== recomendacionGlobal.idSelect) {
+        const targetSelect = $('#puestoCatalogo');
+        const nombreActual = targetSelect.options[targetSelect.selectedIndex].text;
+        
+        $('#val-actual').textContent = nombreActual;
+        $('#val-sugerida').textContent = recomendacionGlobal.nombre;
+        $('#val-fundamento').textContent = recomendacionGlobal.fundamento;
+        
+        $('#modal-validacion').classList.add('show');
+      } else {
+        // Si coincide, o si no hay sugerencia clara, continúa directo
+        ejecutarGeneracion();
+      }
+    });
+
+    // --- BOTONES DEL MODAL DE VALIDACIÓN ---
+    $('#btn-ignorar-val').addEventListener('click', () => {
+      ejecutarGeneracion();
+    });
+
+    $('#btn-corregir-val').addEventListener('click', () => {
+      if (recomendacionGlobal) {
+        const select = $('#puestoCatalogo');
+        select.value = recomendacionGlobal.idSelect;
+        select.dispatchEvent(new Event('change'));
+        ejecutarGeneracion();
       }
     });
 
