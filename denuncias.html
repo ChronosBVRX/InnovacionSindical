@@ -19,63 +19,46 @@
     --primary-hover: #0ea5e9;
     --accent: #7dd3fc;
     --success: #4ade80;
-    --warning: #fbbf24;
     --text-main: #f1f5f9;
     --text-muted: #94a3b8;
     --input-bg: rgba(15, 23, 42, 0.6);
     --input-border: rgba(148, 163, 184, 0.2);
-    --radius: 16px;
+    --radius: 12px;
   }
 
   * { box-sizing: border-box; transition: all 0.2s ease; }
-  html, body { height: 100%; margin: 0; background: var(--bg-dark); background-image: var(--bg-gradient); color: var(--text-main); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
-  .wrap { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
+  html, body { height: 100%; margin: 0; background: var(--bg-dark); background-image: var(--bg-gradient); color: var(--text-main); font-family: 'Inter', sans-serif; }
+  .wrap { max-width: 800px; margin: 0 auto; padding: 30px 20px; }
   
-  h1 { font-size: 24px; text-align: center; background: linear-gradient(90deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
-  .muted { color: var(--text-muted); text-align: center; font-size: 14px; margin-bottom: 32px; }
+  h1 { font-size: 22px; text-align: center; background: linear-gradient(90deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px; }
 
-  .card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 24px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); backdrop-filter: blur(12px); }
+  .card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 20px; padding: 24px; backdrop-filter: blur(12px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
   
-  .form-group { margin-bottom: 20px; }
-  label { display: block; font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  /* GRID DE DATOS */
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--panel-border); }
+  .grid-full { grid-column: 1 / -1; }
+
+  label { display: block; font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 6px; text-transform: uppercase; }
+  input, select, textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--input-border); background: var(--input-bg); color: #fff; font-size: 14px; }
   
-  input, select, textarea { 
-    width: 100%; padding: 14px; border-radius: var(--radius); border: 1px solid var(--input-border); 
-    background: var(--input-bg); color: #fff; font-size: 15px; font-family: inherit; 
-  }
-  input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; background: rgba(30, 41, 59, 0.9); }
-  textarea { min-height: 120px; resize: none; }
+  input[readonly] { background: rgba(15, 23, 42, 0.3); border-color: transparent; color: var(--text-muted); cursor: not-allowed; font-weight: 600; }
 
-  /* PANEL AVANZADO OCULTO */
-  .advanced-panel { height: 0; overflow: hidden; opacity: 0; margin-top: 0; }
-  .advanced-panel.show { height: auto; opacity: 1; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--panel-border); }
+  /* AVANZADO */
+  .advanced-panel { height: 0; overflow: hidden; opacity: 0; }
+  .advanced-panel.show { height: auto; opacity: 1; padding-top: 20px; margin-top: 20px; border-top: 1px solid var(--panel-border); }
 
-  .btn-toggle { 
-    background: none; border: none; color: var(--text-muted); font-size: 13px; font-weight: 600; 
-    cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 10px auto; 
-  }
+  .btn-toggle { background: none; border: none; color: var(--text-muted); font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 15px auto; }
   .btn-toggle:hover { color: var(--primary); }
 
-  .btn { 
-    width: 100%; padding: 16px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; 
-    display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; 
-  }
-  .btn.primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: #0f172a; box-shadow: 0 10px 20px rgba(56, 189, 248, 0.2); }
-  .btn.outline { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--panel-border); }
+  .btn { width: 100%; padding: 15px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15px; }
+  .btn.primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: #0f172a; }
 
-  /* ALERTAS Y MODALES */
-  .alert-tip { background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.2); border-radius: 12px; padding: 12px; margin-top: 10px; display: none; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--success); }
-  
-  .modal { position: fixed; inset: 0; background: rgba(10, 15, 25, 0.95); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+  .modal { position: fixed; inset: 0; background: rgba(10, 15, 25, 0.98); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
   .modal.show { display: flex; }
-  .modal-card { background: #1e293b; border-radius: 24px; width: 100%; max-width: 500px; padding: 30px; position: relative; }
+  .modal-card { background: #1e293b; border-radius: 20px; width: 100%; max-width: 550px; padding: 25px; }
 
-  /* VISTA PREVIA PDF */
-  .pdf-preview { width: 100%; height: 60vh; background: #334155; border-radius: 12px; overflow: auto; padding: 20px; margin: 15px 0; }
-  .page-carta { width: 100%; min-height: 100%; background: #fff; color: #000; padding: 40px; font-family: 'Times New Roman', serif; font-size: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-
-  #preview-evidencia { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-  .thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
+  .pdf-preview { width: 100%; height: 50vh; background: #334155; border-radius: 12px; overflow: auto; padding: 15px; margin: 15px 0; }
+  .page-carta { width: 100%; background: #fff; color: #000; padding: 40px; font-family: 'Times New Roman', serif; font-size: 11px; }
 
   .hide { display: none !important; }
 </style>
@@ -83,251 +66,200 @@
 
 <body>
   <div class="wrap">
-    <h1>Generador de Escritos</h1>
-    <p class="muted">Redacción inteligente basada en los Estatutos SNTSS 2022.</p>
+    <h1>Generador de Escritos PSD</h1>
 
     <div class="card">
+      <div class="info-grid">
+        <div class="grid-full"><label>Nombre del Trabajador</label><input id="valNombreUser" readonly></div>
+        <div><label>Matrícula</label><input id="valMatricula" readonly></div>
+        <div><label>Categoría</label><input id="valCategoria" readonly></div>
+        <div class="grid-full"><label>Adscripción</label><input id="valAdscripcion" readonly></div>
+      </div>
+
       <form id="formEscrito">
-        <div class="form-group">
-          <label>¿A qué Secretaría o Comisión lo envías?</label>
-          <select id="selectDestino" required>
-            <option value="">— Selecciona un área —</option>
-            <optgroup label="Carteras Principales">
-              <option value="Secretaría General|Dr. Juan Gerardo García González">Secretaría General</option>
-              <option value="Secretaría de Conflictos|J.G.E. Arturo Ochoa Huacuz">Secretaría de Conflictos</option>
-              <option value="Secretaría de Trabajo|E.G. Cándido Mora Alcauter">Secretaría de Trabajo</option>
-              <option value="Secretaría de Previsión Social|A.M. Fabiola Farías Ambriz">Secretaría de Previsión Social</option>
-              <option value="Secretaría de Admisión y Cambios|C.C. Uriel Tapia Pérez">Secretaría de Admisión y Cambios</option>
-            </optgroup>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+          <div class="grid-full">
+            <label>¿A quién va dirigido?</label>
+            <select id="selectDestino" required>
+              <option value="">— Selecciona —</option>
+              <optgroup label="Secretarías">
+                <option value="Secretaría General|Dr. Juan Gerardo García González">Secretaría General</option>
+                <option value="Secretaría de Conflictos|J.G.E. Arturo Ochoa Huacuz">Secretaría de Conflictos</option>
+                <option value="Secretaría de Trabajo|E.G. Cándido Mora Alcauter">Secretaría de Trabajo</option>
+                <option value="Secretaría de Previsión Social|A.M. Fabiola Farías Ambriz">Secretaría de Previsión Social</option>
+                <option value="Secretaría de Admisión y Cambios|C.C. Uriel Tapia Pérez">Secretaría de Admisión y Cambios</option>
+                <option value="Secretaría de Capacitación y Adiestramiento|O.P. América Hilda Reyes Reyes">Secretaría de Capacitación</option>
+                <option value="Secretaría de Igualdad Sustantiva|M.F. Gabriela Durán Negrete">Igualdad Sustantiva</option>
+                <option value="Secretaría de Interior y Propaganda|M.N.F. Amin Uriel Morales Sánchez">Interior y Propaganda</option>
+              </optgroup>
+              <optgroup label="Comisiones y Subcomisiones">
+                <option value="Escalafón|E.G. Hilda Ontiveros Cuellar">Subcomisión de Escalafón</option>
+                <option value="Bolsa de Trabajo|C.C. M. Guadalupe Calderón Ayala">Bolsa de Trabajo</option>
+                <option value="Disciplinaria|Cont. Juan Carlos Servín Juárez">Subcomisión Disciplinaria</option>
+                <option value="Ropa y Uniformes|A.A. Julio Cesar García Salgado">Ropa y Uniformes</option>
+                <option value="Jubilaciones y Pensiones|E.G.C. Maricela Navarrete Mora">Jubilaciones y Pensiones</option>
+              </optgroup>
             </select>
+          </div>
+          <div><label>Fecha del escrito</label><input id="inputFecha" type="date" required></div>
+          <div><label>Lugar (Municipio)</label><input id="inputCiudad" placeholder="Ej. Morelia" required></div>
         </div>
 
         <div class="form-group">
-          <label>Describe tu problema o solicitud</label>
-          <textarea id="textoHechos" placeholder="Ej: Solicito apoyo por una sanción injustificada..." required></textarea>
-          
-          <div id="tipEstatutario" class="alert-tip">
-            <i class="ph-bold ph-lightbulb"></i>
-            <span id="tipTexto"></span>
-          </div>
+          <label>Describe tu problemática o trámite</label>
+          <textarea id="textoHechos" placeholder="Escribe aquí lo que necesitas solicitar..." required></textarea>
         </div>
 
         <button type="button" class="btn-toggle" id="toggleAvanzado">
-          <i class="ph-bold ph-plus-circle"></i> Opciones avanzadas (Copias, Atención, Evidencia)
+          <i class="ph-bold ph-gear-six"></i> Configuración adicional (At'n, Copias, Evidencia)
         </button>
 
         <div class="advanced-panel" id="panelAvanzado">
-          <div class="form-group">
-            <label>Con atención a (Opcional)</label>
-            <select id="selectAtn"><option value="">Ninguno</option></select>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div><label>Con atención a</label><select id="selectAtn"><option value="">Ninguno</option></select></div>
+            <div><label>Con copia para</label><select id="selectCCP"><option value="">Ninguno</option></select></div>
           </div>
-          <div class="form-group">
-            <label>Con copia para (c.c.p.)</label>
-            <select id="selectCCP"><option value="">Ninguno</option></select>
-          </div>
-          <div class="form-group">
-            <label>Adjuntar fotos de evidencia</label>
+          <div style="margin-top: 15px;">
+            <label>Anexar fotografías de evidencia</label>
             <input type="file" id="inputFotos" multiple accept="image/*">
-            <div id="preview-evidencia"></div>
-          </div>
-          <div class="form-group">
-            <label>Ubicación</label>
-            <input type="text" id="inputCiudad" placeholder="Ej. Morelia, Michoacán">
+            <div id="preview-evidencia" style="display:flex; gap:10px; margin-top:10px;"></div>
           </div>
         </div>
 
-        <button type="submit" class="btn primary" style="margin-top: 10px;">
-          🚀 Revisar y Firmar Documento
+        <button type="submit" class="btn primary" style="margin-top: 20px;">
+          🚀 Generar Oficio Oficial
         </button>
       </form>
     </div>
   </div>
 
-  <div id="modalVal" class="modal">
-    <div class="modal-card">
-      <h3 style="color:#fff; margin-top:0;">💡 Sugerencia de Envío</h3>
-      <p style="color:#94a3b8; font-size:14px; line-height:1.6;">
-        Según los Estatutos, este tema debería ser conocido por la <strong><span id="valNombre"></span></strong>.
-      </p>
-      <div style="background:rgba(56,189,248,0.1); padding:12px; border-radius:12px; color:#7dd3fc; font-size:13px; margin:15px 0;">
-        <span id="valFundamento"></span>
-      </div>
-      <div style="display:grid; gap:10px;">
-        <button class="btn primary" id="btnCorregirVal">Corregir y continuar</button>
-        <button class="btn outline" id="btnIgnorarVal">Mantener mi selección</button>
-      </div>
-    </div>
-  </div>
-
   <div id="modalFirma" class="modal">
-    <div class="modal-card" style="max-width: 650px;">
-      <h3 style="color:#fff; margin:0;">Vista Previa</h3>
-      <div class="pdf-preview">
-        <div id="hojaDigital" class="page-carta"></div>
-      </div>
-      <label style="color:#fff; margin-bottom:10px;">Firma aquí con tu dedo o mouse:</label>
-      <canvas id="padFirma" style="background:#fff; width:100%; height:120px; border-radius:12px; cursor:crosshair; touch-action:none;"></canvas>
-      <div style="display:flex; gap:10px; margin-top:20px;">
-        <button class="btn outline" id="btnCerrarFirma">Cerrar</button>
-        <button class="btn primary" id="btnFinalizar">✅ Confirmar y Enviar</button>
+    <div class="modal-card">
+      <h3 style="color:#fff; margin:0 0 15px 0;">Revisa y Firma</h3>
+      <div class="pdf-preview"><div id="hojaDigital" class="page-carta"></div></div>
+      <label style="color:#fff;">Firma aquí:</label>
+      <canvas id="padFirma" style="background:#fff; width:100%; height:120px; border-radius:10px;"></canvas>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
+        <button class="btn" style="background:#475569; color:#fff;" id="btnCerrarFirma">Cancelar</button>
+        <button class="btn primary" id="btnFinalizar">✅ Enviar Escrito</button>
       </div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <script>
+    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const $ = s => document.querySelector(s);
-    
-    // --- DATA ESTATUTARIA ---
-    const reglas = [
-      { id: "Secretaría de Conflictos|J.G.E. Arturo Ochoa Huacuz", nombre: "Secretaría de Conflictos", palabras: ["acta", "sanción", "despido", "investigación", "violación", "castigo"], fundamento: "Art. 78: Atiende conflictos por violaciones al CCT y defensa ante sanciones." },
-      { id: "Secretaría de Previsión Social|A.M. Fabiola Farías Ambriz", nombre: "Secretaría de Previsión Social", palabras: ["préstamo", "jubilación", "pensión", "defunción", "riesgo", "accidente"], fundamento: "Art. 81: Encargada de jubilaciones, préstamos y seguridad social." },
-      { id: "Secretaría de Admisión y Cambios|C.C. Uriel Tapia Pérez", nombre: "Secretaría de Admisión y Cambios", palabras: ["bolsa", "propuesta", "ingreso", "vacante", "cambio", "nombramiento"], fundamento: "Art. 90: Gestiona Bolsa de Trabajo e ingresos al Instituto." }
-    ];
-
-    let recomendacionActual = null;
     let fotosBase64 = [];
 
-    // --- INTERFAZ DINÁMICA ---
+    async function init() {
+      // Clonar selects
+      const ops = $('#selectDestino').innerHTML;
+      $('#selectAtn').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
+      $('#selectCCP').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: prof } = await supabase.from('profiles').select('*').eq('user_id', session.user.id).single();
+        if (prof) {
+          $('#valNombreUser').value = prof.display_name || 'Sin Nombre';
+          $('#valMatricula').value = prof.matricula || '00000000';
+          $('#valCategoria').value = prof.categoria || 'Sin Categoría';
+          $('#valAdscripcion').value = prof.adscripcion || 'Sin Adscripción';
+        }
+      }
+      $('#inputFecha').value = new Date().toISOString().split('T')[0];
+    }
+
     $('#toggleAvanzado').addEventListener('click', () => {
       $('#panelAvanzado').classList.toggle('show');
-      $('#toggleAvanzado').innerHTML = $('#panelAvanzado').classList.contains('show') ? 
-        '<i class="ph-bold ph-minus-circle"></i> Ocultar opciones avanzadas' : 
-        '<i class="ph-bold ph-plus-circle"></i> Opciones avanzadas (Copias, Atención, Evidencia)';
     });
 
-    // Clonar opciones a selects secundarios
-    const ops = $('#selectDestino').innerHTML;
-    $('#selectAtn').innerHTML = ops;
-    $('#selectCCP').innerHTML = ops;
-
-    // --- DETECCIÓN ESTATUTARIA ---
-    $('#textoHechos').addEventListener('input', (e) => {
-      const txt = e.target.value.toLowerCase();
-      recomendacionActual = reglas.find(r => r.palabras.some(p => txt.includes(p)));
-      
-      if (recomendacionActual && txt.length > 10) {
-        $('#tipTexto').innerHTML = `Esto parece ser tema de <strong>${recomendacionActual.nombre}</strong>.`;
-        $('#tipEstatutario').style.display = 'flex';
-      } else {
-        $('#tipEstatutario').style.display = 'none';
-      }
-    });
-
-    // --- MANEJO DE FOTOS ---
     $('#inputFotos').addEventListener('change', (e) => {
       const files = Array.from(e.target.files);
       $('#preview-evidencia').innerHTML = "";
       fotosBase64 = [];
-      files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
+      files.forEach(f => {
+        const r = new FileReader();
+        r.onload = (ev) => {
           const img = document.createElement('img');
-          img.src = ev.target.result; img.className = "thumb";
+          img.src = ev.target.result; img.style.width="50px"; img.style.height="50px"; img.style.objectFit="cover";
           $('#preview-evidencia').appendChild(img);
           fotosBase64.push(ev.target.result);
         };
-        reader.readAsDataURL(file);
+        r.readAsDataURL(f);
       });
     });
 
-    // --- FLUJO DE ENVÍO ---
     $('#formEscrito').addEventListener('submit', (e) => {
       e.preventDefault();
-      const actual = $('#selectDestino').value;
-      const atn = $('#selectAtn').value;
-      const ccp = $('#selectCCP').value;
-
-      if (recomendacionActual && actual !== recomendacionActual.id && atn !== recomendacionActual.id && ccp !== recomendacionActual.id) {
-        $('#valNombre').textContent = recomendacionActual.nombre;
-        $('#valFundamento').textContent = recomendacionActual.fundamento;
-        $('#modalVal').classList.add('show');
-      } else {
-        abrirVistaPrevia();
-      }
-    });
-
-    $('#btnCorregirVal').addEventListener('click', () => {
-      $('#selectDestino').value = recomendacionActual.id;
-      $('#modalVal').classList.remove('show');
-      abrirVistaPrevia();
-    });
-
-    $('#btnIgnorarVal').addEventListener('click', () => {
-      $('#modalVal').classList.remove('show');
-      abrirVistaPrevia();
-    });
-
-    function abrirVistaPrevia() {
       const [cargo, nombre] = $('#selectDestino').value.split('|');
       const hechos = $('#textoHechos').value;
-      const ciudad = $('#inputCiudad').value || "Morelia, Michoacán";
-      const fecha = new Date().toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
+      const ciudad = $('#inputCiudad').value;
+      const fecha = new Date($('#inputFecha').value).toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
 
       let atn = $('#selectAtn').value ? `<div style="margin-top:10px; font-weight:bold;">At'n: ${$('#selectAtn').value.split('|')[1]}</div>` : "";
       let ccp = $('#selectCCP').value ? `<div style="font-size:8pt; margin-top:30px;">c.c.p. ${$('#selectCCP').value.split('|')[1]}</div>` : "";
 
       $('#hojaDigital').innerHTML = `
         <div style="text-align:right;">${ciudad}, a ${fecha}</div>
-        <div style="font-weight:bold; margin-top:20px; text-transform:uppercase;">${nombre}</div>
+        <div style="font-weight:bold; margin-top:20px;">${nombre}</div>
         <div style="font-weight:bold;">${cargo}</div>
         <div>Presente.</div>
         ${atn}
-        <div style="margin-top:20px; text-align:justify; line-height:1.5;">${hechos}</div>
+        <div style="margin-top:20px; text-align:justify; line-height:1.4;">${hechos}</div>
         <div style="margin-top:40px; text-align:center;">
           ATENTAMENTE<br><br><br>
           __________________________<br>
-          (Firma del Trabajador)
+          ${$('#valNombreUser').value}<br>
+          Matrícula: ${$('#valMatricula').value}<br>
+          ${$('#valCategoria').value}<br>
+          ${$('#valAdscripcion').value}
           ${ccp}
         </div>
       `;
       $('#modalFirma').classList.add('show');
       iniciarPad();
-    }
+    });
 
-    // --- FIRMA Y PDF ---
-    let ctx, dibujando = false;
+    let dibujando = false, ctx;
     function iniciarPad() {
-      const canvas = $('#padFirma');
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      ctx = canvas.getContext('2d');
-      ctx.lineWidth = 2; ctx.strokeStyle = "#000080";
-      
-      const pos = (e) => {
-        const r = canvas.getBoundingClientRect();
-        return { x: (e.clientX || e.touches[0].clientX) - r.left, y: (e.clientY || e.touches[0].clientY) - r.top };
+      const c = $('#padFirma'); c.width = c.offsetWidth; c.height = 120;
+      ctx = c.getContext('2d'); ctx.lineWidth = 2; ctx.strokeStyle = "#000080";
+      c.onmousedown = c.ontouchstart = (e) => { dibujando = true; ctx.beginPath(); e.preventDefault(); };
+      c.onmousemove = c.ontouchmove = (e) => { 
+        if(!dibujando) return; 
+        const rect = c.getBoundingClientRect();
+        const x = (e.clientX || e.touches[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches[0].clientY) - rect.top;
+        ctx.lineTo(x, y); ctx.stroke();
       };
-
-      canvas.onmousedown = canvas.ontouchstart = (e) => { dibujando = true; const p = pos(e); ctx.moveTo(p.x, p.y); ctx.beginPath(); e.preventDefault(); };
-      canvas.onmousemove = canvas.ontouchmove = (e) => { if(!dibujando) return; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); };
-      canvas.onmouseup = canvas.ontouchend = () => dibujando = false;
+      c.onmouseup = c.ontouchend = () => dibujando = false;
     }
 
     $('#btnFinalizar').addEventListener('click', async () => {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ unit: 'pt', format: 'letter' });
       const canvas = await html2canvas($('#hojaDigital'));
-      
-      // Hoja 1: Escrito
       doc.addImage(canvas.toDataURL('image/jpeg'), 'JPEG', 0, 0, 612, 792);
       
-      // Hojas extra: Evidencias
-      fotosBase64.forEach((img, i) => {
+      fotosBase64.forEach(img => {
         doc.addPage();
-        doc.text(`Anexo ${i+1}`, 40, 40);
         doc.addImage(img, 'JPEG', 40, 60, 532, 400);
       });
 
-      doc.save("Escrito_SNTSS.pdf");
-      alert("¡Documento generado con éxito! Se ha descargado tu archivo.");
+      doc.save(`Escrito_${$('#valMatricula').value}.pdf`);
       location.reload();
     });
 
-    $('#btnCerrarFirma').addEventListener('click', () => $('#modalFirma').classList.remove('show'));
+    $('#btnCerrarFirma').onclick = () => $('#modalFirma').classList.remove('show');
 
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
