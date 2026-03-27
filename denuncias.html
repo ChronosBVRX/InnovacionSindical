@@ -48,7 +48,6 @@
   }
   p.muted { color: var(--text-muted); font-size: 15px; margin-top: 5px; line-height: 1.5; }
 
-  /* ALERTA DE PERFIL */
   .profile-alert {
     background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4);
     color: var(--warning); padding: 16px; border-radius: 12px; margin-bottom: 24px;
@@ -90,15 +89,12 @@
   .btn.primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); border: none; color: #0f172a; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4); }
   .btn.success { background: linear-gradient(135deg, #22c55e, #16a34a); border: none; color: #fff; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); }
 
-  /* MODALES */
   .modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); display: none; align-items: center; justify-content: center; z-index: 1000; }
   .modal.show { display: flex; }
   .modal-card { width: 95vw; height: 95vh; background: #1e293b; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; }
-  
   .modal-h { padding: 16px; background: #0f172a; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
   .modal-b { flex: 1; overflow: auto; padding: 40px 20px; display: flex; justify-content: center; align-items: flex-start; background: #334155; }
 
-  /* HOJA OFICIO */
   .page.carta { width: 816px; height: 1056px; background: #fff; color: #111; box-shadow: 0 10px 40px rgba(0,0,0,0.5); flex-shrink: 0; transform-origin: top center; }
   .sheet { padding: 72px 64px; font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; position: relative; height: 100%; color: #000; }
   .sheet header { text-align: right; font-weight: bold; margin-bottom: 30px; }
@@ -106,7 +102,6 @@
   .sheet .cuerpo { text-align: justify; white-space: pre-wrap; margin-top: 20px; }
   .sheet .pie { position: absolute; bottom: 80px; left: 0; right: 0; text-align: center; font-weight: bold; width: 100%; }
 
-  /* FIRMA DIGITAL */
   .signature-container { background: #fff; border-radius: 12px; padding: 20px; text-align: center; width: 100%; max-width: 500px; margin: auto; }
   canvas#firmaPad { border: 2px dashed #cbd5e1; border-radius: 8px; background: #f8fafc; cursor: crosshair; touch-action: none; width: 100%; height: 200px; margin-bottom: 16px;}
 
@@ -119,7 +114,6 @@
     .modal-h .btn { flex: 1; padding: 8px; font-size: 11px; }
   }
 
-  /* IMPRESIÓN */
   @media print {
     .wrap, .modal-h, #status, #modal-firma, #alerta-perfil, #modal-validacion { display: none !important; }
     body, #modal, .modal-card, .modal-b { background: transparent !important; position: static !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; display: block !important; width: 100% !important; height: auto !important; overflow: visible !important; }
@@ -146,93 +140,89 @@
       <i class="ph-bold ph-warning-circle"></i>
       <div>
         <strong>Faltan datos en tu perfil.</strong><br>
-        Para enviar documentos oficiales, necesitamos tu Matrícula, Categoría y Adscripción. Ve a la pestaña "Personaliza tu perfil" para llenarlos.
+        Para enviar documentos oficiales, necesitamos tu Matrícula, Categoría y Adscripción.
       </div>
     </div>
 
     <div class="card">
       <form id="fDenuncia">
-        <div class="highlight-section">
-          <label for="puestoCatalogo">1. ¿A qué Secretaría o Comisión va dirigido?</label>
-          <select id="puestoCatalogo" required>
-            <option value="">— Selecciona la Secretaría o Comisión —</option>
-            <optgroup label="Secretarías">
-              <option value="Secretaría General|Dr. Juan Gerardo García González">Secretaría General</option>
-              <option value="Secretaría de Interior y Propaganda|M.N.F. Amin Uriel Morales Sánchez">Secretaría de Interior y Propaganda</option>
-              <option value="Secretaría de Conflictos|J.G.E. Arturo Ochoa Huacuz">Secretaría de Conflictos</option>
-              <option value="Secretaría de Trabajo|E.G. Cándido Mora Alcauter">Secretaría de Trabajo</option>
-              <option value="Secretaría del Exterior|M.N.F. Ignacio Agustín Orozco Pérez">Secretaría del Exterior</option>
-              <option value="Tesorería|EST. Azucena Herrera Martínez">Tesorería</option>
-              <option value="Secretaría de Previsión Social|A.M. Fabiola Farías Ambriz">Secretaría de Previsión Social</option>
-              <option value="Secretaría de Igualdad Sustantiva|M.F. Gabriela Durán Negrete">Secretaría de Igualdad Sustantiva</option>
-              <option value="Secretaría de Asuntos Técnicos|M.N.F. Horacio Peña Alfaro">Secretaría de Asuntos Técnicos</option>
-              <option value="Secretaría de Actas y Acuerdos|M.G. César Augusto Contreras Flores">Secretaría de Actas y Acuerdos</option>
-              <option value="Secretaría de Prensa|A.M. Yolanda Morelos Palomares">Secretaría de Prensa</option>
-              <option value="Secretaría de Puestos Periféricos|M.N.F. Alejandra Johnson Aguirre">Secretaría de Puestos Periféricos</option>
-              <option value="Secretaría de Admisión y Cambios|C.C. Uriel Tapia Pérez">Secretaría de Admisión y Cambios</option>
-              <option value="Secretaría de Capacitación y Adiestramiento|O.P. América Hilda Reyes Reyes">Secretaría de Capacitación y Adiestramiento</option>
-              <option value="Secretaría de Calidad y Modernización|Q.C. Gerardo Ordaz Salazar">Secretaría de Calidad y Modernización</option>
-              <option value="Secretaría de Acción Social|E.E. Claudia Denisse Torres Rangel">Secretaría de Acción Social</option>
-            </optgroup>
-            <optgroup label="Comisiones">
-              <option value="Comisión de Honor y Justicia — Presidencia|J.G.S.T. José Francisco Ruiz Domínguez">Honor y Justicia — Presidencia</option>
-              <option value="Comisión de Vigilancia — Presidencia|T.R. Eduardo Bolaños Vázquez">Vigilancia — Presidencia</option>
-              <option value="Comisión de Fomento a la Seguridad Social — Presidencia|M.N.F. Carlos Mojica Rodríguez">Fomento a la Seg. Social — Presidencia</option>
-              <option value="Comisión de Hacienda — Presidencia|A.L. Ángeles Alejandra Ledesma Torres">Hacienda — Presidencia</option>
-              <option value="Comisión de Deportes — Presidencia|J.G.P. Roberto Carlos Reyes Ortiz">Deportes — Presidencia</option>
-              <option value="Comisión de Acción Política — Presidencia|M.N.F. Verónica Diosdado Minguela">Acción Política — Presidencia</option>
-            </optgroup>
-            <optgroup label="Subcomisiones Mixtas">
-              <option value="Subcomisión Mixta de Becas — Representación Sindical|M.F. Jorge Héctor Zaragoza Palacios">Becas</option>
-              <option value="Bolsa de Trabajo|C.C. M. Guadalupe Calderón Ayala">Bolsa de Trabajo</option>
-              <option value="Subcomisión Mixta de Puestos de Confianza 'B' — Representación Sindical|M.F. Jorge Hugo Ruiz Saenz">Puestos de Confianza 'B'</option>
-              <option value="Subcomisión Mixta de Capacitación y Adiestramiento — Representación Sindical|A.E.G. Juan Onofre Baez">Capacitación y Adiestramiento</option>
-              <option value="Subcomisión Mixta de Seguridad e Higiene — Representación Sindical|A.U.O Betsabe Hernández Flores">Seguridad e Higiene</option>
-              <option value="Subcomisión Mixta Disciplinaria — Representación Sindical|Cont. Juan Carlos Servín Juárez">Disciplinaria</option>
-              <option value="Subcomisión Mixta de Escalafón — Representación Sindical|E.G. Hilda Ontiveros Cuellar">Escalafón</option>
-              <option value="Subcomisión Mixta Paritaria de Protección al Salario — Representación Sindical|E.E. Dinorah Alduenda Guiza">Protección al Salario</option>
-              <option value="Subcomisión Mixta de Pasajes — Representación Sindical|O.A. José Antonio Carrillo Bejarano">Pasajes</option>
-              <option value="Subcomisión Mixta de Ropa de Trabajo y Uniformes — Representación Sindical|A.A. Julio Cesar García Salgado">Ropa de Trabajo y Uniformes</option>
-              <option value="Subcomisión Mixta de Selec. Recursos Humanos para Cambios de Rama — Representación Sindical|C.C. Alicia Martínez Correa">Cambios de Rama</option>
-              <option value="Subcomisión Mixta de Tiendas — Representación Sindical|P.E.F.B. Humberto Guerrero Linares">Tiendas</option>
-              <option value="Subcomisión Mixta de Jubilaciones y Pensiones — Representación Sindical|E.G.C. Maricela Navarrete Mora">Jubilaciones y Pensiones</option>
-              <option value="Subcomisión Mixta de Revisión de Plantillas — Representación Sindical|E.G. Luis Fernando García Cervantes">Revisión de Plantillas</option>
-            </optgroup>
-          </select>
+        <div class="highlight-section" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="grid-full">
+            <label for="puestoCatalogo">1. Destinatario Principal (Obligatorio)</label>
+            <select id="puestoCatalogo" required>
+              <option value="">— Selecciona la Secretaría o Comisión —</option>
+              <optgroup label="Secretarías">
+                <option value="Secretaría General|Dr. Juan Gerardo García González">Secretaría General</option>
+                <option value="Secretaría de Interior y Propaganda|M.N.F. Amin Uriel Morales Sánchez">Secretaría de Interior y Propaganda</option>
+                <option value="Secretaría de Conflictos|J.G.E. Arturo Ochoa Huacuz">Secretaría de Conflictos</option>
+                <option value="Secretaría de Trabajo|E.G. Cándido Mora Alcauter">Secretaría de Trabajo</option>
+                <option value="Secretaría del Exterior|M.N.F. Ignacio Agustín Orozco Pérez">Secretaría del Exterior</option>
+                <option value="Tesorería|EST. Azucena Herrera Martínez">Tesorería</option>
+                <option value="Secretaría de Previsión Social|A.M. Fabiola Farías Ambriz">Secretaría de Previsión Social</option>
+                <option value="Secretaría de Igualdad Sustantiva|M.F. Gabriela Durán Negrete">Secretaría de Igualdad Sustantiva</option>
+                <option value="Secretaría de Asuntos Técnicos|M.N.F. Horacio Peña Alfaro">Secretaría de Asuntos Técnicos</option>
+                <option value="Secretaría de Actas y Acuerdos|M.G. César Augusto Contreras Flores">Secretaría de Actas y Acuerdos</option>
+                <option value="Secretaría de Prensa|A.M. Yolanda Morelos Palomares">Secretaría de Prensa</option>
+                <option value="Secretaría de Puestos Periféricos|M.N.F. Alejandra Johnson Aguirre">Secretaría de Puestos Periféricos</option>
+                <option value="Secretaría de Admisión y Cambios|C.C. Uriel Tapia Pérez">Secretaría de Admisión y Cambios</option>
+                <option value="Secretaría de Capacitación y Adiestramiento|O.P. América Hilda Reyes Reyes">Secretaría de Capacitación y Adiestramiento</option>
+                <option value="Secretaría de Calidad y Modernización|Q.C. Gerardo Ordaz Salazar">Secretaría de Calidad y Modernización</option>
+                <option value="Secretaría de Acción Social|E.E. Claudia Denisse Torres Rangel">Secretaría de Acción Social</option>
+              </optgroup>
+              <optgroup label="Comisiones">
+                <option value="Comisión de Honor y Justicia — Presidencia|J.G.S.T. José Francisco Ruiz Domínguez">Honor y Justicia — Presidencia</option>
+                <option value="Comisión de Vigilancia — Presidencia|T.R. Eduardo Bolaños Vázquez">Vigilancia — Presidencia</option>
+                <option value="Comisión de Fomento a la Seguridad Social — Presidencia|M.N.F. Carlos Mojica Rodríguez">Fomento a la Seg. Social — Presidencia</option>
+                <option value="Comisión de Hacienda — Presidencia|A.L. Ángeles Alejandra Ledesma Torres">Hacienda — Presidencia</option>
+                <option value="Comisión de Deportes — Presidencia|J.G.P. Roberto Carlos Reyes Ortiz">Deportes — Presidencia</option>
+                <option value="Comisión de Acción Política — Presidencia|M.N.F. Verónica Diosdado Minguela">Acción Política — Presidencia</option>
+              </optgroup>
+              <optgroup label="Subcomisiones Mixtas">
+                <option value="Subcomisión Mixta de Becas — Representación Sindical|M.F. Jorge Héctor Zaragoza Palacios">Becas</option>
+                <option value="Bolsa de Trabajo|C.C. M. Guadalupe Calderón Ayala">Bolsa de Trabajo</option>
+                <option value="Subcomisión Mixta de Puestos de Confianza 'B' — Representación Sindical|M.F. Jorge Hugo Ruiz Saenz">Puestos de Confianza 'B'</option>
+                <option value="Subcomisión Mixta de Capacitación y Adiestramiento — Representación Sindical|A.E.G. Juan Onofre Baez">Capacitación y Adiestramiento</option>
+                <option value="Subcomisión Mixta de Seguridad e Higiene — Representación Sindical|A.U.O Betsabe Hernández Flores">Seguridad e Higiene</option>
+                <option value="Subcomisión Mixta Disciplinaria — Representación Sindical|Cont. Juan Carlos Servín Juárez">Disciplinaria</option>
+                <option value="Subcomisión Mixta de Escalafón — Representación Sindical|E.G. Hilda Ontiveros Cuellar">Escalafón</option>
+                <option value="Subcomisión Mixta Paritaria de Protección al Salario — Representación Sindical|E.E. Dinorah Alduenda Guiza">Protección al Salario</option>
+                <option value="Subcomisión Mixta de Pasajes — Representación Sindical|O.A. José Antonio Carrillo Bejarano">Pasajes</option>
+                <option value="Subcomisión Mixta de Ropa de Trabajo y Uniformes — Representación Sindical|A.A. Julio Cesar García Salgado">Ropa de Trabajo y Uniformes</option>
+                <option value="Subcomisión Mixta de Selec. Recursos Humanos para Cambios de Rama — Representación Sindical|C.C. Alicia Martínez Correa">Cambios de Rama</option>
+                <option value="Subcomisión Mixta de Tiendas — Representación Sindical|P.E.F.B. Humberto Guerrero Linares">Tiendas</option>
+                <option value="Subcomisión Mixta de Jubilaciones y Pensiones — Representación Sindical|E.G.C. Maricela Navarrete Mora">Jubilaciones y Pensiones</option>
+                <option value="Subcomisión Mixta de Revisión de Plantillas — Representación Sindical|E.G. Luis Fernando García Cervantes">Revisión de Plantillas</option>
+              </optgroup>
+            </select>
+          </div>
+          <div>
+            <label>Con atención a (Opcional)</label>
+            <select id="atencionCatalogo"></select>
+          </div>
+          <div>
+            <label>Con copia para (c.c.p.) (Opcional)</label>
+            <select id="ccpCatalogo"></select>
+          </div>
         </div>
 
         <input type="hidden" id="cargo">
-        <div>
-          <label>Nombre del titular a dirigirse</label>
-          <input id="destinatario" readonly placeholder="Se llena automático...">
-        </div>
+        <input type="hidden" id="destinatario">
+
         <div>
           <label>Fecha del escrito</label>
           <input id="fecha" type="date">
         </div>
-
-        <div class="grid-full"><hr style="border:0; border-top:1px solid var(--panel-border);"></div>
-
         <div>
-          <label>Nombre del trabajador</label>
-          <input id="nombre" required readonly placeholder="Autocompletado...">
-        </div>
-        <div>
-          <label>Matrícula</label>
-          <input id="matricula" required readonly placeholder="Autocompletado...">
-        </div>
-        <div>
-          <label>Categoría</label>
-          <input id="categoria" required readonly placeholder="Autocompletado...">
-        </div>
-        <div>
-          <label>Adscripción</label>
-          <input id="lugar" required readonly placeholder="Autocompletado...">
-        </div>
-        <div class="grid-full">
           <label>Ciudad / Municipio donde te encuentras</label>
           <input id="ciudad" placeholder="Ej. Lázaro Cárdenas, Michoacán" required>
         </div>
+
+        <div class="grid-full"><hr style="border:0; border-top:1px solid var(--panel-border);"></div>
+
+        <div><label>Nombre del trabajador</label><input id="nombre" required readonly></div>
+        <div><label>Matrícula</label><input id="matricula" required readonly></div>
+        <div><label>Categoría</label><input id="categoria" required readonly></div>
+        <div><label>Adscripción</label><input id="lugar" required readonly></div>
 
         <div class="grid-full">
           <label>2. Descripción de los hechos (La IA redactará tu solicitud formalmente)</label>
@@ -242,13 +232,13 @@
         <div id="alerta-sugerencia" class="profile-alert hide" style="grid-column: 1/-1; background: rgba(74, 222, 128, 0.15); border-color: rgba(74, 222, 128, 0.4); color: var(--success); margin-bottom: 0;">
           <i class="ph-bold ph-lightbulb"></i>
           <div style="flex: 1;">
-            <strong style="color: #fff;">Sugerencia Estatutaria de la PSD:</strong><br>
+            <strong style="color: #fff;">Sugerencia de la PSD:</strong><br>
             <span id="texto-sugerencia" style="font-size: 13px; color: #e2e8f0;"></span>
           </div>
-          <button type="button" class="btn success" id="btn-aplicar-sugerencia" style="padding: 8px 16px; font-size: 12px; color: white;">Seleccionar y Dirigir a esta Área</button>
         </div>
+        
         <div class="grid-full" style="display: flex; gap: 12px; justify-content: flex-end; align-items: center; flex-wrap: wrap; margin-top: 15px;">
-          <span style="font-size: 12px; color: var(--text-muted);">Redacción impulsada por IA con Generación de Folio.</span>
+          <span style="font-size: 12px; color: var(--text-muted);">Validación automática por Estatutos.</span>
           <button type="submit" class="btn primary" id="btnGenerarPrincipal">🚀 Generar Documento</button>
         </div>
       </form>
@@ -281,36 +271,34 @@
   <div id="modal-firma" class="modal">
     <div class="signature-container">
       <h3 style="color: #0f172a; margin-top:0;">Firma Digital</h3>
-      <p style="color: #64748b; font-size: 14px;">Dibuja tu firma en el recuadro de abajo. Este documento será enviado oficialmente a la Secretaría correspondiente.</p>
-      
+      <p style="color: #64748b; font-size: 14px;">Dibuja tu firma para enviar tu trámite.</p>
       <canvas id="firmaPad"></canvas>
-      
       <div style="display: flex; gap: 10px; justify-content: center; margin-top: 16px;">
         <button class="btn" id="btnClearSignature" style="color: #0f172a; border-color: #cbd5e1;">Borrar</button>
-        <button class="btn success" id="btnConfirmSignature" style="color: white;">Confirmar y Enviar Trámite</button>
+        <button class="btn success" id="btnConfirmSignature" style="color: white;">Confirmar Envío</button>
       </div>
       <button class="btn" onclick="document.getElementById('modal-firma').classList.remove('show')" style="margin-top: 10px; color: #ef4444; width: 100%; border: none;">Cancelar</button>
     </div>
   </div>
 
   <div id="modal-validacion" class="modal">
-    <div class="signature-container" style="max-width: 600px;">
+    <div class="signature-container" style="max-width: 650px;">
       <h3 style="color: #0f172a; margin-top:0; display:flex; align-items:center; justify-content:center; gap:8px;">
-        <i class="ph-bold ph-warning" style="color: #ef4444;"></i> Verificación de Destinatario
+        <i class="ph-bold ph-warning" style="color: #ef4444;"></i> Aviso de Destino Estatutario
       </h3>
       <p style="color: #64748b; font-size: 15px; text-align: left; line-height: 1.5;">
-        Detectamos que estás enviando este escrito a <strong><span id="val-actual"></span></strong>,
-        pero de acuerdo a la problemática redactada, los Estatutos del SNTSS indican que debería ir dirigido a:
+        Conforme a la problemática redactada, los Estatutos del SNTSS indican que la siguiente Secretaría debe tener conocimiento o intervención en tu trámite:
       </p>
       <div style="background: rgba(56, 189, 248, 0.1); padding: 16px; border-radius: 8px; border: 1px solid var(--primary); color: #0f172a; margin: 15px 0; text-align: left;">
         <strong id="val-sugerida" style="font-size: 16px;"></strong><br>
         <span id="val-fundamento" style="font-size: 13px; color: #475569; display:block; margin-top:4px;"></span>
       </div>
-      <p style="color: #64748b; font-size: 14px; text-align: center;">¿Qué deseas hacer?</p>
+      <p style="color: #64748b; font-size: 14px; text-align: center;">Tu escrito actual no la incluye en el destino principal ni en copias. ¿Qué deseas hacer?</p>
       
       <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
         <button class="btn" id="btn-ignorar-val" style="color: #64748b; border-color: #cbd5e1; background: #f1f5f9;">Ignorar y Continuar</button>
-        <button class="btn primary" id="btn-corregir-val" style="color: #0f172a;">Corregir Automáticamente y Generar</button>
+        <button class="btn primary" id="btn-corregir-ccp" style="color: #0f172a;">Añadirla Con Copia (c.c.p.) y Generar</button>
+        <button class="btn primary" id="btn-corregir-val" style="color: #0f172a;">Hacerla Destino Principal</button>
       </div>
     </div>
   </div>
@@ -320,7 +308,6 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <script>
-    // Configuración de Supabase
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
     const supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -349,8 +336,12 @@
     };
     window.addEventListener('resize', ajustarEscala);
 
-    // --- INICIALIZAR USUARIO ---
     async function initUser() {
+      // Clonar catálogo principal a los secundarios
+      const htmlOpciones = '<option value="">— Ninguno —</option>' + $('#puestoCatalogo').innerHTML.replace('<option value="">— Selecciona la Secretaría o Comisión —</option>', '');
+      $('#atencionCatalogo').innerHTML = htmlOpciones;
+      $('#ccpCatalogo').innerHTML = htmlOpciones;
+
       const { data: { session } } = await supabaseApp.auth.getSession();
       if (!session) {
         alert("Debes iniciar sesión en la plataforma para usar el generador.");
@@ -360,13 +351,11 @@
       currentUser = session.user;
 
       const { data: prof } = await supabaseApp.from('profiles').select('*').eq('user_id', currentUser.id).single();
-      
       if (prof) {
         $('#nombre').value = prof.display_name || '';
         $('#matricula').value = prof.matricula || '';
         $('#categoria').value = prof.categoria || '';
         $('#lugar').value = prof.adscripcion || '';
-
         if (!prof.display_name || !prof.matricula || !prof.categoria || !prof.adscripcion) {
           $('#alerta-perfil').classList.remove('hide');
         }
@@ -375,9 +364,9 @@
     }
 
     $('#puestoCatalogo').addEventListener('change', (e) => {
-      const [cargo, nombre] = e.target.value.split('|');
-      $('#cargo').value = cargo || '';
-      $('#destinatario').value = nombre || '';
+      const parts = e.target.value.split('|');
+      $('#cargo').value = parts[0] || '';
+      $('#destinatario').value = parts[1] || '';
     });
 
     function obtenerAcronimo(area) {
@@ -440,6 +429,19 @@
 
     const generarContenido = (d, cuerpo, folio) => {
       const fLarga = new Date(d.fecha + 'T12:00:00').toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
+      
+      let atencionHtml = "";
+      if (d.atencionVal) {
+          const [cargoAtn, nombreAtn] = d.atencionVal.split('|');
+          atencionHtml = `<div style="margin-top: 15px; font-weight: bold;">At'n: ${nombreAtn}<br><span style="font-weight: normal; font-size: 11pt;">${cargoAtn}</span></div>`;
+      }
+
+      let ccpHtml = "";
+      if (d.ccpVal) {
+          const [cargoCcp, nombreCcp] = d.ccpVal.split('|');
+          ccpHtml = `<div style="text-align: left; font-size: 8pt; margin-top: 40px; font-family: Arial, sans-serif; line-height: 1.2;">c.c.p. ${nombreCcp} - ${cargoCcp}. Para su conocimiento e intervención.</div>`;
+      }
+
       return `
         <header>
           <div style="text-align: right; color: #991b1b; font-size: 13pt; margin-bottom: 16px;">Folio Oficial: <strong>${folio}</strong></div>
@@ -448,6 +450,7 @@
         <div class="dest">${d.destinatario}</div>
         <div style="font-weight:bold; margin-bottom:5px;">${d.cargo}</div>
         <div>Presente.</div>
+        ${atencionHtml}
         <div class="cuerpo">${cuerpo}</div>
         <div class="pie">
           ATENTAMENTE<br>
@@ -457,11 +460,11 @@
           Matrícula: ${d.matricula}<br>
           ${d.categoria}<br>
           ${d.lugar}
+          ${ccpHtml}
         </div>
       `;
     };
 
-    // --- NUEVA LÓGICA DE EJECUCIÓN SEPARADA ---
     async function ejecutarGeneracion() {
       $('#modal-validacion').classList.remove('show');
       
@@ -478,7 +481,9 @@
         ciudad: $('#ciudad').value, fecha: $('#fecha').value,
         destinatario: $('#destinatario').value, cargo: $('#cargo').value,
         nombre: $('#nombre').value, matricula: $('#matricula').value,
-        categoria: $('#categoria').value, lugar: $('#lugar').value
+        categoria: $('#categoria').value, lugar: $('#lugar').value,
+        atencionVal: $('#atencionCatalogo').value,
+        ccpVal: $('#ccpCatalogo').value
       };
       
       const cuerpoIA = await redactarIA($('#problematica').value);
@@ -491,24 +496,19 @@
       ajustarEscala();
     }
 
-
     $('#btnClose').addEventListener('click', () => $('#modal').classList.remove('show'));
 
     $('#btnPrint').addEventListener('click', () => {
       const originalTitle = document.title;
       document.title = `${currentFolio}_${$('#matricula').value}`;
-
       $('#modal-firma').style.display = 'none';
       $('#mainWrap').style.display = 'none';
-
       window.print();
-
       $('#modal-firma').style.display = '';
       $('#mainWrap').style.display = '';
       document.title = originalTitle;
     });
 
-    // --- SISTEMA DE FIRMA DIGITAL ---
     const canvasFirma = $('#firmaPad');
     const ctx = canvasFirma.getContext('2d');
     let isDrawing = false;
@@ -590,11 +590,9 @@
 
         const fileName = `escritos/${currentFolio}_${$('#matricula').value}.pdf`;
         const { error: uploadError } = await supabaseApp.storage.from('documentos').upload(fileName, pdfBlob);
-        
         if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabaseApp.storage.from('documentos').getPublicUrl(fileName);
-
         const targetSelect = $('#puestoCatalogo');
         const areaDestino = targetSelect.options[targetSelect.selectedIndex].text;
 
@@ -603,7 +601,7 @@
           area_destino: areaDestino,
           folio: currentFolio,
           asunto: `[${currentFolio}] Trámite Oficial Firmado`,
-          contenido: `Se adjunta solicitud oficial generada y firmada digitalmente a través de la PSD.\n\n📄 Ver Documento: ${publicUrl}`
+          contenido: `Se adjunta solicitud oficial generada a través de la PSD.\n\n📄 Ver Documento: ${publicUrl}`
         });
 
         if (buzonError) throw buzonError;
@@ -612,14 +610,14 @@
         $('#modal').classList.remove('show');
         $('#fDenuncia').reset();
         
-        alert(`✅ Trámite enviado a ${areaDestino}.\nTu folio de seguimiento es: ${currentFolio}\n\nRevisa tu Buzón Sindical para conocer la respuesta.`);
+        alert(`✅ Trámite enviado a ${areaDestino}.\nTu folio de seguimiento es: ${currentFolio}`);
         window.location.href = "index.html#buzon"; 
 
       } catch (e) {
         console.error(e);
         alert("Ocurrió un error al enviar el documento: " + e.message);
         btn.disabled = false;
-        btn.innerHTML = "Confirmar y Enviar Trámite";
+        btn.innerHTML = "Confirmar Envío";
         pageEl.style.transform = originalTransform; 
       }
     });
@@ -663,7 +661,6 @@
       { idSelect: "Subcomisión Mixta de Revisión de Plantillas — Representación Sindical|E.G. Luis Fernando García Cervantes", nombre: "Revisión de Plantillas", palabras: ["falta de personal", "cobertura", "ausentismo", "carga de trabajo", "plantilla incompleta", "creación de plazas"], fundamento: "Analiza las cargas de trabajo y gestiona la creación o cobertura de plazas necesarias para el buen funcionamiento de los servicios." }
     ];
 
-    let areaSugeridaId = "";
     let recomendacionGlobal = null;
 
     $('#problematica').addEventListener('input', (e) => {
@@ -683,62 +680,56 @@
         divSug.classList.remove('hide');
         divSug.style.display = 'flex';
         textSug.innerHTML = `Por lo que describes, este trámite corresponde a la <strong>${encontrada.nombre}</strong>.<br>${encontrada.fundamento}`;
-        areaSugeridaId = encontrada.idSelect;
       } else {
         divSug.classList.add('hide');
         divSug.style.display = 'none';
-        areaSugeridaId = "";
       }
     });
 
-    $('#btn-aplicar-sugerencia').addEventListener('click', () => {
-      if (areaSugeridaId) {
-        const select = $('#puestoCatalogo');
-        select.value = areaSugeridaId;
-        select.dispatchEvent(new Event('change'));
-        
-        $('#alerta-sugerencia').classList.add('hide');
-        $('#alerta-sugerencia').style.display = 'none';
-      }
-    });
-
-    // --- MANEJO DEL FORMULARIO CON INTERCEPCIÓN ESTATUTARIA ---
     $('#fDenuncia').addEventListener('submit', (e) => { 
       e.preventDefault(); 
       
       const texto = $('#problematica').value.toLowerCase();
       const seleccionActual = $('#puestoCatalogo').value;
+      const atencionVal = $('#atencionCatalogo').value;
+      const ccpVal = $('#ccpCatalogo').value;
       
       recomendacionGlobal = reglasSNTSS.find(regla => 
         regla.palabras.some(palabra => texto.includes(palabra))
       );
 
-      // Si el sistema detecta una recomendación que NO coincide con lo que eligió el usuario:
-      if (recomendacionGlobal && seleccionActual !== recomendacionGlobal.idSelect) {
-        const targetSelect = $('#puestoCatalogo');
-        const nombreActual = targetSelect.options[targetSelect.selectedIndex].text;
-        
-        $('#val-actual').textContent = nombreActual;
-        $('#val-sugerida').textContent = recomendacionGlobal.nombre;
-        $('#val-fundamento').textContent = recomendacionGlobal.fundamento;
-        
-        $('#modal-validacion').classList.add('show');
-      } else {
-        // Si coincide, o si no hay sugerencia clara, continúa directo
-        ejecutarGeneracion();
+      if (recomendacionGlobal) {
+        // Valida si la sugerencia está en Principal, en Atención, o en Copia
+        const esValido = (seleccionActual === recomendacionGlobal.idSelect || 
+                          atencionVal === recomendacionGlobal.idSelect || 
+                          ccpVal === recomendacionGlobal.idSelect);
+
+        if (!esValido) {
+          $('#val-sugerida').textContent = recomendacionGlobal.nombre;
+          $('#val-fundamento').textContent = recomendacionGlobal.fundamento;
+          $('#modal-validacion').classList.add('show');
+          return;
+        }
       }
+
+      ejecutarGeneracion();
     });
 
-    // --- BOTONES DEL MODAL DE VALIDACIÓN ---
     $('#btn-ignorar-val').addEventListener('click', () => {
       ejecutarGeneracion();
     });
 
+    $('#btn-corregir-ccp').addEventListener('click', () => {
+      if (recomendacionGlobal) {
+        $('#ccpCatalogo').value = recomendacionGlobal.idSelect;
+        ejecutarGeneracion();
+      }
+    });
+
     $('#btn-corregir-val').addEventListener('click', () => {
       if (recomendacionGlobal) {
-        const select = $('#puestoCatalogo');
-        select.value = recomendacionGlobal.idSelect;
-        select.dispatchEvent(new Event('change'));
+        $('#puestoCatalogo').value = recomendacionGlobal.idSelect;
+        $('#puestoCatalogo').dispatchEvent(new Event('change'));
         ejecutarGeneracion();
       }
     });
