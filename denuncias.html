@@ -193,36 +193,55 @@
       $('#selectAtn').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
       $('#selectCCP').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
 
-      // 1. OBTENER SESIÓN
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        alert("Acceso denegado. Debes iniciar sesión para usar el Generador de Escritos.");
-        window.location.href = "login.html"; 
-        return;
-      }
-
-      // 2. CONSULTAR PERFIL EN SUPABASE
-      const { data: prof } = await supabase.from('profiles').select('*').eq('user_id', session.user.id).single();
-      
-      $('#loader-inicial').classList.add('hide'); // Ocultar spinner
-
-      // 3. VALIDAR QUE TODOS LOS DATOS EXISTAN
-      const isComplete = prof && prof.display_name && prof.matricula && prof.categoria && prof.adscripcion;
-
-      if (!isComplete) {
-        // PERFIL INCOMPLETO -> Mostrar bloqueo con el enlace proporcionado
-        $('#bloqueo-perfil').classList.remove('hide');
-      } else {
-        // PERFIL COMPLETO -> Mostrar herramienta y llenar datos
-        $('#contenido-generador').classList.remove('hide');
+      try {
+        // 1. OBTENER SESIÓN
+        const { data: { session }, error: authError } = await supabase.auth.getSession();
         
-        $('#valNombreUser').value = prof.display_name;
-        $('#valMatricula').value = prof.matricula;
-        $('#valCategoria').value = prof.categoria;
-        $('#valAdscripcion').value = prof.adscripcion;
+        if (authError || !session) {
+          alert("Acceso denegado. Debes iniciar sesión para usar el Generador de Escritos.");
+          window.location.href = "login.html"; // Asegúrate de que esta ruta sea correcta
+          return;
+        }
+
+        // 2. CONSULTAR PERFIL EN SUPABASE (Usamos maybeSingle para evitar el crasheo)
+        const { data: prof, error: profError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+
+        if (profError) {
+          console.warn("Aviso al consultar el perfil:", profError.message);
+        }
         
-        $('#inputFecha').value = new Date().toISOString().split('T')[0];
+        // PASE LO QUE PASE, OCULTAMOS EL CARGADOR AQUÍ
+        $('#loader-inicial').classList.add('hide'); 
+
+        // 3. VALIDAR QUE TODOS LOS DATOS EXISTAN
+        const isComplete = prof && prof.display_name && prof.matricula && prof.categoria && prof.adscripcion;
+
+        if (!isComplete) {
+          // PERFIL INCOMPLETO -> Mostrar bloqueo con el enlace a tu página
+          $('#bloqueo-perfil').classList.remove('hide');
+        } else {
+          // PERFIL COMPLETO -> Mostrar herramienta y llenar datos
+          $('#contenido-generador').classList.remove('hide');
+          
+          $('#valNombreUser').value = prof.display_name;
+          $('#valMatricula').value = prof.matricula;
+          $('#valCategoria').value = prof.categoria;
+          $('#valAdscripcion').value = prof.adscripcion;
+          
+          $('#inputFecha').value = new Date().toISOString().split('T')[0];
+        }
+
+      } catch (error) {
+        console.error("Error crítico en la inicialización:", error);
+        // Si hay un error grave (ej. caída de internet), le avisamos al usuario en vez de dejarlo trabado
+        $('#loader-inicial').innerHTML = `
+          <i class="ph-bold ph-warning-circle" style="font-size: 40px; margin-bottom: 10px; color: #ef4444;"></i>
+          <p style="color: #ef4444;">Hubo un problema de conexión. Intenta recargar la página.</p>
+        `;
       }
     }
 
