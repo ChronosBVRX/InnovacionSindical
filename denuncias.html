@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Asistente de Escritos — Plataforma Sindical Digital</title>
+<title>Asistente de Escritos — PSD</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -85,6 +85,7 @@
   /* ALERTAS Y GUÍA */
   .lock-alert { background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4); color: var(--warning); padding: 16px; border-radius: 12px; font-size: 14px; text-align: center; margin-bottom: 15px; }
   
+  .guia-categoria { font-size: 16px; color: var(--primary); margin: 20px 0 10px 0; padding-bottom: 5px; border-bottom: 1px solid var(--panel-border); font-weight: bold; text-transform: uppercase;}
   .guia-item { background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); padding: 15px; border-radius: 10px; margin-bottom: 10px; }
   .guia-item h4 { color: var(--accent); margin: 0 0 5px 0; font-size: 15px; }
   .guia-item p { color: var(--text-muted); margin: 0; font-size: 13px; line-height: 1.4; }
@@ -235,51 +236,17 @@
   </div>
 
   <div id="modalGuiaEstatutos" class="modal">
-    <div class="modal-card" style="max-width: 650px; max-height: 85vh; padding: 0;">
+    <div class="modal-card" style="max-width: 700px; max-height: 85vh; padding: 0;">
       <div style="padding: 20px 25px; border-bottom: 1px solid var(--panel-border); display: flex; justify-content: space-between; align-items: center; background: #0f172a; border-radius: 20px 20px 0 0;">
         <div>
-          <h3 style="color:#fff; margin:0; display:flex; align-items:center; gap:8px;"><i class="ph-bold ph-book-open"></i> Guía de Destinatarios</h3>
-          <p style="color: var(--warning); font-size: 12px; margin: 4px 0 0 0;">* Basado en las funciones establecidas en los Estatutos SNTSS.</p>
+          <h3 style="color:#fff; margin:0; display:flex; align-items:center; gap:8px;"><i class="ph-bold ph-book-open"></i> Guía Oficial de Destinatarios</h3>
+          <p style="color: var(--warning); font-size: 13px; margin: 6px 0 0 0; font-weight: 600;">⚠️ Esta guía está basada íntegramente en los Estatutos SNTSS (2022).</p>
         </div>
-        <button class="btn" id="btnCerrarGuia" style="width:auto; padding:8px; background:transparent; border:none; color:#ef4444;"><i class="ph-bold ph-x" style="font-size:20px;"></i></button>
+        <button class="btn" id="btnCerrarGuia" style="width:auto; padding:8px; background:transparent; border:none; color:#ef4444;"><i class="ph-bold ph-x" style="font-size:24px;"></i></button>
       </div>
       
-      <div style="padding: 20px 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #1e293b; border-radius: 0 0 20px 20px;">
-        
-        <div class="guia-item">
-          <h4>Secretaría de Conflictos</h4>
-          <p><strong>Si tu problema es:</strong> Sanciones, actas administrativas, despidos, citatorios de investigación o cualquier violación al Contrato Colectivo. (Art. 78)</p>
+      <div id="contenedorGuiaEstatutos" style="padding: 20px 25px; overflow-y: auto; display: flex; flex-direction: column; background: #1e293b; border-radius: 0 0 20px 20px;">
         </div>
-        <div class="guia-item">
-          <h4>Secretaría de Admisión y Cambios</h4>
-          <p><strong>Si tu problema es:</strong> Bolsa de trabajo, propuestas de familiares, vacantes, cambios de adscripción y movimientos de base. (Art. 90)</p>
-        </div>
-        <div class="guia-item">
-          <h4>Secretaría de Previsión Social</h4>
-          <p><strong>Si tu problema es:</strong> Préstamos a mediano plazo, trámites de jubilación o pensión, riesgos de trabajo, afore y pliegos testamentarios. (Art. 81)</p>
-        </div>
-        <div class="guia-item">
-          <h4>Secretaría de Trabajo</h4>
-          <p><strong>Si tu problema es:</strong> Pago de tiempo extraordinario (horas extras), pases de salida, jornada laboral o trámite de licencias. (Art. 87)</p>
-        </div>
-        <div class="guia-item">
-          <h4>Secretaría de Igualdad Sustantiva</h4>
-          <p><strong>Si tu problema es:</strong> Trámites de guarderías, descansos por maternidad/lactancia, violencia laboral, acoso u hostigamiento. (Art. 82)</p>
-        </div>
-        <div class="guia-item">
-          <h4>Subcomisión de Escalafón</h4>
-          <p><strong>Si tu problema es:</strong> Exámenes de promoción, inconformidad de puntaje o procesos para subir de categoría.</p>
-        </div>
-        <div class="guia-item">
-          <h4>Subcomisión de Protección al Salario</h4>
-          <p><strong>Si tu problema es:</strong> Descuentos indebidos, falta de pago quincenal o errores en el tarjetón de pago.</p>
-        </div>
-        <div class="guia-item">
-          <h4>Subcomisión de Ropa de Trabajo y Uniformes</h4>
-          <p><strong>Si tu problema es:</strong> Falta de dotación de ropa, vales, tallas incorrectas o problemas con el calzado.</p>
-        </div>
-
-      </div>
     </div>
   </div>
 
@@ -349,6 +316,61 @@
       };
       window.addEventListener('resize', ajustarEscala);
 
+      // BASE DE DATOS ESTATUTARIA PARA LA GUÍA VISUAL
+      const guiaEstatutaria = [
+        {
+          categoria: "Secretarías del Comité Ejecutivo",
+          items: [
+            { nombre: "Secretaría General", desc: "Otorga la representación general del Sindicato e interviene en conflictos graves o de huelga (Art. 76)." },
+            { nombre: "Secretaría de Conflictos", desc: "Atiende conflictos surgidos por violaciones al Contrato Colectivo de Trabajo, sanciones, actas administrativas, rescisiones y despidos (Art. 78)." },
+            { nombre: "Secretaría de Admisión y Cambios", desc: "Gestiona Bolsa de Trabajo, propuestas de familiares, ingresos, vacantes y cambios de adscripción (Art. 90)." },
+            { nombre: "Secretaría de Previsión Social", desc: "Encargada del Régimen de Jubilaciones y Pensiones, préstamos a mediano plazo, riesgos de trabajo y afores (Art. 81)." },
+            { nombre: "Secretaría de Trabajo", desc: "Gestiona problemas de jornada laboral, pases de salida, pago de tiempo extraordinario y licencias sin violación de contrato (Art. 87)." },
+            { nombre: "Secretaría de Igualdad Sustantiva", desc: "Atiende temas de guarderías, descansos por maternidad, violencia laboral, discriminación o acoso (Art. 82)." },
+            { nombre: "Secretaría de Capacitación", desc: "Regula becas, cursos institucionales, educación media superior y formación continua (Art. 92)." },
+            { nombre: "Secretaría de Puestos Periféricos", desc: "Atiende todos los asuntos y conflictos exclusivos de trabajadores en unidades foráneas o periféricas (Art. 112)." },
+            { nombre: "Secretaría de Interior y Propaganda", desc: "Registro de miembros, padrones, credenciales y constancias de afiliación sindical (Art. 77)." },
+            { nombre: "Secretaría de Asuntos Técnicos", desc: "Procura el perfeccionamiento profesional, estudios de postgrado y especialización de los miembros (Art. 84)." },
+            { nombre: "Tesorería", desc: "Asuntos sobre cuotas sindicales, pagos, reembolsos, apoyos económicos de caja y descuentos (Art. 80)." },
+            { nombre: "Secretaría de Actas y Acuerdos", desc: "Lleva el archivo central, copias de actas de asambleas y resoluciones (Art. 83)." },
+            { nombre: "Secretaría de Prensa", desc: "Publicaciones oficiales, difusión de derechos y boletines (Art. 86)." },
+            { nombre: "Secretaría del Exterior", desc: "Asuntos de solidaridad y relaciones con otras organizaciones o sindicatos (Art. 79)." },
+            { nombre: "Secretaría de Calidad y Modernización", desc: "Procesos de mejora continua y evaluación de calidad institucional (Art. 94)." },
+            { nombre: "Secretaría de Acción Social", desc: "Organización de eventos sociales, festejos y convivencias del sindicato (Art. 89)." }
+          ]
+        },
+        {
+          categoria: "Comisiones Seccionales",
+          items: [
+            { nombre: "Honor y Justicia", desc: "Investiga y sanciona faltas graves de los miembros, usurpación o fraude sindical (Art. 99)." },
+            { nombre: "Vigilancia", desc: "Vigila el cumplimiento de funciones de los representantes y realiza auditorías o revisión de cuentas (Art. 101)." },
+            { nombre: "Fomento a la Seguridad Social", desc: "Promueve la inclusión y mejoras a las leyes de seguridad social para los trabajadores (Art. 103)." },
+            { nombre: "Hacienda", desc: "Inspecciona la administración de los fondos e inversiones mayores (Art. 100)." },
+            { nombre: "Deportes", desc: "Fomento deportivo, organización de torneos y entrega de uniformes deportivos (Art. 102)." },
+            { nombre: "Acción Política", desc: "Organización política y planeación de campañas de candidatos del Sindicato (Art. 91)." }
+          ]
+        },
+        {
+          categoria: "Subcomisiones Mixtas Paritarias",
+          items: [
+            { nombre: "Escalafón", desc: "Vigila los exámenes de promoción, inconformidades de puntaje y el derecho a subir de categoría." },
+            { nombre: "Protección al Salario", desc: "Resuelve descuentos indebidos, falta de pago en la quincena o errores en el tarjetón." },
+            { nombre: "Ropa de Trabajo y Uniformes", desc: "Problemas por falta de dotación, errores de talla o mala calidad del calzado/uniforme." },
+            { nombre: "Disciplinaria", desc: "Interviene directamente en las investigaciones administrativas y citatorios emitidos por el IMSS." },
+            { nombre: "Seguridad e Higiene", desc: "Verificación de condiciones inseguras en el centro de trabajo, falta de equipo de protección y dictámenes de riesgo." },
+            { nombre: "Jubilaciones y Pensiones", desc: "Supervisa el cálculo correcto de años de servicio y cuantía para trabajadores en proceso de retiro." },
+            { nombre: "Bolsa de Trabajo", desc: "Supervisión directa del ingreso de candidatos y validación de las propuestas de familiares." },
+            { nombre: "Cambios de Rama", desc: "Regula convocatorias y exámenes para trabajadores que desean cambiar a un profesiograma diferente." },
+            { nombre: "Revisión de Plantillas", desc: "Analiza cargas de trabajo, falta de cobertura, ausentismo y necesidad de creación de plazas." },
+            { nombre: "Puestos de Confianza 'B'", desc: "Regula licencias y derechos de los trabajadores de base que pasan a cubrir puestos de confianza." },
+            { nombre: "Capacitación y Adiestramiento", desc: "Regula la impartición paritaria de los cursos dentro de las unidades del Instituto." },
+            { nombre: "Pasajes", desc: "Verifica el pago correcto de viáticos y traslados cuando el trabajador sale de comisión foránea." },
+            { nombre: "Tiendas", desc: "Problemáticas con créditos, vales y descuentos en Tiendas IMSS-SNTSS." },
+            { nombre: "Becas", desc: "Trámites, otorgamientos, cancelaciones o prórrogas relativas al Reglamento de Becas IMSS." }
+          ]
+        }
+      ];
+
       // INICIALIZACIÓN Y SEGURIDAD
       try {
         if (!window.supabase) throw new Error("No se pudo conectar a la base de datos.");
@@ -357,7 +379,7 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Clonar catálogos
+        // Clonar catálogos a "con copia" y "atención a"
         const ops = $('#selectDestino').innerHTML;
         $('#selectAtn').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
         $('#selectCCP').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
@@ -399,7 +421,23 @@
         $('#valAdscripcion').value = prof.adscripcion;
         $('#inputFecha').value = new Date().toISOString().split('T')[0];
 
-        // --- MANEJO DE MODAL DE GUÍA ESTATUTARIA ---
+        // RENDERIZAR GUÍA ESTATUTARIA
+        const contenedorGuia = $('#contenedorGuiaEstatutos');
+        let htmlGuia = '';
+        guiaEstatutaria.forEach(grupo => {
+          htmlGuia += `<div class="guia-categoria">${grupo.categoria}</div>`;
+          grupo.items.forEach(item => {
+            htmlGuia += `
+              <div class="guia-item">
+                <h4>${item.nombre}</h4>
+                <p>${item.desc}</p>
+              </div>
+            `;
+          });
+        });
+        contenedorGuia.innerHTML = htmlGuia;
+
+        // MANEJO DEL MODAL DE LA GUÍA
         $('#btnAbrirGuia').addEventListener('click', () => {
           $('#modalGuiaEstatutos').classList.add('show');
         });
@@ -454,12 +492,11 @@
           e.preventDefault();
           
           const btnSubmit = $('#btnGenerarPrincipal');
-          btnSubmit.innerHTML = "⏳ Analizando y Generando Documento...";
+          btnSubmit.innerHTML = "⏳ Redactando con Inteligencia Artificial...";
           btnSubmit.disabled = true;
 
           const targetSelect = $('#selectDestino');
           const [cargo, nombre] = targetSelect.value.split('|');
-          const areaTexto = targetSelect.options[targetSelect.selectedIndex].text;
           
           const cuerpoIA = await redactarIA($('#textoHechos').value);
           const ciudad = $('#inputCiudad').value;
