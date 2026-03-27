@@ -19,6 +19,8 @@
     --primary-hover: #0ea5e9;
     --accent: #7dd3fc;
     --success: #4ade80;
+    --warning: #fbbf24;
+    --danger: #ef4444;
     --text-main: #f1f5f9;
     --text-muted: #94a3b8;
     --input-bg: rgba(15, 23, 42, 0.6);
@@ -32,7 +34,7 @@
   
   h1 { font-size: 22px; text-align: center; background: linear-gradient(90deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px; }
 
-  .card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 20px; padding: 24px; backdrop-filter: blur(12px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 20px; padding: 24px; backdrop-filter: blur(12px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); min-height: 400px; }
   
   /* GRID DE DATOS */
   .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--panel-border); }
@@ -50,8 +52,14 @@
   .btn-toggle { background: none; border: none; color: var(--text-muted); font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 15px auto; }
   .btn-toggle:hover { color: var(--primary); }
 
-  .btn { width: 100%; padding: 15px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15px; }
+  .btn { width: 100%; padding: 15px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15px; text-decoration: none; }
   .btn.primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: #0f172a; }
+
+  /* PANTALLA DE BLOQUEO */
+  .bloqueo-container { text-align: center; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+  .bloqueo-icon { font-size: 64px; color: var(--warning); margin-bottom: 15px; }
+  .bloqueo-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; color: #fff; }
+  .bloqueo-text { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin-bottom: 30px; max-width: 400px; }
 
   .modal { position: fixed; inset: 0; background: rgba(10, 15, 25, 0.98); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
   .modal.show { display: flex; }
@@ -61,6 +69,9 @@
   .page-carta { width: 100%; background: #fff; color: #000; padding: 40px; font-family: 'Times New Roman', serif; font-size: 11px; }
 
   .hide { display: none !important; }
+
+  /* Cargador inicial */
+  #loader-inicial { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; color: var(--primary); }
 </style>
 </head>
 
@@ -69,68 +80,87 @@
     <h1>Generador de Escritos PSD</h1>
 
     <div class="card">
-      <div class="info-grid">
-        <div class="grid-full"><label>Nombre del Trabajador</label><input id="valNombreUser" readonly></div>
-        <div><label>Matrícula</label><input id="valMatricula" readonly></div>
-        <div><label>Categoría</label><input id="valCategoria" readonly></div>
-        <div class="grid-full"><label>Adscripción</label><input id="valAdscripcion" readonly></div>
+      
+      <div id="loader-inicial">
+        <i class="ph-bold ph-spinner ph-spin" style="font-size: 40px; margin-bottom: 10px;"></i>
+        <p>Verificando credenciales...</p>
       </div>
 
-      <form id="formEscrito">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-          <div class="grid-full">
-            <label>¿A quién va dirigido?</label>
-            <select id="selectDestino" required>
-              <option value="">— Selecciona —</option>
-              <optgroup label="Secretarías">
-                <option value="Secretaría General|Dr. Juan Gerardo García González">Secretaría General</option>
-                <option value="Secretaría de Conflictos|J.G.E. Arturo Ochoa Huacuz">Secretaría de Conflictos</option>
-                <option value="Secretaría de Trabajo|E.G. Cándido Mora Alcauter">Secretaría de Trabajo</option>
-                <option value="Secretaría de Previsión Social|A.M. Fabiola Farías Ambriz">Secretaría de Previsión Social</option>
-                <option value="Secretaría de Admisión y Cambios|C.C. Uriel Tapia Pérez">Secretaría de Admisión y Cambios</option>
-                <option value="Secretaría de Capacitación y Adiestramiento|O.P. América Hilda Reyes Reyes">Secretaría de Capacitación</option>
-                <option value="Secretaría de Igualdad Sustantiva|M.F. Gabriela Durán Negrete">Igualdad Sustantiva</option>
-                <option value="Secretaría de Interior y Propaganda|M.N.F. Amin Uriel Morales Sánchez">Interior y Propaganda</option>
-              </optgroup>
-              <optgroup label="Comisiones y Subcomisiones">
-                <option value="Escalafón|E.G. Hilda Ontiveros Cuellar">Subcomisión de Escalafón</option>
-                <option value="Bolsa de Trabajo|C.C. M. Guadalupe Calderón Ayala">Bolsa de Trabajo</option>
-                <option value="Disciplinaria|Cont. Juan Carlos Servín Juárez">Subcomisión Disciplinaria</option>
-                <option value="Ropa y Uniformes|A.A. Julio Cesar García Salgado">Ropa y Uniformes</option>
-                <option value="Jubilaciones y Pensiones|E.G.C. Maricela Navarrete Mora">Jubilaciones y Pensiones</option>
-              </optgroup>
-            </select>
-          </div>
-          <div><label>Fecha del escrito</label><input id="inputFecha" type="date" required></div>
-          <div><label>Lugar (Municipio)</label><input id="inputCiudad" placeholder="Ej. Morelia" required></div>
+      <div id="bloqueo-perfil" class="bloqueo-container hide">
+        <i class="ph-bold ph-lock-key bloqueo-icon"></i>
+        <div class="bloqueo-title">Perfil Incompleto</div>
+        <div class="bloqueo-text">
+          Para poder generar documentos oficiales con validez estatutaria, necesitas completar tu información personal (Nombre, Matrícula, Categoría y Adscripción).
+        </div>
+        <a href="perfil.html" class="btn primary" style="max-width: 250px;">
+          <i class="ph-bold ph-user-circle-gear"></i> Ir a Editar Perfil
+        </a>
+      </div>
+
+      <div id="contenido-generador" class="hide">
+        
+        <div class="info-grid">
+          <div class="grid-full"><label>Nombre del Trabajador</label><input id="valNombreUser" readonly></div>
+          <div><label>Matrícula</label><input id="valMatricula" readonly></div>
+          <div><label>Categoría</label><input id="valCategoria" readonly></div>
+          <div class="grid-full"><label>Adscripción</label><input id="valAdscripcion" readonly></div>
         </div>
 
-        <div class="form-group">
-          <label>Describe tu problemática o trámite</label>
-          <textarea id="textoHechos" placeholder="Escribe aquí lo que necesitas solicitar..." required></textarea>
-        </div>
-
-        <button type="button" class="btn-toggle" id="toggleAvanzado">
-          <i class="ph-bold ph-gear-six"></i> Configuración adicional (At'n, Copias, Evidencia)
-        </button>
-
-        <div class="advanced-panel" id="panelAvanzado">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <div><label>Con atención a</label><select id="selectAtn"><option value="">Ninguno</option></select></div>
-            <div><label>Con copia para</label><select id="selectCCP"><option value="">Ninguno</option></select></div>
+        <form id="formEscrito">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+            <div class="grid-full">
+              <label>¿A quién va dirigido?</label>
+              <select id="selectDestino" required>
+                <option value="">— Selecciona —</option>
+                <optgroup label="Secretarías">
+                  <option value="Secretaría General|Dr. Juan Gerardo García González">Secretaría General</option>
+                  <option value="Secretaría de Conflictos|J.G.E. Arturo Ochoa Huacuz">Secretaría de Conflictos</option>
+                  <option value="Secretaría de Trabajo|E.G. Cándido Mora Alcauter">Secretaría de Trabajo</option>
+                  <option value="Secretaría de Previsión Social|A.M. Fabiola Farías Ambriz">Secretaría de Previsión Social</option>
+                  <option value="Secretaría de Admisión y Cambios|C.C. Uriel Tapia Pérez">Secretaría de Admisión y Cambios</option>
+                  <option value="Secretaría de Capacitación y Adiestramiento|O.P. América Hilda Reyes Reyes">Secretaría de Capacitación</option>
+                  <option value="Secretaría de Igualdad Sustantiva|M.F. Gabriela Durán Negrete">Igualdad Sustantiva</option>
+                  <option value="Secretaría de Interior y Propaganda|M.N.F. Amin Uriel Morales Sánchez">Interior y Propaganda</option>
+                </optgroup>
+                <optgroup label="Comisiones y Subcomisiones">
+                  <option value="Escalafón|E.G. Hilda Ontiveros Cuellar">Subcomisión de Escalafón</option>
+                  <option value="Bolsa de Trabajo|C.C. M. Guadalupe Calderón Ayala">Bolsa de Trabajo</option>
+                  <option value="Disciplinaria|Cont. Juan Carlos Servín Juárez">Subcomisión Disciplinaria</option>
+                  <option value="Ropa y Uniformes|A.A. Julio Cesar García Salgado">Ropa y Uniformes</option>
+                  <option value="Jubilaciones y Pensiones|E.G.C. Maricela Navarrete Mora">Jubilaciones y Pensiones</option>
+                </optgroup>
+              </select>
+            </div>
+            <div><label>Fecha del escrito</label><input id="inputFecha" type="date" required></div>
+            <div><label>Lugar (Municipio)</label><input id="inputCiudad" placeholder="Ej. Morelia" required></div>
           </div>
-          <div style="margin-top: 15px;">
-            <label>Anexar fotografías de evidencia</label>
-            <input type="file" id="inputFotos" multiple accept="image/*">
-            <div id="preview-evidencia" style="display:flex; gap:10px; margin-top:10px;"></div>
-          </div>
-        </div>
 
-        <button type="submit" class="btn primary" style="margin-top: 20px;">
-          🚀 Generar Oficio Oficial
-        </button>
-      </form>
-    </div>
+          <div class="form-group">
+            <label>Describe tu problemática o trámite</label>
+            <textarea id="textoHechos" placeholder="Escribe aquí lo que necesitas solicitar..." required></textarea>
+          </div>
+
+          <button type="button" class="btn-toggle" id="toggleAvanzado">
+            <i class="ph-bold ph-gear-six"></i> Configuración adicional (At'n, Copias, Evidencia)
+          </button>
+
+          <div class="advanced-panel" id="panelAvanzado">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div><label>Con atención a</label><select id="selectAtn"><option value="">Ninguno</option></select></div>
+              <div><label>Con copia para</label><select id="selectCCP"><option value="">Ninguno</option></select></div>
+            </div>
+            <div style="margin-top: 15px;">
+              <label>Anexar fotografías de evidencia</label>
+              <input type="file" id="inputFotos" multiple accept="image/*">
+              <div id="preview-evidencia" style="display:flex; gap:10px; margin-top:10px;"></div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn primary" style="margin-top: 20px;">
+            🚀 Generar Oficio Oficial
+          </button>
+        </form>
+      </div> </div>
   </div>
 
   <div id="modalFirma" class="modal">
@@ -163,17 +193,37 @@
       $('#selectAtn').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
       $('#selectCCP').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
 
+      // 1. OBTENER SESIÓN
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        const { data: prof } = await supabase.from('profiles').select('*').eq('user_id', session.user.id).single();
-        if (prof) {
-          $('#valNombreUser').value = prof.display_name || 'Sin Nombre';
-          $('#valMatricula').value = prof.matricula || '00000000';
-          $('#valCategoria').value = prof.categoria || 'Sin Categoría';
-          $('#valAdscripcion').value = prof.adscripcion || 'Sin Adscripción';
-        }
+      
+      if (!session) {
+        alert("Acceso denegado. Debes iniciar sesión para usar el Generador de Escritos.");
+        window.location.href = "login.html"; // Asegúrate de que este sea el nombre de tu archivo de login
+        return;
       }
-      $('#inputFecha').value = new Date().toISOString().split('T')[0];
+
+      // 2. CONSULTAR PERFIL EN SUPABASE
+      const { data: prof } = await supabase.from('profiles').select('*').eq('user_id', session.user.id).single();
+      
+      $('#loader-inicial').classList.add('hide'); // Ocultar spinner
+
+      // 3. VALIDAR QUE TODOS LOS DATOS EXISTAN
+      const isComplete = prof && prof.display_name && prof.matricula && prof.categoria && prof.adscripcion;
+
+      if (!isComplete) {
+        // PERFIL INCOMPLETO -> Mostrar bloqueo
+        $('#bloqueo-perfil').classList.remove('hide');
+      } else {
+        // PERFIL COMPLETO -> Mostrar herramienta y llenar datos
+        $('#contenido-generador').classList.remove('hide');
+        
+        $('#valNombreUser').value = prof.display_name;
+        $('#valMatricula').value = prof.matricula;
+        $('#valCategoria').value = prof.categoria;
+        $('#valAdscripcion').value = prof.adscripcion;
+        
+        $('#inputFecha').value = new Date().toISOString().split('T')[0];
+      }
     }
 
     $('#toggleAvanzado').addEventListener('click', () => {
@@ -188,7 +238,7 @@
         const r = new FileReader();
         r.onload = (ev) => {
           const img = document.createElement('img');
-          img.src = ev.target.result; img.style.width="50px"; img.style.height="50px"; img.style.objectFit="cover";
+          img.src = ev.target.result; img.style.width="50px"; img.style.height="50px"; img.style.objectFit="cover"; img.style.borderRadius="8px";
           $('#preview-evidencia').appendChild(img);
           fotosBase64.push(ev.target.result);
         };
@@ -243,6 +293,10 @@
     }
 
     $('#btnFinalizar').addEventListener('click', async () => {
+      const btn = $('#btnFinalizar');
+      btn.disabled = true;
+      btn.innerHTML = "Generando PDF...";
+
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ unit: 'pt', format: 'letter' });
       const canvas = await html2canvas($('#hojaDigital'));
@@ -253,7 +307,7 @@
         doc.addImage(img, 'JPEG', 40, 60, 532, 400);
       });
 
-      doc.save(`Escrito_${$('#valMatricula').value}.pdf`);
+      doc.save(`Oficio_${$('#valMatricula').value}.pdf`);
       location.reload();
     });
 
