@@ -54,6 +54,7 @@
 
   .btn { width: 100%; padding: 15px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15px; text-decoration: none; }
   .btn.primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: #0f172a; }
+  .btn.outline { background: transparent; border: 1px solid var(--panel-border); color: var(--text-main); }
 
   /* PANTALLA DE BLOQUEO */
   .bloqueo-container { text-align: center; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
@@ -70,7 +71,9 @@
 
   .hide { display: none !important; }
 
-  /* Cargador inicial */
+  /* ANIMACIÓN SPINNER */
+  @keyframes girar { 100% { transform: rotate(360deg); } }
+  .anim-spin { animation: girar 1s linear infinite; }
   #loader-inicial { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; color: var(--primary); }
 </style>
 </head>
@@ -82,7 +85,7 @@
     <div class="card">
       
       <div id="loader-inicial">
-        <i class="ph-bold ph-spinner ph-spin" style="font-size: 40px; margin-bottom: 10px;"></i>
+        <i class="ph-bold ph-spinner anim-spin" style="font-size: 40px; margin-bottom: 10px;"></i>
         <p>Verificando credenciales...</p>
       </div>
 
@@ -160,7 +163,9 @@
             🚀 Generar Oficio Oficial
           </button>
         </form>
-      </div> </div>
+      </div> 
+
+    </div>
   </div>
 
   <div id="modalFirma" class="modal">
@@ -168,7 +173,7 @@
       <h3 style="color:#fff; margin:0 0 15px 0;">Revisa y Firma</h3>
       <div class="pdf-preview"><div id="hojaDigital" class="page-carta"></div></div>
       <label style="color:#fff;">Firma aquí:</label>
-      <canvas id="padFirma" style="background:#fff; width:100%; height:120px; border-radius:10px;"></canvas>
+      <canvas id="padFirma" style="background:#fff; width:100%; height:120px; border-radius:10px; cursor:crosshair;"></canvas>
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
         <button class="btn" style="background:#475569; color:#fff;" id="btnCerrarFirma">Cancelar</button>
         <button class="btn primary" id="btnFinalizar">✅ Enviar Escrito</button>
@@ -181,158 +186,174 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <script>
-    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const $ = s => document.querySelector(s);
-    let fotosBase64 = [];
-
-    async function init() {
-      // Clonar selects
-      const ops = $('#selectDestino').innerHTML;
-      $('#selectAtn').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
-      $('#selectCCP').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
+    document.addEventListener('DOMContentLoaded', async () => {
+      const $ = s => document.querySelector(s);
+      let fotosBase64 = [];
+      let supabase;
 
       try {
-        // 1. OBTENER SESIÓN
+        // Validación de carga de la librería Supabase
+        if (!window.supabase) throw new Error("No se pudo conectar a la base de datos.");
+
+        const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Clonar catálogos
+        const ops = $('#selectDestino').innerHTML;
+        $('#selectAtn').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
+        $('#selectCCP').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
+
+        // Autenticación segura
         const { data: { session }, error: authError } = await supabase.auth.getSession();
         
         if (authError || !session) {
-          alert("Acceso denegado. Debes iniciar sesión para usar el Generador de Escritos.");
-          window.location.href = "login.html"; // Asegúrate de que esta ruta sea correcta
+          alert("Acceso denegado. Debes iniciar sesión en la plataforma.");
+          window.location.href = "login.html"; 
           return;
         }
 
-        // 2. CONSULTAR PERFIL EN SUPABASE (Usamos maybeSingle para evitar el crasheo)
+        // Recuperar perfil usando maybeSingle para evitar crasheos si está vacío
         const { data: prof, error: profError } = await supabase
           .from('profiles')
           .select('*')
           .eq('user_id', session.user.id)
           .maybeSingle();
 
-        if (profError) {
-          console.warn("Aviso al consultar el perfil:", profError.message);
-        }
-        
-        // PASE LO QUE PASE, OCULTAMOS EL CARGADOR AQUÍ
+        if (profError) console.warn("Aviso:", profError.message);
+
+        // Apagar el cargador
         $('#loader-inicial').classList.add('hide'); 
 
-        // 3. VALIDAR QUE TODOS LOS DATOS EXISTAN
+        // Validación de datos completos
         const isComplete = prof && prof.display_name && prof.matricula && prof.categoria && prof.adscripcion;
 
         if (!isComplete) {
-          // PERFIL INCOMPLETO -> Mostrar bloqueo con el enlace a tu página
           $('#bloqueo-perfil').classList.remove('hide');
-        } else {
-          // PERFIL COMPLETO -> Mostrar herramienta y llenar datos
-          $('#contenido-generador').classList.remove('hide');
-          
-          $('#valNombreUser').value = prof.display_name;
-          $('#valMatricula').value = prof.matricula;
-          $('#valCategoria').value = prof.categoria;
-          $('#valAdscripcion').value = prof.adscripcion;
-          
-          $('#inputFecha').value = new Date().toISOString().split('T')[0];
+          return; // Detiene la ejecución aquí si falta información
+        } 
+
+        // Rellenar datos
+        $('#contenido-generador').classList.remove('hide');
+        $('#valNombreUser').value = prof.display_name;
+        $('#valMatricula').value = prof.matricula;
+        $('#valCategoria').value = prof.categoria;
+        $('#valAdscripcion').value = prof.adscripcion;
+        $('#inputFecha').value = new Date().toISOString().split('T')[0];
+
+        // --- EVENT LISTENER: PANEL AVANZADO ---
+        $('#toggleAvanzado').addEventListener('click', () => {
+          $('#panelAvanzado').classList.toggle('show');
+        });
+
+        // --- EVENT LISTENER: FOTOS ---
+        $('#inputFotos').addEventListener('change', (e) => {
+          const files = Array.from(e.target.files);
+          $('#preview-evidencia').innerHTML = "";
+          fotosBase64 = [];
+          files.forEach(f => {
+            const r = new FileReader();
+            r.onload = (ev) => {
+              const img = document.createElement('img');
+              img.src = ev.target.result; img.style.width="60px"; img.style.height="60px"; img.style.objectFit="cover"; img.style.borderRadius="8px";
+              $('#preview-evidencia').appendChild(img);
+              fotosBase64.push(ev.target.result);
+            };
+            r.readAsDataURL(f);
+          });
+        });
+
+        // --- EVENT LISTENER: GENERAR VISTA PREVIA ---
+        $('#formEscrito').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const [cargo, nombre] = $('#selectDestino').value.split('|');
+          const hechos = $('#textoHechos').value;
+          const ciudad = $('#inputCiudad').value;
+          const fecha = new Date($('#inputFecha').value).toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
+
+          let atn = $('#selectAtn').value ? `<div style="margin-top:10px; font-weight:bold;">At'n: ${$('#selectAtn').value.split('|')[1]}</div>` : "";
+          let ccp = $('#selectCCP').value ? `<div style="font-size:8pt; margin-top:30px;">c.c.p. ${$('#selectCCP').value.split('|')[1]}</div>` : "";
+
+          $('#hojaDigital').innerHTML = `
+            <div style="text-align:right;">${ciudad}, a ${fecha}</div>
+            <div style="font-weight:bold; margin-top:20px;">${nombre}</div>
+            <div style="font-weight:bold;">${cargo}</div>
+            <div>Presente.</div>
+            ${atn}
+            <div style="margin-top:20px; text-align:justify; line-height:1.4;">${hechos}</div>
+            <div style="margin-top:40px; text-align:center;">
+              ATENTAMENTE<br><br><br>
+              __________________________<br>
+              ${$('#valNombreUser').value}<br>
+              Matrícula: ${$('#valMatricula').value}<br>
+              ${$('#valCategoria').value}<br>
+              ${$('#valAdscripcion').value}
+              ${ccp}
+            </div>
+          `;
+          $('#modalFirma').classList.add('show');
+          iniciarPad();
+        });
+
+        // --- LÓGICA DE FIRMA ---
+        let dibujando = false, ctx;
+        function iniciarPad() {
+          const c = $('#padFirma'); c.width = c.offsetWidth; c.height = 120;
+          ctx = c.getContext('2d'); ctx.lineWidth = 2; ctx.strokeStyle = "#000080";
+          c.onmousedown = c.ontouchstart = (e) => { dibujando = true; ctx.beginPath(); e.preventDefault(); };
+          c.onmousemove = c.ontouchmove = (e) => { 
+            if(!dibujando) return; 
+            const rect = c.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            ctx.lineTo(x, y); ctx.stroke();
+          };
+          c.onmouseup = c.ontouchend = () => dibujando = false;
         }
 
+        // --- GENERACIÓN PDF ---
+        $('#btnFinalizar').addEventListener('click', async () => {
+          const btn = $('#btnFinalizar');
+          btn.disabled = true;
+          btn.innerHTML = "Generando PDF...";
+
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+          const canvas = await html2canvas($('#hojaDigital'));
+          doc.addImage(canvas.toDataURL('image/jpeg'), 'JPEG', 0, 0, 612, 792);
+          
+          fotosBase64.forEach(img => {
+            doc.addPage();
+            doc.addImage(img, 'JPEG', 40, 60, 532, 400);
+          });
+
+          doc.save(`Oficio_SNTSS_${$('#valMatricula').value}.pdf`);
+          location.reload();
+        });
+
+        $('#btnCerrarFirma').addEventListener('click', () => {
+          $('#modalFirma').classList.remove('show');
+        });
+
       } catch (error) {
-        console.error("Error crítico en la inicialización:", error);
-        // Si hay un error grave (ej. caída de internet), le avisamos al usuario en vez de dejarlo trabado
-        $('#loader-inicial').innerHTML = `
-          <i class="ph-bold ph-warning-circle" style="font-size: 40px; margin-bottom: 10px; color: #ef4444;"></i>
-          <p style="color: #ef4444;">Hubo un problema de conexión. Intenta recargar la página.</p>
-        `;
+        console.error("Falla en la plataforma:", error);
+        
+        // INTERCEPTOR DE ERRORES EN PANTALLA
+        const loader = document.getElementById('loader-inicial');
+        if(loader) {
+          loader.innerHTML = `
+            <i class="ph-bold ph-warning-octagon" style="font-size: 50px; margin-bottom: 10px; color: #ef4444;"></i>
+            <h3 style="color: #fff; margin: 0 0 5px 0;">Error de Conexión</h3>
+            <p style="color: #94a3b8; text-align:center; max-width: 300px; font-size: 14px;">
+              No pudimos conectar con la base de datos de tu perfil. Por favor, verifica tu conexión a internet.
+            </p>
+            <button onclick="location.reload()" class="btn outline" style="margin-top:20px; max-width: 200px;">
+              <i class="ph-bold ph-arrows-clockwise"></i> Reintentar
+            </button>
+          `;
+        }
       }
-    }
-
-    $('#toggleAvanzado').addEventListener('click', () => {
-      $('#panelAvanzado').classList.toggle('show');
     });
-
-    $('#inputFotos').addEventListener('change', (e) => {
-      const files = Array.from(e.target.files);
-      $('#preview-evidencia').innerHTML = "";
-      fotosBase64 = [];
-      files.forEach(f => {
-        const r = new FileReader();
-        r.onload = (ev) => {
-          const img = document.createElement('img');
-          img.src = ev.target.result; img.style.width="50px"; img.style.height="50px"; img.style.objectFit="cover"; img.style.borderRadius="8px";
-          $('#preview-evidencia').appendChild(img);
-          fotosBase64.push(ev.target.result);
-        };
-        r.readAsDataURL(f);
-      });
-    });
-
-    $('#formEscrito').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const [cargo, nombre] = $('#selectDestino').value.split('|');
-      const hechos = $('#textoHechos').value;
-      const ciudad = $('#inputCiudad').value;
-      const fecha = new Date($('#inputFecha').value).toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
-
-      let atn = $('#selectAtn').value ? `<div style="margin-top:10px; font-weight:bold;">At'n: ${$('#selectAtn').value.split('|')[1]}</div>` : "";
-      let ccp = $('#selectCCP').value ? `<div style="font-size:8pt; margin-top:30px;">c.c.p. ${$('#selectCCP').value.split('|')[1]}</div>` : "";
-
-      $('#hojaDigital').innerHTML = `
-        <div style="text-align:right;">${ciudad}, a ${fecha}</div>
-        <div style="font-weight:bold; margin-top:20px;">${nombre}</div>
-        <div style="font-weight:bold;">${cargo}</div>
-        <div>Presente.</div>
-        ${atn}
-        <div style="margin-top:20px; text-align:justify; line-height:1.4;">${hechos}</div>
-        <div style="margin-top:40px; text-align:center;">
-          ATENTAMENTE<br><br><br>
-          __________________________<br>
-          ${$('#valNombreUser').value}<br>
-          Matrícula: ${$('#valMatricula').value}<br>
-          ${$('#valCategoria').value}<br>
-          ${$('#valAdscripcion').value}
-          ${ccp}
-        </div>
-      `;
-      $('#modalFirma').classList.add('show');
-      iniciarPad();
-    });
-
-    let dibujando = false, ctx;
-    function iniciarPad() {
-      const c = $('#padFirma'); c.width = c.offsetWidth; c.height = 120;
-      ctx = c.getContext('2d'); ctx.lineWidth = 2; ctx.strokeStyle = "#000080";
-      c.onmousedown = c.ontouchstart = (e) => { dibujando = true; ctx.beginPath(); e.preventDefault(); };
-      c.onmousemove = c.ontouchmove = (e) => { 
-        if(!dibujando) return; 
-        const rect = c.getBoundingClientRect();
-        const x = (e.clientX || e.touches[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches[0].clientY) - rect.top;
-        ctx.lineTo(x, y); ctx.stroke();
-      };
-      c.onmouseup = c.ontouchend = () => dibujando = false;
-    }
-
-    $('#btnFinalizar').addEventListener('click', async () => {
-      const btn = $('#btnFinalizar');
-      btn.disabled = true;
-      btn.innerHTML = "Generando PDF...";
-
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit: 'pt', format: 'letter' });
-      const canvas = await html2canvas($('#hojaDigital'));
-      doc.addImage(canvas.toDataURL('image/jpeg'), 'JPEG', 0, 0, 612, 792);
-      
-      fotosBase64.forEach(img => {
-        doc.addPage();
-        doc.addImage(img, 'JPEG', 40, 60, 532, 400);
-      });
-
-      doc.save(`Oficio_${$('#valMatricula').value}.pdf`);
-      location.reload();
-    });
-
-    $('#btnCerrarFirma').onclick = () => $('#modalFirma').classList.remove('show');
-
-    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
