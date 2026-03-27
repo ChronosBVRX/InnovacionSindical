@@ -36,7 +36,7 @@
 
   .card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 20px; padding: 24px; backdrop-filter: blur(12px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); min-height: 400px; }
   
-  /* GRID DE DATOS */
+  /* GRID DE DATOS (READONLY) */
   .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--panel-border); }
   .grid-full { grid-column: 1 / -1; }
 
@@ -52,9 +52,11 @@
   .btn-toggle { background: none; border: none; color: var(--text-muted); font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 15px auto; }
   .btn-toggle:hover { color: var(--primary); }
 
-  .btn { width: 100%; padding: 15px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15px; text-decoration: none; }
+  .btn { width: 100%; padding: 15px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; text-decoration: none; }
   .btn.primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: #0f172a; }
+  .btn.success { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
   .btn.outline { background: transparent; border: 1px solid var(--panel-border); color: var(--text-main); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
   /* PANTALLA DE BLOQUEO */
   .bloqueo-container { text-align: center; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
@@ -62,24 +64,51 @@
   .bloqueo-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; color: #fff; }
   .bloqueo-text { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin-bottom: 30px; max-width: 400px; }
 
+  /* MODALES Y PDF */
   .modal { position: fixed; inset: 0; background: rgba(10, 15, 25, 0.98); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
   .modal.show { display: flex; }
-  .modal-card { background: #1e293b; border-radius: 20px; width: 100%; max-width: 550px; padding: 25px; }
+  .modal-card { background: #1e293b; border-radius: 20px; width: 100%; max-width: 900px; padding: 25px; display: flex; flex-direction: column; max-height: 95vh;}
+  .modal-b { flex: 1; overflow: auto; display: flex; justify-content: center; background: #334155; border-radius: 12px; padding: 20px; margin: 15px 0;}
 
-  .pdf-preview { width: 100%; height: 50vh; background: #334155; border-radius: 12px; overflow: auto; padding: 15px; margin: 15px 0; }
-  .page-carta { width: 100%; background: #fff; color: #000; padding: 40px; font-family: 'Times New Roman', serif; font-size: 11px; }
+  /* HOJA TAMAÑO CARTA EXACTA */
+  .page.carta { width: 816px; height: 1056px; background: #fff; color: #111; box-shadow: 0 10px 40px rgba(0,0,0,0.5); flex-shrink: 0; transform-origin: top center; }
+  .sheet { padding: 72px 64px; font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; position: relative; height: 100%; color: #000; }
+  .sheet header { text-align: right; font-weight: bold; margin-bottom: 30px; }
+  .sheet .dest { font-weight: bold; text-transform: uppercase; }
+  .sheet .cuerpo { text-align: justify; white-space: pre-wrap; margin-top: 20px; }
+  .sheet .pie { position: absolute; bottom: 80px; left: 0; right: 0; text-align: center; font-weight: bold; width: 100%; }
 
   .hide { display: none !important; }
+
+  /* ALERTAS */
+  .profile-alert { background: rgba(74, 222, 128, 0.15); border: 1px solid rgba(74, 222, 128, 0.4); color: var(--success); padding: 16px; border-radius: 12px; margin-top: 15px; display: flex; align-items: center; gap: 12px; font-size: 14px; }
+
+  /* NOTIFICACIÓN FLOTANTE */
+  #status { position: fixed; bottom: 20px; right: 20px; background: #1e293b; border-left: 4px solid var(--primary); color: #fff; padding: 12px 20px; border-radius: 8px; transform: translateY(100px); transition: 0.3s; z-index: 2000; }
+  #status.visible { transform: translateY(0); }
 
   /* ANIMACIÓN SPINNER */
   @keyframes girar { 100% { transform: rotate(360deg); } }
   .anim-spin { animation: girar 1s linear infinite; }
   #loader-inicial { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; color: var(--primary); }
+
+  @media print {
+    .wrap, .modal-card > div:not(.modal-b), #status, #modalVal, #loader-inicial { display: none !important; }
+    body, .modal, .modal-card, .modal-b { background: transparent !important; position: static !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; display: block !important; width: 100% !important; height: auto !important; overflow: visible !important; }
+    .page.carta { width: 100% !important; height: auto !important; transform: none !important; box-shadow: none !important; margin: 0 !important; }
+    .sheet { padding: 2cm !important; height: auto !important; }
+    .sheet .pie { position: relative !important; bottom: auto !important; left: 0 !important; right: 0 !important; width: 100% !important; margin-top: 60px !important; page-break-inside: avoid !important; text-align: center !important; }
+    @page { size: letter; margin: 0; }
+  }
 </style>
 </head>
 
 <body>
-  <div class="wrap">
+  <div class="wrap" id="mainWrap">
+    <div style="margin-bottom: 20px;">
+      <a class="btn outline" href="#" onclick="window.history.back(); return false;" style="display:inline-flex; width:auto; padding: 8px 16px; border:none;">⬅ Regresar</a>
+    </div>
+
     <h1>Generador de Escritos PSD</h1>
 
     <div class="card">
@@ -93,7 +122,7 @@
         <i class="ph-bold ph-lock-key bloqueo-icon"></i>
         <div class="bloqueo-title">Perfil Incompleto</div>
         <div class="bloqueo-text">
-          Para poder generar documentos oficiales con validez estatutaria, necesitas completar tu información personal (Nombre, Matrícula, Categoría y Adscripción).
+          Para generar documentos oficiales, necesitas completar tu información (Nombre, Matrícula, Categoría y Adscripción).
         </div>
         <a href="https://innovacionsindical.com.mx/miembros.html#personaliza" class="btn primary" style="max-width: 250px;">
           <i class="ph-bold ph-user-circle-gear"></i> Ir a Editar Perfil
@@ -134,12 +163,12 @@
                   <option value="Secretaría de Acción Social|E.E. Claudia Denisse Torres Rangel">Secretaría de Acción Social</option>
                 </optgroup>
                 <optgroup label="Comisiones">
-                  <option value="Comisión de Honor y Justicia — Presidencia|J.G.S.T. José Francisco Ruiz Domínguez">Honor y Justicia — Presidencia</option>
-                  <option value="Comisión de Vigilancia — Presidencia|T.R. Eduardo Bolaños Vázquez">Vigilancia — Presidencia</option>
-                  <option value="Comisión de Fomento a la Seguridad Social — Presidencia|M.N.F. Carlos Mojica Rodríguez">Fomento a la Seg. Social — Presidencia</option>
-                  <option value="Comisión de Hacienda — Presidencia|A.L. Ángeles Alejandra Ledesma Torres">Hacienda — Presidencia</option>
-                  <option value="Comisión de Deportes — Presidencia|J.G.P. Roberto Carlos Reyes Ortiz">Deportes — Presidencia</option>
-                  <option value="Comisión de Acción Política — Presidencia|M.N.F. Verónica Diosdado Minguela">Acción Política — Presidencia</option>
+                  <option value="Comisión de Honor y Justicia — Presidencia|J.G.S.T. José Francisco Ruiz Domínguez">Honor y Justicia</option>
+                  <option value="Comisión de Vigilancia — Presidencia|T.R. Eduardo Bolaños Vázquez">Vigilancia</option>
+                  <option value="Comisión de Fomento a la Seguridad Social — Presidencia|M.N.F. Carlos Mojica Rodríguez">Fomento a la Seg. Social</option>
+                  <option value="Comisión de Hacienda — Presidencia|A.L. Ángeles Alejandra Ledesma Torres">Hacienda</option>
+                  <option value="Comisión de Deportes — Presidencia|J.G.P. Roberto Carlos Reyes Ortiz">Deportes</option>
+                  <option value="Comisión de Acción Política — Presidencia|M.N.F. Verónica Diosdado Minguela">Acción Política</option>
                 </optgroup>
                 <optgroup label="Subcomisiones Mixtas">
                   <option value="Subcomisión Mixta de Becas — Representación Sindical|M.F. Jorge Héctor Zaragoza Palacios">Becas</option>
@@ -164,37 +193,44 @@
           </div>
 
           <div class="form-group">
-            <label>Describe tu problemática o trámite</label>
-            <textarea id="textoHechos" placeholder="Escribe aquí lo que necesitas solicitar..." required></textarea>
+            <label>Descripción de los hechos (La IA redactará tu solicitud)</label>
+            <textarea id="textoHechos" placeholder="Explica tu trámite o problema..." required></textarea>
+          </div>
+
+          <div id="alerta-sugerencia" class="profile-alert hide">
+            <i class="ph-bold ph-lightbulb"></i>
+            <div style="flex: 1;">
+              <strong style="color: #fff;">Tip Estatutario:</strong><br>
+              <span id="texto-sugerencia"></span>
+            </div>
           </div>
 
           <button type="button" class="btn-toggle" id="toggleAvanzado">
-            <i class="ph-bold ph-gear-six"></i> Configuración adicional (At'n, Copias, Evidencia)
+            <i class="ph-bold ph-gear-six"></i> Opciones Adicionales (Copias, Evidencia)
           </button>
 
           <div class="advanced-panel" id="panelAvanzado">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
               <div><label>Con atención a</label><select id="selectAtn"><option value="">Ninguno</option></select></div>
-              <div><label>Con copia para</label><select id="selectCCP"><option value="">Ninguno</option></select></div>
+              <div><label>Con copia para (c.c.p)</label><select id="selectCCP"><option value="">Ninguno</option></select></div>
             </div>
             <div style="margin-top: 15px;">
               <label>Anexar fotografías de evidencia</label>
               <input type="file" id="inputFotos" multiple accept="image/*">
-              <div id="preview-evidencia" style="display:flex; gap:10px; margin-top:10px;"></div>
+              <div id="preview-evidencia" style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;"></div>
             </div>
           </div>
 
-          <button type="submit" class="btn primary" style="margin-top: 20px;">
-            🚀 Generar Oficio Oficial
+          <button type="submit" class="btn primary" id="btnGenerarPrincipal" style="margin-top: 20px;">
+            🚀 Analizar y Generar Documento
           </button>
         </form>
       </div> 
-
     </div>
   </div>
 
   <div id="modalVal" class="modal">
-    <div class="modal-card">
+    <div class="modal-card" style="max-width: 550px;">
       <h3 style="color:#fff; margin-top:0;">💡 Sugerencia de Envío</h3>
       <p style="color:#94a3b8; font-size:14px; line-height:1.6;">
         Según los Estatutos, este tema debería ser conocido por la <strong><span id="valNombre"></span></strong>.
@@ -212,16 +248,28 @@
 
   <div id="modalFirma" class="modal">
     <div class="modal-card">
-      <h3 style="color:#fff; margin:0 0 15px 0;">Revisa y Firma</h3>
-      <div class="pdf-preview"><div id="hojaDigital" class="page-carta"></div></div>
-      <label style="color:#fff;">Firma aquí:</label>
-      <canvas id="padFirma" style="background:#fff; width:100%; height:120px; border-radius:10px; cursor:crosshair;"></canvas>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
-        <button class="btn outline" id="btnCerrarFirma">Cancelar</button>
-        <button class="btn primary" id="btnFinalizar">✅ Enviar Escrito</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+        <h3 style="color:#fff; margin:0;">Vista Previa del Oficio</h3>
+        <div style="display:flex; gap:10px;">
+          <button class="btn outline" id="btnPrint" style="padding: 8px 16px;">🖨️ Imprimir</button>
+          <button class="btn outline" id="btnCerrarFirma" style="padding: 8px 16px; border-color: #ef4444; color:#ef4444;">✖ Cerrar</button>
+        </div>
       </div>
+      
+      <div class="modal-b" id="modalBody">
+        <div id="page" class="page carta">
+          <div id="sheet" class="sheet"></div>
+        </div>
+      </div>
+      
+      <label style="color:#fff; margin-top:10px;">Firma aquí para el archivo digital:</label>
+      <canvas id="padFirma" style="background:#fff; width:100%; height:120px; border-radius:10px; cursor:crosshair; margin-bottom: 15px;"></canvas>
+      
+      <button class="btn success" id="btnFinalizar">✅ Confirmar Firma y Guardar PDF</button>
     </div>
   </div>
+
+  <div id="status"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -230,50 +278,74 @@
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       const $ = s => document.querySelector(s);
+      const API_BASE = "https://sinos-api.onrender.com";
+      
       let fotosBase64 = [];
       let supabase;
+      let currentUser = null;
+      let currentFolio = "";
       let recomendacionActual = null;
 
+      const showStatus = (t) => {
+        const s = $('#status');
+        s.textContent = t;
+        s.classList.add('visible');
+        setTimeout(() => s.classList.remove('visible'), 4000);
+      };
+
+      const ajustarEscala = () => {
+        const modalB = $('#modalBody');
+        if (!modalB) return;
+        const availableWidth = modalB.clientWidth - 40;
+        const sheetWidth = 816;
+        const scale = availableWidth < sheetWidth ? availableWidth / sheetWidth : 1;
+        const page = $('#page');
+        page.style.transform = `scale(${scale})`;
+        page.style.marginBottom = availableWidth < sheetWidth ? `-${1056 * (1 - scale)}px` : "0";
+      };
+      window.addEventListener('resize', ajustarEscala);
+
       // EL DICCIONARIO COMPLETO DE REGLAS ESTATUTARIAS
-      const reglas = [
-        { id: "Secretaría General|Dr. Juan Gerardo García González", nombre: "Secretaría General", palabras: ["representación general", "apoyo total", "amparo", "máxima autoridad", "comité de huelga", "poder judicial"], fundamento: "El Art. 76 otorga la representación general del Sindicato e interviene en conflictos graves o de huelga." },
-        { id: "Secretaría de Interior y Propaganda|M.N.F. Amin Uriel Morales Sánchez", nombre: "Secretaría de Interior y Propaganda", palabras: ["padrón", "credencial", "registro", "afiliación", "constancia", "identificación sindical", "domicilio"], fundamento: "Conforme al Art. 77, lleva el registro de los miembros del Sindicato, padrones y constancias de afiliación." },
-        { id: "Secretaría de Conflictos|J.G.E. Arturo Ochoa Huacuz", nombre: "Secretaría de Conflictos", palabras: ["violación", "contrato", "disciplinaria", "despido", "sanción", "reclamación", "huelga", "conflicto", "rescisión", "acta administrativa"], fundamento: "El Art. 78 establece que atiende conflictos surgidos por violaciones al Contrato Colectivo de Trabajo y defiende ante autoridades." },
-        { id: "Secretaría de Trabajo|E.G. Cándido Mora Alcauter", nombre: "Secretaría de Trabajo", palabras: ["tiempo extraordinario", "horas extras", "jornada", "licencia", "permiso", "horario", "pase de salida"], fundamento: "Según el Art. 87, gestiona problemas laborales sin violación de contrato, pagos de tiempo extraordinario y trámite de licencias." },
-        { id: "Secretaría del Exterior|M.N.F. Ignacio Agustín Orozco Pérez", nombre: "Secretaría del Exterior", palabras: ["solidaridad", "otras organizaciones", "extranjero", "apoyo externo", "sindicatos hermanos"], fundamento: "El Art. 79 faculta para fomentar y mantener relaciones de solidaridad con agrupaciones hermanas y otras organizaciones." },
-        { id: "Tesorería|EST. Azucena Herrera Martínez", nombre: "Tesorería", palabras: ["cuotas", "pagos", "descuentos", "finanzas", "reembolso", "caja", "cheque", "apoyo económico"], fundamento: "Conforme al Art. 80, tiene bajo su responsabilidad los fondos de la Agrupación, pagos y descuentos sindicales." },
-        { id: "Secretaría de Previsión Social|A.M. Fabiola Farías Ambriz", nombre: "Secretaría de Previsión Social", palabras: ["previsión", "ahorro", "préstamo", "jubilación", "pensión", "defunción", "pliego testamentario", "accidente", "riesgo de trabajo", "afore"], fundamento: "Según el Art. 81, vigilan el Régimen de Jubilaciones y Pensiones, riesgos de trabajo y el Fondo de Ayuda por Defunción." },
-        { id: "Secretaría de Igualdad Sustantiva|M.F. Gabriela Durán Negrete", nombre: "Secretaría de Igualdad Sustantiva", palabras: ["guardería", "violencia", "discriminación", "acoso", "hostigamiento", "género", "igualdad", "maternidad", "lactancia"], fundamento: "Conforme al Art. 82, atiende temas de guarderías, descansos especiales y promueve una vida libre de violencia laboral." },
-        { id: "Secretaría de Asuntos Técnicos|M.N.F. Horacio Peña Alfaro", nombre: "Secretaría de Asuntos Técnicos", palabras: ["profesional", "especialidad", "postgrado", "carrera", "estudios técnicos", "perfeccionamiento", "universidad"], fundamento: "El Art. 84 indica que procura el perfeccionamiento técnico y profesional de los miembros y atiende problemas de estudios de especialización." },
-        { id: "Secretaría de Actas y Acuerdos|M.G. César Augusto Contreras Flores", nombre: "Secretaría de Actas y Acuerdos", palabras: ["acta de asamblea", "archivo", "acuerdo", "resolución", "copia de acta"], fundamento: "Según el Art. 83, levanta las actas de Asambleas, lleva la estadística y dirige el Archivo Central del Sindicato." },
-        { id: "Secretaría de Prensa|A.M. Yolanda Morelos Palomares", nombre: "Secretaría de Prensa", palabras: ["boletín", "publicación", "propaganda", "noticia", "órgano oficial", "comunicado", "difusión"], fundamento: "El Art. 86 establece que tiene a su cuidado las publicaciones oficiales, propaganda y difusión de los derechos de los trabajadores." },
-        { id: "Secretaría de Puestos Periféricos|M.N.F. Alejandra Johnson Aguirre", nombre: "Secretaría de Puestos Periféricos", palabras: ["periférico", "clínica foránea", "unidad rural", "umf foránea", "traslado periférico", "viáticos foráneos"], fundamento: "El Art. 112 señala que atiende todos los asuntos, conflictos y propuestas de mejora para los compañeros que prestan sus servicios en Puestos Periféricos." },
-        { id: "Secretaría de Admisión y Cambios|C.C. Uriel Tapia Pérez", nombre: "Secretaría de Admisión y Cambios", palabras: ["ingreso", "vacante", "promoción", "cambio de adscripción", "nombramiento", "permuta", "escalafón", "bolsa de trabajo"], fundamento: "El Art. 90 establece que expiden propuestas de ingreso y atienden problemas relacionados con cambios de adscripción y promociones escalafonarias." },
-        { id: "Secretaría de Capacitación y Adiestramiento|O.P. América Hilda Reyes Reyes", nombre: "Secretaría de Capacitación y Adiestramiento", palabras: ["curso", "adiestramiento", "preparatoria", "clases", "centro de capacitación", "educación media superior", "videoteca"], fundamento: "Conforme al Art. 92, coordina el Centro de Capacitación y vigila los reglamentos de cursos, actualización y educación media superior." },
-        { id: "Secretaría de Calidad y Modernización|Q.C. Gerardo Ordaz Salazar", nombre: "Secretaría de Calidad y Modernización", palabras: ["calidad", "modernización", "procesos", "mejora continua", "evaluación de servicios", "indicadores"], fundamento: "Según el Art. 94, establece parámetros para evaluar la calidad institucional y fomenta equipos de proyecto en los centros de trabajo." },
-        { id: "Secretaría de Acción Social|E.E. Claudia Denisse Torres Rangel", nombre: "Secretaría de Acción Social", palabras: ["evento social", "festejo", "día del trabajador", "convivencia", "aniversario", "fiesta"], fundamento: "El Art. 89 señala que organiza los eventos sociales, culturales y políticos programados por la representación sindical." },
-        { id: "Comisión de Honor y Justicia — Presidencia|J.G.S.T. José Francisco Ruiz Domínguez", nombre: "Comisión de Honor y Justicia", palabras: ["castigo sindical", "suspensión de derechos", "queja sindical", "indisciplina", "usurpación", "fraude", "destitución"], fundamento: "El Art. 99 faculta para investigar, dictaminar y sancionar faltas de los miembros para velar por el mantenimiento del honor de la Agrupación." },
-        { id: "Comisión de Vigilancia — Presidencia|T.R. Eduardo Bolaños Vázquez", nombre: "Comisión de Vigilancia", palabras: ["auditoría", "malos manejos", "queja contra representante", "apelación", "fiscalizar", "revisión de cuentas"], fundamento: "Conforme al Art. 101, vigila que los funcionarios cumplan sus deberes, fiscaliza cuentas e interviene en diferencias internas a efecto de solucionarlas." },
-        { id: "Comisión de Fomento a la Seguridad Social — Presidencia|M.N.F. Carlos Mojica Rodríguez", nombre: "Fomento a la Seguridad Social", palabras: ["inclusión", "seguridad social", "mejora de ley", "trabajadores del campo"], fundamento: "El Art. 103 establece su labor para promover la inclusión de trabajadores excluidos de la Ley del Seguro Social y mantener relaciones para mejorar la legislación." },
-        { id: "Comisión de Hacienda — Presidencia|A.L. Ángeles Alejandra Ledesma Torres", nombre: "Comisión de Hacienda", palabras: ["revisión de fondos", "auditoría financiera", "erogaciones", "inversiones"], fundamento: "Según el Art. 100, inspecciona la administración de los fondos y autoriza erogaciones e inversiones mayores." },
-        { id: "Comisión de Deportes — Presidencia|J.G.P. Roberto Carlos Reyes Ortiz", nombre: "Comisión de Deportes", palabras: ["torneo", "equipo", "fútbol", "deporte", "competencia", "cancha", "uniforme deportivo"], fundamento: "El Art. 102 encarga fomentar el desarrollo deportivo, organizar competencias y preparar contingentes para eventos." },
-        { id: "Comisión de Acción Política — Presidencia|M.N.F. Verónica Diosdado Minguela", nombre: "Acción Política", palabras: ["política", "candidato", "elecciones", "campaña política", "diputación", "ayuntamiento"], fundamento: "El Art. 91 señala que encauza la orientación política, organiza grupos de trabajadores y planifica campañas de candidatos del Sindicato." },
-        { id: "Subcomisión Mixta de Becas — Representación Sindical|M.F. Jorge Héctor Zaragoza Palacios", nombre: "Subcomisión Mixta de Becas", palabras: ["solicitud de beca", "pago de beca", "cancelación de beca", "prórroga de beca", "beca imss"], fundamento: "Atiende de forma paritaria con el Instituto los trámites, otorgamientos y controversias relativas al Reglamento de Becas." },
-        { id: "Bolsa de Trabajo|C.C. M. Guadalupe Calderón Ayala", nombre: "Subcomisión Mixta de Bolsa de Trabajo", palabras: ["propuesta familiar", "familiar directo", "nuevo ingreso", "candidato"], fundamento: "Vigila, analiza y dictamina los procesos para el ingreso de familiares y candidatos al Instituto mediante Bolsa de Trabajo." },
-        { id: "Subcomisión Mixta de Puestos de Confianza 'B' — Representación Sindical|M.F. Jorge Hugo Ruiz Saenz", nombre: "Puestos de Confianza 'B'", palabras: ["confianza b", "puesto de confianza", "regresar a base", "licencia sindical confianza"], fundamento: "Regula los derechos, licencias y movimientos de los trabajadores de base que pasan a cubrir puestos de confianza institucionales." },
-        { id: "Subcomisión Mixta de Capacitación y Adiestramiento — Representación Sindical|A.E.G. Juan Onofre Baez", nombre: "Capacitación y Adiestramiento", palabras: ["curso institucional", "capacitación continua", "constancia de habilidades", "asistencia a curso"], fundamento: "Regula la impartición paritaria de los cursos de capacitación dentro de las unidades del Instituto para mejorar el perfil laboral." },
-        { id: "Subcomisión Mixta de Seguridad e Higiene — Representación Sindical|A.U.O Betsabe Hernández Flores", nombre: "Seguridad e Higiene", palabras: ["condición insegura", "equipo de protección", "recorrido de seguridad", "peligro laboral", "dictamen de riesgo"], fundamento: "Investiga accidentes de trabajo y vigila permanentemente las condiciones de seguridad e higiene dentro de los centros laborales." },
-        { id: "Subcomisión Mixta Disciplinaria — Representación Sindical|Cont. Juan Carlos Servín Juárez", nombre: "Subcomisión Mixta Disciplinaria", palabras: ["citatorio", "investigación administrativa", "comparecencia", "nota de demérito", "sanción institucional"], fundamento: "Interviene y defiende directamente al trabajador en las investigaciones administrativas y citatorios emitidos por la autoridad del IMSS." },
-        { id: "Subcomisión Mixta de Escalafón — Representación Sindical|E.G. Hilda Ontiveros Cuellar", nombre: "Subcomisión Mixta de Escalafón", palabras: ["concurso escalafonario", "examen de promoción", "puntaje", "subir de categoría", "derecho escalafonario", "calificación"], fundamento: "Vigila los procesos de examen y calificación para garantizar la transparencia en los derechos de promoción a una categoría superior." },
-        { id: "Subcomisión Mixta Paritaria de Protección al Salario — Representación Sindical|E.E. Dinorah Alduenda Guiza", nombre: "Protección al Salario", palabras: ["descuento indebido", "falta de pago", "tarjetón de pago", "quincena", "reintegro", "concepto de pago", "descuento injustificado"], fundamento: "Analiza y resuelve los casos donde se aplican descuentos injustificados o existen errores en el pago de salarios y conceptos." },
-        { id: "Subcomisión Mixta de Pasajes — Representación Sindical|O.A. José Antonio Carrillo Bejarano", nombre: "Pasajes y Viáticos", palabras: ["viáticos", "pasaje", "comisión foránea", "traslado", "pago de traslado"], fundamento: "Verifica el pago correcto y oportuno de pasajes y viáticos cuando el trabajador debe trasladarse por necesidades del servicio." },
-        { id: "Subcomisión Mixta de Ropa de Trabajo y Uniformes — Representación Sindical|A.A. Julio Cesar García Salgado", nombre: "Ropa de Trabajo y Uniformes", palabras: ["vale de ropa", "talla", "calzado", "uniforme", "dotación de ropa", "bata", "zapatos"], fundamento: "Gestiona inconformidades por falta de entrega, errores de talla o calidad en la dotación de la ropa contractual." },
-        { id: "Subcomisión Mixta de Selec. Recursos Humanos para Cambios de Rama — Representación Sindical|C.C. Alicia Martínez Correa", nombre: "Cambios de Rama", palabras: ["cambio de rama", "examen de rama", "convocatoria de rama", "profesiograma", "cambio de categoría diferente"], fundamento: "Vigila y transparenta los procesos y exámenes de selección para los trabajadores que desean cambiar a una rama diferente a la suya." },
-        { id: "Subcomisión Mixta de Tiendas — Representación Sindical|P.E.F.B. Humberto Guerrero Linares", nombre: "Tiendas IMSS-SNTSS", palabras: ["tienda imss", "vale de tienda", "crédito en tienda", "surtido de tienda", "descuento de tienda"], fundamento: "Atiende las problemáticas relacionadas con la operación, abasto, descuentos y créditos otorgados en las tiendas IMSS-SNTSS." },
-        { id: "Subcomisión Mixta de Jubilaciones y Pensiones — Representación Sindical|E.G.C. Maricela Navarrete Mora", nombre: "Jubilaciones y Pensiones", palabras: ["trámite de jubilación", "cálculo de pensión", "años de servicio", "cuantía", "resolución de pensión", "jubilado"], fundamento: "Supervisa y agiliza el proceso de retiro, garantizando el cálculo correcto de los años de servicio y la cuantía de la pensión." },
-        { id: "Subcomisión Mixta de Revisión de Plantillas — Representación Sindical|E.G. Luis Fernando García Cervantes", nombre: "Revisión de Plantillas", palabras: ["falta de personal", "cobertura", "ausentismo", "carga de trabajo", "plantilla incompleta", "creación de plazas"], fundamento: "Analiza las cargas de trabajo y gestiona la creación o cobertura de plazas necesarias para el buen funcionamiento de los servicios." }
+      const reglasSNTSS = [
+        { idSelect: "Secretaría General|Dr. Juan Gerardo García González", nombre: "Secretaría General", palabras: ["representación general", "apoyo total", "amparo", "máxima autoridad", "comité de huelga", "poder judicial"], fundamento: "El Art. 76 otorga la representación general del Sindicato e interviene en conflictos graves o de huelga." },
+        { idSelect: "Secretaría de Interior y Propaganda|M.N.F. Amin Uriel Morales Sánchez", nombre: "Secretaría de Interior y Propaganda", palabras: ["padrón", "credencial", "registro", "afiliación", "constancia", "identificación sindical", "domicilio"], fundamento: "Conforme al Art. 77, lleva el registro de los miembros del Sindicato, padrones y constancias de afiliación." },
+        { idSelect: "Secretaría de Conflictos|J.G.E. Arturo Ochoa Huacuz", nombre: "Secretaría de Conflictos", palabras: ["violación", "contrato", "disciplinaria", "despido", "sanción", "reclamación", "huelga", "conflicto", "rescisión", "acta administrativa"], fundamento: "El Art. 78 establece que atiende conflictos surgidos por violaciones al CCT y defiende ante autoridades." },
+        { idSelect: "Secretaría de Trabajo|E.G. Cándido Mora Alcauter", nombre: "Secretaría de Trabajo", palabras: ["tiempo extraordinario", "horas extras", "jornada", "licencia", "permiso", "horario", "pase de salida"], fundamento: "Según el Art. 87, gestiona problemas laborales sin violación de contrato, pagos de tiempo extraordinario y trámite de licencias." },
+        { idSelect: "Secretaría del Exterior|M.N.F. Ignacio Agustín Orozco Pérez", nombre: "Secretaría del Exterior", palabras: ["solidaridad", "otras organizaciones", "extranjero", "apoyo externo", "sindicatos hermanos"], fundamento: "El Art. 79 faculta para fomentar y mantener relaciones de solidaridad con agrupaciones hermanas y otras organizaciones." },
+        { idSelect: "Tesorería|EST. Azucena Herrera Martínez", nombre: "Tesorería", palabras: ["cuotas", "pagos", "descuentos", "finanzas", "reembolso", "caja", "cheque", "apoyo económico"], fundamento: "Conforme al Art. 80, tiene bajo su responsabilidad los fondos de la Agrupación, pagos y descuentos sindicales." },
+        { idSelect: "Secretaría de Previsión Social|A.M. Fabiola Farías Ambriz", nombre: "Secretaría de Previsión Social", palabras: ["previsión", "ahorro", "préstamo", "jubilación", "pensión", "defunción", "pliego testamentario", "accidente", "riesgo de trabajo", "afore"], fundamento: "Según el Art. 81, vigilan el Régimen de Jubilaciones y Pensiones, riesgos de trabajo y el Fondo de Ayuda por Defunción." },
+        { idSelect: "Secretaría de Igualdad Sustantiva|M.F. Gabriela Durán Negrete", nombre: "Secretaría de Igualdad Sustantiva", palabras: ["guardería", "violencia", "discriminación", "acoso", "hostigamiento", "género", "igualdad", "maternidad", "lactancia"], fundamento: "Conforme al Art. 82, atiende temas de guarderías, descansos especiales y promueve una vida libre de violencia laboral." },
+        { idSelect: "Secretaría de Asuntos Técnicos|M.N.F. Horacio Peña Alfaro", nombre: "Secretaría de Asuntos Técnicos", palabras: ["profesional", "especialidad", "postgrado", "carrera", "estudios técnicos", "perfeccionamiento", "universidad"], fundamento: "El Art. 84 indica que procura el perfeccionamiento técnico y profesional de los miembros y atiende problemas de estudios de especialización." },
+        { idSelect: "Secretaría de Actas y Acuerdos|M.G. César Augusto Contreras Flores", nombre: "Secretaría de Actas y Acuerdos", palabras: ["acta de asamblea", "archivo", "acuerdo", "resolución", "copia de acta"], fundamento: "Según el Art. 83, levanta las actas de Asambleas, lleva la estadística y dirige el Archivo Central del Sindicato." },
+        { idSelect: "Secretaría de Prensa|A.M. Yolanda Morelos Palomares", nombre: "Secretaría de Prensa", palabras: ["boletín", "publicación", "propaganda", "noticia", "órgano oficial", "comunicado", "difusión"], fundamento: "El Art. 86 establece que tiene a su cuidado las publicaciones oficiales, propaganda y difusión de los derechos de los trabajadores." },
+        { idSelect: "Secretaría de Puestos Periféricos|M.N.F. Alejandra Johnson Aguirre", nombre: "Secretaría de Puestos Periféricos", palabras: ["periférico", "clínica foránea", "unidad rural", "umf foránea", "traslado periférico", "viáticos foráneos"], fundamento: "El Art. 112 señala que atiende todos los asuntos, conflictos y propuestas de mejora para los compañeros que prestan sus servicios en Puestos Periféricos." },
+        { idSelect: "Secretaría de Admisión y Cambios|C.C. Uriel Tapia Pérez", nombre: "Secretaría de Admisión y Cambios", palabras: ["ingreso", "vacante", "promoción", "cambio de adscripción", "nombramiento", "permuta", "escalafón", "bolsa de trabajo"], fundamento: "El Art. 90 establece que expiden propuestas de ingreso y atienden problemas relacionados con cambios de adscripción y promociones escalafonarias." },
+        { idSelect: "Secretaría de Capacitación y Adiestramiento|O.P. América Hilda Reyes Reyes", nombre: "Secretaría de Capacitación y Adiestramiento", palabras: ["curso", "adiestramiento", "preparatoria", "clases", "centro de capacitación", "educación media superior", "videoteca"], fundamento: "Conforme al Art. 92, coordina el Centro de Capacitación y vigila los reglamentos de cursos, actualización y educación media superior." },
+        { idSelect: "Secretaría de Calidad y Modernización|Q.C. Gerardo Ordaz Salazar", nombre: "Secretaría de Calidad y Modernización", palabras: ["calidad", "modernización", "procesos", "mejora continua", "evaluación de servicios", "indicadores"], fundamento: "Según el Art. 94, establece parámetros para evaluar la calidad institucional y fomenta equipos de proyecto en los centros de trabajo." },
+        { idSelect: "Secretaría de Acción Social|E.E. Claudia Denisse Torres Rangel", nombre: "Secretaría de Acción Social", palabras: ["evento social", "festejo", "día del trabajador", "convivencia", "aniversario", "fiesta"], fundamento: "El Art. 89 señala que organiza los eventos sociales, culturales y políticos programados por la representación sindical." },
+        { idSelect: "Comisión de Honor y Justicia — Presidencia|J.G.S.T. José Francisco Ruiz Domínguez", nombre: "Comisión de Honor y Justicia", palabras: ["castigo sindical", "suspensión de derechos", "queja sindical", "indisciplina", "usurpación", "fraude", "destitución"], fundamento: "El Art. 99 faculta para investigar, dictaminar y sancionar faltas de los miembros para velar por el mantenimiento del honor de la Agrupación." },
+        { idSelect: "Comisión de Vigilancia — Presidencia|T.R. Eduardo Bolaños Vázquez", nombre: "Comisión de Vigilancia", palabras: ["auditoría", "malos manejos", "queja contra representante", "apelación", "fiscalizar", "revisión de cuentas"], fundamento: "Conforme al Art. 101, vigila que los funcionarios cumplan sus deberes, fiscaliza cuentas e interviene en diferencias internas a efecto de solucionarlas." },
+        { idSelect: "Comisión de Fomento a la Seguridad Social — Presidencia|M.N.F. Carlos Mojica Rodríguez", nombre: "Fomento a la Seguridad Social", palabras: ["inclusión", "seguridad social", "mejora de ley", "trabajadores del campo"], fundamento: "El Art. 103 establece su labor para promover la inclusión de trabajadores excluidos de la Ley del Seguro Social y mantener relaciones para mejorar la legislación." },
+        { idSelect: "Comisión de Hacienda — Presidencia|A.L. Ángeles Alejandra Ledesma Torres", nombre: "Comisión de Hacienda", palabras: ["revisión de fondos", "auditoría financiera", "erogaciones", "inversiones"], fundamento: "Según el Art. 100, inspecciona la administración de los fondos y autoriza erogaciones e inversiones mayores." },
+        { idSelect: "Comisión de Deportes — Presidencia|J.G.P. Roberto Carlos Reyes Ortiz", nombre: "Comisión de Deportes", palabras: ["torneo", "equipo", "fútbol", "deporte", "competencia", "cancha", "uniforme deportivo"], fundamento: "El Art. 102 encarga fomentar el desarrollo deportivo, organizar competencias y preparar contingentes para eventos." },
+        { idSelect: "Comisión de Acción Política — Presidencia|M.N.F. Verónica Diosdado Minguela", nombre: "Acción Política", palabras: ["política", "candidato", "elecciones", "campaña política", "diputación", "ayuntamiento"], fundamento: "El Art. 91 señala que encauza la orientación política, organiza grupos de trabajadores y planifica campañas de candidatos del Sindicato." },
+        { idSelect: "Subcomisión Mixta de Becas — Representación Sindical|M.F. Jorge Héctor Zaragoza Palacios", nombre: "Subcomisión Mixta de Becas", palabras: ["solicitud de beca", "pago de beca", "cancelación de beca", "prórroga de beca", "beca imss"], fundamento: "Atiende de forma paritaria con el Instituto los trámites, otorgamientos y controversias relativas al Reglamento de Becas." },
+        { idSelect: "Bolsa de Trabajo|C.C. M. Guadalupe Calderón Ayala", nombre: "Subcomisión Mixta de Bolsa de Trabajo", palabras: ["propuesta familiar", "familiar directo", "nuevo ingreso", "candidato"], fundamento: "Vigila, analiza y dictamina los procesos para el ingreso de familiares y candidatos al Instituto mediante Bolsa de Trabajo." },
+        { idSelect: "Subcomisión Mixta de Puestos de Confianza 'B' — Representación Sindical|M.F. Jorge Hugo Ruiz Saenz", nombre: "Puestos de Confianza 'B'", palabras: ["confianza b", "puesto de confianza", "regresar a base", "licencia sindical confianza"], fundamento: "Regula los derechos, licencias y movimientos de los trabajadores de base que pasan a cubrir puestos de confianza institucionales." },
+        { idSelect: "Subcomisión Mixta de Capacitación y Adiestramiento — Representación Sindical|A.E.G. Juan Onofre Baez", nombre: "Capacitación y Adiestramiento", palabras: ["curso institucional", "capacitación continua", "constancia de habilidades", "asistencia a curso"], fundamento: "Regula la impartición paritaria de los cursos de capacitación dentro de las unidades del Instituto para mejorar el perfil laboral." },
+        { idSelect: "Subcomisión Mixta de Seguridad e Higiene — Representación Sindical|A.U.O Betsabe Hernández Flores", nombre: "Seguridad e Higiene", palabras: ["condición insegura", "equipo de protección", "recorrido de seguridad", "peligro laboral", "dictamen de riesgo"], fundamento: "Investiga accidentes de trabajo y vigila permanentemente las condiciones de seguridad e higiene dentro de los centros laborales." },
+        { idSelect: "Subcomisión Mixta Disciplinaria — Representación Sindical|Cont. Juan Carlos Servín Juárez", nombre: "Subcomisión Mixta Disciplinaria", palabras: ["citatorio", "investigación administrativa", "comparecencia", "nota de demérito", "sanción institucional"], fundamento: "Interviene y defiende directamente al trabajador en las investigaciones administrativas y citatorios emitidos por la autoridad del IMSS." },
+        { idSelect: "Subcomisión Mixta de Escalafón — Representación Sindical|E.G. Hilda Ontiveros Cuellar", nombre: "Subcomisión Mixta de Escalafón", palabras: ["concurso escalafonario", "examen de promoción", "puntaje", "subir de categoría", "derecho escalafonario", "calificación"], fundamento: "Vigila los procesos de examen y calificación para garantizar la transparencia en los derechos de promoción a una categoría superior." },
+        { idSelect: "Subcomisión Mixta Paritaria de Protección al Salario — Representación Sindical|E.E. Dinorah Alduenda Guiza", nombre: "Protección al Salario", palabras: ["descuento indebido", "falta de pago", "tarjetón de pago", "quincena", "reintegro", "concepto de pago", "descuento injustificado"], fundamento: "Analiza y resuelve los casos donde se aplican descuentos injustificados o existen errores en el pago de salarios y conceptos." },
+        { idSelect: "Subcomisión Mixta de Pasajes — Representación Sindical|O.A. José Antonio Carrillo Bejarano", nombre: "Pasajes y Viáticos", palabras: ["viáticos", "pasaje", "comisión foránea", "traslado", "pago de traslado"], fundamento: "Verifica el pago correcto y oportuno de pasajes y viáticos cuando el trabajador debe trasladarse por necesidades del servicio." },
+        { idSelect: "Subcomisión Mixta de Ropa de Trabajo y Uniformes — Representación Sindical|A.A. Julio Cesar García Salgado", nombre: "Ropa de Trabajo y Uniformes", palabras: ["vale de ropa", "talla", "calzado", "uniforme", "dotación de ropa", "bata", "zapatos"], fundamento: "Gestiona inconformidades por falta de entrega, errores de talla o calidad en la dotación de la ropa contractual." },
+        { idSelect: "Subcomisión Mixta de Selec. Recursos Humanos para Cambios de Rama — Representación Sindical|C.C. Alicia Martínez Correa", nombre: "Cambios de Rama", palabras: ["cambio de rama", "examen de rama", "convocatoria de rama", "profesiograma", "cambio de categoría diferente"], fundamento: "Vigila y transparenta los procesos y exámenes de selección para los trabajadores que desean cambiar a una rama diferente a la suya." },
+        { idSelect: "Subcomisión Mixta de Tiendas — Representación Sindical|P.E.F.B. Humberto Guerrero Linares", nombre: "Tiendas IMSS-SNTSS", palabras: ["tienda imss", "vale de tienda", "crédito en tienda", "surtido de tienda", "descuento de tienda"], fundamento: "Atiende las problemáticas relacionadas con la operación, abasto, descuentos y créditos otorgados en las tiendas IMSS-SNTSS." },
+        { idSelect: "Subcomisión Mixta de Jubilaciones y Pensiones — Representación Sindical|E.G.C. Maricela Navarrete Mora", nombre: "Jubilaciones y Pensiones", palabras: ["trámite de jubilación", "cálculo de pensión", "años de servicio", "cuantía", "resolución de pensión", "jubilado"], fundamento: "Supervisa y agiliza el proceso de retiro, garantizando el cálculo correcto de los años de servicio y la cuantía de la pensión." },
+        { idSelect: "Subcomisión Mixta de Revisión de Plantillas — Representación Sindical|E.G. Luis Fernando García Cervantes", nombre: "Revisión de Plantillas", palabras: ["falta de personal", "cobertura", "ausentismo", "carga de trabajo", "plantilla incompleta", "creación de plazas"], fundamento: "Analiza las cargas de trabajo y gestiona la creación o cobertura de plazas necesarias para el buen funcionamiento de los servicios." }
       ];
 
+      // INICIALIZACIÓN Y SEGURIDAD
       try {
         if (!window.supabase) throw new Error("No se pudo conectar a la base de datos.");
 
@@ -286,7 +358,7 @@
         $('#selectAtn').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
         $('#selectCCP').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
 
-        // Autenticación segura
+        // Autenticación
         const { data: { session }, error: authError } = await supabase.auth.getSession();
         
         if (authError || !session) {
@@ -294,6 +366,7 @@
           window.location.href = "login.html"; 
           return;
         }
+        currentUser = session.user;
 
         // Recuperar perfil
         const { data: prof, error: profError } = await supabase
@@ -302,7 +375,7 @@
           .eq('user_id', session.user.id)
           .maybeSingle();
 
-        if (profError) console.warn("Aviso:", profError.message);
+        if (profError) console.warn("Aviso perfil:", profError.message);
 
         $('#loader-inicial').classList.add('hide'); 
 
@@ -322,12 +395,34 @@
         $('#valAdscripcion').value = prof.adscripcion;
         $('#inputFecha').value = new Date().toISOString().split('T')[0];
 
-        // EVENT LISTENER: PANEL AVANZADO
+        // TIPS ESTATUTARIOS EN TIEMPO REAL
+        $('#textoHechos').addEventListener('input', (e) => {
+          const texto = e.target.value.toLowerCase();
+          let encontrada = null;
+
+          if (texto.length > 15) {
+            encontrada = reglasSNTSS.find(regla => 
+              regla.palabras.some(palabra => texto.includes(palabra))
+            );
+          }
+
+          const divSug = $('#alerta-sugerencia');
+          const textSug = $('#texto-sugerencia');
+
+          if (encontrada) {
+            divSug.classList.remove('hide');
+            textSug.innerHTML = `Por lo que describes, este trámite corresponde a la <strong>${encontrada.nombre}</strong>.<br>${encontrada.fundamento}`;
+          } else {
+            divSug.classList.add('hide');
+          }
+        });
+
+        // PANEL AVANZADO
         $('#toggleAvanzado').addEventListener('click', () => {
           $('#panelAvanzado').classList.toggle('show');
         });
 
-        // EVENT LISTENER: FOTOS
+        // MANEJO DE FOTOS
         $('#inputFotos').addEventListener('change', (e) => {
           const files = Array.from(e.target.files);
           $('#preview-evidencia').innerHTML = "";
@@ -336,7 +431,7 @@
             const r = new FileReader();
             r.onload = (ev) => {
               const img = document.createElement('img');
-              img.src = ev.target.result; img.style.width="60px"; img.style.height="60px"; img.style.objectFit="cover"; img.style.borderRadius="8px";
+              img.src = ev.target.result; img.style.width="60px"; img.style.height="60px"; img.style.objectFit="cover"; img.style.borderRadius="8px"; img.style.border="2px solid var(--primary)";
               $('#preview-evidencia').appendChild(img);
               fotosBase64.push(ev.target.result);
             };
@@ -344,38 +439,114 @@
           });
         });
 
-        // LÓGICA DE VALIDACIÓN ESTATUTARIA
-        function prepararVistaPrevia() {
-          const [cargo, nombre] = $('#selectDestino').value.split('|');
-          const hechos = $('#textoHechos').value;
+        // FUNCIONES DE API Y FOLIOS
+        function obtenerAcronimo(area) {
+          const mapa = {
+            "Secretaría General": "SG", "Secretaría de Interior y Propaganda": "SIP",
+            "Secretaría de Conflictos": "SC", "Secretaría de Trabajo": "ST",
+            "Secretaría del Exterior": "SE", "Tesorería": "TES",
+            "Secretaría de Previsión Social": "SPS", "Secretaría de Igualdad Sustantiva": "SIS",
+            "Secretaría de Asuntos Técnicos": "SAT", "Secretaría de Actas y Acuerdos": "SAA",
+            "Secretaría de Prensa": "SP", "Secretaría de Puestos Periféricos": "SPP",
+            "Secretaría de Admisión y Cambios": "SAC", "Secretaría de Capacitación y Adiestramiento": "SCA",
+            "Secretaría de Calidad y Modernización": "SCM", "Secretaría de Acción Social": "SAS",
+            "Honor y Justicia — Presidencia": "CHJ", "Vigilancia — Presidencia": "CV",
+            "Fomento a la Seg. Social — Presidencia": "CFSS", "Hacienda — Presidencia": "CH",
+            "Deportes — Presidencia": "CD", "Acción Política — Presidencia": "CAP",
+            "Becas": "SMB", "Bolsa de Trabajo": "BT", "Puestos de Confianza 'B'": "SMCB",
+            "Capacitación y Adiestramiento": "SMCA", "Seguridad e Higiene": "SMSH",
+            "Disciplinaria": "SMD", "Escalafón": "SME", "Protección al Salario": "SMPS",
+            "Pasajes": "SMP", "Ropa de Trabajo y Uniformes": "SMRT", "Cambios de Rama": "SMCR",
+            "Tiendas": "SMT", "Jubilaciones y Pensiones": "SMJP", "Revisión de Plantillas": "SMRP"
+          };
+          return mapa[area] || "SNTSS"; 
+        }
+
+        async function generarFolio(area) {
+          const year = new Date().getFullYear();
+          const acronimo = obtenerAcronimo(area);
+          const startOfYear = `${year}-01-01T00:00:00Z`;
+          
+          const { count } = await supabase
+            .from('escritos_buzon')
+            .select('*', { count: 'exact', head: true })
+            .eq('area_destino', area)
+            .gte('fecha_envio', startOfYear);
+            
+          let nextNum = (count || 0) + 1;
+          let sequence = nextNum.toString().padStart(4, '0'); 
+          return `${acronimo}-${year}-${sequence}`;
+        }
+
+        async function redactarIA(prob) {
+          try {
+            const res = await fetch(`${API_BASE}/escritor`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                tema: "Oficio sindical de petición o trámite",
+                hechos: [prob],
+                extras: "Tono formal, profesional, máximo 3 párrafos, directo al grano.",
+                incluirDespedida: false
+              })
+            });
+            const data = await res.json();
+            return data.cuerpo || "No se pudo generar el texto con IA.";
+          } catch (e) {
+            return "Por medio de la presente, expongo ante usted la siguiente solicitud:\n\n" + prob;
+          }
+        }
+
+        // GENERACIÓN VISUAL DE LA HOJA
+        async function ejecutarGeneracion() {
+          $('#modalVal').classList.remove('show');
+          
+          const btnSubmit = $('#btnGenerarPrincipal');
+          btnSubmit.innerHTML = "⏳ Generando Folio y Documento...";
+          btnSubmit.disabled = true;
+
+          const targetSelect = $('#selectDestino');
+          const [cargo, nombre] = targetSelect.value.split('|');
+          const areaTexto = targetSelect.options[targetSelect.selectedIndex].text;
+          
+          currentFolio = await generarFolio(areaTexto);
+          const cuerpoIA = await redactarIA($('#textoHechos').value);
           const ciudad = $('#inputCiudad').value;
-          const fecha = new Date($('#inputFecha').value).toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
+          const fechaLarga = new Date($('#inputFecha').value + 'T12:00:00').toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
 
-          let atn = $('#selectAtn').value ? `<div style="margin-top:10px; font-weight:bold;">At'n: ${$('#selectAtn').value.split('|')[1]}</div>` : "";
-          let ccp = $('#selectCCP').value ? `<div style="font-size:8pt; margin-top:30px;">c.c.p. ${$('#selectCCP').value.split('|')[1]}</div>` : "";
+          let atnHtml = $('#selectAtn').value ? `<div style="margin-top:15px; font-weight:bold;">At'n: ${$('#selectAtn').value.split('|')[1]}<br><span style="font-weight:normal; font-size:11pt;">${$('#selectAtn').value.split('|')[0]}</span></div>` : "";
+          let ccpHtml = $('#selectCCP').value ? `<div style="font-size:8pt; margin-top:40px; text-align:left;">c.c.p. ${$('#selectCCP').value.split('|')[1]} - ${$('#selectCCP').value.split('|')[0]}. Para su conocimiento e intervención.</div>` : "";
 
-          $('#hojaDigital').innerHTML = `
-            <div style="text-align:right;">${ciudad}, a ${fecha}</div>
-            <div style="font-weight:bold; margin-top:20px;">${nombre}</div>
-            <div style="font-weight:bold;">${cargo}</div>
+          $('#sheet').innerHTML = `
+            <header>
+              <div style="text-align: right; color: #991b1b; font-size: 13pt; margin-bottom: 16px;">Folio Oficial: <strong>${currentFolio}</strong></div>
+              ${ciudad}, a ${fechaLarga}
+            </header>
+            <div class="dest">${nombre}</div>
+            <div style="font-weight:bold; margin-bottom:5px;">${cargo}</div>
             <div>Presente.</div>
-            ${atn}
-            <div style="margin-top:20px; text-align:justify; line-height:1.4;">${hechos}</div>
-            <div style="margin-top:40px; text-align:center;">
-              ATENTAMENTE<br><br><br>
-              __________________________<br>
+            ${atnHtml}
+            <div class="cuerpo">${cuerpoIA}</div>
+            <div class="pie">
+              ATENTAMENTE<br>
+              <div id="linea-firma" style="margin: 60px auto 5px auto; width: 250px; border-top: 1px solid black;"></div>
               ${$('#valNombreUser').value}<br>
               Matrícula: ${$('#valMatricula').value}<br>
               ${$('#valCategoria').value}<br>
               ${$('#valAdscripcion').value}
-              ${ccp}
+              ${ccpHtml}
             </div>
           `;
-          $('#modalVal').classList.remove('show');
+
+          btnSubmit.innerHTML = "🚀 Analizar y Generar Documento";
+          btnSubmit.disabled = false;
+
           $('#modalFirma').classList.add('show');
+          ajustarEscala();
           iniciarPad();
         }
 
+        // LÓGICA DE VALIDACIÓN ESTATUTARIA
         $('#formEscrito').addEventListener('submit', (e) => {
           e.preventDefault();
           
@@ -384,39 +555,37 @@
           const atn = $('#selectAtn').value;
           const ccp = $('#selectCCP').value;
 
-          // Buscar recomendación
-          recomendacionActual = reglas.find(r => r.palabras.some(p => texto.includes(p)));
+          recomendacionActual = reglasSNTSS.find(r => r.palabras.some(p => texto.includes(p)));
 
-          // Si hay recomendación y no está en destino, atn o ccp, saltar modal
-          if (recomendacionActual && destino !== recomendacionActual.id && atn !== recomendacionActual.id && ccp !== recomendacionActual.id) {
+          if (recomendacionActual && destino !== recomendacionActual.idSelect && atn !== recomendacionActual.idSelect && ccp !== recomendacionActual.idSelect) {
             $('#valNombre').textContent = recomendacionActual.nombre;
             $('#valFundamento').textContent = recomendacionActual.fundamento;
             $('#modalVal').classList.add('show');
           } else {
-            prepararVistaPrevia();
+            ejecutarGeneracion();
           }
         });
 
-        // BOTONES DEL MODAL ESTATUTARIO
         $('#btnCorregirVal').addEventListener('click', () => {
-          $('#selectDestino').value = recomendacionActual.id;
-          prepararVistaPrevia();
+          $('#selectDestino').value = recomendacionActual.idSelect;
+          ejecutarGeneracion();
         });
 
         $('#btnCorregirCCP').addEventListener('click', () => {
-          $('#selectCCP').value = recomendacionActual.id;
-          prepararVistaPrevia();
+          $('#selectCCP').value = recomendacionActual.idSelect;
+          ejecutarGeneracion();
         });
 
         $('#btnIgnorarVal').addEventListener('click', () => {
-          prepararVistaPrevia();
+          ejecutarGeneracion();
         });
 
-        // LÓGICA DE FIRMA
+        // FIRMA Y GUARDADO
         let dibujando = false, ctx;
         function iniciarPad() {
           const c = $('#padFirma'); c.width = c.offsetWidth; c.height = 120;
           ctx = c.getContext('2d'); ctx.lineWidth = 2; ctx.strokeStyle = "#000080";
+          ctx.clearRect(0,0,c.width,c.height); // Limpiar en caso de reabrir
           c.onmousedown = c.ontouchstart = (e) => { dibujando = true; ctx.beginPath(); e.preventDefault(); };
           c.onmousemove = c.ontouchmove = (e) => { 
             if(!dibujando) return; 
@@ -428,24 +597,86 @@
           c.onmouseup = c.ontouchend = () => dibujando = false;
         }
 
-        // GENERACIÓN PDF
+        $('#btnPrint').addEventListener('click', () => {
+          const originalTitle = document.title;
+          document.title = `${currentFolio}_${$('#valMatricula').value}`;
+          $('#modalFirma').style.display = 'none';
+          $('#mainWrap').style.display = 'none';
+          window.print();
+          $('#modalFirma').style.display = '';
+          $('#mainWrap').style.display = '';
+          document.title = originalTitle;
+        });
+
         $('#btnFinalizar').addEventListener('click', async () => {
           const btn = $('#btnFinalizar');
           btn.disabled = true;
-          btn.innerHTML = "Generando PDF...";
+          btn.innerHTML = "⏳ Generando PDF y Subiendo a Buzón...";
+          showStatus("Generando expediente digital...");
 
-          const { jsPDF } = window.jspdf;
-          const doc = new jsPDF({ unit: 'pt', format: 'letter' });
-          const canvas = await html2canvas($('#hojaDigital'));
-          doc.addImage(canvas.toDataURL('image/jpeg'), 'JPEG', 0, 0, 612, 792);
+          // Pasar firma al DOM para captura
+          const imgFirma = document.createElement('img');
+          imgFirma.src = $('#padFirma').toDataURL('image/png');
+          imgFirma.style.maxHeight = '80px'; imgFirma.style.margin = '10px auto 5px auto'; imgFirma.style.display = 'block';
           
-          fotosBase64.forEach(img => {
-            doc.addPage();
-            doc.addImage(img, 'JPEG', 40, 60, 532, 400);
-          });
+          const lineaFirma = $('#linea-firma');
+          lineaFirma.parentNode.insertBefore(imgFirma, lineaFirma);
+          lineaFirma.style.display = 'none';
 
-          doc.save(`Oficio_SNTSS_${$('#valMatricula').value}.pdf`);
-          location.reload();
+          const pageEl = $('#page');
+          const originalTransform = pageEl.style.transform;
+          pageEl.style.transform = 'scale(1)'; 
+          
+          try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+            const canvas = await html2canvas(pageEl, { scale: 2, backgroundColor: '#ffffff' });
+            pageEl.style.transform = originalTransform;
+
+            doc.addImage(canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 612, 792);
+            
+            // Añadir páginas de evidencia
+            fotosBase64.forEach((img, i) => {
+              doc.addPage();
+              doc.setFontSize(14); doc.setFont("helvetica", "bold");
+              doc.text(`Anexo de Evidencia ${i+1}`, 40, 40);
+              doc.addImage(img, 'JPEG', 40, 60, 532, 400);
+            });
+
+            const pdfBlob = doc.output('blob');
+            const fileName = `escritos/${currentFolio}_${$('#valMatricula').value}.pdf`;
+            
+            const { error: uploadError } = await supabase.storage.from('documentos').upload(fileName, pdfBlob);
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage.from('documentos').getPublicUrl(fileName);
+            const targetSelect = $('#selectDestino');
+            const areaDestino = targetSelect.options[targetSelect.selectedIndex].text;
+
+            const { error: buzonError } = await supabase.from('escritos_buzon').insert({
+              user_id: currentUser.id,
+              area_destino: areaDestino,
+              folio: currentFolio,
+              asunto: `[${currentFolio}] Trámite Oficial Firmado`,
+              contenido: `Se adjunta solicitud oficial generada digitalmente a través de la PSD.\n\n📄 Ver Documento: ${publicUrl}`
+            });
+            if (buzonError) throw buzonError;
+
+            $('#modalFirma').classList.remove('show');
+            $('#formEscrito').reset();
+            
+            alert(`✅ Trámite enviado a ${areaDestino}.\nTu folio es: ${currentFolio}\nRevisa tu Buzón Sindical.`);
+            window.location.href = "index.html#buzon"; 
+
+          } catch (e) {
+            console.error(e);
+            alert("Error al enviar el documento: " + e.message);
+            btn.disabled = false;
+            btn.innerHTML = "✅ Confirmar Firma y Guardar PDF";
+            pageEl.style.transform = originalTransform;
+            lineaFirma.style.display = 'block';
+            imgFirma.remove();
+          }
         });
 
         $('#btnCerrarFirma').addEventListener('click', () => {
@@ -459,12 +690,8 @@
           loader.innerHTML = `
             <i class="ph-bold ph-warning-octagon" style="font-size: 50px; margin-bottom: 10px; color: #ef4444;"></i>
             <h3 style="color: #fff; margin: 0 0 5px 0;">Error de Conexión</h3>
-            <p style="color: #94a3b8; text-align:center; max-width: 300px; font-size: 14px;">
-              No pudimos conectar con la base de datos de tu perfil. Por favor, verifica tu conexión a internet.
-            </p>
-            <button onclick="location.reload()" class="btn outline" style="margin-top:20px; max-width: 200px;">
-              <i class="ph-bold ph-arrows-clockwise"></i> Reintentar
-            </button>
+            <p style="color: #94a3b8; text-align:center; max-width: 300px; font-size: 14px;">No pudimos conectar con la base de datos de tu perfil.</p>
+            <button onclick="location.reload()" class="btn outline" style="margin-top:20px; max-width: 200px;"><i class="ph-bold ph-arrows-clockwise"></i> Reintentar</button>
           `;
         }
       }
