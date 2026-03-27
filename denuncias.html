@@ -56,7 +56,7 @@
   .btn.primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: #0f172a; }
   .btn.success { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
   .btn.outline { background: transparent; border: 1px solid var(--panel-border); color: var(--text-main); }
-  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
   /* PANTALLA DE BLOQUEO */
   .bloqueo-container { text-align: center; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
@@ -82,6 +82,8 @@
 
   /* ALERTAS */
   .profile-alert { background: rgba(74, 222, 128, 0.15); border: 1px solid rgba(74, 222, 128, 0.4); color: var(--success); padding: 16px; border-radius: 12px; margin-top: 15px; display: flex; align-items: center; gap: 12px; font-size: 14px; }
+  
+  .lock-alert { background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4); color: var(--warning); padding: 16px; border-radius: 12px; font-size: 14px; text-align: center; margin-bottom: 15px; }
 
   /* NOTIFICACIÓN FLOTANTE */
   #status { position: fixed; bottom: 20px; right: 20px; background: #1e293b; border-left: 4px solid var(--primary); color: #fff; padding: 12px 20px; border-radius: 8px; transform: translateY(100px); transition: 0.3s; z-index: 2000; }
@@ -93,7 +95,7 @@
   #loader-inicial { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; color: var(--primary); }
 
   @media print {
-    .wrap, .modal-card > div:not(.modal-b), #status, #modalVal, #loader-inicial { display: none !important; }
+    .wrap, .modal-card > div:not(.modal-b), #status, #modalVal, #loader-inicial, .lock-alert { display: none !important; }
     body, .modal, .modal-card, .modal-b { background: transparent !important; position: static !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; display: block !important; width: 100% !important; height: auto !important; overflow: visible !important; }
     .page.carta { width: 100% !important; height: auto !important; transform: none !important; box-shadow: none !important; margin: 0 !important; }
     .sheet { padding: 2cm !important; height: auto !important; }
@@ -248,10 +250,12 @@
 
   <div id="modalFirma" class="modal">
     <div class="modal-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+      
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px; flex-wrap:wrap; gap:10px;">
         <h3 style="color:#fff; margin:0;">Vista Previa del Oficio</h3>
         <div style="display:flex; gap:10px;">
           <button class="btn outline" id="btnPrint" style="padding: 8px 16px;">🖨️ Imprimir</button>
+          <button class="btn outline" id="btnDescargar" style="padding: 8px 16px;">📥 Descargar PDF</button>
           <button class="btn outline" id="btnCerrarFirma" style="padding: 8px 16px; border-color: #ef4444; color:#ef4444;">✖ Cerrar</button>
         </div>
       </div>
@@ -262,10 +266,16 @@
         </div>
       </div>
       
-      <label style="color:#fff; margin-top:10px;">Firma aquí para el archivo digital:</label>
+      <label style="color:#fff; margin-top:10px;">Firma aquí (Opcional para descargar PDF):</label>
       <canvas id="padFirma" style="background:#fff; width:100%; height:120px; border-radius:10px; cursor:crosshair; margin-bottom: 15px;"></canvas>
       
-      <button class="btn success" id="btnFinalizar">✅ Confirmar Firma y Guardar PDF</button>
+      <div class="lock-alert">
+        <i class="ph-bold ph-lock-key" style="font-size: 20px; vertical-align: middle;"></i> 
+        <strong>Envío a Buzón Digital bloqueado:</strong> Disponible a partir del 16 de abril.<br>
+        <span style="color: #fff; font-weight: bold; font-size: 15px; display:block; margin-top: 5px;">¡Vota Planilla Azul para hacerlo realidad!</span>
+      </div>
+
+      <button class="btn primary" id="btnFinalizar" disabled>✅ Confirmar Firma y Enviar a Buzón Digital</button>
     </div>
   </div>
 
@@ -283,7 +293,6 @@
       let fotosBase64 = [];
       let supabase;
       let currentUser = null;
-      let currentFolio = "";
       let recomendacionActual = null;
 
       const showStatus = (t) => {
@@ -358,7 +367,7 @@
         $('#selectAtn').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
         $('#selectCCP').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
 
-        // Autenticación
+        // Autenticación segura
         const { data: { session }, error: authError } = await supabase.auth.getSession();
         
         if (authError || !session) {
@@ -368,7 +377,7 @@
         }
         currentUser = session.user;
 
-        // Recuperar perfil
+        // Recuperar perfil usando maybeSingle
         const { data: prof, error: profError } = await supabase
           .from('profiles')
           .select('*')
@@ -439,45 +448,7 @@
           });
         });
 
-        // FUNCIONES DE API Y FOLIOS
-        function obtenerAcronimo(area) {
-          const mapa = {
-            "Secretaría General": "SG", "Secretaría de Interior y Propaganda": "SIP",
-            "Secretaría de Conflictos": "SC", "Secretaría de Trabajo": "ST",
-            "Secretaría del Exterior": "SE", "Tesorería": "TES",
-            "Secretaría de Previsión Social": "SPS", "Secretaría de Igualdad Sustantiva": "SIS",
-            "Secretaría de Asuntos Técnicos": "SAT", "Secretaría de Actas y Acuerdos": "SAA",
-            "Secretaría de Prensa": "SP", "Secretaría de Puestos Periféricos": "SPP",
-            "Secretaría de Admisión y Cambios": "SAC", "Secretaría de Capacitación y Adiestramiento": "SCA",
-            "Secretaría de Calidad y Modernización": "SCM", "Secretaría de Acción Social": "SAS",
-            "Honor y Justicia — Presidencia": "CHJ", "Vigilancia — Presidencia": "CV",
-            "Fomento a la Seg. Social — Presidencia": "CFSS", "Hacienda — Presidencia": "CH",
-            "Deportes — Presidencia": "CD", "Acción Política — Presidencia": "CAP",
-            "Becas": "SMB", "Bolsa de Trabajo": "BT", "Puestos de Confianza 'B'": "SMCB",
-            "Capacitación y Adiestramiento": "SMCA", "Seguridad e Higiene": "SMSH",
-            "Disciplinaria": "SMD", "Escalafón": "SME", "Protección al Salario": "SMPS",
-            "Pasajes": "SMP", "Ropa de Trabajo y Uniformes": "SMRT", "Cambios de Rama": "SMCR",
-            "Tiendas": "SMT", "Jubilaciones y Pensiones": "SMJP", "Revisión de Plantillas": "SMRP"
-          };
-          return mapa[area] || "SNTSS"; 
-        }
-
-        async function generarFolio(area) {
-          const year = new Date().getFullYear();
-          const acronimo = obtenerAcronimo(area);
-          const startOfYear = `${year}-01-01T00:00:00Z`;
-          
-          const { count } = await supabase
-            .from('escritos_buzon')
-            .select('*', { count: 'exact', head: true })
-            .eq('area_destino', area)
-            .gte('fecha_envio', startOfYear);
-            
-          let nextNum = (count || 0) + 1;
-          let sequence = nextNum.toString().padStart(4, '0'); 
-          return `${acronimo}-${year}-${sequence}`;
-        }
-
+        // FUNCIONES DE API DE REDACCIÓN
         async function redactarIA(prob) {
           try {
             const res = await fetch(`${API_BASE}/escritor`, {
@@ -502,14 +473,13 @@
           $('#modalVal').classList.remove('show');
           
           const btnSubmit = $('#btnGenerarPrincipal');
-          btnSubmit.innerHTML = "⏳ Generando Folio y Documento...";
+          btnSubmit.innerHTML = "⏳ Analizando y Generando Documento...";
           btnSubmit.disabled = true;
 
           const targetSelect = $('#selectDestino');
           const [cargo, nombre] = targetSelect.value.split('|');
           const areaTexto = targetSelect.options[targetSelect.selectedIndex].text;
           
-          currentFolio = await generarFolio(areaTexto);
           const cuerpoIA = await redactarIA($('#textoHechos').value);
           const ciudad = $('#inputCiudad').value;
           const fechaLarga = new Date($('#inputFecha').value + 'T12:00:00').toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
@@ -517,9 +487,10 @@
           let atnHtml = $('#selectAtn').value ? `<div style="margin-top:15px; font-weight:bold;">At'n: ${$('#selectAtn').value.split('|')[1]}<br><span style="font-weight:normal; font-size:11pt;">${$('#selectAtn').value.split('|')[0]}</span></div>` : "";
           let ccpHtml = $('#selectCCP').value ? `<div style="font-size:8pt; margin-top:40px; text-align:left;">c.c.p. ${$('#selectCCP').value.split('|')[1]} - ${$('#selectCCP').value.split('|')[0]}. Para su conocimiento e intervención.</div>` : "";
 
+          // El folio dice PENDIENTE hasta que sea el envío digital real
           $('#sheet').innerHTML = `
             <header>
-              <div style="text-align: right; color: #991b1b; font-size: 13pt; margin-bottom: 16px;">Folio Oficial: <strong>${currentFolio}</strong></div>
+              <div style="text-align: right; color: #991b1b; font-size: 13pt; margin-bottom: 16px;">Folio Oficial: <strong>PENDIENTE DE ENVÍO DIGITAL</strong></div>
               ${ciudad}, a ${fechaLarga}
             </header>
             <div class="dest">${nombre}</div>
@@ -580,7 +551,7 @@
           ejecutarGeneracion();
         });
 
-        // FIRMA Y GUARDADO
+        // FIRMA EN PANTALLA
         let dibujando = false, ctx;
         function iniciarPad() {
           const c = $('#padFirma'); c.width = c.offsetWidth; c.height = 120;
@@ -597,22 +568,39 @@
           c.onmouseup = c.ontouchend = () => dibujando = false;
         }
 
+        // ACCIONES DEL MODAL FINAL (IMPRIMIR Y DESCARGAR LIBERADOS)
         $('#btnPrint').addEventListener('click', () => {
           const originalTitle = document.title;
-          document.title = `${currentFolio}_${$('#valMatricula').value}`;
+          document.title = `Oficio_SNTSS_${$('#valMatricula').value}`;
+          
+          // Pasar firma al DOM para captura si es que firmaron
+          const imgFirma = document.createElement('img');
+          imgFirma.src = $('#padFirma').toDataURL('image/png');
+          imgFirma.id = "img-firma-temp";
+          imgFirma.style.maxHeight = '80px'; imgFirma.style.margin = '10px auto 5px auto'; imgFirma.style.display = 'block';
+          
+          const lineaFirma = $('#linea-firma');
+          lineaFirma.parentNode.insertBefore(imgFirma, lineaFirma);
+          lineaFirma.style.display = 'none';
+
           $('#modalFirma').style.display = 'none';
           $('#mainWrap').style.display = 'none';
+          
           window.print();
+          
           $('#modalFirma').style.display = '';
           $('#mainWrap').style.display = '';
           document.title = originalTitle;
+          
+          // Restaurar la vista
+          lineaFirma.style.display = 'block';
+          $('#img-firma-temp').remove();
         });
 
-        $('#btnFinalizar').addEventListener('click', async () => {
-          const btn = $('#btnFinalizar');
+        $('#btnDescargar').addEventListener('click', async () => {
+          const btn = $('#btnDescargar');
           btn.disabled = true;
-          btn.innerHTML = "⏳ Generando PDF y Subiendo a Buzón...";
-          showStatus("Generando expediente digital...");
+          btn.innerHTML = "⏳ Generando PDF...";
 
           // Pasar firma al DOM para captura
           const imgFirma = document.createElement('img');
@@ -643,36 +631,18 @@
               doc.addImage(img, 'JPEG', 40, 60, 532, 400);
             });
 
-            const pdfBlob = doc.output('blob');
-            const fileName = `escritos/${currentFolio}_${$('#valMatricula').value}.pdf`;
+            doc.save(`Oficio_SNTSS_${$('#valMatricula').value}.pdf`);
             
-            const { error: uploadError } = await supabase.storage.from('documentos').upload(fileName, pdfBlob);
-            if (uploadError) throw uploadError;
-
-            const { data: { publicUrl } } = supabase.storage.from('documentos').getPublicUrl(fileName);
-            const targetSelect = $('#selectDestino');
-            const areaDestino = targetSelect.options[targetSelect.selectedIndex].text;
-
-            const { error: buzonError } = await supabase.from('escritos_buzon').insert({
-              user_id: currentUser.id,
-              area_destino: areaDestino,
-              folio: currentFolio,
-              asunto: `[${currentFolio}] Trámite Oficial Firmado`,
-              contenido: `Se adjunta solicitud oficial generada digitalmente a través de la PSD.\n\n📄 Ver Documento: ${publicUrl}`
-            });
-            if (buzonError) throw buzonError;
-
-            $('#modalFirma').classList.remove('show');
-            $('#formEscrito').reset();
-            
-            alert(`✅ Trámite enviado a ${areaDestino}.\nTu folio es: ${currentFolio}\nRevisa tu Buzón Sindical.`);
-            window.location.href = "index.html#buzon"; 
+            btn.disabled = false;
+            btn.innerHTML = "📥 Descargar PDF";
+            lineaFirma.style.display = 'block';
+            imgFirma.remove();
 
           } catch (e) {
             console.error(e);
-            alert("Error al enviar el documento: " + e.message);
+            alert("Error al descargar el PDF: " + e.message);
             btn.disabled = false;
-            btn.innerHTML = "✅ Confirmar Firma y Guardar PDF";
+            btn.innerHTML = "📥 Descargar PDF";
             pageEl.style.transform = originalTransform;
             lineaFirma.style.display = 'block';
             imgFirma.remove();
