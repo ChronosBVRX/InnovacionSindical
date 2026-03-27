@@ -92,7 +92,7 @@
         <div class="bloqueo-text">
           Para poder generar documentos oficiales con validez estatutaria, necesitas completar tu información personal (Nombre, Matrícula, Categoría y Adscripción).
         </div>
-        <a href="perfil.html" class="btn primary" style="max-width: 250px;">
+        <a href="https://innovacionsindical.com.mx/miembros.html#personaliza" class="btn primary" style="max-width: 250px;">
           <i class="ph-bold ph-user-circle-gear"></i> Ir a Editar Perfil
         </a>
       </div>
@@ -198,7 +198,7 @@
       
       if (!session) {
         alert("Acceso denegado. Debes iniciar sesión para usar el Generador de Escritos.");
-        window.location.href = "login.html"; // Asegúrate de que este sea el nombre de tu archivo de login
+        window.location.href = "login.html"; 
         return;
       }
 
@@ -211,7 +211,7 @@
       const isComplete = prof && prof.display_name && prof.matricula && prof.categoria && prof.adscripcion;
 
       if (!isComplete) {
-        // PERFIL INCOMPLETO -> Mostrar bloqueo
+        // PERFIL INCOMPLETO -> Mostrar bloqueo con el enlace proporcionado
         $('#bloqueo-perfil').classList.remove('hide');
       } else {
         // PERFIL COMPLETO -> Mostrar herramienta y llenar datos
