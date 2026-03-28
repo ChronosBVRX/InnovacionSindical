@@ -115,12 +115,32 @@
     .acciones-header { justify-content: center !important; }
   }
 
+  /* REGLAS DE IMPRESIÓN CORREGIDAS */
   @media print {
-    .wrap, .modal-card > div:not(.modal-b), #status, #loader-inicial, .lock-alert { display: none !important; }
-    body, .modal, .modal-card, .modal-b { background: transparent !important; position: static !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; display: block !important; width: 100% !important; height: auto !important; overflow: visible !important; }
-    .page.carta { width: 100% !important; height: auto !important; transform: none !important; box-shadow: none !important; margin: 0 !important; }
-    .sheet { padding: 2cm !important; height: auto !important; }
-    .sheet .pie { position: relative !important; bottom: auto !important; left: 0 !important; right: 0 !important; width: 100% !important; margin-top: 60px !important; page-break-inside: avoid !important; text-align: center !important; }
+    /* 1. Oculta absolutamente todo en la página por defecto */
+    body > * { display: none !important; }
+    
+    /* 2. Muestra ÚNICAMENTE el modal donde está el documento */
+    #modalFirma { display: block !important; position: static !important; background: transparent !important; padding: 0 !important; }
+    
+    /* 3. Limpia los contenedores oscuros para que no salgan en la hoja */
+    .modal-card { background: transparent !important; box-shadow: none !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; border: none !important; }
+    
+    /* 4. Oculta la cabecera (botones de Imprimir/Descargar) y las alertas */
+    #modalFirma .modal-card > div:not(.modal-b) { display: none !important; }
+    
+    /* 5. Asegura que el área del documento fluya libremente */
+    .modal-b { display: block !important; padding: 0 !important; background: transparent !important; overflow: visible !important; margin: 0 !important; border: none !important; }
+    
+    /* 6. Ajusta la hoja blanca para que ocupe todo el papel sin la escala de la pantalla */
+    #page.carta { width: 100% !important; height: auto !important; transform: none !important; box-shadow: none !important; margin: 0 !important; }
+    
+    /* 7. Márgenes reales de impresión */
+    .sheet { padding: 1.5cm 2cm !important; height: auto !important; }
+    
+    /* 8. Fuerza la firma y despedida al final del texto, evitando cortes raros */
+    .sheet .pie { position: relative !important; bottom: auto !important; left: 0 !important; right: 0 !important; width: 100% !important; margin-top: 50px !important; text-align: center !important; page-break-inside: avoid; }
+    
     @page { size: letter; margin: 0; }
   }
 </style>
@@ -586,16 +606,14 @@
 
         // ------------------ RUTA IMPRESIÓN/DESCARGA NORMAL ------------------
         $('#btnPrint').addEventListener('click', () => {
+          // Cambiamos el nombre del documento para que al imprimir/guardar tenga el nombre correcto
           const originalTitle = document.title;
           document.title = `Oficio_SNTSS_${$('#valMatricula').value}`;
           
-          $('#modalFirma').style.display = 'none';
-          $('#mainWrap').style.display = 'none';
-          
+          // Lanzamos el cuadro de impresión (el CSS hace todo el trabajo de limpieza visual)
           window.print();
           
-          $('#modalFirma').style.display = '';
-          $('#mainWrap').style.display = '';
+          // Restauramos el nombre original de la pestaña
           document.title = originalTitle;
         });
 
