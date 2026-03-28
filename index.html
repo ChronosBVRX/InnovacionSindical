@@ -548,8 +548,8 @@
           <span id="calendar-badge" class="indicator-dot hide"></span>
         </div>
 
-        <div class="notification-icon" onclick="PSDAuth.markNotificationsAsRead(); PSD.openApp('buzon');" title="Notificaciones">
-          <i class="ph-duotone ph-bell"></i>
+        <div class="notification-icon" onclick="PSDAuth.markNotificationsAsRead(); PSD.openApp('buzon');" title="Buzón Sindical">
+          <i class="ph-duotone ph-envelope-simple"></i>
           <span id="notif-badge" class="notification-badge hide">0</span>
         </div>
 
@@ -709,7 +709,7 @@
 
     const APPS = [
       { id: 'trascendencia', title: 'TrascendencIA - Orientacion del CCT por medio de Inteligencia Artificial', desc: 'Asistente Virtual.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true, newTab: true },
-      { id: 'buzon', title: 'Buzón Sindical', desc: 'Trámites y Respuestas.', iconClass: 'ph-duotone ph-envelope-open', iframe: 'buzon.html', featured: true },
+      { id: 'buzon', title: 'Buzón Sindical', desc: 'Trámites y Respuestas.', iconClass: 'ph-duotone ph-envelope-open', iframe: 'buzon.html', featured: true, hideFromMenu: true },
       { id: 'auditoria', title: 'Auditoría Sindical', desc: 'Monitor de desempeño.', iconClass: 'ph-duotone ph-chart-line-up', iframe: 'auditoria.html', featured: true, adminOnly: true },
       { id: 'escalafon', title: 'Consulta tu lugar', desc: 'Bolsa de trabajo y Escalafon', iconClass: 'ph-duotone ph-list-numbers', iframe: 'consultalugar.html', featured: true },
       { id: 'denuncias', title: 'Gestor de Escritos', desc: 'IA.', iconClass: 'ph-duotone ph-pen-nib', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
