@@ -373,27 +373,93 @@
       position: relative; 
     }
     
-    .app-head { 
-      position: absolute; 
-      top: calc(var(--topbar) + max(env(safe-area-inset-top), 35px) + 26px); 
-      right: 24px; 
-      z-index: 50; 
-      display: flex; 
-      align-items: center; 
-      gap: 8px; 
-      background: rgba(var(--panel-base), 0.85); 
-      backdrop-filter: blur(10px); 
-      padding: 8px 12px; 
-      border-radius: 12px; 
-      border: 1px solid var(--ring); 
-      margin: 0; 
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+    /* --- NUEVOS ESTILOS DINÁMICOS PARA LA BARRA DEL APP --- */
+    .app-head {
+      position: fixed;
+      bottom: max(env(safe-area-inset-bottom, 24px), 24px); /* Se ancla abajo respetando áreas seguras */
+      left: 50%;
+      top: auto;
+      right: auto;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(var(--panel-base), 0.4); /* Semi-transparente por defecto */
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 6px;
+      border-radius: 40px; /* Forma de píldora */
+      border: 1px solid rgba(122, 209, 214, 0.2);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      opacity: 0.5; /* No invasivo cuando está inactivo */
     }
-    .app-head > div:first-child { display: none !important; }
+
+    /* Estado activo: se ilumina, se hace opaco y "flota" un poco más */
+    .app-head:hover, .app-head:active, .app-head:focus-within {
+      opacity: 1;
+      background: rgba(var(--panel-base), 0.95);
+      border-color: var(--primary-light);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 15px rgba(77, 161, 168, 0.3);
+      transform: translateX(-50%) translateY(-5px);
+      padding: 8px 12px;
+    }
+
+    /* Contenedor de la info (Oculto por defecto para ahorrar espacio) */
+    .app-head .app-info {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 0 10px;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    /* Mostrar el título solo al interactuar con la barra (en PC) */
+    .app-head:hover .app-info {
+      display: flex;
+      animation: fadeInText 0.3s ease forwards;
+    }
+
+    @keyframes fadeInText {
+      from { opacity: 0; max-width: 0; }
+      to { opacity: 1; max-width: 250px; }
+    }
+
+    .app-head .app-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* Botones más redondos y estéticos */
+    .app-head .btn {
+      background: transparent;
+      border: 1px solid transparent;
+      min-width: 40px;
+      min-height: 40px;
+      border-radius: 50%;
+      box-shadow: none;
+      color: var(--primary-light);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .app-head .btn i { font-size: 20px; }
+
+    .app-head .btn:hover {
+      background: rgba(77, 161, 168, 0.2);
+      border-color: rgba(122, 209, 214, 0.3);
+      color: var(--text-main);
+    }
     
     .app-body { flex: 1; background: transparent; border-radius: 0; border: none; overflow: hidden; position: relative; width: 100%; height: 100%; }
     .iframe { width: 100%; height: 100%; border: none; display: block; }
     
+    /* Conservamos estilos antiguos de btn para otros posibles usos o los reemplazamos arriba */
     .btn { background: rgba(var(--panel-base), 0.5); border: 1px solid var(--ring); color: var(--primary-light); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s ease; min-width: 44px; min-height: 44px;}
     .btn i { font-size: 20px; }
     .btn:hover { background: rgba(77, 161, 168, .2); color: var(--text-main); border-color: var(--primary-light); box-shadow: 0 0 10px rgba(122, 209, 214, 0.3); }
@@ -413,15 +479,11 @@
       
       .wrap { padding: calc(var(--topbar) + max(env(safe-area-inset-top), 35px) + 16px) 16px 20px 16px; }
       
-      .app-head { 
-        top: auto; 
-        bottom: 24px; 
-        right: 50%; 
-        transform: translateX(50%); 
-        padding: 8px; 
-        border-radius: 20px; 
-        background: rgba(var(--panel-base), 0.95);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      .app-head {
+        bottom: max(env(safe-area-inset-bottom, 16px), 16px);
+      }
+      .app-head:hover .app-info {
+        display: none; /* En celular mantenemos solo los botones para no tapar nada */
       }
       
       .tiles { grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -677,19 +739,25 @@
 
   <section id="app" class="layer hide">
     <div class="app-wrap">
+      
       <div class="app-head">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div id="app-ic" style="font-size:32px; color:var(--primary-light);"></div>
+        <div class="app-info">
+          <div id="app-ic" style="font-size:22px; color:var(--primary-light);"></div>
           <div>
-            <h2 id="app-title" style="margin:0; font-size:18px;">Módulo</h2>
-            <p id="app-desc" style="margin:0; font-size:12px; color:var(--text-muted);"></p>
+            <h2 id="app-title" style="margin:0; font-size:14px; font-weight:600; color:var(--text-main);">Módulo</h2>
+            <p id="app-desc" style="display:none;"></p>
           </div>
         </div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn" onclick="PSD.goHome()" title="Ir al Inicio"><i class="ph-duotone ph-house"></i></button>
-          <button class="btn" onclick="PSD.closeApp()" title="Cerrar"><i class="ph-bold ph-x"></i></button>
+        <div class="app-controls">
+          <button class="btn" onclick="PSD.goHome()" title="Volver al Inicio">
+            <i class="ph-duotone ph-house"></i>
+          </button>
+          <button class="btn" onclick="PSD.closeApp()" title="Cerrar Módulo">
+            <i class="ph-bold ph-x"></i>
+          </button>
         </div>
       </div>
+
       <div class="app-body">
         <iframe id="app-iframe" class="iframe" allowfullscreen></iframe>
         <div id="app-internal" style="height:100%; overflow:auto;"></div>
@@ -715,7 +783,6 @@
       { id: 'denuncias', title: 'Gestor de Escritos', desc: 'IA.', iconClass: 'ph-duotone ph-pen-nib', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados.', iconClass: 'ph-duotone ph-broadcast', iframe: 'noticias.html' },
       { id: 'biblioteca', title: 'Biblioteca', desc: 'Recursos digitales.', iconClass: 'ph-duotone ph-books', iframe: 'biblioteca.html' },
-      // Añadido: hideFromMenu: true para ocultarlo del grid central
       { id: 'calendario', title: 'Calendario', desc: 'Eventos Oficiales sindicales.', iconClass: 'ph-duotone ph-calendar-blank', iframe: 'calendario.html', hideFromMenu: true },
       { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Acceso a representantes sindicales.', iconClass: 'ph-duotone ph-scales', href: 'nucleo.html', featured: true, newTab: true },
       { id: 'comite', title: 'Comité Seccional', desc: 'Planilla Azul.', iconClass: 'ph-duotone ph-users-three',  iframe: 'comite.html' },
@@ -786,7 +853,6 @@
         const correosAutorizados = ['s.general@seccionxx.mx', 's.interior@seccionxx.mx', 'c.vigilancia@seccionxx.mx'];
 
         APPS.forEach(a => {
-          // Ya no renderiza privacidad ni las apps marcadas con hideFromMenu (ej. calendario)
           if(a.id === 'privacidad' || a.hideFromMenu) return; 
 
           if (a.adminOnly) {
@@ -879,7 +945,7 @@
 
           PSD.renderTiles(session.user.email, prof?.role);
           this.checkNotifications(session.user.id);
-          this.checkUpcomingEvents(); // Añadido para verificar el calendario
+          this.checkUpcomingEvents();
         } else {
           unloggedDiv.classList.remove('hide');
           loggedDiv.classList.add('hide');
@@ -889,11 +955,7 @@
       },
 
       async checkUpcomingEvents() {
-        // Lógica de validación para activar el efecto de iluminación
-        // Puedes conectarlo directamente a tu tabla de eventos en Supabase aquí.
-        // Por ahora, usamos una variable simulada para que veas el efecto funcionando.
         try {
-          // Simulación: Cambia a "false" para apagar la iluminación.
           const hasUpcomingEvent = true; 
 
           const calIcon = document.getElementById('calendar-icon');
