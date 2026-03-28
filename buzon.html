@@ -45,13 +45,10 @@
     .btn:hover { background: var(--primary-light); transform: translateY(-2px); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     
-    .btn-secondary { background: transparent; border: 1px solid var(--primary-light); color: var(--primary-light); }
-    .btn-secondary:hover { background: rgba(77, 161, 168, 0.1); }
-    
     .btn.success { background: linear-gradient(135deg, #22c55e, #16a34a); color: white;}
     .btn.success:hover { box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); }
 
-    /* --- FORMULARIOS Y ETIQUETAS --- */
+    /* --- FORMULARIOS --- */
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
     .form-control { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--ring); background: rgba(21, 35, 54, 0.8); color: var(--text-main); font-family: 'Inter', sans-serif; }
@@ -63,6 +60,13 @@
     .badge.enviado { background: rgba(77, 161, 168, 0.15); color: var(--primary-light); border: 1px solid var(--ring); }
     .badge.proceso { background: rgba(251, 191, 36, 0.15); color: var(--warning); border: 1px solid rgba(251, 191, 36, 0.3); }
     .badge.atendido { background: rgba(74, 222, 128, 0.15); color: var(--success); border: 1px solid rgba(74, 222, 128, 0.3); }
+
+    /* --- SISTEMA DE PESTAÑAS (TABS) --- */
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--ring); padding-bottom: 10px; overflow-x: auto; }
+    .tab-btn { background: transparent; color: var(--text-muted); border: none; padding: 10px 20px; cursor: pointer; font-weight: 600; font-size: 14px; border-radius: 8px; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+    .tab-btn i { font-size: 18px; }
+    .tab-btn.active { background: rgba(77, 161, 168, 0.2); color: var(--primary-light); border: 1px solid rgba(77, 161, 168, 0.4); }
+    .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--text-main); }
 
     /* --- LISTA DE ESCRITOS --- */
     .escrito-item { background: rgba(21, 35, 54, 0.5); border: 1px solid var(--ring); border-radius: 12px; padding: 16px; margin-bottom: 12px; transition: all 0.2s; cursor: pointer; }
@@ -102,51 +106,21 @@
     <div class="header">
       <div>
         <h2><i class="ph-duotone ph-envelope-open" style="color: var(--primary-light);"></i> Buzón Sindical</h2>
-        <p>Envía tus trámites a las Secretarías y dale seguimiento a tus respuestas.</p>
+        <p>Consulta tus trámites y dale seguimiento a tus respuestas.</p>
       </div>
-      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <button class="btn btn-secondary" onclick="irAlGenerador()"><i class="ph-bold ph-magic-wand"></i> Asistente de Escritos</button>
-        <button class="btn" id="btn-nuevo-escrito" onclick="abrirFormulario()"><i class="ph-bold ph-paper-plane-tilt"></i> Enviar Escrito</button>
+      <div>
+        <button class="btn" id="btn-nuevo-escrito" onclick="irAlGenerador()"><i class="ph-bold ph-plus-circle"></i> Enviar Nuevo</button>
       </div>
-    </div>
-
-    <div class="card hide" id="form-section">
-      <h3><i class="ph-duotone ph-pencil-simple"></i> Nuevo Escrito</h3>
-      <form id="enviar-form">
-        <div class="form-group">
-          <label>¿A quién va dirigido?</label>
-          <select id="f-destino" class="form-control" required>
-            <option value="">Selecciona la Secretaría o Comisión...</option>
-            <option value="Secretaría General">Secretaría General</option>
-            <option value="Secretaría de Conflictos">Secretaría de Conflictos</option>
-            <option value="Secretaría de Admisión y Cambios">Secretaría de Admisión y Cambios</option>
-            <option value="Subcomisión Mixta de Escalafón">Subcomisión Mixta de Escalafón</option>
-            <option value="Bolsa de Trabajo">Bolsa de Trabajo</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Asunto del Trámite</label>
-          <input type="text" id="f-asunto" class="form-control" placeholder="Ej. Solicitud de Cambio de Adscripción" required>
-        </div>
-        <div class="form-group">
-          <label style="display:flex; justify-content:space-between; align-items:center;">
-            Cuerpo del Escrito
-            <a href="#" onclick="irAlGenerador(); return false;" style="color:var(--primary-light); text-decoration:none; display:flex; align-items:center; gap:4px; font-weight:bold;">
-              <i class="ph-bold ph-magic-wand"></i> Generar con IA
-            </a>
-          </label>
-          <textarea id="f-contenido" class="form-control" placeholder="Pega aquí el texto de tu escrito o redáctalo directamente..." required></textarea>
-        </div>
-        <div style="display: flex; gap: 12px; margin-top: 20px;">
-          <button type="submit" class="btn" id="btnSubmitForm">Enviar Escrito</button>
-          <button type="button" class="btn btn-secondary" onclick="cerrarFormulario()">Cancelar</button>
-        </div>
-        <div id="form-status" style="margin-top: 12px; font-size: 13px;"></div>
-      </form>
     </div>
 
     <div class="card" id="bandeja-section">
-      <h3 id="bandeja-titulo"><i class="ph-duotone ph-tray"></i> Mis Escritos Enviados</h3>
+      <h3 id="bandeja-titulo"><i class="ph-duotone ph-tray"></i> Mi Bandeja</h3>
+      
+      <div class="tabs" id="buzon-tabs">
+        <button id="tab-1" class="tab-btn active" onclick="switchTab('tab1')"><i class="ph-bold ph-paper-plane-right"></i> Enviados</button>
+        <button id="tab-2" class="tab-btn" onclick="switchTab('tab2')"><i class="ph-bold ph-download-simple"></i> Recibidos</button>
+      </div>
+
       <div id="lista-escritos">
         <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;">Cargando historial...</div>
       </div>
@@ -210,14 +184,13 @@
     let currentUser = null;
     let isAdmin = false;
     let currentEscritos = []; 
+    let currentTab = 'tab1';
 
-    // NUEVA FUNCIÓN DE REDIRECCIÓN
+    // FUNCIÓN DE REDIRECCIÓN AL GENERADOR
     function irAlGenerador() {
-      // Si estamos dentro del iframe del index.html
       if (window.parent && window.parent.PSD) {
         window.parent.PSD.openApp('denuncias');
       } else {
-        // Si por alguna razón se abre de forma independiente
         window.open('https://chronosbvrx.github.io/InnovacionSindical/denuncias', '_blank');
       }
     }
@@ -238,16 +211,18 @@
         document.getElementById('main-content').classList.remove('hide');
 
         const { data: prof } = await supabaseApp.from('profiles').select('role, display_name').eq('user_id', currentUser.id).maybeSingle();
+        
         if (prof && prof.role === 'admin') {
           isAdmin = true;
-          document.getElementById('bandeja-titulo').innerHTML = `<i class="ph-duotone ph-inbox"></i> Bandeja de Entrada (Administración)`;
+          document.getElementById('bandeja-titulo').innerHTML = `<i class="ph-duotone ph-inbox"></i> Bandeja de Administración`;
           document.getElementById('btn-nuevo-escrito').classList.add('hide'); 
-          // Ocultar también el nuevo botón para admins si lo deseas
-          const btnAsistente = document.querySelector('button[onclick="irAlGenerador()"]');
-          if(btnAsistente) btnAsistente.classList.add('hide');
+          
+          // Cambiar el texto de las pestañas para los administradores
+          document.getElementById('tab-1').innerHTML = `<i class="ph-bold ph-clock"></i> Pendientes`;
+          document.getElementById('tab-2').innerHTML = `<i class="ph-bold ph-check-circle"></i> Atendidos`;
         }
 
-        loadBandeja();
+        await loadDatos();
 
       } catch (error) {
         console.error(error);
@@ -260,52 +235,18 @@
       else window.open('login.html', '_top');
     }
 
-    function abrirFormulario() {
-      document.getElementById('form-section').classList.remove('hide');
-      document.getElementById('bandeja-section').classList.add('hide');
-    }
-    
-    function cerrarFormulario() {
-      document.getElementById('form-section').classList.add('hide');
-      document.getElementById('bandeja-section').classList.remove('hide');
-      document.getElementById('enviar-form').reset();
-      document.getElementById('form-status').innerHTML = '';
+    // GESTIÓN DE PESTAÑAS (TABS)
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.getElementById('tab-1').classList.remove('active');
+      document.getElementById('tab-2').classList.remove('active');
+      document.getElementById(tabId).classList.add('active');
+      
+      renderLista();
     }
 
-    document.getElementById('enviar-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if(!supabaseApp) return;
-
-      const destino = document.getElementById('f-destino').value;
-      const asunto = document.getElementById('f-asunto').value;
-      const contenido = document.getElementById('f-contenido').value;
-      const btn = document.getElementById('btnSubmitForm');
-      const statusDiv = document.getElementById('form-status');
-
-      btn.disabled = true;
-      statusDiv.innerHTML = '<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Enviando escrito oficial...</span>';
-
-      try {
-        const { error } = await supabaseApp.from('escritos_buzon').insert([{
-          user_id: currentUser.id,
-          area_destino: destino,
-          asunto: asunto,
-          contenido: contenido
-        }]);
-
-        if (error) throw error;
-
-        statusDiv.innerHTML = '<span style="color: var(--success)">✅ Escrito enviado exitosamente. Te notificaremos la respuesta.</span>';
-        setTimeout(() => { cerrarFormulario(); loadBandeja(); }, 2000);
-
-      } catch (err) {
-        console.error(err);
-        statusDiv.innerHTML = `<span style="color: var(--danger)">❌ Error al enviar: ${err.message}</span>`;
-        btn.disabled = false;
-      }
-    });
-
-    async function loadBandeja() {
+    // CARGAR DATOS DESDE SUPABASE
+    async function loadDatos() {
       const list = document.getElementById('lista-escritos');
       list.innerHTML = `<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;"><i class="ph-bold ph-spinner ph-spin"></i> Sincronizando...</div>`;
 
@@ -318,35 +259,8 @@
         const { data, error } = await query;
         if (error) throw error;
 
-        currentEscritos = data;
-
-        if (!data || data.length === 0) {
-          list.innerHTML = `<div style="padding: 30px; text-align:center; color: var(--text-muted);"><i class="ph-duotone ph-envelope-simple" style="font-size:48px; display:block; margin-bottom:12px;"></i>No hay escritos en la bandeja.</div>`;
-          return;
-        }
-
-        list.innerHTML = '';
-        data.forEach(item => {
-          let badgeClass = 'enviado';
-          if(item.estatus === 'En proceso') badgeClass = 'proceso';
-          if(item.estatus === 'Atendido') badgeClass = 'atendido';
-
-          const displayAsunto = item.folio ? `[${item.folio}] ${item.asunto.replace(`[${item.folio}] `, '')}` : item.asunto;
-
-          let metaText = isAdmin 
-            ? `De: <strong>${item.profiles?.display_name || 'Compañero'}</strong> (Matrícula: ${item.profiles?.matricula || 'N/A'}) • Para: ${item.area_destino}`
-            : `Destino: <strong>${item.area_destino}</strong>`;
-
-          list.innerHTML += `
-            <div class="escrito-item" onclick="abrirModal('${item.id}')">
-              <div class="escrito-header">
-                <h4 class="escrito-title">${displayAsunto}</h4>
-                <span class="badge ${badgeClass}">${item.estatus}</span>
-              </div>
-              <p class="escrito-meta"><i class="ph-bold ph-calendar-blank"></i> ${new Date(item.fecha_envio).toLocaleDateString('es-MX')} • ${metaText}</p>
-            </div>
-          `;
-        });
+        currentEscritos = data || [];
+        renderLista();
 
       } catch (err) {
         console.error(err);
@@ -354,6 +268,64 @@
       }
     }
 
+    // DIBUJAR LA LISTA DEPENDIENDO DE LA PESTAÑA ACTIVA
+    function renderLista() {
+      const list = document.getElementById('lista-escritos');
+      let filtrados = [];
+
+      if (isAdmin) {
+        // Lógica de Admin
+        if (currentTab === 'tab1') {
+          // Pendientes: Todo lo que NO esté Atendido
+          filtrados = currentEscritos.filter(x => x.estatus !== 'Atendido');
+        } else {
+          // Atendidos
+          filtrados = currentEscritos.filter(x => x.estatus === 'Atendido');
+        }
+      } else {
+        // Lógica de Usuario
+        if (currentTab === 'tab1') {
+          // Enviados: Mostrar todos sus escritos
+          filtrados = currentEscritos;
+        } else {
+          // Recibidos: Mostrar solo aquellos con respuesta o marcados como atendidos
+          filtrados = currentEscritos.filter(x => x.respuesta || x.archivo_respuesta || x.estatus === 'Atendido');
+        }
+      }
+
+      if (filtrados.length === 0) {
+        list.innerHTML = `<div style="padding: 40px 20px; text-align:center; color: var(--text-muted);">
+          <i class="ph-duotone ph-folder-open" style="font-size:48px; display:block; margin-bottom:12px; opacity:0.5;"></i>
+          No hay documentos en esta bandeja.
+        </div>`;
+        return;
+      }
+
+      list.innerHTML = '';
+      filtrados.forEach(item => {
+        let badgeClass = 'enviado';
+        if(item.estatus === 'En proceso') badgeClass = 'proceso';
+        if(item.estatus === 'Atendido') badgeClass = 'atendido';
+
+        const displayAsunto = item.folio ? `[${item.folio}] ${item.asunto.replace(`[${item.folio}] `, '')}` : item.asunto;
+
+        let metaText = isAdmin 
+          ? `De: <strong>${item.profiles?.display_name || 'Compañero'}</strong> (Matrícula: ${item.profiles?.matricula || 'N/A'}) • Para: ${item.area_destino}`
+          : `Destino: <strong>${item.area_destino}</strong>`;
+
+        list.innerHTML += `
+          <div class="escrito-item" onclick="abrirModal('${item.id}')">
+            <div class="escrito-header">
+              <h4 class="escrito-title">${displayAsunto}</h4>
+              <span class="badge ${badgeClass}">${item.estatus}</span>
+            </div>
+            <p class="escrito-meta"><i class="ph-bold ph-calendar-blank"></i> ${new Date(item.fecha_envio).toLocaleDateString('es-MX')} • ${metaText}</p>
+          </div>
+        `;
+      });
+    }
+
+    // MODAL Y RESPUESTAS
     function abrirModal(id) {
       const item = currentEscritos.find(x => x.id === id);
       if(!item) return;
@@ -396,9 +368,9 @@
         document.getElementById('m-respuesta-input').value = item.respuesta || '';
       } else {
         adminReplyForm.classList.add('hide');
-        if (item.respuesta || item.archivo_respuesta) {
+        if (item.respuesta || item.archivo_respuesta || item.estatus === 'Atendido') {
           userReplyView.classList.remove('hide');
-          document.getElementById('m-respuesta-text').textContent = item.respuesta || 'Se ha emitido un dictamen en el documento adjunto.';
+          document.getElementById('m-respuesta-text').textContent = item.respuesta || 'Se ha emitido un dictamen en el documento adjunto o se ha marcado como resuelto.';
           
           if (item.archivo_respuesta) {
             document.getElementById('m-respuesta-archivo-btn').innerHTML = `<a href="${item.archivo_respuesta}" target="_blank" class="btn success" style="margin-top: 10px;"><i class="ph-bold ph-file-pdf"></i> Descargar Resolución Oficial</a>`;
@@ -406,7 +378,12 @@
             document.getElementById('m-respuesta-archivo-btn').innerHTML = '';
           }
 
-          document.getElementById('m-respuesta-fecha').textContent = `Respondido el: ${new Date(item.fecha_respuesta).toLocaleString('es-MX')}`;
+          if (item.fecha_respuesta) {
+            document.getElementById('m-respuesta-fecha').textContent = `Respondido el: ${new Date(item.fecha_respuesta).toLocaleString('es-MX')}`;
+            document.getElementById('m-respuesta-fecha').classList.remove('hide');
+          } else {
+            document.getElementById('m-respuesta-fecha').classList.add('hide');
+          }
         } else {
           userReplyView.classList.add('hide');
         }
@@ -419,6 +396,7 @@
       document.getElementById('escrito-modal').classList.remove('active');
     }
 
+    // ENVÍO DE RESPUESTA ADMINISTRATIVA
     document.getElementById('admin-reply-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('m-id').value;
@@ -463,7 +441,7 @@
 
         statusDiv.innerHTML = '<span style="color: var(--success)">✅ Guardado exitosamente.</span>';
         
-        loadBandeja();
+        await loadDatos(); // Recargar datos frescos
         setTimeout(() => cerrarModal(), 1500);
 
       } catch (err) {
