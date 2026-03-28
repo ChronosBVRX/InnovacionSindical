@@ -172,7 +172,7 @@
     .btn-logout { background: transparent; color: #ff7b7b; border: 1px solid rgba(255,123,123,0.3); padding: 6px 10px; border-radius: 8px; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; }
     .btn-logout:hover { background: rgba(255,123,123,0.1); }
 
-    /* --- NOTIFICATION BELL STYLES --- */
+    /* --- NOTIFICATION & CALENDAR ICON STYLES --- */
     .notification-icon {
       position: relative;
       cursor: pointer;
@@ -184,7 +184,8 @@
       padding: 6px;
     }
     .notification-icon:hover { color: var(--primary-light); }
-    .notification-icon i { font-size: 24px; }
+    .notification-icon i { font-size: 24px; transition: all 0.3s ease; }
+    
     .notification-badge {
       position: absolute;
       top: 0px;
@@ -202,6 +203,30 @@
       padding: 0 4px;
       box-shadow: 0 0 0 2px var(--bg-body);
       animation: popIn 0.3s ease;
+    }
+
+    /* Estilos específicos para iluminar el calendario */
+    .indicator-dot {
+      position: absolute;
+      top: 5px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      background-color: var(--primary-light);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--primary-light), 0 0 0 2px var(--bg-body);
+      animation: pulseGlow 1.5s infinite;
+    }
+    
+    .icon-illuminated {
+      color: var(--primary-light) !important;
+      filter: drop-shadow(0 0 8px rgba(122, 209, 214, 0.6));
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 rgba(122, 209, 214, 0.7), 0 0 0 2px var(--bg-body); }
+      70% { box-shadow: 0 0 0 6px rgba(122, 209, 214, 0), 0 0 0 2px var(--bg-body); }
+      100% { box-shadow: 0 0 0 0 rgba(122, 209, 214, 0), 0 0 0 2px var(--bg-body); }
     }
 
     /* --- LOGIN MODAL STYLES --- */
@@ -518,6 +543,11 @@
       
       <div id="auth-logged" class="hide" style="display: flex; gap: 12px; align-items: center;">
         
+        <div id="calendar-icon" class="notification-icon" onclick="PSD.openApp('calendario')" title="Calendario">
+          <i class="ph-duotone ph-calendar-blank"></i>
+          <span id="calendar-badge" class="indicator-dot hide"></span>
+        </div>
+
         <div class="notification-icon" onclick="PSDAuth.markNotificationsAsRead(); PSD.openApp('buzon');" title="Notificaciones">
           <i class="ph-duotone ph-bell"></i>
           <span id="notif-badge" class="notification-badge hide">0</span>
@@ -685,7 +715,8 @@
       { id: 'denuncias', title: 'Gestor de Escritos', desc: 'IA.', iconClass: 'ph-duotone ph-pen-nib', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados.', iconClass: 'ph-duotone ph-broadcast', iframe: 'noticias.html' },
       { id: 'biblioteca', title: 'Biblioteca', desc: 'Recursos digitales.', iconClass: 'ph-duotone ph-books', iframe: 'biblioteca.html' },
-      { id: 'calendario', title: 'Calendario', desc: 'Eventos Oficiales sindicales.', iconClass: 'ph-duotone ph-calendar-blank', iframe: 'calendario.html' },
+      // Añadido: hideFromMenu: true para ocultarlo del grid central
+      { id: 'calendario', title: 'Calendario', desc: 'Eventos Oficiales sindicales.', iconClass: 'ph-duotone ph-calendar-blank', iframe: 'calendario.html', hideFromMenu: true },
       { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Acceso a representantes sindicales.', iconClass: 'ph-duotone ph-scales', href: 'nucleo.html', featured: true, newTab: true },
       { id: 'comite', title: 'Comité Seccional', desc: 'Planilla Azul.', iconClass: 'ph-duotone ph-users-three',  iframe: 'comite.html' },
       { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción.', iconClass: 'ph-duotone ph-scan-smiley', href: 'kiosko.html', featured: true, newTab: true },
@@ -755,7 +786,8 @@
         const correosAutorizados = ['s.general@seccionxx.mx', 's.interior@seccionxx.mx', 'c.vigilancia@seccionxx.mx'];
 
         APPS.forEach(a => {
-          if(a.id === 'privacidad') return; 
+          // Ya no renderiza privacidad ni las apps marcadas con hideFromMenu (ej. calendario)
+          if(a.id === 'privacidad' || a.hideFromMenu) return; 
 
           if (a.adminOnly) {
             const isSuperAdmin = userRole === 'admin' && userEmail && !userEmail.includes('@seccionxx.mx');
@@ -847,11 +879,35 @@
 
           PSD.renderTiles(session.user.email, prof?.role);
           this.checkNotifications(session.user.id);
+          this.checkUpcomingEvents(); // Añadido para verificar el calendario
         } else {
           unloggedDiv.classList.remove('hide');
           loggedDiv.classList.add('hide');
           
           PSD.renderTiles();
+        }
+      },
+
+      async checkUpcomingEvents() {
+        // Lógica de validación para activar el efecto de iluminación
+        // Puedes conectarlo directamente a tu tabla de eventos en Supabase aquí.
+        // Por ahora, usamos una variable simulada para que veas el efecto funcionando.
+        try {
+          // Simulación: Cambia a "false" para apagar la iluminación.
+          const hasUpcomingEvent = true; 
+
+          const calIcon = document.getElementById('calendar-icon');
+          const calBadge = document.getElementById('calendar-badge');
+
+          if (hasUpcomingEvent) {
+            calIcon.classList.add('icon-illuminated');
+            calBadge.classList.remove('hide');
+          } else {
+            calIcon.classList.remove('icon-illuminated');
+            calBadge.classList.add('hide');
+          }
+        } catch (err) {
+          console.error("Error al verificar eventos del calendario:", err);
         }
       },
 
