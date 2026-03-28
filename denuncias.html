@@ -30,18 +30,25 @@
 
   * { box-sizing: border-box; transition: all 0.2s ease; }
   html, body { height: 100%; margin: 0; background: var(--bg-dark); background-image: var(--bg-gradient); color: var(--text-main); font-family: 'Inter', sans-serif; }
-  .wrap { max-width: 800px; margin: 0 auto; padding: 30px 20px; }
   
-  h1 { font-size: 22px; text-align: center; background: linear-gradient(90deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px; }
+  /* MEJORA 1: Aprovechar el ancho de la pantalla */
+  .wrap { max-width: 1000px; width: 95%; margin: 0 auto; padding: 30px 15px; }
+  
+  h1 { font-size: 24px; text-align: center; background: linear-gradient(90deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px; }
 
-  .card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 20px; padding: 24px; backdrop-filter: blur(12px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); min-height: 400px; }
+  .card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 20px; padding: 30px; backdrop-filter: blur(12px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); min-height: 400px; }
   
-  /* GRID DE DATOS (READONLY) */
-  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--panel-border); }
+  /* GRID DE DATOS REVISADO PARA RESPONSIVE */
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--panel-border); }
   .grid-full { grid-column: 1 / -1; }
 
-  label { display: block; font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 6px; text-transform: uppercase; }
-  input, select, textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--input-border); background: var(--input-bg); color: #fff; font-size: 14px; }
+  /* SISTEMA DE COLUMNAS FLEXIBLE */
+  .flex-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+  .flex-col { flex: 1; min-width: 250px; }
+
+  label { display: block; font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  input, select, textarea { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--input-border); background: var(--input-bg); color: #fff; font-size: 15px; font-family: 'Inter', sans-serif; }
+  textarea { min-height: 120px; resize: vertical; }
   
   input[readonly] { background: rgba(15, 23, 42, 0.3); border-color: transparent; color: var(--text-muted); cursor: not-allowed; font-weight: 600; }
 
@@ -49,14 +56,14 @@
   .advanced-panel { height: 0; overflow: hidden; opacity: 0; }
   .advanced-panel.show { height: auto; opacity: 1; padding-top: 20px; margin-top: 20px; border-top: 1px solid var(--panel-border); }
 
-  .btn-toggle { background: none; border: none; color: var(--text-muted); font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 15px auto; }
-  .btn-toggle:hover { color: var(--primary); }
+  .btn-toggle { background: none; border: none; color: var(--text-muted); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin: 20px auto; padding: 10px; border-radius: 8px; }
+  .btn-toggle:hover { color: var(--primary); background: rgba(255,255,255,0.05); }
 
-  .btn { width: 100%; padding: 15px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; text-decoration: none; }
+  .btn { width: 100%; padding: 15px 20px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; text-decoration: none; }
   .btn.primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: #0f172a; }
   .btn.success { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
   .btn.outline { background: transparent; border: 1px solid var(--panel-border); color: var(--text-main); }
-  .btn.outline-accent { background: rgba(56, 189, 248, 0.1); border: 1px solid var(--primary); color: var(--primary); font-size: 12px; padding: 8px 16px; border-radius: 8px; width: auto; display: inline-flex; }
+  .btn.outline-accent { background: rgba(56, 189, 248, 0.1); border: 1px solid var(--primary); color: var(--primary); font-size: 13px; padding: 10px 16px; border-radius: 8px; width: auto; display: inline-flex; }
   .btn.outline-accent:hover { background: var(--primary); color: #0f172a; }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -69,8 +76,13 @@
   /* MODALES Y PDF */
   .modal { position: fixed; inset: 0; background: rgba(10, 15, 25, 0.98); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
   .modal.show { display: flex; }
-  .modal-card { background: #1e293b; border-radius: 20px; width: 100%; max-width: 900px; padding: 25px; display: flex; flex-direction: column; max-height: 95vh;}
+  .modal-card { background: #1e293b; border-radius: 20px; width: 100%; max-width: 1000px; padding: 30px; display: flex; flex-direction: column; max-height: 95vh;}
   .modal-b { flex: 1; overflow: auto; display: flex; justify-content: center; background: #334155; border-radius: 12px; padding: 20px; margin: 15px 0;}
+  
+  /* MEJORA: Sección de firma oculta inicialmente */
+  .seccion-firma { display: none; padding-top: 15px; border-top: 1px solid var(--panel-border); margin-top: 10px; animation: fadeIn 0.4s ease; }
+  .seccion-firma.show { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
   /* HOJA TAMAÑO CARTA EXACTA */
   .page.carta { width: 816px; height: 1056px; background: #fff; color: #111; box-shadow: 0 10px 40px rgba(0,0,0,0.5); flex-shrink: 0; transform-origin: top center; }
@@ -83,24 +95,33 @@
   .hide { display: none !important; }
 
   /* ALERTAS Y GUÍA */
-  .lock-alert { background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4); color: var(--warning); padding: 16px; border-radius: 12px; font-size: 14px; text-align: center; margin-bottom: 15px; }
+  .lock-alert { background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4); color: var(--warning); padding: 16px; border-radius: 12px; font-size: 14px; text-align: center; margin-bottom: 20px; line-height: 1.5; }
   
   .guia-categoria { font-size: 16px; color: var(--primary); margin: 20px 0 10px 0; padding-bottom: 5px; border-bottom: 1px solid var(--panel-border); font-weight: bold; text-transform: uppercase;}
   .guia-item { background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); padding: 15px; border-radius: 10px; margin-bottom: 10px; }
   .guia-item h4 { color: var(--accent); margin: 0 0 5px 0; font-size: 15px; }
   .guia-item p { color: var(--text-muted); margin: 0; font-size: 13px; line-height: 1.4; }
 
-  /* NOTIFICACIÓN FLOTANTE */
-  #status { position: fixed; bottom: 20px; right: 20px; background: #1e293b; border-left: 4px solid var(--primary); color: #fff; padding: 12px 20px; border-radius: 8px; transform: translateY(100px); transition: 0.3s; z-index: 2000; }
+  #status { position: fixed; bottom: 20px; right: 20px; background: #1e293b; border-left: 4px solid var(--primary); color: #fff; padding: 12px 20px; border-radius: 8px; transform: translateY(100px); transition: 0.3s; z-index: 2000; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
   #status.visible { transform: translateY(0); }
 
-  /* ANIMACIÓN SPINNER */
   @keyframes girar { 100% { transform: rotate(360deg); } }
   .anim-spin { animation: girar 1s linear infinite; }
   #loader-inicial { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; color: var(--primary); }
 
+  /* AJUSTES PARA CELULAR */
+  @media (max-width: 768px) {
+    .card { padding: 20px; }
+    .info-grid { grid-template-columns: 1fr; gap: 15px; padding: 15px; }
+    .flex-row { flex-direction: column; gap: 15px; }
+    .flex-col { min-width: 100%; }
+    .modal-card { padding: 20px; width: 95%; max-height: 98vh; }
+    .modal-header-actions { justify-content: center; }
+    .btn { font-size: 13px; padding: 12px 15px; }
+  }
+
   @media print {
-    .wrap, .modal-card > div:not(.modal-b), #status, #loader-inicial, .lock-alert { display: none !important; }
+    .wrap, .modal-card > div:not(.modal-b), #status, #loader-inicial, .lock-alert, .seccion-firma { display: none !important; }
     body, .modal, .modal-card, .modal-b { background: transparent !important; position: static !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; display: block !important; width: 100% !important; height: auto !important; overflow: visible !important; }
     .page.carta { width: 100% !important; height: auto !important; transform: none !important; box-shadow: none !important; margin: 0 !important; }
     .sheet { padding: 2cm !important; height: auto !important; }
@@ -113,7 +134,7 @@
 <body>
   <div class="wrap" id="mainWrap">
     <div style="margin-bottom: 20px;">
-      <a class="btn outline" href="#" onclick="window.history.back(); return false;" style="display:inline-flex; width:auto; padding: 8px 16px; border:none;">⬅ Regresar</a>
+      <a class="btn outline" href="#" onclick="window.history.back(); return false;" style="display:inline-flex; width:auto; padding: 8px 16px; border:none; color: var(--text-muted);"><i class="ph-bold ph-arrow-left"></i> Regresar</a>
     </div>
 
     <h1>Generador de Escritos PSD</h1>
@@ -146,8 +167,9 @@
         </div>
 
         <form id="formEscrito">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-            <div class="grid-full">
+          
+          <div class="flex-row">
+            <div class="flex-col grid-full">
               <label>¿A quién va dirigido?</label>
               <select id="selectDestino" required>
                 <option value="">— Selecciona —</option>
@@ -194,41 +216,40 @@
                   <option value="Subcomisión Mixta de Revisión de Plantillas — Representación Sindical|E.G. Luis Fernando García Cervantes">Revisión de Plantillas</option>
                 </optgroup>
               </select>
-            </div>
-            
-            <div class="grid-full" style="margin-top: -10px; margin-bottom: 5px;">
-              <button type="button" class="btn outline-accent" id="btnAbrirGuia">
-                <i class="ph-bold ph-question"></i> ¿Tienes dudas de a quién dirigir el escrito? Haz clic aquí
+              <button type="button" class="btn outline-accent" id="btnAbrirGuia" style="margin-top: 10px;">
+                <i class="ph-bold ph-question"></i> ¿Dudas del destinatario? Guía aquí
               </button>
             </div>
-
-            <div><label>Fecha del escrito</label><input id="inputFecha" type="date" required></div>
-            <div><label>Lugar (Municipio)</label><input id="inputCiudad" placeholder="Ej. Morelia" required></div>
           </div>
 
-          <div class="form-group">
+          <div class="flex-row">
+            <div class="flex-col"><label>Fecha del escrito</label><input id="inputFecha" type="date" required></div>
+            <div class="flex-col"><label>Lugar (Municipio)</label><input id="inputCiudad" placeholder="Ej. Morelia" required></div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
             <label>Descripción de los hechos (La IA redactará tu solicitud)</label>
-            <textarea id="textoHechos" placeholder="Explica tu trámite o problema de forma clara..." required></textarea>
+            <textarea id="textoHechos" placeholder="Explica tu trámite o problema de forma clara... Ej: Solicito una beca para mi hijo..." required></textarea>
           </div>
 
           <button type="button" class="btn-toggle" id="toggleAvanzado">
-            <i class="ph-bold ph-gear-six"></i> Opciones Adicionales (Copias, Evidencia)
+            <i class="ph-bold ph-gear-six"></i> Mostrar Opciones Avanzadas (Copias, Evidencia)
           </button>
 
           <div class="advanced-panel" id="panelAvanzado">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-              <div><label>Con atención a</label><select id="selectAtn"><option value="">Ninguno</option></select></div>
-              <div><label>Con copia para (c.c.p)</label><select id="selectCCP"><option value="">Ninguno</option></select></div>
+            <div class="flex-row">
+              <div class="flex-col"><label>Con atención a</label><select id="selectAtn"><option value="">Ninguno</option></select></div>
+              <div class="flex-col"><label>Con copia para (c.c.p)</label><select id="selectCCP"><option value="">Ninguno</option></select></div>
             </div>
             <div style="margin-top: 15px;">
               <label>Anexar fotografías de evidencia</label>
-              <input type="file" id="inputFotos" multiple accept="image/*">
-              <div id="preview-evidencia" style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;"></div>
+              <input type="file" id="inputFotos" multiple accept="image/*" style="padding: 10px;">
+              <div id="preview-evidencia" style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;"></div>
             </div>
           </div>
 
-          <button type="submit" class="btn primary" id="btnGenerarPrincipal" style="margin-top: 20px;">
-            🚀 Redactar con IA y Generar Documento
+          <button type="submit" class="btn primary" id="btnGenerarPrincipal" style="margin-top: 30px; font-size: 16px;">
+            <i class="ph-bold ph-magic-wand"></i> Redactar con IA y Generar Documento
           </button>
         </form>
       </div> 
@@ -242,23 +263,24 @@
           <h3 style="color:#fff; margin:0; display:flex; align-items:center; gap:8px;"><i class="ph-bold ph-book-open"></i> Guía Oficial de Destinatarios</h3>
           <p style="color: var(--warning); font-size: 13px; margin: 6px 0 0 0; font-weight: 600;">⚠️ Esta guía está basada íntegramente en los Estatutos SNTSS (2022).</p>
         </div>
-        <button class="btn" id="btnCerrarGuia" style="width:auto; padding:8px; background:transparent; border:none; color:#ef4444;"><i class="ph-bold ph-x" style="font-size:24px;"></i></button>
+        <button class="btn" id="btnCerrarGuia" style="width:auto; padding:8px; background:transparent; border:none; color:#ef4444; cursor:pointer;"><i class="ph-bold ph-x" style="font-size:24px;"></i></button>
       </div>
       
       <div id="contenedorGuiaEstatutos" style="padding: 20px 25px; overflow-y: auto; display: flex; flex-direction: column; background: #1e293b; border-radius: 0 0 20px 20px;">
-        </div>
+      </div>
     </div>
   </div>
 
   <div id="modalFirma" class="modal">
     <div class="modal-card">
       
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px; flex-wrap:wrap; gap:10px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; flex-wrap:wrap; gap:15px;">
         <h3 style="color:#fff; margin:0;">Vista Previa del Oficio</h3>
-        <div style="display:flex; gap:10px;">
-          <button class="btn outline" id="btnPrint" style="padding: 8px 16px;">🖨️ Imprimir</button>
-          <button class="btn outline" id="btnDescargar" style="padding: 8px 16px;">📥 Descargar PDF</button>
-          <button class="btn outline" id="btnCerrarFirma" style="padding: 8px 16px; border-color: #ef4444; color:#ef4444;">✖ Cerrar</button>
+        <div class="modal-header-actions" style="display:flex; gap:10px; flex-wrap: wrap;">
+          <button class="btn outline" id="btnPrint" style="padding: 10px 16px; width: auto;"><i class="ph-bold ph-printer"></i> Imprimir</button>
+          <button class="btn outline" id="btnDescargar" style="padding: 10px 16px; width: auto;"><i class="ph-bold ph-download-simple"></i> Guardar PDF</button>
+          <button class="btn primary" id="btnActivarBuzon" style="padding: 10px 16px; width: auto;"><i class="ph-bold ph-paper-plane-right"></i> Enviar por Buzón Digital</button>
+          <button class="btn outline" id="btnCerrarFirma" style="padding: 10px 16px; width: auto; border-color: #ef4444; color:#ef4444;"><i class="ph-bold ph-x"></i></button>
         </div>
       </div>
       
@@ -268,16 +290,19 @@
         </div>
       </div>
       
-      <label style="color:#fff; margin-top:10px;">Firma aquí (Opcional para descargar PDF):</label>
-      <canvas id="padFirma" style="background:#fff; width:100%; height:120px; border-radius:10px; cursor:crosshair; margin-bottom: 15px;"></canvas>
-      
-      <div class="lock-alert">
-        <i class="ph-bold ph-lock-key" style="font-size: 20px; vertical-align: middle;"></i> 
-        <strong>Envío a Buzón Digital bloqueado:</strong> Disponible a partir del 16 de abril.<br>
-        <span style="color: #fff; font-weight: bold; font-size: 15px; display:block; margin-top: 5px;">¡Vota Planilla Azul para hacerlo realidad!</span>
+      <div id="seccionFirmaDigital" class="seccion-firma">
+        <label style="color:#fff; font-size: 14px; text-transform: none; margin-bottom: 10px;">Dibuja tu firma para autorizar el trámite digital:</label>
+        <canvas id="padFirma" style="background:#fff; width:100%; height:160px; border-radius:10px; border: 2px dashed #94a3b8; cursor:crosshair; margin-bottom: 20px;"></canvas>
+        
+        <div class="lock-alert">
+          <i class="ph-bold ph-lock-key" style="font-size: 22px; vertical-align: middle;"></i> 
+          <strong>Envío a Buzón Digital bloqueado:</strong> Función disponible a partir del 16 de abril.<br>
+          <span style="color: #fff; font-weight: bold; font-size: 16px; display:block; margin-top: 8px;">¡Vota Planilla Azul para hacerlo realidad!</span>
+        </div>
+
+        <button class="btn success" id="btnFinalizar" disabled style="font-size: 16px;"><i class="ph-bold ph-check-circle"></i> Confirmar Firma y Enviar a Buzón Digital</button>
       </div>
 
-      <button class="btn primary" id="btnFinalizar" disabled>✅ Confirmar Firma y Enviar a Buzón Digital</button>
     </div>
   </div>
 
@@ -295,7 +320,6 @@
       let fotosBase64 = [];
       let supabase;
       let currentUser = null;
-      let currentFolio = "";
 
       const showStatus = (t) => {
         const s = $('#status');
@@ -446,8 +470,12 @@
         });
 
         // PANEL AVANZADO
-        $('#toggleAvanzado').addEventListener('click', () => {
-          $('#panelAvanzado').classList.toggle('show');
+        $('#toggleAvanzado').addEventListener('click', function() {
+          const panel = $('#panelAvanzado');
+          panel.classList.toggle('show');
+          this.innerHTML = panel.classList.contains('show') 
+            ? '<i class="ph-bold ph-gear-six"></i> Ocultar Opciones Avanzadas' 
+            : '<i class="ph-bold ph-gear-six"></i> Mostrar Opciones Avanzadas (Copias, Evidencia)';
         });
 
         // MANEJO DE FOTOS
@@ -459,7 +487,7 @@
             const r = new FileReader();
             r.onload = (ev) => {
               const img = document.createElement('img');
-              img.src = ev.target.result; img.style.width="60px"; img.style.height="60px"; img.style.objectFit="cover"; img.style.borderRadius="8px"; img.style.border="2px solid var(--primary)";
+              img.src = ev.target.result; img.style.width="70px"; img.style.height="70px"; img.style.objectFit="cover"; img.style.borderRadius="8px"; img.style.border="2px solid var(--primary)";
               $('#preview-evidencia').appendChild(img);
               fotosBase64.push(ev.target.result);
             };
@@ -492,7 +520,7 @@
           e.preventDefault();
           
           const btnSubmit = $('#btnGenerarPrincipal');
-          btnSubmit.innerHTML = "⏳ Redactando con Inteligencia Artificial...";
+          btnSubmit.innerHTML = "<i class='ph-bold ph-spinner anim-spin'></i> Redactando con Inteligencia Artificial...";
           btnSubmit.disabled = true;
 
           const targetSelect = $('#selectDestino');
@@ -505,10 +533,10 @@
           let atnHtml = $('#selectAtn').value ? `<div style="margin-top:15px; font-weight:bold;">At'n: ${$('#selectAtn').value.split('|')[1]}<br><span style="font-weight:normal; font-size:11pt;">${$('#selectAtn').value.split('|')[0]}</span></div>` : "";
           let ccpHtml = $('#selectCCP').value ? `<div style="font-size:8pt; margin-top:40px; text-align:left;">c.c.p. ${$('#selectCCP').value.split('|')[1]} - ${$('#selectCCP').value.split('|')[0]}. Para su conocimiento e intervención.</div>` : "";
 
-          // El folio dice PENDIENTE hasta que sea el envío digital real
+          // Contenedor del Folio Vacío Inicialmente
           $('#sheet').innerHTML = `
             <header>
-              <div style="text-align: right; color: #991b1b; font-size: 13pt; margin-bottom: 16px;">Folio Oficial: <strong>PENDIENTE DE ENVÍO DIGITAL</strong></div>
+              <div id="folio-documento" style="text-align: right; color: #991b1b; font-size: 13pt; margin-bottom: 16px; min-height: 25px;"></div>
               ${ciudad}, a ${fechaLarga}
             </header>
             <div class="dest">${nombre}</div>
@@ -527,44 +555,91 @@
             </div>
           `;
 
-          btnSubmit.innerHTML = "🚀 Redactar con IA y Generar Documento";
+          btnSubmit.innerHTML = "<i class='ph-bold ph-magic-wand'></i> Redactar con IA y Generar Documento";
           btnSubmit.disabled = false;
+
+          // Restaurar estados iniciales del modal
+          $('#seccionFirmaDigital').classList.remove('show');
+          $('#btnActivarBuzon').style.display = 'inline-flex';
 
           $('#modalFirma').classList.add('show');
           ajustarEscala();
-          iniciarPad();
         });
 
-        // FIRMA EN PANTALLA
+        // LÓGICA DE ACTIVACIÓN BUZÓN DIGITAL
+        $('#btnActivarBuzon').addEventListener('click', () => {
+          // 1. Mostrar texto de folio en el documento
+          $('#folio-documento').innerHTML = `Folio Oficial: <strong>PENDIENTE DE ENVÍO DIGITAL</strong>`;
+          
+          // 2. Ocultar el botón que lo activó
+          $('#btnActivarBuzon').style.display = 'none';
+          
+          // 3. Mostrar área de firma
+          const areaFirma = $('#seccionFirmaDigital');
+          areaFirma.classList.add('show');
+          
+          // 4. Iniciar Pad (Debe hacerse DESPUÉS de que es visible para tomar el ancho correcto)
+          iniciarPad();
+
+          // 5. Scroll suave hasta la firma
+          areaFirma.scrollIntoView({behavior: 'smooth', block: 'end'});
+        });
+
+
+        // FIRMA EN PANTALLA MEJORADA
         let dibujando = false, ctx;
         function iniciarPad() {
-          const c = $('#padFirma'); c.width = c.offsetWidth; c.height = 120;
-          ctx = c.getContext('2d'); ctx.lineWidth = 2; ctx.strokeStyle = "#000080";
+          const c = $('#padFirma'); 
+          // Es crucial leer el offsetWidth cuando el contenedor ya está visible (display:block)
+          c.width = c.offsetWidth; 
+          c.height = 160;
+          ctx = c.getContext('2d'); 
+          ctx.lineWidth = 2.5; 
+          ctx.strokeStyle = "#0f172a"; // Trazo azul oscuro tipo tinta
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
           ctx.clearRect(0,0,c.width,c.height); 
-          c.onmousedown = c.ontouchstart = (e) => { dibujando = true; ctx.beginPath(); e.preventDefault(); };
+          
+          c.onmousedown = c.ontouchstart = (e) => { 
+            dibujando = true; 
+            ctx.beginPath(); 
+            e.preventDefault(); 
+          };
+          
           c.onmousemove = c.ontouchmove = (e) => { 
             if(!dibujando) return; 
             const rect = c.getBoundingClientRect();
-            const x = (e.clientX || e.touches[0].clientX) - rect.left;
-            const y = (e.clientY || e.touches[0].clientY) - rect.top;
-            ctx.lineTo(x, y); ctx.stroke();
+            // Corrección de posición exacta del touch/mouse
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            if (clientX !== undefined && clientY !== undefined) {
+              const x = clientX - rect.left;
+              const y = clientY - rect.top;
+              ctx.lineTo(x, y); 
+              ctx.stroke();
+            }
           };
-          c.onmouseup = c.ontouchend = () => dibujando = false;
+          c.onmouseup = c.ontouchend = c.onmouseout = () => dibujando = false;
         }
 
-        // ACCIONES DEL MODAL FINAL (IMPRIMIR Y DESCARGAR LIBERADOS)
+        // ACCIONES DEL MODAL FINAL
         $('#btnPrint').addEventListener('click', () => {
           const originalTitle = document.title;
           document.title = `Oficio_SNTSS_${$('#valMatricula').value}`;
           
-          const imgFirma = document.createElement('img');
-          imgFirma.src = $('#padFirma').toDataURL('image/png');
-          imgFirma.id = "img-firma-temp";
-          imgFirma.style.maxHeight = '80px'; imgFirma.style.margin = '10px auto 5px auto'; imgFirma.style.display = 'block';
-          
+          // Solo pegamos la firma si el canvas está activo y fue modificado (opcional)
+          let imgFirma = null;
           const lineaFirma = $('#linea-firma');
-          lineaFirma.parentNode.insertBefore(imgFirma, lineaFirma);
-          lineaFirma.style.display = 'none';
+
+          if($('#seccionFirmaDigital').classList.contains('show')) {
+            imgFirma = document.createElement('img');
+            imgFirma.src = $('#padFirma').toDataURL('image/png');
+            imgFirma.id = "img-firma-temp";
+            imgFirma.style.maxHeight = '80px'; imgFirma.style.margin = '10px auto 5px auto'; imgFirma.style.display = 'block';
+            lineaFirma.parentNode.insertBefore(imgFirma, lineaFirma);
+            lineaFirma.style.display = 'none';
+          }
 
           $('#modalFirma').style.display = 'none';
           $('#mainWrap').style.display = 'none';
@@ -575,22 +650,27 @@
           $('#mainWrap').style.display = '';
           document.title = originalTitle;
           
-          lineaFirma.style.display = 'block';
-          $('#img-firma-temp').remove();
+          if(imgFirma) {
+            lineaFirma.style.display = 'block';
+            $('#img-firma-temp').remove();
+          }
         });
 
         $('#btnDescargar').addEventListener('click', async () => {
           const btn = $('#btnDescargar');
           btn.disabled = true;
-          btn.innerHTML = "⏳ Generando PDF...";
+          btn.innerHTML = "<i class='ph-bold ph-spinner anim-spin'></i> Generando PDF...";
 
-          const imgFirma = document.createElement('img');
-          imgFirma.src = $('#padFirma').toDataURL('image/png');
-          imgFirma.style.maxHeight = '80px'; imgFirma.style.margin = '10px auto 5px auto'; imgFirma.style.display = 'block';
-          
+          let imgFirma = null;
           const lineaFirma = $('#linea-firma');
-          lineaFirma.parentNode.insertBefore(imgFirma, lineaFirma);
-          lineaFirma.style.display = 'none';
+
+          if($('#seccionFirmaDigital').classList.contains('show')) {
+            imgFirma = document.createElement('img');
+            imgFirma.src = $('#padFirma').toDataURL('image/png');
+            imgFirma.style.maxHeight = '80px'; imgFirma.style.margin = '10px auto 5px auto'; imgFirma.style.display = 'block';
+            lineaFirma.parentNode.insertBefore(imgFirma, lineaFirma);
+            lineaFirma.style.display = 'none';
+          }
 
           const pageEl = $('#page');
           const originalTransform = pageEl.style.transform;
@@ -613,19 +693,17 @@
 
             doc.save(`Oficio_SNTSS_${$('#valMatricula').value}.pdf`);
             
-            btn.disabled = false;
-            btn.innerHTML = "📥 Descargar PDF";
-            lineaFirma.style.display = 'block';
-            imgFirma.remove();
-
           } catch (e) {
             console.error(e);
             alert("Error al descargar el PDF: " + e.message);
-            btn.disabled = false;
-            btn.innerHTML = "📥 Descargar PDF";
             pageEl.style.transform = originalTransform;
-            lineaFirma.style.display = 'block';
-            imgFirma.remove();
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = "<i class='ph-bold ph-download-simple'></i> Guardar PDF";
+            if(imgFirma) {
+              lineaFirma.style.display = 'block';
+              imgFirma.remove();
+            }
           }
         });
 
