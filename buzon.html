@@ -26,9 +26,13 @@
     body { margin: 0; padding: 24px; background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; box-sizing: border-box; }
     * { box-sizing: border-box; }
 
-    .header { margin-bottom: 24px; border-bottom: 1px solid var(--ring); padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;}
+    .header { margin-bottom: 24px; border-bottom: 1px solid var(--ring); padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;}
     .header h2 { margin: 0 0 8px 0; font-size: 22px; display: flex; align-items: center; gap: 10px; }
     .header p { margin: 0; color: var(--text-muted); font-size: 14px; line-height: 1.5; }
+
+    /* Margen para evitar choque con los botones flotantes del padre */
+    .header-actions { margin-right: 130px; margin-top: 5px; }
+    @media (max-width: 768px) { .header-actions { margin-right: 0; margin-top: 10px; } }
 
     .card { background: rgba(var(--panel-base), 0.3); border: 1px solid var(--ring); border-radius: 16px; padding: 20px; margin-bottom: 24px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }
     .card h3 { margin: 0 0 16px 0; font-size: 18px; color: var(--primary-light); display: flex; align-items: center; gap: 8px; }
@@ -42,8 +46,8 @@
     .auth-wall p { margin: 0 0 24px 0; color: var(--text-muted); max-width: 400px; line-height: 1.5; }
 
     .btn { background: var(--primary); color: #0a141d; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: all 0.2s; text-decoration: none;}
-    .btn:hover { background: var(--primary-light); transform: translateY(-2px); }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(77, 161, 168, 0.3); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
     
     .btn.success { background: linear-gradient(135deg, #22c55e, #16a34a); color: white;}
     .btn.success:hover { box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); }
@@ -70,7 +74,7 @@
 
     /* --- LISTA DE ESCRITOS --- */
     .escrito-item { background: rgba(21, 35, 54, 0.5); border: 1px solid var(--ring); border-radius: 12px; padding: 16px; margin-bottom: 12px; transition: all 0.2s; cursor: pointer; }
-    .escrito-item:hover { border-color: var(--primary-light); background: rgba(var(--panel-base), 0.4); }
+    .escrito-item:hover { border-color: var(--primary-light); background: rgba(var(--panel-base), 0.4); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2);}
     .escrito-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 12px; flex-wrap: wrap;}
     .escrito-title { font-size: 16px; font-weight: 600; color: var(--text-main); margin: 0; }
     .escrito-meta { font-size: 12px; color: var(--text-muted); margin: 4px 0 0 0; display: flex; align-items: center; gap: 6px;}
@@ -108,7 +112,7 @@
         <h2><i class="ph-duotone ph-envelope-open" style="color: var(--primary-light);"></i> Buzón Sindical</h2>
         <p>Consulta tus trámites y dale seguimiento a tus respuestas.</p>
       </div>
-      <div>
+      <div class="header-actions">
         <button class="btn" id="btn-nuevo-escrito" onclick="irAlGenerador()"><i class="ph-bold ph-plus-circle"></i> Enviar Nuevo</button>
       </div>
     </div>
@@ -273,21 +277,15 @@
       let filtrados = [];
 
       if (isAdmin) {
-        // Lógica de Admin
         if (currentTab === 'tab1') {
-          // Pendientes: Todo lo que NO esté Atendido
           filtrados = currentEscritos.filter(x => x.estatus !== 'Atendido');
         } else {
-          // Atendidos
           filtrados = currentEscritos.filter(x => x.estatus === 'Atendido');
         }
       } else {
-        // Lógica de Usuario
         if (currentTab === 'tab1') {
-          // Enviados: Mostrar todos sus escritos
           filtrados = currentEscritos;
         } else {
-          // Recibidos: Mostrar solo aquellos con respuesta o marcados como atendidos
           filtrados = currentEscritos.filter(x => x.respuesta || x.archivo_respuesta || x.estatus === 'Atendido');
         }
       }
