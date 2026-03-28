@@ -41,7 +41,6 @@
     .auth-wall h2 { margin: 0 0 12px 0; font-size: 24px; }
     .auth-wall p { margin: 0 0 24px 0; color: var(--text-muted); max-width: 400px; line-height: 1.5; }
 
-    /* CORRECCIÓN: COLOR DE TEXTO DE BOTÓN FIJADO A OSCURO */
     .btn { background: var(--primary); color: #0a141d; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: all 0.2s; text-decoration: none;}
     .btn:hover { background: var(--primary-light); transform: translateY(-2px); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
@@ -105,7 +104,10 @@
         <h2><i class="ph-duotone ph-envelope-open" style="color: var(--primary-light);"></i> Buzón Sindical</h2>
         <p>Envía tus trámites a las Secretarías y dale seguimiento a tus respuestas.</p>
       </div>
-      <button class="btn" id="btn-nuevo-escrito" onclick="abrirFormulario()"><i class="ph-bold ph-paper-plane-tilt"></i> Redactar Escrito</button>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn btn-secondary" onclick="irAlGenerador()"><i class="ph-bold ph-magic-wand"></i> Asistente de Escritos</button>
+        <button class="btn" id="btn-nuevo-escrito" onclick="abrirFormulario()"><i class="ph-bold ph-paper-plane-tilt"></i> Enviar Escrito</button>
+      </div>
     </div>
 
     <div class="card hide" id="form-section">
@@ -127,8 +129,13 @@
           <input type="text" id="f-asunto" class="form-control" placeholder="Ej. Solicitud de Cambio de Adscripción" required>
         </div>
         <div class="form-group">
-          <label>Cuerpo del Escrito (Puedes pegarlo desde el Generador con IA)</label>
-          <textarea id="f-contenido" class="form-control" placeholder="Por medio de la presente, solicito de la manera más atenta..." required></textarea>
+          <label style="display:flex; justify-content:space-between; align-items:center;">
+            Cuerpo del Escrito
+            <a href="#" onclick="irAlGenerador(); return false;" style="color:var(--primary-light); text-decoration:none; display:flex; align-items:center; gap:4px; font-weight:bold;">
+              <i class="ph-bold ph-magic-wand"></i> Generar con IA
+            </a>
+          </label>
+          <textarea id="f-contenido" class="form-control" placeholder="Pega aquí el texto de tu escrito o redáctalo directamente..." required></textarea>
         </div>
         <div style="display: flex; gap: 12px; margin-top: 20px;">
           <button type="submit" class="btn" id="btnSubmitForm">Enviar Escrito</button>
@@ -204,6 +211,17 @@
     let isAdmin = false;
     let currentEscritos = []; 
 
+    // NUEVA FUNCIÓN DE REDIRECCIÓN
+    function irAlGenerador() {
+      // Si estamos dentro del iframe del index.html
+      if (window.parent && window.parent.PSD) {
+        window.parent.PSD.openApp('denuncias');
+      } else {
+        // Si por alguna razón se abre de forma independiente
+        window.open('https://chronosbvrx.github.io/InnovacionSindical/denuncias', '_blank');
+      }
+    }
+
     async function init() {
       try {
         if (window.parent && window.parent.supabaseClient) { supabaseApp = window.parent.supabaseClient; } 
@@ -224,6 +242,9 @@
           isAdmin = true;
           document.getElementById('bandeja-titulo').innerHTML = `<i class="ph-duotone ph-inbox"></i> Bandeja de Entrada (Administración)`;
           document.getElementById('btn-nuevo-escrito').classList.add('hide'); 
+          // Ocultar también el nuevo botón para admins si lo deseas
+          const btnAsistente = document.querySelector('button[onclick="irAlGenerador()"]');
+          if(btnAsistente) btnAsistente.classList.add('hide');
         }
 
         loadBandeja();
@@ -243,6 +264,7 @@
       document.getElementById('form-section').classList.remove('hide');
       document.getElementById('bandeja-section').classList.add('hide');
     }
+    
     function cerrarFormulario() {
       document.getElementById('form-section').classList.add('hide');
       document.getElementById('bandeja-section').classList.remove('hide');
@@ -309,7 +331,6 @@
           if(item.estatus === 'En proceso') badgeClass = 'proceso';
           if(item.estatus === 'Atendido') badgeClass = 'atendido';
 
-          // Mostrar el folio si existe
           const displayAsunto = item.folio ? `[${item.folio}] ${item.asunto.replace(`[${item.folio}] `, '')}` : item.asunto;
 
           let metaText = isAdmin 
@@ -356,7 +377,6 @@
           .replace(/>/g, "&gt;");
           
       contenidoSeguro = contenidoSeguro.replace(/📄 Ver Documento:\s*/g, '');
-      // El texto del botón ahora tiene style="color: #0a141d" explícito por si acaso.
       contenidoSeguro = contenidoSeguro.replace(
           /(https?:\/\/[^\s]+)/g, 
           '<div style="margin-top:16px;"><a href="$1" target="_blank" class="btn" style="color: #0a141d;"><i class="ph-bold ph-file-pdf"></i> Abrir Documento Original</a></div>'
