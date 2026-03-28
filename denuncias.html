@@ -31,7 +31,6 @@
   * { box-sizing: border-box; transition: all 0.2s ease; }
   html, body { height: 100%; margin: 0; background: var(--bg-dark); background-image: var(--bg-gradient); color: var(--text-main); font-family: 'Inter', sans-serif; }
   
-  /* MEJORA 1: Aprovechar el ancho de la pantalla */
   .wrap { max-width: 1000px; width: 95%; margin: 0 auto; padding: 30px 15px; }
   
   h1 { font-size: 24px; text-align: center; background: linear-gradient(90deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px; }
@@ -62,6 +61,7 @@
   .btn { width: 100%; padding: 15px 20px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; text-decoration: none; }
   .btn.primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: #0f172a; }
   .btn.success { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+  .btn.danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
   .btn.outline { background: transparent; border: 1px solid var(--panel-border); color: var(--text-main); }
   .btn.outline-accent { background: rgba(56, 189, 248, 0.1); border: 1px solid var(--primary); color: var(--primary); font-size: 13px; padding: 10px 16px; border-radius: 8px; width: auto; display: inline-flex; }
   .btn.outline-accent:hover { background: var(--primary); color: #0f172a; }
@@ -79,11 +79,6 @@
   .modal-card { background: #1e293b; border-radius: 20px; width: 100%; max-width: 1000px; padding: 30px; display: flex; flex-direction: column; max-height: 95vh;}
   .modal-b { flex: 1; overflow: auto; display: flex; justify-content: center; background: #334155; border-radius: 12px; padding: 20px; margin: 15px 0;}
   
-  /* MEJORA: Sección de firma oculta inicialmente */
-  .seccion-firma { display: none; padding-top: 15px; border-top: 1px solid var(--panel-border); margin-top: 10px; animation: fadeIn 0.4s ease; }
-  .seccion-firma.show { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
   /* HOJA TAMAÑO CARTA EXACTA */
   .page.carta { width: 816px; height: 1056px; background: #fff; color: #111; box-shadow: 0 10px 40px rgba(0,0,0,0.5); flex-shrink: 0; transform-origin: top center; }
   .sheet { padding: 72px 64px; font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; position: relative; height: 100%; color: #000; }
@@ -116,12 +111,12 @@
     .flex-row { flex-direction: column; gap: 15px; }
     .flex-col { min-width: 100%; }
     .modal-card { padding: 20px; width: 95%; max-height: 98vh; }
-    .modal-header-actions { justify-content: center; }
     .btn { font-size: 13px; padding: 12px 15px; }
+    .acciones-header { justify-content: center !important; }
   }
 
   @media print {
-    .wrap, .modal-card > div:not(.modal-b), #status, #loader-inicial, .lock-alert, .seccion-firma { display: none !important; }
+    .wrap, .modal-card > div:not(.modal-b), #status, #loader-inicial, .lock-alert { display: none !important; }
     body, .modal, .modal-card, .modal-b { background: transparent !important; position: static !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; display: block !important; width: 100% !important; height: auto !important; overflow: visible !important; }
     .page.carta { width: 100% !important; height: auto !important; transform: none !important; box-shadow: none !important; margin: 0 !important; }
     .sheet { padding: 2cm !important; height: auto !important; }
@@ -265,8 +260,21 @@
         </div>
         <button class="btn" id="btnCerrarGuia" style="width:auto; padding:8px; background:transparent; border:none; color:#ef4444; cursor:pointer;"><i class="ph-bold ph-x" style="font-size:24px;"></i></button>
       </div>
-      
       <div id="contenedorGuiaEstatutos" style="padding: 20px 25px; overflow-y: auto; display: flex; flex-direction: column; background: #1e293b; border-radius: 0 0 20px 20px;">
+      </div>
+    </div>
+  </div>
+
+  <div id="modalCapturaFirma" class="modal" style="z-index: 1050;">
+    <div class="modal-card" style="max-width: 500px; text-align: center;">
+      <h3 style="color:#fff; margin-top:0; margin-bottom: 5px;">Firma Digital</h3>
+      <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Dibuja tu firma para autorizar el envío del trámite al buzón oficial.</p>
+      
+      <canvas id="padFirma" style="background:#fff; width:100%; height:200px; border-radius:10px; border: 2px dashed #94a3b8; cursor:crosshair; margin-bottom: 20px;"></canvas>
+      
+      <div style="display:flex; gap:10px; justify-content:center;">
+        <button class="btn outline" id="btnCancelarFirma" style="width: auto; padding: 12px 20px;">Cancelar</button>
+        <button class="btn success" id="btnGuardarFirma" style="width: auto; padding: 12px 20px;">Aplicar Firma</button>
       </div>
     </div>
   </div>
@@ -275,11 +283,12 @@
     <div class="modal-card">
       
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; flex-wrap:wrap; gap:15px;">
-        <h3 style="color:#fff; margin:0;">Vista Previa del Oficio</h3>
-        <div class="modal-header-actions" style="display:flex; gap:10px; flex-wrap: wrap;">
+        <h3 id="tituloVistaPrevia" style="color:#fff; margin:0;">Vista Previa del Oficio</h3>
+        
+        <div id="accionesNormales" class="acciones-header" style="display:flex; gap:10px; flex-wrap: wrap; justify-content: flex-end;">
           <button class="btn outline" id="btnPrint" style="padding: 10px 16px; width: auto;"><i class="ph-bold ph-printer"></i> Imprimir</button>
           <button class="btn outline" id="btnDescargar" style="padding: 10px 16px; width: auto;"><i class="ph-bold ph-download-simple"></i> Guardar PDF</button>
-          <button class="btn primary" id="btnActivarBuzon" style="padding: 10px 16px; width: auto;"><i class="ph-bold ph-paper-plane-right"></i> Enviar por Buzón Digital</button>
+          <button class="btn primary" id="btnRutaDigital" style="padding: 10px 16px; width: auto;"><i class="ph-bold ph-paper-plane-right"></i> Enviar por Buzón Digital</button>
           <button class="btn outline" id="btnCerrarFirma" style="padding: 10px 16px; width: auto; border-color: #ef4444; color:#ef4444;"><i class="ph-bold ph-x"></i></button>
         </div>
       </div>
@@ -290,17 +299,16 @@
         </div>
       </div>
       
-      <div id="seccionFirmaDigital" class="seccion-firma">
-        <label style="color:#fff; font-size: 14px; text-transform: none; margin-bottom: 10px;">Dibuja tu firma para autorizar el trámite digital:</label>
-        <canvas id="padFirma" style="background:#fff; width:100%; height:160px; border-radius:10px; border: 2px dashed #94a3b8; cursor:crosshair; margin-bottom: 20px;"></canvas>
-        
+      <div id="seccionFinalDigital" class="hide" style="margin-top: 20px; border-top: 1px solid var(--panel-border); padding-top: 20px;">
         <div class="lock-alert">
           <i class="ph-bold ph-lock-key" style="font-size: 22px; vertical-align: middle;"></i> 
           <strong>Envío a Buzón Digital bloqueado:</strong> Función disponible a partir del 16 de abril.<br>
           <span style="color: #fff; font-weight: bold; font-size: 16px; display:block; margin-top: 8px;">¡Vota Planilla Azul para hacerlo realidad!</span>
         </div>
-
-        <button class="btn success" id="btnFinalizar" disabled style="font-size: 16px;"><i class="ph-bold ph-check-circle"></i> Confirmar Firma y Enviar a Buzón Digital</button>
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+          <button class="btn outline" id="btnCancelarRutaDigital" style="width: auto;">Cancelar Envío</button>
+          <button class="btn success" disabled style="width: auto;"><i class="ph-bold ph-check-circle"></i> Confirmar y Enviar al Buzón</button>
+        </div>
       </div>
 
     </div>
@@ -340,59 +348,11 @@
       };
       window.addEventListener('resize', ajustarEscala);
 
-      // BASE DE DATOS ESTATUTARIA PARA LA GUÍA VISUAL
+      // BASE DE DATOS ESTATUTARIA
       const guiaEstatutaria = [
-        {
-          categoria: "Secretarías del Comité Ejecutivo",
-          items: [
-            { nombre: "Secretaría General", desc: "Otorga la representación general del Sindicato e interviene en conflictos graves o de huelga (Art. 76)." },
-            { nombre: "Secretaría de Conflictos", desc: "Atiende conflictos surgidos por violaciones al Contrato Colectivo de Trabajo, sanciones, actas administrativas, rescisiones y despidos (Art. 78)." },
-            { nombre: "Secretaría de Admisión y Cambios", desc: "Gestiona Bolsa de Trabajo, propuestas de familiares, ingresos, vacantes y cambios de adscripción (Art. 90)." },
-            { nombre: "Secretaría de Previsión Social", desc: "Encargada del Régimen de Jubilaciones y Pensiones, préstamos a mediano plazo, riesgos de trabajo y afores (Art. 81)." },
-            { nombre: "Secretaría de Trabajo", desc: "Gestiona problemas de jornada laboral, pases de salida, pago de tiempo extraordinario y licencias sin violación de contrato (Art. 87)." },
-            { nombre: "Secretaría de Igualdad Sustantiva", desc: "Atiende temas de guarderías, descansos por maternidad, violencia laboral, discriminación o acoso (Art. 82)." },
-            { nombre: "Secretaría de Capacitación", desc: "Regula becas, cursos institucionales, educación media superior y formación continua (Art. 92)." },
-            { nombre: "Secretaría de Puestos Periféricos", desc: "Atiende todos los asuntos y conflictos exclusivos de trabajadores en unidades foráneas o periféricas (Art. 112)." },
-            { nombre: "Secretaría de Interior y Propaganda", desc: "Registro de miembros, padrones, credenciales y constancias de afiliación sindical (Art. 77)." },
-            { nombre: "Secretaría de Asuntos Técnicos", desc: "Procura el perfeccionamiento profesional, estudios de postgrado y especialización de los miembros (Art. 84)." },
-            { nombre: "Tesorería", desc: "Asuntos sobre cuotas sindicales, pagos, reembolsos, apoyos económicos de caja y descuentos (Art. 80)." },
-            { nombre: "Secretaría de Actas y Acuerdos", desc: "Lleva el archivo central, copias de actas de asambleas y resoluciones (Art. 83)." },
-            { nombre: "Secretaría de Prensa", desc: "Publicaciones oficiales, difusión de derechos y boletines (Art. 86)." },
-            { nombre: "Secretaría del Exterior", desc: "Asuntos de solidaridad y relaciones con otras organizaciones o sindicatos (Art. 79)." },
-            { nombre: "Secretaría de Calidad y Modernización", desc: "Procesos de mejora continua y evaluación de calidad institucional (Art. 94)." },
-            { nombre: "Secretaría de Acción Social", desc: "Organización de eventos sociales, festejos y convivencias del sindicato (Art. 89)." }
-          ]
-        },
-        {
-          categoria: "Comisiones Seccionales",
-          items: [
-            { nombre: "Honor y Justicia", desc: "Investiga y sanciona faltas graves de los miembros, usurpación o fraude sindical (Art. 99)." },
-            { nombre: "Vigilancia", desc: "Vigila el cumplimiento de funciones de los representantes y realiza auditorías o revisión de cuentas (Art. 101)." },
-            { nombre: "Fomento a la Seguridad Social", desc: "Promueve la inclusión y mejoras a las leyes de seguridad social para los trabajadores (Art. 103)." },
-            { nombre: "Hacienda", desc: "Inspecciona la administración de los fondos e inversiones mayores (Art. 100)." },
-            { nombre: "Deportes", desc: "Fomento deportivo, organización de torneos y entrega de uniformes deportivos (Art. 102)." },
-            { nombre: "Acción Política", desc: "Organización política y planeación de campañas de candidatos del Sindicato (Art. 91)." }
-          ]
-        },
-        {
-          categoria: "Subcomisiones Mixtas Paritarias",
-          items: [
-            { nombre: "Escalafón", desc: "Vigila los exámenes de promoción, inconformidades de puntaje y el derecho a subir de categoría." },
-            { nombre: "Protección al Salario", desc: "Resuelve descuentos indebidos, falta de pago en la quincena o errores en el tarjetón." },
-            { nombre: "Ropa de Trabajo y Uniformes", desc: "Problemas por falta de dotación, errores de talla o mala calidad del calzado/uniforme." },
-            { nombre: "Disciplinaria", desc: "Interviene directamente en las investigaciones administrativas y citatorios emitidos por el IMSS." },
-            { nombre: "Seguridad e Higiene", desc: "Verificación de condiciones inseguras en el centro de trabajo, falta de equipo de protección y dictámenes de riesgo." },
-            { nombre: "Jubilaciones y Pensiones", desc: "Supervisa el cálculo correcto de años de servicio y cuantía para trabajadores en proceso de retiro." },
-            { nombre: "Bolsa de Trabajo", desc: "Supervisión directa del ingreso de candidatos y validación de las propuestas de familiares." },
-            { nombre: "Cambios de Rama", desc: "Regula convocatorias y exámenes para trabajadores que desean cambiar a un profesiograma diferente." },
-            { nombre: "Revisión de Plantillas", desc: "Analiza cargas de trabajo, falta de cobertura, ausentismo y necesidad de creación de plazas." },
-            { nombre: "Puestos de Confianza 'B'", desc: "Regula licencias y derechos de los trabajadores de base que pasan a cubrir puestos de confianza." },
-            { nombre: "Capacitación y Adiestramiento", desc: "Regula la impartición paritaria de los cursos dentro de las unidades del Instituto." },
-            { nombre: "Pasajes", desc: "Verifica el pago correcto de viáticos y traslados cuando el trabajador sale de comisión foránea." },
-            { nombre: "Tiendas", desc: "Problemáticas con créditos, vales y descuentos en Tiendas IMSS-SNTSS." },
-            { nombre: "Becas", desc: "Trámites, otorgamientos, cancelaciones o prórrogas relativas al Reglamento de Becas IMSS." }
-          ]
-        }
+        { categoria: "Secretarías del Comité Ejecutivo", items: [ { nombre: "Secretaría General", desc: "Otorga la representación general del Sindicato e interviene en conflictos graves o de huelga (Art. 76)." }, { nombre: "Secretaría de Conflictos", desc: "Atiende conflictos surgidos por violaciones al Contrato Colectivo de Trabajo, sanciones, actas administrativas, rescisiones y despidos (Art. 78)." }, { nombre: "Secretaría de Admisión y Cambios", desc: "Gestiona Bolsa de Trabajo, propuestas de familiares, ingresos, vacantes y cambios de adscripción (Art. 90)." }, { nombre: "Secretaría de Previsión Social", desc: "Encargada del Régimen de Jubilaciones y Pensiones, préstamos a mediano plazo, riesgos de trabajo y afores (Art. 81)." }, { nombre: "Secretaría de Trabajo", desc: "Gestiona problemas de jornada laboral, pases de salida, pago de tiempo extraordinario y licencias sin violación de contrato (Art. 87)." }, { nombre: "Secretaría de Igualdad Sustantiva", desc: "Atiende temas de guarderías, descansos por maternidad, violencia laboral, discriminación o acoso (Art. 82)." }, { nombre: "Secretaría de Capacitación", desc: "Regula becas, cursos institucionales, educación media superior y formación continua (Art. 92)." }, { nombre: "Secretaría de Puestos Periféricos", desc: "Atiende todos los asuntos y conflictos exclusivos de trabajadores en unidades foráneas o periféricas (Art. 112)." }, { nombre: "Secretaría de Interior y Propaganda", desc: "Registro de miembros, padrones, credenciales y constancias de afiliación sindical (Art. 77)." }, { nombre: "Secretaría de Asuntos Técnicos", desc: "Procura el perfeccionamiento profesional, estudios de postgrado y especialización de los miembros (Art. 84)." }, { nombre: "Tesorería", desc: "Asuntos sobre cuotas sindicales, pagos, reembolsos, apoyos económicos de caja y descuentos (Art. 80)." }, { nombre: "Secretaría de Actas y Acuerdos", desc: "Lleva el archivo central, copias de actas de asambleas y resoluciones (Art. 83)." }, { nombre: "Secretaría de Prensa", desc: "Publicaciones oficiales, difusión de derechos y boletines (Art. 86)." }, { nombre: "Secretaría del Exterior", desc: "Asuntos de solidaridad y relaciones con otras organizaciones o sindicatos (Art. 79)." }, { nombre: "Secretaría de Calidad y Modernización", desc: "Procesos de mejora continua y evaluación de calidad institucional (Art. 94)." }, { nombre: "Secretaría de Acción Social", desc: "Organización de eventos sociales, festejos y convivencias del sindicato (Art. 89)." } ] },
+        { categoria: "Comisiones Seccionales", items: [ { nombre: "Honor y Justicia", desc: "Investiga y sanciona faltas graves de los miembros, usurpación o fraude sindical (Art. 99)." }, { nombre: "Vigilancia", desc: "Vigila el cumplimiento de funciones de los representantes y realiza auditorías o revisión de cuentas (Art. 101)." }, { nombre: "Fomento a la Seguridad Social", desc: "Promueve la inclusión y mejoras a las leyes de seguridad social para los trabajadores (Art. 103)." }, { nombre: "Hacienda", desc: "Inspecciona la administración de los fondos e inversiones mayores (Art. 100)." }, { nombre: "Deportes", desc: "Fomento deportivo, organización de torneos y entrega de uniformes deportivos (Art. 102)." }, { nombre: "Acción Política", desc: "Organización política y planeación de campañas de candidatos del Sindicato (Art. 91)." } ] },
+        { categoria: "Subcomisiones Mixtas Paritarias", items: [ { nombre: "Escalafón", desc: "Vigila los exámenes de promoción, inconformidades de puntaje y el derecho a subir de categoría." }, { nombre: "Protección al Salario", desc: "Resuelve descuentos indebidos, falta de pago en la quincena o errores en el tarjetón." }, { nombre: "Ropa de Trabajo y Uniformes", desc: "Problemas por falta de dotación, errores de talla o mala calidad del calzado/uniforme." }, { nombre: "Disciplinaria", desc: "Interviene directamente en las investigaciones administrativas y citatorios emitidos por el IMSS." }, { nombre: "Seguridad e Higiene", desc: "Verificación de condiciones inseguras en el centro de trabajo, falta de equipo de protección y dictámenes de riesgo." }, { nombre: "Jubilaciones y Pensiones", desc: "Supervisa el cálculo correcto de años de servicio y cuantía para trabajadores en proceso de retiro." }, { nombre: "Bolsa de Trabajo", desc: "Supervisión directa del ingreso de candidatos y validación de las propuestas de familiares." }, { nombre: "Cambios de Rama", desc: "Regula convocatorias y exámenes para trabajadores que desean cambiar a un profesiograma diferente." }, { nombre: "Revisión de Plantillas", desc: "Analiza cargas de trabajo, falta de cobertura, ausentismo y necesidad de creación de plazas." }, { nombre: "Puestos de Confianza 'B'", desc: "Regula licencias y derechos de los trabajadores de base que pasan a cubrir puestos de confianza." }, { nombre: "Capacitación y Adiestramiento", desc: "Regula la impartición paritaria de los cursos dentro de las unidades del Instituto." }, { nombre: "Pasajes", desc: "Verifica el pago correcto de viáticos y traslados cuando el trabajador sale de comisión foránea." }, { nombre: "Tiendas", desc: "Problemáticas con créditos, vales y descuentos en Tiendas IMSS-SNTSS." }, { nombre: "Becas", desc: "Trámites, otorgamientos, cancelaciones o prórrogas relativas al Reglamento de Becas IMSS." } ] }
       ];
 
       // INICIALIZACIÓN Y SEGURIDAD
@@ -403,12 +363,10 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Clonar catálogos a "con copia" y "atención a"
         const ops = $('#selectDestino').innerHTML;
         $('#selectAtn').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
         $('#selectCCP').innerHTML = ops.replace('— Selecciona —', 'Ninguno');
 
-        // Autenticación segura
         const { data: { session }, error: authError } = await supabase.auth.getSession();
         
         if (authError || !session) {
@@ -418,18 +376,14 @@
         }
         currentUser = session.user;
 
-        // Recuperar perfil
         const { data: prof, error: profError } = await supabase
           .from('profiles')
           .select('*')
           .eq('user_id', session.user.id)
           .maybeSingle();
 
-        if (profError) console.warn("Aviso perfil:", profError.message);
-
         $('#loader-inicial').classList.add('hide'); 
 
-        // Validación de datos completos
         const isComplete = prof && prof.display_name && prof.matricula && prof.categoria && prof.adscripcion;
 
         if (!isComplete) {
@@ -437,7 +391,6 @@
           return; 
         } 
 
-        // Rellenar datos
         $('#contenido-generador').classList.remove('hide');
         $('#valNombreUser').value = prof.display_name;
         $('#valMatricula').value = prof.matricula;
@@ -445,31 +398,19 @@
         $('#valAdscripcion').value = prof.adscripcion;
         $('#inputFecha').value = new Date().toISOString().split('T')[0];
 
-        // RENDERIZAR GUÍA ESTATUTARIA
         const contenedorGuia = $('#contenedorGuiaEstatutos');
         let htmlGuia = '';
         guiaEstatutaria.forEach(grupo => {
           htmlGuia += `<div class="guia-categoria">${grupo.categoria}</div>`;
           grupo.items.forEach(item => {
-            htmlGuia += `
-              <div class="guia-item">
-                <h4>${item.nombre}</h4>
-                <p>${item.desc}</p>
-              </div>
-            `;
+            htmlGuia += `<div class="guia-item"><h4>${item.nombre}</h4><p>${item.desc}</p></div>`;
           });
         });
         contenedorGuia.innerHTML = htmlGuia;
 
-        // MANEJO DEL MODAL DE LA GUÍA
-        $('#btnAbrirGuia').addEventListener('click', () => {
-          $('#modalGuiaEstatutos').classList.add('show');
-        });
-        $('#btnCerrarGuia').addEventListener('click', () => {
-          $('#modalGuiaEstatutos').classList.remove('show');
-        });
+        $('#btnAbrirGuia').addEventListener('click', () => $('#modalGuiaEstatutos').classList.add('show'));
+        $('#btnCerrarGuia').addEventListener('click', () => $('#modalGuiaEstatutos').classList.remove('show'));
 
-        // PANEL AVANZADO
         $('#toggleAvanzado').addEventListener('click', function() {
           const panel = $('#panelAvanzado');
           panel.classList.toggle('show');
@@ -478,7 +419,6 @@
             : '<i class="ph-bold ph-gear-six"></i> Mostrar Opciones Avanzadas (Copias, Evidencia)';
         });
 
-        // MANEJO DE FOTOS
         $('#inputFotos').addEventListener('change', (e) => {
           const files = Array.from(e.target.files);
           $('#preview-evidencia').innerHTML = "";
@@ -495,18 +435,11 @@
           });
         });
 
-        // FUNCIONES DE API DE REDACCIÓN
         async function redactarIA(prob) {
           try {
             const res = await fetch(`${API_BASE}/escritor`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                tema: "Oficio sindical de petición o trámite",
-                hechos: [prob],
-                extras: "Tono formal, profesional, máximo 3 párrafos, directo al grano.",
-                incluirDespedida: false
-              })
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ tema: "Oficio sindical de petición o trámite", hechos: [prob], extras: "Tono formal, profesional, máximo 3 párrafos, directo al grano.", incluirDespedida: false })
             });
             const data = await res.json();
             return data.cuerpo || "No se pudo generar el texto con IA.";
@@ -515,7 +448,7 @@
           }
         }
 
-        // ENVÍO DE FORMULARIO -> GENERACIÓN VISUAL
+        // GENERAR DOCUMENTO INICIAL (Limpio, sin folio)
         $('#formEscrito').addEventListener('submit', async (e) => {
           e.preventDefault();
           
@@ -533,7 +466,7 @@
           let atnHtml = $('#selectAtn').value ? `<div style="margin-top:15px; font-weight:bold;">At'n: ${$('#selectAtn').value.split('|')[1]}<br><span style="font-weight:normal; font-size:11pt;">${$('#selectAtn').value.split('|')[0]}</span></div>` : "";
           let ccpHtml = $('#selectCCP').value ? `<div style="font-size:8pt; margin-top:40px; text-align:left;">c.c.p. ${$('#selectCCP').value.split('|')[1]} - ${$('#selectCCP').value.split('|')[0]}. Para su conocimiento e intervención.</div>` : "";
 
-          // Contenedor del Folio Vacío Inicialmente
+          // Renderizar SIN texto de folio y SIN firma
           $('#sheet').innerHTML = `
             <header>
               <div id="folio-documento" style="text-align: right; color: #991b1b; font-size: 13pt; margin-bottom: 16px; min-height: 25px;"></div>
@@ -558,61 +491,89 @@
           btnSubmit.innerHTML = "<i class='ph-bold ph-magic-wand'></i> Redactar con IA y Generar Documento";
           btnSubmit.disabled = false;
 
-          // Restaurar estados iniciales del modal
-          $('#seccionFirmaDigital').classList.remove('show');
-          $('#btnActivarBuzon').style.display = 'inline-flex';
+          // Restaurar interfaz por si antes habían iniciado un trámite digital
+          $('#tituloVistaPrevia').innerText = "Vista Previa del Oficio";
+          $('#accionesNormales').classList.remove('hide');
+          $('#seccionFinalDigital').classList.add('hide');
 
           $('#modalFirma').classList.add('show');
           ajustarEscala();
         });
 
-        // LÓGICA DE ACTIVACIÓN BUZÓN DIGITAL
-        $('#btnActivarBuzon').addEventListener('click', () => {
-          // 1. Mostrar texto de folio en el documento
-          $('#folio-documento').innerHTML = `Folio Oficial: <strong>PENDIENTE DE ENVÍO DIGITAL</strong>`;
-          
-          // 2. Ocultar el botón que lo activó
-          $('#btnActivarBuzon').style.display = 'none';
-          
-          // 3. Mostrar área de firma
-          const areaFirma = $('#seccionFirmaDigital');
-          areaFirma.classList.add('show');
-          
-          // 4. Iniciar Pad (Debe hacerse DESPUÉS de que es visible para tomar el ancho correcto)
-          iniciarPad();
+        // ------------------ RUTA DIGITAL (NUEVA LÓGICA) ------------------
 
-          // 5. Scroll suave hasta la firma
-          areaFirma.scrollIntoView({behavior: 'smooth', block: 'end'});
+        // 1. Abrir modal independiente de firma
+        $('#btnRutaDigital').addEventListener('click', () => {
+          $('#modalCapturaFirma').classList.add('show');
+          iniciarPad();
         });
 
+        $('#btnCancelarFirma').addEventListener('click', () => {
+          $('#modalCapturaFirma').classList.remove('show');
+        });
 
-        // FIRMA EN PANTALLA MEJORADA
+        // 2. Guardar firma y transformar la vista previa
+        $('#btnGuardarFirma').addEventListener('click', () => {
+          // Inyectar el folio
+          $('#folio-documento').innerHTML = `Folio Oficial: <strong>PENDIENTE DE ENVÍO DIGITAL</strong>`;
+          
+          // Crear y colocar imagen de firma
+          const lineaFirma = $('#linea-firma');
+          let imgFirma = document.getElementById('img-firma-digital');
+          if(!imgFirma) {
+            imgFirma = document.createElement('img');
+            imgFirma.id = 'img-firma-digital';
+            imgFirma.style.maxHeight = '80px'; 
+            imgFirma.style.margin = '10px auto 5px auto'; 
+            imgFirma.style.display = 'block';
+            lineaFirma.parentNode.insertBefore(imgFirma, lineaFirma);
+          }
+          imgFirma.src = $('#padFirma').toDataURL('image/png');
+          lineaFirma.style.display = 'none'; // Ocultar la línea, dejamos la firma
+
+          // Transformar la UI del modal de vista previa
+          $('#tituloVistaPrevia').innerText = "Confirmación de Documento Digital";
+          $('#accionesNormales').classList.add('hide'); // Ocultar Imprimir/Descargar/Etc
+          $('#seccionFinalDigital').classList.remove('hide'); // Mostrar ruta de envío
+
+          // Cerrar modal de firma
+          $('#modalCapturaFirma').classList.remove('show');
+        });
+
+        // 3. Cancelar ruta digital y devolver a vista de impresión/descarga normal
+        $('#btnCancelarRutaDigital').addEventListener('click', () => {
+          // Quitar folio
+          $('#folio-documento').innerHTML = ``;
+          // Quitar firma
+          const imgFirma = document.getElementById('img-firma-digital');
+          if(imgFirma) imgFirma.remove();
+          $('#linea-firma').style.display = 'block';
+
+          // Restaurar UI
+          $('#tituloVistaPrevia').innerText = "Vista Previa del Oficio";
+          $('#accionesNormales').classList.remove('hide');
+          $('#seccionFinalDigital').classList.add('hide');
+        });
+
+        // ------------------ FUNCIONALIDAD DEL CANVAS ------------------
         let dibujando = false, ctx;
         function iniciarPad() {
           const c = $('#padFirma'); 
-          // Es crucial leer el offsetWidth cuando el contenedor ya está visible (display:block)
           c.width = c.offsetWidth; 
-          c.height = 160;
+          c.height = 200;
           ctx = c.getContext('2d'); 
           ctx.lineWidth = 2.5; 
-          ctx.strokeStyle = "#0f172a"; // Trazo azul oscuro tipo tinta
+          ctx.strokeStyle = "#0f172a"; 
           ctx.lineCap = "round";
           ctx.lineJoin = "round";
           ctx.clearRect(0,0,c.width,c.height); 
           
-          c.onmousedown = c.ontouchstart = (e) => { 
-            dibujando = true; 
-            ctx.beginPath(); 
-            e.preventDefault(); 
-          };
-          
+          c.onmousedown = c.ontouchstart = (e) => { dibujando = true; ctx.beginPath(); e.preventDefault(); };
           c.onmousemove = c.ontouchmove = (e) => { 
             if(!dibujando) return; 
             const rect = c.getBoundingClientRect();
-            // Corrección de posición exacta del touch/mouse
             const clientX = e.clientX || (e.touches && e.touches[0].clientX);
             const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-            
             if (clientX !== undefined && clientY !== undefined) {
               const x = clientX - rect.left;
               const y = clientY - rect.top;
@@ -623,24 +584,11 @@
           c.onmouseup = c.ontouchend = c.onmouseout = () => dibujando = false;
         }
 
-        // ACCIONES DEL MODAL FINAL
+        // ------------------ RUTA IMPRESIÓN/DESCARGA NORMAL ------------------
         $('#btnPrint').addEventListener('click', () => {
           const originalTitle = document.title;
           document.title = `Oficio_SNTSS_${$('#valMatricula').value}`;
           
-          // Solo pegamos la firma si el canvas está activo y fue modificado (opcional)
-          let imgFirma = null;
-          const lineaFirma = $('#linea-firma');
-
-          if($('#seccionFirmaDigital').classList.contains('show')) {
-            imgFirma = document.createElement('img');
-            imgFirma.src = $('#padFirma').toDataURL('image/png');
-            imgFirma.id = "img-firma-temp";
-            imgFirma.style.maxHeight = '80px'; imgFirma.style.margin = '10px auto 5px auto'; imgFirma.style.display = 'block';
-            lineaFirma.parentNode.insertBefore(imgFirma, lineaFirma);
-            lineaFirma.style.display = 'none';
-          }
-
           $('#modalFirma').style.display = 'none';
           $('#mainWrap').style.display = 'none';
           
@@ -649,28 +597,12 @@
           $('#modalFirma').style.display = '';
           $('#mainWrap').style.display = '';
           document.title = originalTitle;
-          
-          if(imgFirma) {
-            lineaFirma.style.display = 'block';
-            $('#img-firma-temp').remove();
-          }
         });
 
         $('#btnDescargar').addEventListener('click', async () => {
           const btn = $('#btnDescargar');
           btn.disabled = true;
           btn.innerHTML = "<i class='ph-bold ph-spinner anim-spin'></i> Generando PDF...";
-
-          let imgFirma = null;
-          const lineaFirma = $('#linea-firma');
-
-          if($('#seccionFirmaDigital').classList.contains('show')) {
-            imgFirma = document.createElement('img');
-            imgFirma.src = $('#padFirma').toDataURL('image/png');
-            imgFirma.style.maxHeight = '80px'; imgFirma.style.margin = '10px auto 5px auto'; imgFirma.style.display = 'block';
-            lineaFirma.parentNode.insertBefore(imgFirma, lineaFirma);
-            lineaFirma.style.display = 'none';
-          }
 
           const pageEl = $('#page');
           const originalTransform = pageEl.style.transform;
@@ -700,10 +632,6 @@
           } finally {
             btn.disabled = false;
             btn.innerHTML = "<i class='ph-bold ph-download-simple'></i> Guardar PDF";
-            if(imgFirma) {
-              lineaFirma.style.display = 'block';
-              imgFirma.remove();
-            }
           }
         });
 
@@ -713,15 +641,6 @@
 
       } catch (error) {
         console.error("Falla en la plataforma:", error);
-        const loader = document.getElementById('loader-inicial');
-        if(loader) {
-          loader.innerHTML = `
-            <i class="ph-bold ph-warning-octagon" style="font-size: 50px; margin-bottom: 10px; color: #ef4444;"></i>
-            <h3 style="color: #fff; margin: 0 0 5px 0;">Error de Conexión</h3>
-            <p style="color: #94a3b8; text-align:center; max-width: 300px; font-size: 14px;">No pudimos conectar con la base de datos de tu perfil.</p>
-            <button onclick="location.reload()" class="btn outline" style="margin-top:20px; max-width: 200px;"><i class="ph-bold ph-arrows-clockwise"></i> Reintentar</button>
-          `;
-        }
       }
     });
   </script>
