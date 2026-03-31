@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>PSD - Instalador Masivo de Delegaciones</title>
+  <title>PSD - Instalador Masivo (Cuentas Faltantes)</title>
   <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background: #1b2e45; color: white; }
     .container { max-width: 900px; margin: 0 auto; background: rgba(0,0,0,0.3); padding: 30px; border-radius: 12px; }
@@ -14,16 +14,16 @@
     th { color: #7ad1d6; background: rgba(0,0,0,0.2); }
     .status-ok { color: #4ade80; font-weight: bold; }
     .status-err { color: #f87171; font-weight: bold; }
-    .vacante-nota { color: #bce9eb; font-size: 12px; font-style: italic; }
+    .status-wait { color: #fcd34d; font-weight: bold; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h2>Módulo de Instalación - Núcleo de Defensa (Sección XX)</h2>
-    <p>Este panel registrará automáticamente las 70 cuentas delegacionales (D.S., S.D. y R.S.) en Supabase. Se incluyen las carteras actualmente vacantes para asegurar la cobertura total de la estructura sindical.</p>
+    <h2>Módulo de Instalación - Recuperación de Cuentas Faltantes</h2>
+    <p>Este panel contiene únicamente las 28 delegaciones que fueron bloqueadas por el límite de velocidad. Se ha ajustado el tiempo de espera a 4 segundos entre cada registro para evitar saturar Supabase.</p>
     
-    <button id="btnCrear" onclick="iniciarCreacionMasiva()">Crear Todas las Cuentas Ahora</button>
+    <button id="btnCrear" onclick="iniciarCreacionMasiva()">Crear Cuentas Faltantes</button>
     
     <div id="progreso" style="margin-bottom: 15px; font-weight: bold; font-size: 18px; text-align: center; color: #7ad1d6;"></div>
 
@@ -48,79 +48,32 @@
     
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Directorio Completo: 70 Unidades (Delegaciones, Subdelegaciones y Representaciones)
-    const delegaciones = [
-      // D.S. (1 al 48)
-      { clave: "HGZ2_ZACAPU", nombre: "H.G.Z./ M.F. No. 2, ZACAPU", pass: "Sntss_Zacapu26!" },
-      { clave: "HGZ8_URUAPAN", nombre: "H.G.Z. No. 8, URUAPAN (Matutino)", pass: "Sntss_Uruapan26!" },
-      { clave: "HGZ4_ZAMORA", nombre: "H.G.Z./M.F. No. 4, ZAMORA", pass: "Sntss_Zamora26!" },
-      { clave: "UMF64_PURUANDIRO", nombre: "U.M.F./ H. No. 64, PURUÁNDIRO", pass: "Sntss_Puruand26!" },
-      { clave: "HGSZ9_APATZINGAN", nombre: "H.G.S.Z./M.F. No. 9, APÁTZINGAN", pass: "Sntss_Apatzin26!" },
-      { clave: "HGSZ7_LAPIEDAD", nombre: "H.G.S.Z. N° 7, LA PIEDAD", pass: "Sntss_Piedad26!" },
-      { clave: "UMF26_TARETAN", nombre: "U.M.F./ H. No. 26, TARÉTAN", pass: "Sntss_Taretan26!" },
-      { clave: "UMF18_ZITACUARO", nombre: "U.M.F./H. No. 18, ZITÁCUARO", pass: "Sntss_Zitacua26!" },
-      { clave: "HGSZ17_LOSREYES", nombre: "H.G.S.Z./M.F. No. 17, LOS REYES", pass: "Sntss_LosReyes26!" },
-      { clave: "HGSZ24_PEDERNALES", nombre: "H.G.S.Z. C/M.F. No. 24, PEDERNALES", pass: "Sntss_Pederna26!" },
-      { clave: "CSS_MORELIA", nombre: "CENTRO DE SEGURIDAD SOCIAL, MORELIA", pass: "Sntss_CSSMor26!" },
-      { clave: "DELADMIN_MORELIA", nombre: "DELEGACIÓN ADMINISTRATIVA, MORELIA", pass: "Sntss_DelAdmM26!" },
-      { clave: "UMF80_MORELIA", nombre: "U.M.F. No. 80, MORELIA", pass: "Sntss_UMF80Mor26!" },
-      { clave: "HGR1_CHARO_MAT", nombre: "H.G.R. No.1, CHARO (Matutino)", pass: "Sntss_CharoM26!" },
-      { clave: "UMF19_CDHIDALGO", nombre: "U.M.F/H No 19, CD. HIDALGO", pass: "Sntss_CdHidal26!" },
-      { clave: "UMF20_PATZCUARO", nombre: "U.M.F. /H. No. 20, PÁTZCUARO", pass: "Sntss_Patzcua26!" },
-      { clave: "GUARD_001_ZAMORA", nombre: "GUARDERÍA INFANTIL 001, ZAMORA", pass: "Sntss_GuaZamo26!" },
-      { clave: "UMF40_COALCOMAN", nombre: "U.M.F. No. 40 / H.R. No. 46, COALCOMÁN", pass: "Sntss_Coalcom26!" },
-      { clave: "ALMACEN_MORELIA", nombre: "ALMACEN DELEGACIONAL, MORELIA", pass: "Sntss_Almacen26!" },
-      { clave: "HR30_ARIO", nombre: "H.R “B” No. 30, ARIO DE ROSALES", pass: "Sntss_Ario26!" },
-      { clave: "HGR1_CHARO_VESP", nombre: "H.G.R. No.1, CHARO (Vesp/Noct)", pass: "Sntss_CharoV26!" },
-      { clave: "GUARD_001_MORELIA", nombre: "GUARDERÍA INFANTIL No.001, MORELIA", pass: "Sntss_GuaMor26!" },
-      { clave: "HGZ12_LCARDENAS", nombre: "H.G.Z./M.F. No. 12, LÁZARO CÁRDENAS", pass: "Sntss_LCardena26!" },
-      { clave: "HR31_HUETAMO", nombre: "H.R. “B” No. 31, HUETAMO", pass: "Sntss_Huetamo26!" },
-      { clave: "HR33_TUXPAN", nombre: "H.R. “B” No. 33, TUXPAN", pass: "Sntss_Tuxpan26!" },
-      { clave: "HGZ4_ZAMORA_VESP", nombre: "H.G.Z./ M.F. No. 4, ZAMORA (Vesp/Noct)", pass: "Sntss_ZamoVes26!" },
-      { clave: "UMF75_MORELIA", nombre: "U.M.F. C/ U.M.A.A. No.75, MORELIA", pass: "Sntss_UMF75Mo26!" },
-      { clave: "HGZ8_URUAPAN_VESP", nombre: "H.G.Z. No. 8, URUAPAN (Vesp/Noct)", pass: "Sntss_UruaVes26!" },
-      { clave: "SUBDEL_URUAPAN", nombre: "SUBDELEGACIÓN ADMINISTRATIVA, URUAPAN", pass: "Sntss_SubUrua26!" },
-      { clave: "SUBDEL_MORELIA", nombre: "SUBDELEGACIÓN METROPOLITANA, MORELIA", pass: "Sntss_SubMor26!" },
-      { clave: "SUBDEL_LCARDENAS", nombre: "SUBDELEGACIÓN, LÁZARO CÁRDENAS", pass: "Sntss_SubLCar26!" },
-      { clave: "UMF31_GUACAMAYAS", nombre: "U.M.F. No. 31, GUACAMAYAS", pass: "Sntss_Guacama26!" },
-      { clave: "HR32_PARACHO", nombre: "H.R. “B” No. 32, PARACHO", pass: "Sntss_Paracho26!" },
-      { clave: "UMF78_LCARDENAS", nombre: "U.M.F. No. 78, LÁZARO CARDENAS", pass: "Sntss_UMF78LC26!" },
-      { clave: "UMF77_LAPIEDAD", nombre: "U.M.F. No.77, LA PIEDAD", pass: "Sntss_UMF77Pi26!" },
-      { clave: "HGZ83_MORELIA", nombre: "H.G.Z. No.83, MORELIA", pass: "Sntss_HGZ83Mo26!" },
+    // Lista exclusiva de las 28 unidades que marcaron error
+    const delegacionesFaltantes = [
       { clave: "UMF76_URUAPAN", nombre: "U.M.F. No. 76, URUAPAN", pass: "Sntss_UMF76Ur26!" },
       { clave: "UMF84_TACICUARO", nombre: "U.M.F. N° 84, TACICUARO", pass: "Sntss_Tacicu26!" },
       { clave: "UMF5_SAHUAYO", nombre: "U.M.F./H. No. 5, SAHUAYO", pass: "Sntss_Sahuayo26!" },
-      { clave: "SUBDEL_ZAMORA", nombre: "SUBDELEGACIÓN ADMINISTRATIVA, ZAMORA", pass: "Sntss_SubZamo26!" },
       { clave: "UMF27_LAMIRA", nombre: "U.M.F. No. 27, LA MIRA", pass: "Sntss_LaMira26!" },
       { clave: "UMF25_PURUARAN", nombre: "U.M.F./H. No. 25, PURUARAN", pass: "Sntss_Puruaran26!" },
       { clave: "UMF81_URUAPAN", nombre: "U.M.F. No. 81, URUAPAN", pass: "Sntss_UMF81Ur26!" },
       { clave: "UMF82_ZAMORA", nombre: "U.M.F. No. 82, ZAMORA", pass: "Sntss_UMF82Za26!" },
       { clave: "HR_VILLAMAR", nombre: "H.R. “B” VILLAMAR", pass: "Sntss_Villamar26!" },
-      { clave: "HR_BUENAVISTA", nombre: "H.R. “B”, BUENAVISTA TOMATLAN", pass: "Sntss_Buenavi26!" },
       { clave: "UMF85_TARIMBARO", nombre: "U.M.F. N° 85, TARIMBARO", pass: "Sntss_Tarimba26!" },
       { clave: "HGZ86_URUAPAN", nombre: "H.G.Z. No. 86, URUAPAN", pass: "Sntss_HGZ86Ur26!" },
-      
-      // S.D. (1 al 10)
       { clave: "UMF21_JACONA", nombre: "U.M.F. No. 21, JACONA", pass: "Sntss_Jacona26!" },
       { clave: "UMF50_MARAVATIO", nombre: "U.M.F. No. 50, MARAVATIO", pass: "Sntss_Maravat26!" },
-      { clave: "CSS_ZACAPU", nombre: "CENTRO DE SEGURIDAD SOCIAL, ZACAPU", pass: "Sntss_CSSZac26!" },
       { clave: "UMF89_TLALPUJAHUA", nombre: "U.M.F. No. 89, TLALPUJAHUA", pass: "Sntss_Tlalpu26!" },
       { clave: "UMF74_TACAMBARO", nombre: "U.M.F. No. 74, TACÁMBARO", pass: "Sntss_Tacamba26!" },
       { clave: "CSS_LCARDENAS", nombre: "CENTRO DE SEGURIDAD SOCIAL, LÁZARO CÁRDENAS", pass: "Sntss_CSSLCar26!" },
       { clave: "GUARD_LCARDENAS", nombre: "GUARDERÍA INFANTIL, LÁZARO CÁRDENAS", pass: "Sntss_GuaLCar26!" },
-      { clave: "SUBDEL_ZITACUARO", nombre: "SUBDELEGACIÓN, ZITÁCUARO", pass: "Sntss_SubZita26!" },
       { clave: "UMF11_NUEVAITALIA", nombre: "U.M.F. No. 11, NUEVA ITALIA", pass: "Sntss_NvaIta26!" },
       { clave: "UMF6_JIQUILPAN", nombre: "U.M.F. No. 6, JIQUILPAN", pass: "Sntss_Jiquil26!" },
-      
-      // R.S. (1 al 12)
       { clave: "UMF42_CUITZEO", nombre: "U.M.F. No. 42, CUITZEO", pass: "Sntss_Cuitzeo26!" },
       { clave: "UMF54_PUREPERO", nombre: "U.M.F. No. 54, PURÉPERO", pass: "Sntss_Pureper26!" },
-      { clave: "UMF46_LAHUACANA", nombre: "U.M.F. No. 46 LA HUACANA / UMF 43 CHURUMUCO", pass: "Sntss_LaHuaca26!" },
       { clave: "UMF71_MORELIA", nombre: "U.M.F. No. 71, MORELIA", pass: "Sntss_UMF71Mo26!" },
       { clave: "UMF65_VILLAMADERO", nombre: "U.M.F. No. 65, VILLA MADERO", pass: "Sntss_VillaMa26!" },
       { clave: "UMF23_INFIERNILLO", nombre: "U.M.F. No. 23, INFIERNILLO", pass: "Sntss_Infiern26!" },
       { clave: "UMF70_ZINAPECUARO", nombre: "U.M.F. N° 70, ZINAPÉCUARO", pass: "Sntss_Zinapec26!" },
-      { clave: "UMF28_STACLARA", nombre: "U.M.F. N° 28, STA CLARA", pass: "Sntss_StaClar26!" },
       { clave: "UMF37_ANGANGUEO", nombre: "U.M.F. No. 37, ANGANGUEO", pass: "Sntss_Angangu26!" },
       { clave: "TIENDA_MORELIA", nombre: "TIENDA I.M.S.S.-S.N.T.S.S. MORELIA", pass: "Sntss_TiendaM26!" },
       { clave: "UMF13_COTIJA", nombre: "U.M.F. N° 13, COTIJA", pass: "Sntss_Cotija26!" },
@@ -128,7 +81,7 @@
     ];
 
     const tbody = document.querySelector("#tablaDelegaciones tbody");
-    delegaciones.forEach((del, index) => {
+    delegacionesFaltantes.forEach((del, index) => {
       const tr = document.createElement("tr");
       tr.id = `row-${index}`;
       tr.innerHTML = `
@@ -145,11 +98,11 @@
       btn.disabled = true;
       btn.innerText = "Procesando...";
 
-      for (let i = 0; i < delegaciones.length; i++) {
-        const del = delegaciones[i];
+      for (let i = 0; i < delegacionesFaltantes.length; i++) {
+        const del = delegacionesFaltantes[i];
         const emailFormateado = `${del.clave}@nucleo.sntss.mx`.toLowerCase();
         
-        document.getElementById("progreso").innerText = `Creando cuenta ${i + 1} de ${delegaciones.length}...`;
+        document.getElementById("progreso").innerText = `Creando cuenta ${i + 1} de ${delegacionesFaltantes.length}...`;
 
         const { data, error } = await supabaseClient.auth.signUp({
           email: emailFormateado,
@@ -166,6 +119,12 @@
         if (error) {
           if(error.message.includes("already registered")) {
              statusTd.innerHTML = `<span class="status-ok">Ya Existía ✓</span>`;
+          } else if (error.message.includes("rate limit")) {
+             statusTd.innerHTML = `<span class="status-wait">Límite alcanzado. Intenta más tarde.</span>`;
+             document.getElementById("progreso").innerText = "Proceso pausado. Supabase requiere esperar 1 hora aprox.";
+             btn.disabled = false;
+             btn.innerText = "Reintentar Cuentas Restantes";
+             return; // Detiene el ciclo si se topa con el límite de nuevo
           } else {
              statusTd.innerHTML = `<span class="status-err">Error: ${error.message}</span>`;
           }
@@ -173,12 +132,12 @@
           statusTd.innerHTML = `<span class="status-ok">Creado ✓</span>`;
         }
 
-        // Retraso de 1.5 segundos para respetar los límites de la API de Supabase en registros masivos
-        await new Promise(r => setTimeout(r, 1500));
+        // Retraso de 4 segundos (4000ms) para proteger la API
+        await new Promise(r => setTimeout(r, 4000));
       }
 
-      document.getElementById("progreso").innerText = "¡Sincronización Completada! (70 Unidades Registradas)";
-      btn.innerText = "Estructura Delegacional Creada Exitosamente";
+      document.getElementById("progreso").innerText = "¡Sincronización Completada! (28 Unidades Registradas)";
+      btn.innerText = "Estructura Delegacional Completada";
     }
   </script>
 </body>
