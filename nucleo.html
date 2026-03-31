@@ -99,7 +99,7 @@
     <div class="card">
       <h3 style="margin-top:0;">Gestión de Casos</h3>
       <p style="color: var(--text-muted); font-size: 14px;">Aquí podrás registrar y dar seguimiento a los asuntos de tu delegación.</p>
-      </div>
+    </div>
   </div>
 
   <script>
@@ -143,8 +143,28 @@
           return;
         }
 
-        // Validar que el usuario tenga un email
-        const userEmail = session.user.email || "";
+        const user = session.user;
+
+        // --- NUEVA LÓGICA: VERIFICACIÓN DE ADMINISTRADOR ---
+        // Comprobamos si el rol está definido en los metadatos del usuario.
+        // Soporta llaves 'role' o 'rol' en user_metadata, o en app_metadata.
+        const userRole = user.user_metadata?.role || user.user_metadata?.rol || user.app_metadata?.role;
+        const isAdmin = userRole === 'admin' || userRole === 'administrador'; // Puedes ajustar la palabra clave según lo tengas en BD
+
+        if (isAdmin) {
+          console.log("2. Acceso concedido: Cuenta de Administrador detectada.");
+          
+          if (unidadBadge) unidadBadge.innerHTML = `<i class="ph-bold ph-shield-star"></i> Administrador General`;
+          if (statusContainer) statusContainer.classList.add('hide');
+          if (appContainer) appContainer.classList.remove('hide');
+          
+          // Retornamos aquí para evitar que el admin pase por la validación de la lista blanca
+          return;
+        }
+        // ---------------------------------------------------
+
+        // Si NO es admin, continuamos con la validación de la lista blanca
+        const userEmail = user.email || "";
         if (!userEmail) {
           console.log("El usuario no tiene email registrado.");
           showError("Datos Incompletos", "Tu cuenta no tiene un correo válido asociado para verificar identidad.");
@@ -153,7 +173,7 @@
 
         // Extraer la matrícula/ID del correo
         const userID = userEmail.split('@')[0].toUpperCase();
-        console.log("2. Buscando en Lista Blanca el ID:", userID);
+        console.log("3. Buscando en Lista Blanca el ID:", userID);
 
         // Consultar la Lista Blanca en la base de datos
         const { data: authData, error: dbError } = await supabase
@@ -169,14 +189,14 @@
         }
 
         if (!authData) {
-          console.log("3. Usuario no encontrado en la lista blanca.");
+          console.log("4. Usuario no encontrado en la lista blanca.");
           showError("Privilegios Insuficientes", "Tu cuenta no está registrada como Delegación o Representación Sindical autorizada.");
           return;
         }
 
         console.log("4. Acceso concedido. Unidad:", authData.nombre_unidad);
 
-        // Mostrar la app y ocultar la carga
+        // Mostrar la app y ocultar la carga para representantes
         if (unidadBadge) unidadBadge.innerHTML = `<i class="ph-bold ph-identification-badge"></i> ${authData.nombre_unidad}`;
         if (statusContainer) statusContainer.classList.add('hide');
         if (appContainer) appContainer.classList.remove('hide');
