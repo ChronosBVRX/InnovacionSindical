@@ -84,7 +84,6 @@
     
     .user-widget { display: flex; align-items: center; gap: 10px; cursor: pointer; background: rgba(var(--panel-base), 0.4); padding: 4px 12px 4px 4px; border-radius: 20px; border: 1px solid var(--ring); transition: all 0.2s ease; }
     .user-widget:hover { border-color: var(--primary-light); background: rgba(var(--panel-base), 0.6); }
-    /* CSS ACTUALIZADO: color: transparent añadido para ocultar el texto alt si falla la imagen */
     .user-widget img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--ring); background: var(--bg-body); flex-shrink: 0; color: transparent;}
     .user-widget .name { font-size: 13px; font-weight: 600; color: var(--text-main); max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 4px; }
     
@@ -471,7 +470,7 @@
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados.', iconClass: 'ph-duotone ph-broadcast', iframe: 'noticias.html' },
       { id: 'biblioteca', title: 'Biblioteca', desc: 'Recursos digitales.', iconClass: 'ph-duotone ph-books', iframe: 'biblioteca.html' },
       { id: 'calendario', title: 'Calendario', desc: 'Eventos Oficiales sindicales.', iconClass: 'ph-duotone ph-calendar-blank', iframe: 'calendario.html', hideFromMenu: true },
-      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Acceso a representantes sindicales.', iconClass: 'ph-duotone ph-scales', iframe: 'nucleo.html', featured: true },      
+      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Acceso a representantes sindicales.', iconClass: 'ph-duotone ph-scales', iframe: 'nucleo.html', featured: true, restrictedNucleo: true },
       { id: 'comite', title: 'Comité Seccional', desc: 'Planilla Azul.', iconClass: 'ph-duotone ph-users-three',  iframe: 'comite.html' },
       { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción.', iconClass: 'ph-duotone ph-scan-smiley', href: 'kiosko.html', featured: true, newTab: true },
       { id: 'directorio', title: 'Directorio', desc: 'Contactos.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
@@ -516,17 +515,11 @@
         boot.style.opacity = '0';
         setTimeout(() => {
           boot.style.display = 'none';
-          
-          // Generar en el DOM todos los elementos del Home aunque no se vea inmediatamente, 
-          // así cuando el usuario presione el botón Home estarán cargados con sus animaciones.
           document.getElementById('home').classList.remove('hide');
           document.querySelectorAll('.tile').forEach((t, i) => {
             t.style.animationDelay = `${i * 0.05}s`;
             t.classList.add('tile-enter');
           });
-          
-          // MODIFICACIÓN: Abre automáticamente el Núcleo de Defensa
-          this.openApp('nucleo');
         }, 500);
       },
       skipBoot() { this.hideBoot(); },
@@ -536,12 +529,37 @@
         wrap.innerHTML = ''; 
         const correosAutorizados = ['s.general@seccionxx.mx', 's.interior@seccionxx.mx', 'c.vigilancia@seccionxx.mx'];
 
+        const cuentasNucleo = [
+          'HGZ2_ZACAPU', 'HGZ8_URUAPAN', 'HGZ4_ZAMORA', 'UMF64_PURUANDIRO', 'HGSZ9_APATZINGAN',
+          'HGSZ7_LAPIEDAD', 'UMF26_TARETAN', 'UMF18_ZITACUARO', 'HGSZ17_LOSREYES', 'HGSZ24_PEDERNALES',
+          'CSS_MORELIA', 'DELADMIN_MORELIA', 'UMF80_MORELIA', 'HGR1_CHARO_MAT', 'UMF19_CDHIDALGO',
+          'UMF20_PATZCUARO', 'GUARD_001_ZAMORA', 'UMF40_COALCOMAN', 'ALMACEN_MORELIA', 'HR30_ARIO',
+          'HGR1_CHARO_VESP', 'GUARD_001_MORELIA', 'HGZ12_LCARDENAS', 'HR31_HUETAMO', 'HR33_TUXPAN',
+          'HGZ4_ZAMORA_VESP', 'UMF75_MORELIA', 'HGZ8_URUAPAN_VESP', 'SUBDEL_URUAPAN', 'SUBDEL_MORELIA',
+          'SUBDEL_LCARDENAS', 'UMF31_GUACAMAYAS', 'HR32_PARACHO', 'UMF78_LCARDENAS', 'UMF77_LAPIEDAD',
+          'HGZ83_MORELIA', 'UMF76_URUAPAN', 'UMF84_TACICUARO', 'UMF5_SAHUAYO', 'SUBDEL_ZAMORA',
+          'UMF27_LAMIRA', 'UMF25_PURUARAN', 'UMF81_URUAPAN', 'UMF82_ZAMORA', 'HR_VILLAMAR',
+          'HR_BUENAVISTA', 'UMF85_TARIMBARO', 'HGZ86_URUAPAN', 'UMF21_JACONA', 'UMF50_MARAVATIO',
+          'CSS_ZACAPU', 'UMF89_TLALPUJAHUA', 'UMF74_TACAMBARO', 'CSS_LCARDENAS', 'GUARD_LCARDENAS',
+          'SUBDEL_ZITACUARO', 'UMF11_NUEVAITALIA', 'UMF6_JIQUILPAN', 'UMF42_CUITZEO', 'UMF54_PUREPERO',
+          'UMF46_LAHUACANA', 'UMF71_MORELIA', 'UMF65_VILLAMADERO', 'UMF23_INFIERNILLO', 'UMF70_ZINAPECUARO',
+          'UMF28_STACLARA', 'UMF37_ANGANGUEO', 'TIENDA_MORELIA', 'UMF13_COTIJA', 'CSS_LOSREYES'
+        ];
+
         APPS.forEach(a => {
           if(a.id === 'privacidad' || a.hideFromMenu) return; 
+          
+          const isSuperAdmin = userRole === 'admin' && userEmail && !userEmail.includes('@seccionxx.mx');
+          const isAuthorizedEmail = userEmail && correosAutorizados.includes(userEmail);
+
           if (a.adminOnly) {
-            const isSuperAdmin = userRole === 'admin' && userEmail && !userEmail.includes('@seccionxx.mx');
-            const isAuthorizedEmail = userEmail && correosAutorizados.includes(userEmail);
             if (!isSuperAdmin && !isAuthorizedEmail) return;
+          }
+
+          if (a.restrictedNucleo) {
+            const userID = userEmail ? userEmail.split('@')[0].toUpperCase() : '';
+            const isNucleoAuth = cuentasNucleo.includes(userID);
+            if (!isNucleoAuth && !isSuperAdmin && !isAuthorizedEmail) return;
           }
 
           const tile = document.createElement('div');
@@ -552,6 +570,7 @@
             else this.openApp(a.id);
             if(a.id === 'buzon') PSDAuth.markNotificationsAsRead();
           };
+          
           if (a.ia) tile.innerHTML = `<div class="badge-ia"><i class="ph-bold ph-sparkle"></i> IA</div>`;
           tile.innerHTML += `<i class="${a.iconClass} tile-icon-integrated"></i><h3>${a.title}</h3><p>${a.desc}</p>`;
           tile.style.animationDelay = `${wrap.children.length * 0.05}s`;
@@ -604,7 +623,6 @@
           const name = prof?.display_name || session.user.user_metadata?.display_name || 'Compañero';
           
           const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e4f77&color=fff&size=128&bold=true`;
-          
           const avatarUrl = prof?.avatar_url || session.user.user_metadata?.avatar_url || defaultAvatar;
 
           const imgEl = document.getElementById('header-avatar');
@@ -613,7 +631,7 @@
           imgEl.src = avatarUrl;
           
           imgEl.onerror = () => {
-            imgEl.onerror = null;
+            imgEl.onerror = null; 
             imgEl.src = defaultAvatar;
           };
 
