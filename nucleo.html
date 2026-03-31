@@ -21,17 +21,25 @@
       --danger: #ff7b7b;
       --ring: rgba(77, 161, 168, .35);
     }
+    
+    /* Adaptaciones específicas para iFrame */
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow-y: auto; /* Permite scroll solo si el contenido excede el iframe */
+      background-color: transparent; /* Útil si quieres que herede el fondo del padre */
+    }
+
     body {
       background-color: var(--bg-body);
       color: var(--text-main);
       font-family: 'Inter', sans-serif;
-      margin: 0;
       padding: 24px;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
       box-sizing: border-box;
     }
+    
     .hide { display: none !important; }
     
     /* Pantalla de carga y error */
@@ -40,12 +48,13 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 80vh;
+      height: 100%;
+      min-height: 60vh;
       text-align: center;
     }
     .status-screen i { font-size: 64px; margin-bottom: 16px; }
     .status-screen h2 { margin: 0 0 8px 0; font-size: 24px; }
-    .status-screen p { color: var(--text-muted); font-size: 15px; max-width: 400px; }
+    .status-screen p { color: var(--text-muted); font-size: 15px; max-width: 400px; line-height: 1.4; }
     .error-icon { color: var(--danger); filter: drop-shadow(0 0 10px rgba(255,123,123,0.3)); }
     .loading-icon { color: var(--primary-light); animation: spin 2s linear infinite; }
     
@@ -103,11 +112,6 @@
   </div>
 
   <script>
-    // Inicializar cliente Supabase con tus credenciales
-    const supabaseUrl = "https://axsncdwshdvsysrpikwj.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
     const statusContainer = document.getElementById('status-container');
     const appContainer = document.getElementById('app-container');
     const statusIcon = document.getElementById('status-icon');
@@ -122,15 +126,35 @@
         statusTitle.style.color = "var(--danger)";
       }
       if (statusDesc) statusDesc.textContent = desc;
+      
+      // Ocultar la app si hubo error y asegurar que se vea el contenedor de estado
+      if (appContainer) appContainer.classList.add('hide');
+      if (statusContainer) statusContainer.classList.remove('hide');
     }
+
+    // Configurar temporizador de seguridad en caso de que el iFrame bloquee el localStorage
+    const watchdogTimer = setTimeout(() => {
+      showError(
+        "Tiempo de espera agotado", 
+        "No pudimos verificar tu sesión. Si estás viendo esto en un iframe, es posible que tu navegador esté bloqueando el acceso a los datos de sesión por motivos de seguridad (cookies de terceros)."
+      );
+    }, 8000); // 8 segundos de límite
 
     async function initModulo() {
       try {
+        // Inicializar cliente Supabase
+        const supabaseUrl = "https://axsncdwshdvsysrpikwj.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
         console.log("1. Iniciando validación de Núcleo...");
         
         // Obtener la sesión activa del usuario
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
+        // Si llegamos aquí, Supabase respondió. Limpiamos el temporizador de seguridad.
+        clearTimeout(watchdogTimer);
+
         if (sessionError) {
           console.error("Error de sesión:", sessionError);
           showError("Error de Autenticación", sessionError.message);
@@ -139,17 +163,16 @@
         
         if (!session) {
           console.log("No hay sesión activa.");
-          showError("Acceso Denegado", "No se detectó una sesión activa. Por favor, inicia sesión.");
+          showError("Acceso Denegado", "No se detectó una sesión activa en este módulo. Inicia sesión en la plataforma principal.");
           return;
         }
 
         const user = session.user;
 
-        // --- NUEVA LÓGICA: VERIFICACIÓN DE ADMINISTRADOR ---
-        // Comprobamos si el rol está definido en los metadatos del usuario.
-        // Soporta llaves 'role' o 'rol' en user_metadata, o en app_metadata.
-        const userRole = user.user_metadata?.role || user.user_metadata?.rol || user.app_metadata?.role;
-        const isAdmin = userRole === 'admin' || userRole === 'administrador'; // Puedes ajustar la palabra clave según lo tengas en BD
+        // VERIFICACIÓN SEGURA DE ADMINISTRADOR
+        // Se usa ?. para evitar que falle si el usuario no tiene metadatos asignados
+        const userRole = user?.user_metadata?.role || user?.user_metadata?.rol || user?.app_metadata?.role;
+        const isAdmin = userRole === 'admin' || userRole === 'administrador';
 
         if (isAdmin) {
           console.log("2. Acceso concedido: Cuenta de Administrador detectada.");
@@ -157,25 +180,19 @@
           if (unidadBadge) unidadBadge.innerHTML = `<i class="ph-bold ph-shield-star"></i> Administrador General`;
           if (statusContainer) statusContainer.classList.add('hide');
           if (appContainer) appContainer.classList.remove('hide');
-          
-          // Retornamos aquí para evitar que el admin pase por la validación de la lista blanca
-          return;
+          return; // Termina la función aquí para el admin
         }
-        // ---------------------------------------------------
 
-        // Si NO es admin, continuamos con la validación de la lista blanca
+        // VALIDACIÓN PARA REPRESENTANTES (LISTA BLANCA)
         const userEmail = user.email || "";
         if (!userEmail) {
-          console.log("El usuario no tiene email registrado.");
           showError("Datos Incompletos", "Tu cuenta no tiene un correo válido asociado para verificar identidad.");
           return;
         }
 
-        // Extraer la matrícula/ID del correo
         const userID = userEmail.split('@')[0].toUpperCase();
         console.log("3. Buscando en Lista Blanca el ID:", userID);
 
-        // Consultar la Lista Blanca en la base de datos
         const { data: authData, error: dbError } = await supabase
           .from('nucleo_autorizados')
           .select('nombre_unidad')
@@ -183,32 +200,33 @@
           .maybeSingle();
 
         if (dbError) {
-          console.error("Error en base de datos:", dbError);
+          console.error("Error en BD:", dbError);
           showError("Error de Base de Datos", "No pudimos conectar con los registros de seguridad.");
           return;
         }
 
         if (!authData) {
-          console.log("4. Usuario no encontrado en la lista blanca.");
           showError("Privilegios Insuficientes", "Tu cuenta no está registrada como Delegación o Representación Sindical autorizada.");
           return;
         }
 
         console.log("4. Acceso concedido. Unidad:", authData.nombre_unidad);
 
-        // Mostrar la app y ocultar la carga para representantes
         if (unidadBadge) unidadBadge.innerHTML = `<i class="ph-bold ph-identification-badge"></i> ${authData.nombre_unidad}`;
         if (statusContainer) statusContainer.classList.add('hide');
         if (appContainer) appContainer.classList.remove('hide');
 
       } catch (err) {
+        // En caso de un fallo grave en JavaScript (ej. navegador bloquea cookies)
+        clearTimeout(watchdogTimer);
         console.error("Error crítico en Núcleo de Defensa:", err);
-        showError("Error Inesperado", "Hubo un problema de código al procesar tu solicitud.");
+        showError(
+          "Error Inesperado", 
+          "El navegador impidió la ejecución del script. Si usas un navegador estricto (Brave, Safari), revisa el bloqueo de rastreadores para este iframe."
+        );
       }
     }
 
-    // Ejecutar la validación directamente. 
-    // Al estar al final del HTML, el DOM ya existe y no necesitamos esperar el evento DOMContentLoaded.
     initModulo();
   </script>
 </body>
