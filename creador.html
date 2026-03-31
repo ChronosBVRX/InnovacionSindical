@@ -5,25 +5,27 @@
   <title>PSD - Instalador Masivo de Delegaciones</title>
   <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background: #1b2e45; color: white; }
-    .container { max-width: 800px; margin: 0 auto; background: rgba(0,0,0,0.3); padding: 30px; border-radius: 12px; }
+    .container { max-width: 900px; margin: 0 auto; background: rgba(0,0,0,0.3); padding: 30px; border-radius: 12px; }
     button { padding: 15px 24px; cursor: pointer; background: #4da1a8; color: #0b1f2a; border: none; font-weight: bold; border-radius: 8px; font-size: 16px; width: 100%; margin-bottom: 20px;}
+    button:hover { filter: brightness(1.1); }
     button:disabled { background: #555; cursor: not-allowed; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
     th, td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(77, 161, 168, .35); }
-    th { color: #7ad1d6; }
+    th { color: #7ad1d6; background: rgba(0,0,0,0.2); }
     .status-ok { color: #4ade80; font-weight: bold; }
     .status-err { color: #f87171; font-weight: bold; }
+    .vacante-nota { color: #bce9eb; font-size: 12px; font-style: italic; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h2>Módulo de Instalación - Núcleo de Defensa</h2>
-    <p>Este panel registrará automáticamente las cuentas en Supabase usando la clave delegacional como prefijo de correo (ej. HGZ2_ZACAPU@nucleo.sntss.mx). <strong>Asegúrate de tener desactivado "Confirm Email" en Supabase Auth.</strong></p>
+    <h2>Módulo de Instalación - Núcleo de Defensa (Sección XX)</h2>
+    <p>Este panel registrará automáticamente las 70 cuentas delegacionales (D.S., S.D. y R.S.) en Supabase. Se incluyen las carteras actualmente vacantes para asegurar la cobertura total de la estructura sindical.</p>
     
     <button id="btnCrear" onclick="iniciarCreacionMasiva()">Crear Todas las Cuentas Ahora</button>
     
-    <div id="progreso" style="margin-bottom: 15px; font-weight: bold;"></div>
+    <div id="progreso" style="margin-bottom: 15px; font-weight: bold; font-size: 18px; text-align: center; color: #7ad1d6;"></div>
 
     <table id="tablaDelegaciones">
       <thead>
@@ -41,13 +43,14 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Tus credenciales de Supabase
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Directorio extraído de tu Excel
+    // Directorio Completo: 70 Unidades (Delegaciones, Subdelegaciones y Representaciones)
     const delegaciones = [
+      // D.S. (1 al 48)
       { clave: "HGZ2_ZACAPU", nombre: "H.G.Z./ M.F. No. 2, ZACAPU", pass: "Sntss_Zacapu26!" },
       { clave: "HGZ8_URUAPAN", nombre: "H.G.Z. No. 8, URUAPAN (Matutino)", pass: "Sntss_Uruapan26!" },
       { clave: "HGZ4_ZAMORA", nombre: "H.G.Z./M.F. No. 4, ZAMORA", pass: "Sntss_Zamora26!" },
@@ -87,10 +90,43 @@
       { clave: "UMF76_URUAPAN", nombre: "U.M.F. No. 76, URUAPAN", pass: "Sntss_UMF76Ur26!" },
       { clave: "UMF84_TACICUARO", nombre: "U.M.F. N° 84, TACICUARO", pass: "Sntss_Tacicu26!" },
       { clave: "UMF5_SAHUAYO", nombre: "U.M.F./H. No. 5, SAHUAYO", pass: "Sntss_Sahuayo26!" },
-      { clave: "SUBDEL_ZAMORA", nombre: "SUBDELEGACIÓN ADMINISTRATIVA, ZAMORA", pass: "Sntss_SubZamo26!" }
+      { clave: "SUBDEL_ZAMORA", nombre: "SUBDELEGACIÓN ADMINISTRATIVA, ZAMORA", pass: "Sntss_SubZamo26!" },
+      { clave: "UMF27_LAMIRA", nombre: "U.M.F. No. 27, LA MIRA", pass: "Sntss_LaMira26!" },
+      { clave: "UMF25_PURUARAN", nombre: "U.M.F./H. No. 25, PURUARAN", pass: "Sntss_Puruaran26!" },
+      { clave: "UMF81_URUAPAN", nombre: "U.M.F. No. 81, URUAPAN", pass: "Sntss_UMF81Ur26!" },
+      { clave: "UMF82_ZAMORA", nombre: "U.M.F. No. 82, ZAMORA", pass: "Sntss_UMF82Za26!" },
+      { clave: "HR_VILLAMAR", nombre: "H.R. “B” VILLAMAR", pass: "Sntss_Villamar26!" },
+      { clave: "HR_BUENAVISTA", nombre: "H.R. “B”, BUENAVISTA TOMATLAN", pass: "Sntss_Buenavi26!" },
+      { clave: "UMF85_TARIMBARO", nombre: "U.M.F. N° 85, TARIMBARO", pass: "Sntss_Tarimba26!" },
+      { clave: "HGZ86_URUAPAN", nombre: "H.G.Z. No. 86, URUAPAN", pass: "Sntss_HGZ86Ur26!" },
+      
+      // S.D. (1 al 10)
+      { clave: "UMF21_JACONA", nombre: "U.M.F. No. 21, JACONA", pass: "Sntss_Jacona26!" },
+      { clave: "UMF50_MARAVATIO", nombre: "U.M.F. No. 50, MARAVATIO", pass: "Sntss_Maravat26!" },
+      { clave: "CSS_ZACAPU", nombre: "CENTRO DE SEGURIDAD SOCIAL, ZACAPU", pass: "Sntss_CSSZac26!" },
+      { clave: "UMF89_TLALPUJAHUA", nombre: "U.M.F. No. 89, TLALPUJAHUA", pass: "Sntss_Tlalpu26!" },
+      { clave: "UMF74_TACAMBARO", nombre: "U.M.F. No. 74, TACÁMBARO", pass: "Sntss_Tacamba26!" },
+      { clave: "CSS_LCARDENAS", nombre: "CENTRO DE SEGURIDAD SOCIAL, LÁZARO CÁRDENAS", pass: "Sntss_CSSLCar26!" },
+      { clave: "GUARD_LCARDENAS", nombre: "GUARDERÍA INFANTIL, LÁZARO CÁRDENAS", pass: "Sntss_GuaLCar26!" },
+      { clave: "SUBDEL_ZITACUARO", nombre: "SUBDELEGACIÓN, ZITÁCUARO", pass: "Sntss_SubZita26!" },
+      { clave: "UMF11_NUEVAITALIA", nombre: "U.M.F. No. 11, NUEVA ITALIA", pass: "Sntss_NvaIta26!" },
+      { clave: "UMF6_JIQUILPAN", nombre: "U.M.F. No. 6, JIQUILPAN", pass: "Sntss_Jiquil26!" },
+      
+      // R.S. (1 al 12)
+      { clave: "UMF42_CUITZEO", nombre: "U.M.F. No. 42, CUITZEO", pass: "Sntss_Cuitzeo26!" },
+      { clave: "UMF54_PUREPERO", nombre: "U.M.F. No. 54, PURÉPERO", pass: "Sntss_Pureper26!" },
+      { clave: "UMF46_LAHUACANA", nombre: "U.M.F. No. 46 LA HUACANA / UMF 43 CHURUMUCO", pass: "Sntss_LaHuaca26!" },
+      { clave: "UMF71_MORELIA", nombre: "U.M.F. No. 71, MORELIA", pass: "Sntss_UMF71Mo26!" },
+      { clave: "UMF65_VILLAMADERO", nombre: "U.M.F. No. 65, VILLA MADERO", pass: "Sntss_VillaMa26!" },
+      { clave: "UMF23_INFIERNILLO", nombre: "U.M.F. No. 23, INFIERNILLO", pass: "Sntss_Infiern26!" },
+      { clave: "UMF70_ZINAPECUARO", nombre: "U.M.F. N° 70, ZINAPÉCUARO", pass: "Sntss_Zinapec26!" },
+      { clave: "UMF28_STACLARA", nombre: "U.M.F. N° 28, STA CLARA", pass: "Sntss_StaClar26!" },
+      { clave: "UMF37_ANGANGUEO", nombre: "U.M.F. No. 37, ANGANGUEO", pass: "Sntss_Angangu26!" },
+      { clave: "TIENDA_MORELIA", nombre: "TIENDA I.M.S.S.-S.N.T.S.S. MORELIA", pass: "Sntss_TiendaM26!" },
+      { clave: "UMF13_COTIJA", nombre: "U.M.F. N° 13, COTIJA", pass: "Sntss_Cotija26!" },
+      { clave: "CSS_LOSREYES", nombre: "CENTRO DE SEGURIDAD SOCIAL, LOS REYES", pass: "Sntss_CSSRey26!" }
     ];
 
-    // Renderizar tabla inicial
     const tbody = document.querySelector("#tablaDelegaciones tbody");
     delegaciones.forEach((del, index) => {
       const tr = document.createElement("tr");
@@ -104,7 +140,6 @@
       tbody.appendChild(tr);
     });
 
-    // Función para crear cuentas con un retraso (para evitar bloqueos de Supabase por "Rate Limit")
     async function iniciarCreacionMasiva() {
       const btn = document.getElementById("btnCrear");
       btn.disabled = true;
@@ -114,9 +149,9 @@
         const del = delegaciones[i];
         const emailFormateado = `${del.clave}@nucleo.sntss.mx`.toLowerCase();
         
-        document.getElementById("progreso").innerText = `Creando ${i + 1} de ${delegaciones.length}...`;
+        document.getElementById("progreso").innerText = `Creando cuenta ${i + 1} de ${delegaciones.length}...`;
 
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error } = await supabaseClient.auth.signUp({
           email: emailFormateado,
           password: del.pass,
           options: {
@@ -129,7 +164,6 @@
 
         const statusTd = document.getElementById(`status-${i}`);
         if (error) {
-          // Si el usuario ya existe, Supabase Auth a veces arroja error o lo ignora dependiendo de la config.
           if(error.message.includes("already registered")) {
              statusTd.innerHTML = `<span class="status-ok">Ya Existía ✓</span>`;
           } else {
@@ -139,12 +173,12 @@
           statusTd.innerHTML = `<span class="status-ok">Creado ✓</span>`;
         }
 
-        // Esperar 1 segundo entre cada creación para no saturar la API
-        await new Promise(r => setTimeout(r, 1000));
+        // Retraso de 1.5 segundos para respetar los límites de la API de Supabase en registros masivos
+        await new Promise(r => setTimeout(r, 1500));
       }
 
-      document.getElementById("progreso").innerText = "¡Proceso Terminado!";
-      btn.innerText = "Cuentas Creadas Exitosamente";
+      document.getElementById("progreso").innerText = "¡Sincronización Completada! (70 Unidades Registradas)";
+      btn.innerText = "Estructura Delegacional Creada Exitosamente";
     }
   </script>
 </body>
