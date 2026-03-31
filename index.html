@@ -471,7 +471,8 @@
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados.', iconClass: 'ph-duotone ph-broadcast', iframe: 'noticias.html' },
       { id: 'biblioteca', title: 'Biblioteca', desc: 'Recursos digitales.', iconClass: 'ph-duotone ph-books', iframe: 'biblioteca.html' },
       { id: 'calendario', title: 'Calendario', desc: 'Eventos Oficiales sindicales.', iconClass: 'ph-duotone ph-calendar-blank', iframe: 'calendario.html', hideFromMenu: true },
-{ id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Acceso a representantes sindicales.', iconClass: 'ph-duotone ph-scales', iframe: 'nucleo.html', featured: true },      { id: 'comite', title: 'Comité Seccional', desc: 'Planilla Azul.', iconClass: 'ph-duotone ph-users-three',  iframe: 'comite.html' },
+      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Acceso a representantes sindicales.', iconClass: 'ph-duotone ph-scales', iframe: 'nucleo.html', featured: true },      
+      { id: 'comite', title: 'Comité Seccional', desc: 'Planilla Azul.', iconClass: 'ph-duotone ph-users-three',  iframe: 'comite.html' },
       { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción.', iconClass: 'ph-duotone ph-scan-smiley', href: 'kiosko.html', featured: true, newTab: true },
       { id: 'directorio', title: 'Directorio', desc: 'Contactos.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
       { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de diferentes prestaciones.', iconClass: 'ph-duotone ph-hand-coins', iframe: 'prestaciones.html' },
@@ -515,11 +516,17 @@
         boot.style.opacity = '0';
         setTimeout(() => {
           boot.style.display = 'none';
+          
+          // Generar en el DOM todos los elementos del Home aunque no se vea inmediatamente, 
+          // así cuando el usuario presione el botón Home estarán cargados con sus animaciones.
           document.getElementById('home').classList.remove('hide');
           document.querySelectorAll('.tile').forEach((t, i) => {
             t.style.animationDelay = `${i * 0.05}s`;
             t.classList.add('tile-enter');
           });
+          
+          // MODIFICACIÓN: Abre automáticamente el Núcleo de Defensa
+          this.openApp('nucleo');
         }, 500);
       },
       skipBoot() { this.hideBoot(); },
@@ -584,7 +591,6 @@
         document.getElementById('header-login-form').addEventListener('submit', (e) => this.handleLogin(e));
       },
       
-      // FUNCIÓN ACTUALIZADA CON EL "PLAN B" PARA EL AVATAR Y MEJOR CALIDAD
       async updateUI(session) {
         const unloggedDiv = document.getElementById('auth-unlogged');
         const loggedDiv = document.getElementById('auth-logged');
@@ -597,21 +603,17 @@
           const { data: prof } = await supabaseClient.from('profiles').select('display_name, avatar_url, role').eq('user_id', session.user.id).maybeSingle();
           const name = prof?.display_name || session.user.user_metadata?.display_name || 'Compañero';
           
-          // Creamos avatar por defecto de alta calidad
           const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e4f77&color=fff&size=128&bold=true`;
           
-          // Intentamos usar la foto del usuario
           const avatarUrl = prof?.avatar_url || session.user.user_metadata?.avatar_url || defaultAvatar;
 
           const imgEl = document.getElementById('header-avatar');
           document.getElementById('header-name').textContent = name.split(' ')[0];
 
-          // Asignamos la imagen
           imgEl.src = avatarUrl;
           
-          // TRUCO: Si la imagen real está rota o bloqueada, forzamos las iniciales
           imgEl.onerror = () => {
-            imgEl.onerror = null; // Evita un bucle infinito
+            imgEl.onerror = null;
             imgEl.src = defaultAvatar;
           };
 
