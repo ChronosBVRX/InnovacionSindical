@@ -1,6 +1,6 @@
 {
-  "name": "Innovación Sindical",
-  "short_name": "InnSindical",
+  "name": "Plataforma Sindical Digital",
+  "short_name": "PSD",
   "description": "Plataforma oficial de Innovación Sindical",
   "start_url": "./index.html",
   "display": "standalone",
