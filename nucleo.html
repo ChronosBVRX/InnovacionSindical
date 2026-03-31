@@ -2,791 +2,194 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover" />
-
-  <title>Plataforma Sindical Digital (PSD)</title>
-  <meta name="description" content="Plataforma Sindical Digital (PSD) - Panel de Control y Gestión Sindical." />
-  <meta property="og:title" content="Plataforma Sindical Digital (PSD)" />
-  <meta property="og:description" content="Panel de Control y Gestión Sindical para la base trabajadora." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" />
-
-  <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#1b2e45">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="PSD">
-  <link rel="apple-touch-icon" href="./assets/icon-192.png">
-
-  <meta
-    http-equiv="Content-Security-Policy"
-    content="
-      default-src 'self';
-      script-src 'self' 'unsafe-inline' https://connect.facebook.net https://cdn.jsdelivr.net;
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
-      font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:;
-      img-src 'self' data: https://raw.githubusercontent.com https://*.facebook.com https://*.fbcdn.net https://*.googleusercontent.com https://ui-avatars.com https://*.supabase.co;
-      frame-src 'self' https://chronosbvrx.github.io https://trascendencia-sindical-7t85.onrender.com https://rh.imss.gob.mx https://tuperfil.imss.gob.mx https://www.facebook.com;
-      connect-src 'self' https://connect.facebook.net https://www.facebook.com https://raw.githubusercontent.com https://*.supabase.co;
-      object-src 'none';
-      base-uri 'self';
-      form-action 'self';
-      frame-ancestors 'self';
-      upgrade-insecure-requests;
-    "
-  />
-
-  <meta name="referrer" content="strict-origin-when-cross-origin" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+  <title>Núcleo de Defensa</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
-
-  <link rel="icon" href="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" />
-
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+  
   <style>
     :root {
-      --bg-body: #1b2e45; --bg-body-end: #152336;
+      --bg-body: #1b2e45; 
       --panel-base: 46, 79, 119;
-      --primary: #4da1a8; --primary-light: #7ad1d6;
-      --success: #4ade80;
+      --primary: #4da1a8; 
+      --primary-light: #7ad1d6;
+      --text-main: #f0fdfa; 
+      --text-muted: #bce9eb;
       --danger: #ff7b7b;
-      --text-main: #f0fdfa; --text-muted: #bce9eb;
       --ring: rgba(77, 161, 168, .35);
-      --topbar: 64px; --radius: 16px;
-      --glass-bg: rgba(var(--panel-base), 0.35);
     }
-
-    * { -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; margin: 0; overflow: hidden; background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
-
-    .ambient-bg { position: fixed; inset: 0; z-index: -1; background: linear-gradient(160deg, var(--bg-body) 0%, var(--bg-body-end) 100%); }
-    .ambient-bg::before { content: ""; position: absolute; inset: 0; opacity: .06; background-image: linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px); background-size: 40px 40px; }
-
-    .topbar { position: fixed; inset: 0 0 auto 0; min-height: var(--topbar); height: auto; display: flex; align-items: center; justify-content: space-between; padding: max(env(safe-area-inset-top), 35px) 24px 10px 24px; background: rgba(var(--panel-base), 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--ring); z-index: 30; box-sizing: border-box; }
-    .mark { width: 36px; height: 36px; border-radius: 8px; background: rgba(77, 161, 168, .15); border: 1px solid var(--ring); overflow: hidden; display: grid; place-items: center; flex-shrink: 0; }
-    .mark img { width: 100%; height: 100%; object-fit: cover; }
-    .title { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 16px; white-space: nowrap; }
-    .title-text span { color: var(--primary-light); }
-
-    .clock-container { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); background: rgba(var(--panel-base), 0.4); padding: 6px 12px; border-radius: 12px; border: 1px solid var(--ring); }
-    .secure-badge { display: flex; align-items: center; gap: 4px; color: var(--success); font-weight: 600; font-size: 11px; text-transform: uppercase; border-right: 1px solid var(--ring); padding-right: 8px; }
-    .secure-badge i { font-size: 14px; }
-
-    .topbar-right { display: flex; align-items: center; gap: 16px; }
-    .btn-auth { background: var(--primary); color: var(--bg-body); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center;}
-    .btn-auth:hover { background: var(--primary-light); transform: translateY(-1px); }
-    
-    .user-widget { display: flex; align-items: center; gap: 10px; cursor: pointer; background: rgba(var(--panel-base), 0.4); padding: 4px 12px 4px 4px; border-radius: 20px; border: 1px solid var(--ring); transition: all 0.2s ease; }
-    .user-widget:hover { border-color: var(--primary-light); background: rgba(var(--panel-base), 0.6); }
-    .user-widget img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--ring); background: var(--bg-body); flex-shrink: 0; color: transparent;}
-    .user-widget .name { font-size: 13px; font-weight: 600; color: var(--text-main); max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 4px; }
-    
-    .btn-logout { background: transparent; color: #ff7b7b; border: 1px solid rgba(255,123,123,0.3); padding: 6px 10px; border-radius: 8px; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; }
-    .btn-logout:hover { background: rgba(255,123,123,0.1); }
-
-    .notification-icon { position: relative; cursor: pointer; color: var(--text-muted); transition: color 0.2s ease; display: flex; align-items: center; justify-content: center; padding: 6px; }
-    .notification-icon:hover { color: var(--primary-light); }
-    .notification-icon i { font-size: 24px; transition: all 0.3s ease; }
-    
-    .notification-badge { position: absolute; top: 0px; right: 0px; background-color: var(--danger); color: white; font-size: 10px; font-weight: 700; border-radius: 50%; min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; padding: 0 4px; box-shadow: 0 0 0 2px var(--bg-body); animation: popIn 0.3s ease; }
-
-    .indicator-dot { position: absolute; top: 5px; right: 6px; width: 8px; height: 8px; background-color: var(--primary-light); border-radius: 50%; box-shadow: 0 0 8px var(--primary-light), 0 0 0 2px var(--bg-body); animation: pulseGlow 1.5s infinite; }
-    .icon-illuminated { color: var(--primary-light) !important; filter: drop-shadow(0 0 8px rgba(122, 209, 214, 0.6)); }
-
-    @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(122, 209, 214, 0.7), 0 0 0 2px var(--bg-body); } 70% { box-shadow: 0 0 0 6px rgba(122, 209, 214, 0), 0 0 0 2px var(--bg-body); } 100% { box-shadow: 0 0 0 0 rgba(122, 209, 214, 0), 0 0 0 2px var(--bg-body); } }
-
-    .modal-overlay { position: fixed; inset: 0; background: rgba(10, 20, 29, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 20px;}
-    .modal-overlay.active { opacity: 1; pointer-events: auto; }
-    .modal-content { background: linear-gradient(180deg, rgba(46,79,119,.95), rgba(27,46,69,.95)); border: 1px solid var(--ring); border-radius: 16px; padding: 24px; width: 100%; max-width: 340px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: translateY(20px); transition: transform 0.3s ease; box-sizing: border-box;}
-    .modal-overlay.active .modal-content { transform: translateY(0); }
-    
-    .modal-input { width: 100%; padding: 12px; margin-bottom: 16px; border-radius: 12px; border: 1px solid var(--ring); background: rgba(21,35,54,.85); color: var(--text-main); box-sizing: border-box; font-family: 'Inter', sans-serif; font-size: 16px; outline: none; transition: all 0.2s; }
-    .modal-input:focus { border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(77,161,168,.18); }
-    .modal-label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; font-weight: 500;}
-
-    .layer { position: fixed; inset: 0; top: 0; overflow-y: auto; display: flex; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
-    .wrap { padding: calc(var(--topbar) + max(env(safe-area-inset-top), 35px) + 20px) 24px 32px 24px; max-width: 1200px; margin: 0 auto; flex: 1; width: 100%; box-sizing: border-box; }
-
-    .brand { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--ring); }
-    .brand h1 { margin: 0; font-size: 28px; font-weight: 700; color: var(--text-main); }
-    .brand p { margin: 4px 0 0 0; color: var(--text-muted); }
-    .text-gradient { background: linear-gradient(to right, var(--primary-light), var(--text-main)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .badge { background: rgba(77, 161, 168, .15); border: 1px solid var(--ring); color: var(--primary-light); padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
-
-    .campaign-banner { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.6)); border: 1px solid var(--primary-light); border-radius: var(--radius); padding: 24px 32px; margin-bottom: 32px; cursor: pointer; box-shadow: 0 8px 24px rgba(77, 161, 168, 0.15); transition: all 0.3s ease; position: relative; overflow: hidden; }
-    .campaign-banner:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(77, 161, 168, 0.3); background: linear-gradient(135deg, rgba(77, 161, 168, 0.3), rgba(var(--panel-base), 0.8)); }
-    .campaign-banner::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(122, 209, 214, 0.1) 0%, transparent 60%); pointer-events: none; }
-    .campaign-content { display: flex; align-items: center; gap: 24px; z-index: 1; }
-    .campaign-icon { font-size: 52px; color: var(--primary-light); filter: drop-shadow(0 4px 8px rgba(77, 161, 168, 0.4)); animation: float 3s ease-in-out infinite; }
-    .campaign-text h2 { margin: 0 0 6px 0; font-size: 24px; color: var(--text-main); font-weight: 700; }
-    .campaign-text p { margin: 0; color: var(--text-muted); font-size: 15px; }
-    .campaign-btn { background: var(--primary); color: var(--bg-body); border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; z-index: 1; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(77, 161, 168, 0.3); }
-    .campaign-banner:hover .campaign-btn { background: var(--primary-light); transform: scale(1.05); }
-
-    @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0px); } }
-    @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
-
-    .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding-bottom: 20px; }
-    .tile { position: relative; display: flex; flex-direction: column; min-height: 180px; padding: 24px; cursor: pointer; background: var(--glass-bg); backdrop-filter: blur(8px); border: 1px solid var(--ring); border-radius: var(--radius); transition: all 0.3s ease; overflow: hidden; }
-    .tile:hover { transform: translateY(-4px); border-color: var(--primary); background: rgba(var(--panel-base), 0.6); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25); }
-    .tile.featured { background: linear-gradient(145deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.45)); border: 1px solid var(--primary-light); box-shadow: 0 0 15px rgba(77, 161, 168, 0.15); }
-    .tile-icon-integrated { font-size: 48px; color: var(--primary-light); margin-bottom: 16px; transition: all 0.3s ease; filter: drop-shadow(0 4px 6px rgba(77, 161, 168, 0.4)); }
-    .tile:hover .tile-icon-integrated { transform: scale(1.1) rotate(-2deg); color: #fff; filter: drop-shadow(0 6px 12px rgba(122, 209, 214, 0.7)); }
-    .tile h3 { margin: 0 0 8px 0; font-size: 18px; }
-    .tile p { margin: 0; color: var(--text-muted); font-size: 14px; line-height: 1.5; }
-    .badge-ia { position: absolute; top: 14px; right: 14px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; color: var(--primary-light); background: rgba(77, 161, 168, .14); border: 1px solid var(--ring); box-shadow: 0 0 8px rgba(122, 209, 214, 0.2); }
-
-    .download-strip { display: flex; align-items: center; justify-content: space-between; background: rgba(var(--panel-base), 0.2); border: 1px dashed var(--primary-light); border-radius: var(--radius); padding: 16px 24px; margin-bottom: 32px; transition: all 0.3s ease; }
-    .download-strip:hover { background: rgba(var(--panel-base), 0.4); border-style: solid; box-shadow: 0 4px 15px rgba(77, 161, 168, 0.15); }
-    .ds-content { display: flex; align-items: center; gap: 16px; }
-    .ds-icon { font-size: 36px; color: var(--primary-light); opacity: 0.9; }
-    .ds-text h3 { margin: 0; font-size: 15px; color: var(--text-main); }
-    .ds-text p { margin: 4px 0 0 0; font-size: 13px; color: var(--text-muted); }
-    .ds-btn { background: transparent; color: var(--primary-light); border: 1px solid var(--primary-light); padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-    .ds-btn:hover { background: var(--primary-light); color: var(--bg-body); }
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
     .hide { display: none !important; }
-
-    .security-section { margin-top: 20px; padding-top: 32px; padding-bottom: 40px; border-top: 1px solid var(--ring); }
-    .security-header { margin-bottom: 24px; }
-    .security-header h2 { font-size: 20px; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin: 0 0 8px 0; }
-    .security-header h2 i { color: var(--success); filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.4)); }
-    .security-header p { color: var(--text-muted); font-size: 14px; margin: 0; line-height: 1.6; max-width: 850px; }
-
-    .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-    .tech-card { background: rgba(var(--panel-base), 0.25); border: 1px solid var(--ring); border-radius: 12px; padding: 16px; display: flex; gap: 16px; align-items: flex-start; transition: all 0.3s ease; }
-    .tech-card:hover { border-color: var(--primary-light); background: rgba(var(--panel-base), 0.4); transform: translateY(-2px); }
-    .tech-icon { font-size: 32px; color: var(--primary-light); background: rgba(77, 161, 168, 0.1); padding: 8px; border-radius: 8px; flex-shrink: 0; border: 1px solid rgba(122, 209, 214, 0.2); filter: drop-shadow(0 4px 8px rgba(77, 161, 168, 0.3)); }
-    .tech-info h4 { margin: 0 0 6px 0; font-size: 15px; color: var(--text-main); }
-    .tech-info p { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.4; }
-
-    .psd-footer { margin-top: 40px; padding: 24px 0; border-top: 1px solid rgba(77, 161, 168, 0.1); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; color: var(--text-muted); font-size: 12px; }
-    .footer-links { display: flex; gap: 20px; }
-    .footer-links a { color: var(--primary-light); text-decoration: none; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease; font-weight: 500; }
-    .footer-links a:hover { color: var(--text-main); text-shadow: 0 0 8px rgba(122, 209, 214, 0.4); }
-
-    .app-wrap { width: 100%; max-width: 100%; margin: 0; padding-top: calc(var(--topbar) + max(env(safe-area-inset-top), 35px) + 10px); padding-bottom: 0; padding-left: 0; padding-right: 0; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; position: relative; }
     
-    .app-head { position: fixed; bottom: max(env(safe-area-inset-bottom, 24px), 24px); left: 50%; top: auto; right: auto; transform: translateX(-50%); z-index: 1000; display: flex; align-items: center; gap: 8px; background: rgba(var(--panel-base), 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 6px; border-radius: 40px; border: 1px solid rgba(122, 209, 214, 0.2); box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); opacity: 0.5; }
-    .app-head:hover, .app-head:active, .app-head:focus-within { opacity: 1; background: rgba(var(--panel-base), 0.95); border-color: var(--primary-light); box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 15px rgba(77, 161, 168, 0.3); transform: translateX(-50%) translateY(-5px); padding: 8px 12px; }
-    .app-head .app-info { display: none; align-items: center; gap: 8px; padding: 0 10px; transition: all 0.3s ease; overflow: hidden; white-space: nowrap; }
-    .app-head:hover .app-info { display: flex; animation: fadeInText 0.3s ease forwards; }
-
-    @keyframes fadeInText { from { opacity: 0; max-width: 0; } to { opacity: 1; max-width: 250px; } }
-
-    .app-head .app-controls { display: flex; gap: 6px; }
-    .app-head .btn { background: transparent; border: 1px solid transparent; min-width: 40px; min-height: 40px; border-radius: 50%; box-shadow: none; color: var(--primary-light); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
-    .app-head .btn i { font-size: 20px; }
-    .app-head .btn:hover { background: rgba(77, 161, 168, 0.2); border-color: rgba(122, 209, 214, 0.3); color: var(--text-main); }
+    /* Pantalla de carga y error */
+    .status-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 80vh;
+      text-align: center;
+    }
+    .status-screen i { font-size: 64px; margin-bottom: 16px; }
+    .status-screen h2 { margin: 0 0 8px 0; font-size: 24px; }
+    .status-screen p { color: var(--text-muted); font-size: 15px; max-width: 400px; }
+    .error-icon { color: var(--danger); filter: drop-shadow(0 0 10px rgba(255,123,123,0.3)); }
+    .loading-icon { color: var(--primary-light); animation: spin 2s linear infinite; }
     
-    .app-body { flex: 1; background: transparent; border-radius: 0; border: none; overflow: hidden; position: relative; width: 100%; height: 100%; }
-    .iframe { width: 100%; height: 100%; border: none; display: block; }
-    
-    .btn { background: rgba(var(--panel-base), 0.5); border: 1px solid var(--ring); color: var(--primary-light); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s ease; min-width: 44px; min-height: 44px;}
-    .btn i { font-size: 20px; }
-    .btn:hover { background: rgba(77, 161, 168, .2); color: var(--text-main); border-color: var(--primary-light); box-shadow: 0 0 10px rgba(122, 209, 214, 0.3); }
-
-    .boot { position: fixed; inset: 0; display: grid; place-items: center; z-index: 100; background: radial-gradient(circle at center, #1b2e45 0%, #0a141d 100%); transition: opacity 0.6s ease; padding: 20px; text-align: center;}
-    .logo-boot { width: 100px; height: 100px; border-radius: 22px; border: 1px solid var(--ring); overflow: hidden; box-shadow: 0 0 30px rgba(77,161,168,0.3); margin: 0 auto 20px; }
-    .logo-boot img { width: 100%; height: 100%; object-fit: cover; }
-    .bar { height: 3px; width: 200px; max-width: 80%; background: rgba(255,255,255,0.05); overflow: hidden; position: relative; border-radius: 10px; margin: 20px auto; }
-    .bar span { display: block; height: 100%; width: 30%; background: var(--primary-light); position: absolute; animation: load 2s infinite; box-shadow: 0 0 10px var(--primary-light); }
-
-    @media (max-width: 768px) {
-      .hide-mobile { display: none !important; }
-      .wrap { padding: calc(var(--topbar) + max(env(safe-area-inset-top), 35px) + 16px) 16px 20px 16px; }
-      .app-head { bottom: max(env(safe-area-inset-bottom, 16px), 16px); }
-      .app-head:hover .app-info { display: none; }
-      .tiles { grid-template-columns: 1fr 1fr; gap: 12px; }
-      .tile { min-height: 140px; padding: 16px; }
-      .tile-icon-integrated { font-size: 36px; margin-bottom: 12px; }
-      .tile h3 { font-size: 15px; margin-bottom: 6px; }
-      .tile p { font-size: 12px; }
-      .clock-container { padding: 4px 8px; font-size: 11px; }
-      .secure-badge span { display: none; }
-      .tech-grid { grid-template-columns: 1fr; }
-      .campaign-banner { flex-direction: column; text-align: center; padding: 20px; gap: 16px; }
-      .campaign-content { flex-direction: column; gap: 12px; }
-      .campaign-icon { font-size: 42px; }
-      .psd-footer { flex-direction: column; text-align: center; gap: 12px; padding-bottom: 30px;}
-      .footer-links { justify-content: center; flex-wrap: wrap; gap: 12px; }
-      .download-strip { flex-direction: column; text-align: center; gap: 16px; }
-      .ds-content { flex-direction: column; gap: 8px; }
+    /* Interfaz principal del módulo */
+    .dashboard-header {
+      border-bottom: 1px solid var(--ring);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+    .dashboard-header h1 { margin: 0; font-size: 24px; color: var(--primary-light); }
+    .dashboard-header p { margin: 4px 0 0 0; color: var(--text-muted); font-size: 14px; }
+    .unidad-badge {
+      display: inline-block;
+      margin-top: 12px;
+      background: rgba(77, 161, 168, 0.15);
+      border: 1px solid var(--ring);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
     }
 
-    @media (max-width: 480px) {
-      .topbar { padding-left: 16px; padding-right: 16px; }
-      .title-text span:last-child { display: none; } 
-      .title-text span.hide-mobile { display: none; } 
-      .title { gap: 8px; font-size: 15px; }
-      .topbar-right { gap: 12px; }
-      .user-widget { padding: 4px; border-radius: 50%; } 
-      .user-widget .name { display: none; }
-      .btn-auth { font-size: 12px; padding: 8px 12px; }
-      .brand h1 { font-size: 24px; }
-      .brand { gap: 16px; flex-direction: column; align-items: flex-start; }
-      .tiles { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .tile { padding: 12px; min-height: 120px; border-radius: 12px; }
-      .tile-icon-integrated { font-size: 32px; margin-bottom: 8px; }
-      .tile h3 { font-size: 13px; line-height: 1.2; margin-bottom: 4px;}
-      .tile p { font-size: 11px; line-height: 1.3; }
-      .badge-ia { padding: 2px 8px; font-size: 9px; top: 8px; right: 8px; }
-      .btn { min-width: 40px; min-height: 40px; padding: 8px; }
-      .btn i { font-size: 18px; }
+    .card {
+      background: rgba(var(--panel-base), 0.35);
+      border: 1px solid var(--ring);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
     }
 
-    @keyframes load { 0% { left: -30%; } 100% { left: 100%; } }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .tile-enter { animation: fadeUp 0.5s ease forwards; opacity: 0; }
-
-    .pass-wrapper { position: relative; margin-bottom: 0; }
-    .pass-wrapper .modal-input { margin-bottom: 0; padding-right: 40px; }
-    .btn-eye { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; font-size: 20px; display: flex; align-items: center; justify-content: center; transition: color 0.2s; }
-    .btn-eye:hover { color: var(--primary-light); }
-    .forgot-link { display: block; text-align: right; font-size: 12px; color: var(--text-muted); margin-top: 8px; margin-bottom: 16px; text-decoration: underline; cursor: pointer; transition: color 0.2s; }
-    .forgot-link:hover { color: var(--text-main); }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
   </style>
-
-  <script>
-    if (window.top !== window.self) {
-      document.documentElement.innerHTML = `
-        <body style="background-color: #1b2e45; color: #bce9eb; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: 'Inter', sans-serif; text-align: center; padding: 20px; box-sizing: border-box;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#ff7b7b" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z"></path></svg>
-          <h2 style="color: #f0fdfa; margin: 16px 0 8px 0; font-size: 20px;">Módulo en Construcción</h2>
-          <p style="text-align: center; max-width: 100%; font-size: 14px;">El archivo correspondiente a esta herramienta aún no se ha subido o la ruta es incorrecta.</p>
-        </body>
-      `;
-    }
-  </script>
 </head>
-
 <body>
-  <div id="fb-root"></div>
-  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v24.0"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <div class="ambient-bg"></div>
-
-  <div id="boot" class="boot" onclick="PSD.skipBoot()">
-    <div>
-      <div class="logo-boot">
-        <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo SNTSS" />
-      </div>
-      <h1 style="font-size: 18px; letter-spacing: 2px; margin:0;">PLATAFORMA SINDICAL</h1>
-      <div class="bar"><span></span></div>
-      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(77, 161, 168, 0.2);">
-        <i class="ph-fill ph-shield-check" style="color: var(--success); font-size: 18px; filter: drop-shadow(0 0 5px rgba(74, 222, 128, 0.5));"></i>
-        <div id="security-status" style="font-size: 11px; color: var(--success); font-family: monospace; transition: opacity 0.2s ease; text-align: left; min-width: 180px;">Inicializando entorno...</div>
-      </div>
-    </div>
+  <div id="status-container" class="status-screen">
+    <i id="status-icon" class="ph-duotone ph-spinner loading-icon"></i>
+    <h2 id="status-title">Verificando credenciales...</h2>
+    <p id="status-desc">Conectando con el servidor seguro.</p>
   </div>
 
-  <div class="topbar">
-    <div class="title">
-      <div class="mark"><img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo" /></div>
-      <div class="title-text"><span class="hide-mobile">Plataforma</span> Sindical <span>Digital</span></div>
+  <div id="app-container" class="hide">
+    <div class="dashboard-header">
+      <h1><i class="ph-duotone ph-scales"></i> Núcleo de Defensa</h1>
+      <p>Panel exclusivo para Representación Sindical.</p>
+      <div id="unidad-nombre" class="unidad-badge">Cargando unidad...</div>
     </div>
-    
-    <div class="topbar-right">
-      <div class="clock-container hide-mobile">
-        <div class="secure-badge"><i class="ph-fill ph-lock-key"></i> <span>Seguro</span></div>
-        <div id="clock">--:--</div>
-      </div>
 
-      <div id="auth-unlogged">
-        <button class="btn-auth" onclick="PSDAuth.openModal()">Iniciar Sesión</button>
+    <div class="card">
+      <h3 style="margin-top:0;">Gestión de Casos</h3>
+      <p style="color: var(--text-muted); font-size: 14px;">Aquí podrás registrar y dar seguimiento a los asuntos de tu delegación.</p>
       </div>
-      
-      <div id="auth-logged" class="hide" style="display: flex; gap: 12px; align-items: center;">
-        <div id="calendar-icon" class="notification-icon" onclick="PSD.openApp('calendario')" title="Calendario">
-          <i class="ph-duotone ph-calendar-blank"></i>
-          <span id="calendar-badge" class="indicator-dot hide"></span>
-        </div>
-
-        <div class="notification-icon" onclick="PSDAuth.markNotificationsAsRead(); PSD.openApp('buzon');" title="Buzón Sindical">
-          <i class="ph-duotone ph-envelope-simple"></i>
-          <span id="notif-badge" class="notification-badge hide">0</span>
-        </div>
-
-        <div class="user-widget" onclick="PSD.openSafeExternal('miembros.html')" title="Ir a mi perfil">
-          <img id="header-avatar" src="" alt="Avatar">
-          <span id="header-name" class="name">Cargando...</span>
-        </div>
-        <button class="btn-logout" onclick="PSDAuth.logout()" title="Cerrar sesión"><i class="ph-bold ph-sign-out"></i></button>
-      </div>
-    </div>
   </div>
-
-  <div id="login-modal" class="modal-overlay">
-    <div class="modal-content">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;">
-        <h2 style="margin:0; font-size:18px; color:var(--text-main);">Acceso a Miembros</h2>
-        <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:26px; padding:0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;" onclick="PSDAuth.closeModal()">&times;</button>
-      </div>
-      
-      <form id="header-login-form">
-        <label class="modal-label">Matrícula o Correo</label>
-        <input id="hl-user" type="text" inputmode="email" class="modal-input" placeholder="Ej. 12345678" required autocomplete="username">
-
-        <label class="modal-label">Contraseña</label>
-        <div class="pass-wrapper">
-          <input id="hl-pass" type="password" class="modal-input" placeholder="••••••••" required autocomplete="current-password">
-          <button type="button" class="btn-eye" onclick="PSDAuth.togglePassword()" title="Mostrar/Ocultar contraseña">
-            <i class="ph-bold ph-eye" id="hl-eye-icon"></i>
-          </button>
-        </div>
-        
-        <a class="forgot-link" onclick="PSDAuth.forgotPassword()">¿Olvidaste tu contraseña?</a>
-
-        <button type="submit" style="width:100%; padding:14px; margin-top:4px; font-size: 14px;" class="btn-auth">Entrar a la Plataforma</button>
-        <div id="hl-error" style="color:#ff7b7b; font-size:13px; margin-top:12px; text-align:center; min-height: 15px;"></div>
-      </form>
-      <div style="margin-top:20px; text-align:center; font-size:13px; border-top: 1px solid var(--ring); padding-top: 16px;">
-        <a href="#" onclick="PSD.openSafeExternal('login.html'); return false;" style="color:var(--primary-light); text-decoration:none; font-weight:500;">¿Nuevo ingreso? Regístrate aquí</a>
-      </div>
-    </div>
-  </div>
-
-  <main id="home" class="layer hide">
-    <section class="wrap">
-      <section class="brand">
-        <div>
-          <h1>Bienvenido, <span class="text-gradient">Compañero</span></h1>
-          <p>Panel de Control y Gestión Sindical.</p>
-        </div>
-        <div class="badge"><i class="ph-bold ph-identification-badge"></i> SNTSS Secc. XX</div>
-      </section>
-
-      <section class="campaign-banner" onclick="PSD.openSafeExternal('campaña-carlos-guerrero.html')">
-        <div class="campaign-content">
-          <i class="ph-duotone ph-presentation-chart campaign-icon"></i>
-          <div class="campaign-text">
-            <h2>Planilla Azul</h2>
-            <p>Conoce nuestro proyecto y súmate al cambio.</p>
-          </div>
-        </div>
-        <button class="campaign-btn">Ver Propuestas <i class="ph-bold ph-arrow-right"></i></button>
-      </section>
-
-      <section class="tiles" id="tiles"></section>
-
-      <section id="pwa-install-strip" class="download-strip hide">
-        <div class="ds-content">
-          <i class="ph-duotone ph-device-mobile ds-icon"></i>
-          <div class="ds-text">
-            <h3>Instala la App Oficial</h3>
-            <p id="pwa-instrucciones">Agrega la Plataforma Sindical Digital a tu dispositivo para un acceso más rápido y sin ocupar espacio.</p>
-          </div>
-        </div>
-        <button id="btn-instalar-android" class="ds-btn hide">
-          <i class="ph-bold ph-download-simple"></i> Instalar
-        </button>
-      </section>
-
-      <section class="security-section">
-        <div class="security-header">
-          <h2><i class="ph-fill ph-shield-check"></i> Infraestructura y Seguridad</h2>
-          <p>La protección de la información es nuestra prioridad.</p>
-        </div>
-
-        <div class="tech-grid">
-          <div class="tech-card">
-            <div class="tech-icon"><i class="ph-duotone ph-server"></i></div>
-            <div class="tech-info">
-              <h4>Alojamiento Empresarial</h4>
-              <p>Respaldado por <strong>Microsoft</strong>. Alta disponibilidad global y protección contra ataques (DDoS).</p>
-            </div>
-          </div>
-          <div class="tech-card">
-            <div class="tech-icon"><i class="ph-duotone ph-database"></i></div>
-            <div class="tech-info">
-              <h4>Privacidad Absoluta</h4>
-              <p>Gestión por <strong>Supabase</strong>. Cifrado de extremo a extremo (E2E) para máxima confidencialidad.</p>
-            </div>
-          </div>
-          <div class="tech-card">
-            <div class="tech-icon"><i class="ph-duotone ph-shield-check"></i></div>
-            <div class="tech-info">
-              <h4>Conexiones Seguras</h4>
-              <p>Despliegue en <strong>Render</strong>. Tránsito de datos protegido por túneles HTTPS y certificados SSL/TLS.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <footer class="psd-footer">
-        <div>&copy; 2026 SNTSS Sección XX Michoacán | <strong>PSD</strong></div>
-        <div class="footer-links">
-          <a href="#" onclick="PSD.openApp('privacidad'); return false;"><i class="ph-bold ph-shield-check"></i> Aviso de Privacidad</a>
-          <a href="mailto:contacto@seccionxxmich.org.mx"><i class="ph-bold ph-envelope"></i> Soporte</a>
-        </div>
-      </footer>
-    </section>
-  </main>
-
-  <section id="app" class="layer hide">
-    <div class="app-wrap">
-      <div class="app-head">
-        <div class="app-info">
-          <div id="app-ic" style="font-size:22px; color:var(--primary-light);"></div>
-          <div>
-            <h2 id="app-title" style="margin:0; font-size:14px; font-weight:600; color:var(--text-main);">Módulo</h2>
-            <p id="app-desc" style="display:none;"></p>
-          </div>
-        </div>
-        <div class="app-controls">
-          <button class="btn" onclick="PSD.goHome()" title="Volver al Inicio"><i class="ph-duotone ph-house"></i></button>
-          <button class="btn" onclick="PSD.closeApp()" title="Cerrar Módulo"><i class="ph-bold ph-x"></i></button>
-        </div>
-      </div>
-      <div class="app-body">
-        <iframe id="app-iframe" class="iframe" allowfullscreen></iframe>
-        <div id="app-internal" style="height:100%; overflow:auto;"></div>
-      </div>
-    </div>
-  </section>
 
   <script>
-    const SAFE_ORIGINS = new Set([
-      window.location.origin,
-      'https://chronosbvrx.github.io',
-      'https://trascendencia-sindical-7t85.onrender.com',
-      'https://rh.imss.gob.mx',
-      'https://tuperfil.imss.gob.mx',
-      'https://www.facebook.com'
-    ]);
+    // Inicializar cliente Supabase con tus credenciales
+    const supabaseUrl = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    const APPS = [
-      { id: 'trascendencia', title: 'TrascendencIA - Orientacion del CCT por medio de Inteligencia Artificial', desc: 'Asistente Virtual.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true, newTab: true },
-      { id: 'buzon', title: 'Buzón Sindical', desc: 'Trámites y Respuestas.', iconClass: 'ph-duotone ph-envelope-open', iframe: 'buzon.html', featured: true, hideFromMenu: true },
-      { id: 'auditoria', title: 'Auditoría Sindical', desc: 'Monitor de desempeño.', iconClass: 'ph-duotone ph-chart-line-up', iframe: 'auditoria.html', featured: true, adminOnly: true },
-      { id: 'escalafon', title: 'Consulta tu lugar', desc: 'Bolsa de trabajo y Escalafon', iconClass: 'ph-duotone ph-list-numbers', iframe: 'consultalugar.html', featured: true },
-      { id: 'denuncias', title: 'Gestor de Escritos', desc: 'IA.', iconClass: 'ph-duotone ph-pen-nib', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
-      { id: 'noticias', title: 'Noticias', desc: 'Comunicados.', iconClass: 'ph-duotone ph-broadcast', iframe: 'noticias.html' },
-      { id: 'biblioteca', title: 'Biblioteca', desc: 'Recursos digitales.', iconClass: 'ph-duotone ph-books', iframe: 'biblioteca.html' },
-      { id: 'calendario', title: 'Calendario', desc: 'Eventos Oficiales sindicales.', iconClass: 'ph-duotone ph-calendar-blank', iframe: 'calendario.html', hideFromMenu: true },
-      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Acceso a representantes sindicales.', iconClass: 'ph-duotone ph-scales', iframe: 'nucleo.html', featured: true, restrictedNucleo: true },
-      { id: 'comite', title: 'Comité Seccional', desc: 'Planilla Azul.', iconClass: 'ph-duotone ph-users-three',  iframe: 'comite.html' },
-      { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción.', iconClass: 'ph-duotone ph-scan-smiley', href: 'kiosko.html', featured: true, newTab: true },
-      { id: 'directorio', title: 'Directorio', desc: 'Contactos.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
-      { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de diferentes prestaciones.', iconClass: 'ph-duotone ph-hand-coins', iframe: 'prestaciones.html' },
-      { id: 'tramites', title: 'Catálogo de Trámites', desc: 'Requisitos y Procesos.', iconClass: 'ph-duotone ph-file-text', iframe: 'requisitos_tramites.html', featured: true },
-      { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga.', iconClass: 'ph-duotone ph-file-pdf', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/', secure: true },
-      { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Cuenta.', iconClass: 'ph-duotone ph-hospital', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true },
-      { id: 'privacidad', title: 'Aviso de Privacidad', desc: 'Documento Legal.', iconClass: 'ph-bold ph-shield-check', iframe: 'avisoprivacidad.html' }
-    ];
+    const statusContainer = document.getElementById('status-container');
+    const appContainer = document.getElementById('app-container');
+    const statusIcon = document.getElementById('status-icon');
+    const statusTitle = document.getElementById('status-title');
+    const statusDesc = document.getElementById('status-desc');
+    const unidadBadge = document.getElementById('unidad-nombre');
 
-    const PSD = {
-      init() {
-        this.renderTiles();
-        this.runSecurityBoot();
-        this.tickClock();
-        setInterval(() => this.tickClock(), 1000);
-      },
-      tickClock() {
-        const clockEl = document.getElementById('clock');
-        if(clockEl) clockEl.textContent = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
-      },
-      runSecurityBoot() {
-        const messages = ["Verificando integridad...", "Conexión TLS...", "Privacidad habilitada...", "Entorno Seguro."];
-        const statusEl = document.getElementById('security-status');
-        let currentMsg = 0;
-        const bootInterval = setInterval(() => {
-          if (currentMsg < messages.length) {
-            statusEl.style.opacity = '0';
-            setTimeout(() => {
-              statusEl.textContent = messages[currentMsg];
-              statusEl.style.opacity = '1';
-              currentMsg++;
-            }, 150);
-          } else {
-            clearInterval(bootInterval);
-            setTimeout(() => this.hideBoot(), 600);
-          }
-        }, 600);
-      },
-      hideBoot() {
-        const boot = document.getElementById('boot');
-        boot.style.opacity = '0';
-        setTimeout(() => {
-          boot.style.display = 'none';
-          document.getElementById('home').classList.remove('hide');
-          document.querySelectorAll('.tile').forEach((t, i) => {
-            t.style.animationDelay = `${i * 0.05}s`;
-            t.classList.add('tile-enter');
-          });
-        }, 500);
-      },
-      skipBoot() { this.hideBoot(); },
-      openSafeExternal(url) { window.open(url, '_blank', 'noopener,noreferrer'); },
-      renderTiles(userEmail = null, userRole = null) {
-        const wrap = document.getElementById('tiles');
-        wrap.innerHTML = ''; 
-        const correosAutorizados = ['s.general@seccionxx.mx', 's.interior@seccionxx.mx', 'c.vigilancia@seccionxx.mx'];
-
-        const cuentasNucleo = [
-          'HGZ2_ZACAPU', 'HGZ8_URUAPAN', 'HGZ4_ZAMORA', 'UMF64_PURUANDIRO', 'HGSZ9_APATZINGAN',
-          'HGSZ7_LAPIEDAD', 'UMF26_TARETAN', 'UMF18_ZITACUARO', 'HGSZ17_LOSREYES', 'HGSZ24_PEDERNALES',
-          'CSS_MORELIA', 'DELADMIN_MORELIA', 'UMF80_MORELIA', 'HGR1_CHARO_MAT', 'UMF19_CDHIDALGO',
-          'UMF20_PATZCUARO', 'GUARD_001_ZAMORA', 'UMF40_COALCOMAN', 'ALMACEN_MORELIA', 'HR30_ARIO',
-          'HGR1_CHARO_VESP', 'GUARD_001_MORELIA', 'HGZ12_LCARDENAS', 'HR31_HUETAMO', 'HR33_TUXPAN',
-          'HGZ4_ZAMORA_VESP', 'UMF75_MORELIA', 'HGZ8_URUAPAN_VESP', 'SUBDEL_URUAPAN', 'SUBDEL_MORELIA',
-          'SUBDEL_LCARDENAS', 'UMF31_GUACAMAYAS', 'HR32_PARACHO', 'UMF78_LCARDENAS', 'UMF77_LAPIEDAD',
-          'HGZ83_MORELIA', 'UMF76_URUAPAN', 'UMF84_TACICUARO', 'UMF5_SAHUAYO', 'SUBDEL_ZAMORA',
-          'UMF27_LAMIRA', 'UMF25_PURUARAN', 'UMF81_URUAPAN', 'UMF82_ZAMORA', 'HR_VILLAMAR',
-          'HR_BUENAVISTA', 'UMF85_TARIMBARO', 'HGZ86_URUAPAN', 'UMF21_JACONA', 'UMF50_MARAVATIO',
-          'CSS_ZACAPU', 'UMF89_TLALPUJAHUA', 'UMF74_TACAMBARO', 'CSS_LCARDENAS', 'GUARD_LCARDENAS',
-          'SUBDEL_ZITACUARO', 'UMF11_NUEVAITALIA', 'UMF6_JIQUILPAN', 'UMF42_CUITZEO', 'UMF54_PUREPERO',
-          'UMF46_LAHUACANA', 'UMF71_MORELIA', 'UMF65_VILLAMADERO', 'UMF23_INFIERNILLO', 'UMF70_ZINAPECUARO',
-          'UMF28_STACLARA', 'UMF37_ANGANGUEO', 'TIENDA_MORELIA', 'UMF13_COTIJA', 'CSS_LOSREYES'
-        ];
-
-        APPS.forEach(a => {
-          if(a.id === 'privacidad' || a.hideFromMenu) return; 
-          
-          if (a.adminOnly) {
-            const isSuperAdmin = userRole === 'admin' && userEmail && !userEmail.includes('@seccionxx.mx');
-            const isAuthorizedEmail = userEmail && correosAutorizados.includes(userEmail);
-            if (!isSuperAdmin && !isAuthorizedEmail) return;
-          }
-
-          if (a.restrictedNucleo) {
-            const userID = userEmail ? userEmail.split('@')[0].toUpperCase() : '';
-            const isNucleoAuth = cuentasNucleo.includes(userID);
-            if (!isNucleoAuth) return;
-          }
-
-          const tile = document.createElement('div');
-          tile.className = `tile ${a.featured ? 'featured' : ''}`;
-          tile.onclick = () => {
-            const url = a.href || a.iframe;
-            if (a.newTab || (url && url.includes('imss.gob.mx'))) this.openSafeExternal(url);
-            else this.openApp(a.id);
-            if(a.id === 'buzon') PSDAuth.markNotificationsAsRead();
-          };
-          
-          if (a.ia) tile.innerHTML = `<div class="badge-ia"><i class="ph-bold ph-sparkle"></i> IA</div>`;
-          tile.innerHTML += `<i class="${a.iconClass} tile-icon-integrated"></i><h3>${a.title}</h3><p>${a.desc}</p>`;
-          tile.style.animationDelay = `${wrap.children.length * 0.05}s`;
-          tile.classList.add('tile-enter');
-          wrap.appendChild(tile);
-        });
-      },
-      openApp(id) {
-        const app = APPS.find(x => x.id === id);
-        if (!app) return;
-        document.getElementById('home').classList.add('hide');
-        document.getElementById('app').classList.remove('hide');
-        document.getElementById('app-title').textContent = app.title;
-        document.getElementById('app-desc').textContent = app.desc;
-        const iconWrap = document.getElementById('app-ic');
-        iconWrap.innerHTML = `<i class="${app.iconClass}"></i>`;
-        document.getElementById('app-iframe').src = app.iframe || app.href;
-      },
-      goHome() {
-        document.getElementById('app').classList.add('hide');
-        document.getElementById('home').classList.remove('hide');
-        document.getElementById('app-iframe').src = "";
-      },
-      closeApp() { this.goHome(); }
-    };
-
-    const supabaseClient = window.supabase.createClient(
-      "https://axsncdwshdvsysrpikwj.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs"
-    );
-
-    const PSDAuth = {
-      async init() {
-        supabaseClient.auth.onAuthStateChange((event, session) => this.updateUI(session));
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        this.updateUI(session);
-        document.getElementById('header-login-form').addEventListener('submit', (e) => this.handleLogin(e));
-      },
-      
-      async updateUI(session) {
-        const unloggedDiv = document.getElementById('auth-unlogged');
-        const loggedDiv = document.getElementById('auth-logged');
-
-        if (session) {
-          unloggedDiv.classList.add('hide');
-          loggedDiv.classList.remove('hide');
-          this.closeModal();
-
-          const { data: prof } = await supabaseClient.from('profiles').select('display_name, avatar_url, role').eq('user_id', session.user.id).maybeSingle();
-          const name = prof?.display_name || session.user.user_metadata?.display_name || 'Compañero';
-          
-          const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e4f77&color=fff&size=128&bold=true`;
-          const avatarUrl = prof?.avatar_url || session.user.user_metadata?.avatar_url || defaultAvatar;
-
-          const imgEl = document.getElementById('header-avatar');
-          document.getElementById('header-name').textContent = name.split(' ')[0];
-
-          imgEl.src = avatarUrl;
-          
-          imgEl.onerror = () => {
-            imgEl.onerror = null; 
-            imgEl.src = defaultAvatar;
-          };
-
-          PSD.renderTiles(session.user.email, prof?.role);
-          this.checkNotifications(session.user.id);
-          this.checkUpcomingEvents();
-        } else {
-          unloggedDiv.classList.remove('hide');
-          loggedDiv.classList.add('hide');
-          PSD.renderTiles();
-        }
-      },
-
-      async checkUpcomingEvents() {
-        try {
-          const hasUpcomingEvent = true; 
-          const calIcon = document.getElementById('calendar-icon');
-          const calBadge = document.getElementById('calendar-badge');
-          if (hasUpcomingEvent) {
-            calIcon.classList.add('icon-illuminated');
-            calBadge.classList.remove('hide');
-          } else {
-            calIcon.classList.remove('icon-illuminated');
-            calBadge.classList.add('hide');
-          }
-        } catch (err) { console.error(err); }
-      },
-      async checkNotifications(userId) {
-        try {
-          const { data, error } = await supabaseClient.from('escritos_buzon').select('id, estatus, updated_at').eq('user_id', userId).in('estatus', ['Atendido', 'En proceso']);
-          if (error) throw error;
-          if (data && data.length > 0) {
-            const lastRead = localStorage.getItem(`buzon_last_read_${userId}`);
-            let unreadCount = 0;
-            if (!lastRead) unreadCount = data.length;
-            else {
-              const lastReadDate = new Date(lastRead).getTime();
-              unreadCount = data.filter(oficio => new Date(oficio.updated_at).getTime() > lastReadDate).length;
-            }
-            const badge = document.getElementById('notif-badge');
-            if (unreadCount > 0) {
-              badge.textContent = unreadCount;
-              badge.classList.remove('hide');
-            } else badge.classList.add('hide');
-          } else document.getElementById('notif-badge').classList.add('hide');
-        } catch (err) { console.error(err); }
-      },
-      async markNotificationsAsRead() {
-        document.getElementById('notif-badge').classList.add('hide'); 
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session) localStorage.setItem(`buzon_last_read_${session.user.id}`, new Date().toISOString());
-      },
-      openModal() {
-        document.getElementById('login-modal').classList.add('active');
-        setTimeout(() => document.getElementById('hl-user').focus(), 300);
-      },
-      closeModal() {
-        document.getElementById('login-modal').classList.remove('active');
-        document.getElementById('hl-error').textContent = '';
-      },
-      togglePassword() {
-        const passInput = document.getElementById('hl-pass');
-        const eyeIcon = document.getElementById('hl-eye-icon');
-        if (passInput.type === 'password') {
-          passInput.type = 'text';
-          eyeIcon.classList.remove('ph-eye');
-          eyeIcon.classList.add('ph-eye-slash');
-        } else {
-          passInput.type = 'password';
-          eyeIcon.classList.remove('ph-eye-slash');
-          eyeIcon.classList.add('ph-eye');
-        }
-      },
-      async forgotPassword() {
-        const errDiv = document.getElementById('hl-error');
-        errDiv.textContent = '';
-        let email = prompt("Escribe el correo con el que te registraste (para enviarte el enlace):");
-        if (!email) return;
-        errDiv.textContent = 'Enviando solicitud...';
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(email.trim(), { redirectTo: "https://chronosbvrx.github.io/InnovacionSindical/reset-password.html" });
-        if (error) errDiv.textContent = "Error: " + (error.message || "");
-        else { errDiv.textContent = ''; alert("Te enviamos un correo con instrucciones."); this.closeModal(); }
-      },
-      async handleLogin(e) {
-        e.preventDefault();
-        const errDiv = document.getElementById('hl-error');
-        const userVal = document.getElementById('hl-user').value.trim();
-        const passVal = document.getElementById('hl-pass').value;
-        errDiv.textContent = 'Verificando credenciales...';
-        let emailToLogin = userVal;
-        if (/^[0-9]{4,12}$/.test(userVal)) {
-          const { data: email, error: rpcErr } = await supabaseClient.rpc('get_email_by_matricula', { p_matricula: userVal });
-          if (rpcErr || !email) { errDiv.textContent = 'Matrícula no encontrada.'; return; }
-          emailToLogin = email;
-        }
-        const { error } = await supabaseClient.auth.signInWithPassword({ email: emailToLogin, password: passVal });
-        if (error) errDiv.textContent = 'Error: ' + (error.message.includes('Invalid') ? 'Credenciales incorrectas' : error.message);
-        else { errDiv.textContent = ''; document.getElementById('header-login-form').reset(); }
-      },
-      async logout() { await supabaseClient.auth.signOut(); }
-    };
-
-    // CONTROLADOR PWA
-    const PWAController = {
-      init() {
-        if ('serviceWorker' in navigator) {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-              .then(reg => console.log('SW PWA registrado correctamente.', reg.scope))
-              .catch(err => console.error('Error al registrar SW:', err));
-          });
-        }
-
-        const pwaStrip = document.getElementById('pwa-install-strip');
-        const btnAndroid = document.getElementById('btn-instalar-android');
-        const pwaInstrucciones = document.getElementById('pwa-instrucciones');
-        let eventoInstalacionAndroid;
-
-        const esIos = () => /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
-        const appYaInstalada = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-
-        if (!appYaInstalada()) {
-          if (esIos()) {
-            pwaStrip.classList.remove('hide');
-            pwaInstrucciones.innerHTML = 'Para instalar en tu iPhone: toca el ícono de <strong>Compartir</strong> <i class="ph-bold ph-export"></i> y luego selecciona <strong>"Agregar a inicio"</strong> <i class="ph-bold ph-plus-square"></i>.';
-          } else {
-            window.addEventListener('beforeinstallprompt', (e) => {
-              e.preventDefault(); 
-              eventoInstalacionAndroid = e; 
-              pwaStrip.classList.remove('hide'); 
-              btnAndroid.classList.remove('hide'); 
-            });
-          }
-        }
-
-        btnAndroid.addEventListener('click', async () => {
-          if (!eventoInstalacionAndroid) return;
-          eventoInstalacionAndroid.prompt();
-          const { outcome } = await eventoInstalacionAndroid.userChoice;
-          if (outcome === 'accepted') {
-            pwaStrip.classList.add('hide'); 
-          }
-          eventoInstalacionAndroid = null;
-        });
-
-        window.addEventListener('appinstalled', () => {
-          pwaStrip.classList.add('hide');
-        });
+    function showError(title, desc) {
+      if (statusIcon) statusIcon.className = "ph-fill ph-warning-circle error-icon";
+      if (statusTitle) {
+        statusTitle.textContent = title;
+        statusTitle.style.color = "var(--danger)";
       }
-    };
+      if (statusDesc) statusDesc.textContent = desc;
+    }
 
-    document.addEventListener('DOMContentLoaded', () => { 
-      PSD.init();
-      PSDAuth.init(); 
-      PWAController.init(); 
-    });
+    async function initModulo() {
+      try {
+        console.log("1. Iniciando validación de Núcleo...");
+        
+        // Obtener la sesión activa del usuario
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Error de sesión:", sessionError);
+          showError("Error de Autenticación", sessionError.message);
+          return;
+        }
+        
+        if (!session) {
+          console.log("No hay sesión activa.");
+          showError("Acceso Denegado", "No se detectó una sesión activa. Por favor, inicia sesión.");
+          return;
+        }
+
+        // Validar que el usuario tenga un email
+        const userEmail = session.user.email || "";
+        if (!userEmail) {
+          console.log("El usuario no tiene email registrado.");
+          showError("Datos Incompletos", "Tu cuenta no tiene un correo válido asociado para verificar identidad.");
+          return;
+        }
+
+        // Extraer la matrícula/ID del correo
+        const userID = userEmail.split('@')[0].toUpperCase();
+        console.log("2. Buscando en Lista Blanca el ID:", userID);
+
+        // Consultar la Lista Blanca en la base de datos
+        const { data: authData, error: dbError } = await supabase
+          .from('nucleo_autorizados')
+          .select('nombre_unidad')
+          .eq('cuenta_id', userID)
+          .maybeSingle();
+
+        if (dbError) {
+          console.error("Error en base de datos:", dbError);
+          showError("Error de Base de Datos", "No pudimos conectar con los registros de seguridad.");
+          return;
+        }
+
+        if (!authData) {
+          console.log("3. Usuario no encontrado en la lista blanca.");
+          showError("Privilegios Insuficientes", "Tu cuenta no está registrada como Delegación o Representación Sindical autorizada.");
+          return;
+        }
+
+        console.log("4. Acceso concedido. Unidad:", authData.nombre_unidad);
+
+        // Mostrar la app y ocultar la carga
+        if (unidadBadge) unidadBadge.innerHTML = `<i class="ph-bold ph-identification-badge"></i> ${authData.nombre_unidad}`;
+        if (statusContainer) statusContainer.classList.add('hide');
+        if (appContainer) appContainer.classList.remove('hide');
+
+      } catch (err) {
+        console.error("Error crítico en Núcleo de Defensa:", err);
+        showError("Error Inesperado", "Hubo un problema de código al procesar tu solicitud.");
+      }
+    }
+
+    // Ejecutar la validación directamente. 
+    // Al estar al final del HTML, el DOM ya existe y no necesitamos esperar el evento DOMContentLoaded.
+    initModulo();
   </script>
 </body>
 </html>
