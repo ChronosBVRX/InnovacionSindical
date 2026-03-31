@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>PSD - Instalador Masivo de Delegaciones</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background: #1b2e45; color: white; }
+    .container { max-width: 800px; margin: 0 auto; background: rgba(0,0,0,0.3); padding: 30px; border-radius: 12px; }
+    button { padding: 15px 24px; cursor: pointer; background: #4da1a8; color: #0b1f2a; border: none; font-weight: bold; border-radius: 8px; font-size: 16px; width: 100%; margin-bottom: 20px;}
+    button:disabled { background: #555; cursor: not-allowed; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(77, 161, 168, .35); }
+    th { color: #7ad1d6; }
+    .status-ok { color: #4ade80; font-weight: bold; }
+    .status-err { color: #f87171; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Módulo de Instalación - Núcleo de Defensa</h2>
+    <p>Este panel registrará automáticamente las cuentas en Supabase usando la clave delegacional como prefijo de correo (ej. HGZ2_ZACAPU@nucleo.sntss.mx). <strong>Asegúrate de tener desactivado "Confirm Email" en Supabase Auth.</strong></p>
+    
+    <button id="btnCrear" onclick="iniciarCreacionMasiva()">Crear Todas las Cuentas Ahora</button>
+    
+    <div id="progreso" style="margin-bottom: 15px; font-weight: bold;"></div>
+
+    <table id="tablaDelegaciones">
+      <thead>
+        <tr>
+          <th>Unidad Sindical</th>
+          <th>Clave (Usuario)</th>
+          <th>Contraseña</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        </tbody>
+    </table>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Tus credenciales de Supabase
+    const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Directorio extraído de tu Excel
+    const delegaciones = [
+      { clave: "HGZ2_ZACAPU", nombre: "H.G.Z./ M.F. No. 2, ZACAPU", pass: "Sntss_Zacapu26!" },
+      { clave: "HGZ8_URUAPAN", nombre: "H.G.Z. No. 8, URUAPAN (Matutino)", pass: "Sntss_Uruapan26!" },
+      { clave: "HGZ4_ZAMORA", nombre: "H.G.Z./M.F. No. 4, ZAMORA", pass: "Sntss_Zamora26!" },
+      { clave: "UMF64_PURUANDIRO", nombre: "U.M.F./ H. No. 64, PURUÁNDIRO", pass: "Sntss_Puruand26!" },
+      { clave: "HGSZ9_APATZINGAN", nombre: "H.G.S.Z./M.F. No. 9, APÁTZINGAN", pass: "Sntss_Apatzin26!" },
+      { clave: "HGSZ7_LAPIEDAD", nombre: "H.G.S.Z. N° 7, LA PIEDAD", pass: "Sntss_Piedad26!" },
+      { clave: "UMF26_TARETAN", nombre: "U.M.F./ H. No. 26, TARÉTAN", pass: "Sntss_Taretan26!" },
+      { clave: "UMF18_ZITACUARO", nombre: "U.M.F./H. No. 18, ZITÁCUARO", pass: "Sntss_Zitacua26!" },
+      { clave: "HGSZ17_LOSREYES", nombre: "H.G.S.Z./M.F. No. 17, LOS REYES", pass: "Sntss_LosReyes26!" },
+      { clave: "HGSZ24_PEDERNALES", nombre: "H.G.S.Z. C/M.F. No. 24, PEDERNALES", pass: "Sntss_Pederna26!" },
+      { clave: "CSS_MORELIA", nombre: "CENTRO DE SEGURIDAD SOCIAL, MORELIA", pass: "Sntss_CSSMor26!" },
+      { clave: "DELADMIN_MORELIA", nombre: "DELEGACIÓN ADMINISTRATIVA, MORELIA", pass: "Sntss_DelAdmM26!" },
+      { clave: "UMF80_MORELIA", nombre: "U.M.F. No. 80, MORELIA", pass: "Sntss_UMF80Mor26!" },
+      { clave: "HGR1_CHARO_MAT", nombre: "H.G.R. No.1, CHARO (Matutino)", pass: "Sntss_CharoM26!" },
+      { clave: "UMF19_CDHIDALGO", nombre: "U.M.F/H No 19, CD. HIDALGO", pass: "Sntss_CdHidal26!" },
+      { clave: "UMF20_PATZCUARO", nombre: "U.M.F. /H. No. 20, PÁTZCUARO", pass: "Sntss_Patzcua26!" },
+      { clave: "GUARD_001_ZAMORA", nombre: "GUARDERÍA INFANTIL 001, ZAMORA", pass: "Sntss_GuaZamo26!" },
+      { clave: "UMF40_COALCOMAN", nombre: "U.M.F. No. 40 / H.R. No. 46, COALCOMÁN", pass: "Sntss_Coalcom26!" },
+      { clave: "ALMACEN_MORELIA", nombre: "ALMACEN DELEGACIONAL, MORELIA", pass: "Sntss_Almacen26!" },
+      { clave: "HR30_ARIO", nombre: "H.R “B” No. 30, ARIO DE ROSALES", pass: "Sntss_Ario26!" },
+      { clave: "HGR1_CHARO_VESP", nombre: "H.G.R. No.1, CHARO (Vesp/Noct)", pass: "Sntss_CharoV26!" },
+      { clave: "GUARD_001_MORELIA", nombre: "GUARDERÍA INFANTIL No.001, MORELIA", pass: "Sntss_GuaMor26!" },
+      { clave: "HGZ12_LCARDENAS", nombre: "H.G.Z./M.F. No. 12, LÁZARO CÁRDENAS", pass: "Sntss_LCardena26!" },
+      { clave: "HR31_HUETAMO", nombre: "H.R. “B” No. 31, HUETAMO", pass: "Sntss_Huetamo26!" },
+      { clave: "HR33_TUXPAN", nombre: "H.R. “B” No. 33, TUXPAN", pass: "Sntss_Tuxpan26!" },
+      { clave: "HGZ4_ZAMORA_VESP", nombre: "H.G.Z./ M.F. No. 4, ZAMORA (Vesp/Noct)", pass: "Sntss_ZamoVes26!" },
+      { clave: "UMF75_MORELIA", nombre: "U.M.F. C/ U.M.A.A. No.75, MORELIA", pass: "Sntss_UMF75Mo26!" },
+      { clave: "HGZ8_URUAPAN_VESP", nombre: "H.G.Z. No. 8, URUAPAN (Vesp/Noct)", pass: "Sntss_UruaVes26!" },
+      { clave: "SUBDEL_URUAPAN", nombre: "SUBDELEGACIÓN ADMINISTRATIVA, URUAPAN", pass: "Sntss_SubUrua26!" },
+      { clave: "SUBDEL_MORELIA", nombre: "SUBDELEGACIÓN METROPOLITANA, MORELIA", pass: "Sntss_SubMor26!" },
+      { clave: "SUBDEL_LCARDENAS", nombre: "SUBDELEGACIÓN, LÁZARO CÁRDENAS", pass: "Sntss_SubLCar26!" },
+      { clave: "UMF31_GUACAMAYAS", nombre: "U.M.F. No. 31, GUACAMAYAS", pass: "Sntss_Guacama26!" },
+      { clave: "HR32_PARACHO", nombre: "H.R. “B” No. 32, PARACHO", pass: "Sntss_Paracho26!" },
+      { clave: "UMF78_LCARDENAS", nombre: "U.M.F. No. 78, LÁZARO CARDENAS", pass: "Sntss_UMF78LC26!" },
+      { clave: "UMF77_LAPIEDAD", nombre: "U.M.F. No.77, LA PIEDAD", pass: "Sntss_UMF77Pi26!" },
+      { clave: "HGZ83_MORELIA", nombre: "H.G.Z. No.83, MORELIA", pass: "Sntss_HGZ83Mo26!" },
+      { clave: "UMF76_URUAPAN", nombre: "U.M.F. No. 76, URUAPAN", pass: "Sntss_UMF76Ur26!" },
+      { clave: "UMF84_TACICUARO", nombre: "U.M.F. N° 84, TACICUARO", pass: "Sntss_Tacicu26!" },
+      { clave: "UMF5_SAHUAYO", nombre: "U.M.F./H. No. 5, SAHUAYO", pass: "Sntss_Sahuayo26!" },
+      { clave: "SUBDEL_ZAMORA", nombre: "SUBDELEGACIÓN ADMINISTRATIVA, ZAMORA", pass: "Sntss_SubZamo26!" }
+    ];
+
+    // Renderizar tabla inicial
+    const tbody = document.querySelector("#tablaDelegaciones tbody");
+    delegaciones.forEach((del, index) => {
+      const tr = document.createElement("tr");
+      tr.id = `row-${index}`;
+      tr.innerHTML = `
+        <td>${del.nombre}</td>
+        <td><code>${del.clave}</code></td>
+        <td><code>${del.pass}</code></td>
+        <td class="status" id="status-${index}">Pendiente</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Función para crear cuentas con un retraso (para evitar bloqueos de Supabase por "Rate Limit")
+    async function iniciarCreacionMasiva() {
+      const btn = document.getElementById("btnCrear");
+      btn.disabled = true;
+      btn.innerText = "Procesando...";
+
+      for (let i = 0; i < delegaciones.length; i++) {
+        const del = delegaciones[i];
+        const emailFormateado = `${del.clave}@nucleo.sntss.mx`.toLowerCase();
+        
+        document.getElementById("progreso").innerText = `Creando ${i + 1} de ${delegaciones.length}...`;
+
+        const { data, error } = await supabase.auth.signUp({
+          email: emailFormateado,
+          password: del.pass,
+          options: {
+            data: {
+              nombre_unidad: del.nombre,
+              clave_delegacion: del.clave
+            }
+          }
+        });
+
+        const statusTd = document.getElementById(`status-${i}`);
+        if (error) {
+          // Si el usuario ya existe, Supabase Auth a veces arroja error o lo ignora dependiendo de la config.
+          if(error.message.includes("already registered")) {
+             statusTd.innerHTML = `<span class="status-ok">Ya Existía ✓</span>`;
+          } else {
+             statusTd.innerHTML = `<span class="status-err">Error: ${error.message}</span>`;
+          }
+        } else {
+          statusTd.innerHTML = `<span class="status-ok">Creado ✓</span>`;
+        }
+
+        // Esperar 1 segundo entre cada creación para no saturar la API
+        await new Promise(r => setTimeout(r, 1000));
+      }
+
+      document.getElementById("progreso").innerText = "¡Proceso Terminado!";
+      btn.innerText = "Cuentas Creadas Exitosamente";
+    }
+  </script>
+</body>
+</html>
