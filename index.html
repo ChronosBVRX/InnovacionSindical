@@ -604,7 +604,6 @@
     ]);
 
     const APPS = [
-      { id: 'trascendencia', title: 'TrascendencIA - Orientacion del CCT por medio de Inteligencia Artificial', desc: 'Asistente Virtual.', iconClass: 'ph-duotone ph-robot', href: 'https://trascendencia-sindical-7t85.onrender.com/', ia: true },
       { id: 'buzon', title: 'Buzón Sindical', desc: 'Trámites y Respuestas.', iconClass: 'ph-duotone ph-envelope-open', iframe: 'buzon.html', featured: true, hideFromMenu: true },
       { id: 'auditoria', title: 'Auditoría Sindical', desc: 'Monitor de desempeño.', iconClass: 'ph-duotone ph-chart-line-up', iframe: 'auditoria.html', featured: true, adminOnly: true },
       { id: 'escalafon', title: 'Consulta tu lugar', desc: 'Bolsa de trabajo y Escalafon', iconClass: 'ph-duotone ph-list-numbers', iframe: 'consultalugar.html', featured: true },
@@ -708,15 +707,6 @@
           tile.className = `tile ${a.featured ? 'featured' : ''}`;
           
           tile.onclick = () => {
-            // INTEGRACIÓN CON WIDGET PARA TRASCENDENCIA
-            if (a.id === 'trascendencia') {
-              const chatWindow = document.getElementById('chatbot-window');
-              if (!chatWindow.classList.contains('active')) {
-                toggleChatbot();
-              }
-              return;
-            }
-
             const url = a.href || a.iframe;
             if (a.newTab || (url && url.includes('imss.gob.mx'))) this.openSafeExternal(url);
             else this.openApp(a.id);
@@ -756,9 +746,12 @@
 
     const PSDAuth = {
       async init() {
-        supabaseClient.auth.onAuthStateChange((event, session) => this.updateUI(session));
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        this.updateUI(session);
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+          if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+            this.updateUI(session);
+          }
+        });
+        
         document.getElementById('header-login-form').addEventListener('submit', (e) => this.handleLogin(e));
       },
       
@@ -775,13 +768,20 @@
           const name = prof?.display_name || session.user.user_metadata?.display_name || 'Compañero';
           
           const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e4f77&color=fff&size=128&bold=true`;
-          const avatarUrl = prof?.avatar_url || session.user.user_metadata?.avatar_url || defaultAvatar;
+          
+          let avatarUrl = defaultAvatar;
+          if (prof?.avatar_url && prof.avatar_url.trim() !== '') {
+            avatarUrl = prof.avatar_url;
+          } else if (session.user.user_metadata?.avatar_url && session.user.user_metadata.avatar_url.trim() !== '') {
+            avatarUrl = session.user.user_metadata.avatar_url;
+          }
 
           const imgEl = document.getElementById('header-avatar');
           document.getElementById('header-name').textContent = name.split(' ')[0];
 
+          imgEl.onerror = null; 
           imgEl.src = avatarUrl;
-          
+
           imgEl.onerror = () => {
             imgEl.onerror = null; 
             imgEl.src = defaultAvatar;
@@ -883,7 +883,13 @@
         if (error) errDiv.textContent = 'Error: ' + (error.message.includes('Invalid') ? 'Credenciales incorrectas' : error.message);
         else { errDiv.textContent = ''; document.getElementById('header-login-form').reset(); }
       },
-      async logout() { await supabaseClient.auth.signOut(); }
+      async logout() {
+        this.updateUI(null);
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) {
+          console.error("Error al cerrar sesión:", error.message);
+        }
+      }
     };
 
     // CONTROLADOR PWA
