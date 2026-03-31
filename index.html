@@ -25,7 +25,7 @@
       script-src 'self' 'unsafe-inline' https://connect.facebook.net https://cdn.jsdelivr.net;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
       font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:;
-      img-src 'self' data: https://raw.githubusercontent.com https://*.facebook.com https://*.fbcdn.net https://ui-avatars.com https://*.supabase.co;
+      img-src 'self' data: https://raw.githubusercontent.com https://*.facebook.com https://*.fbcdn.net https://*.googleusercontent.com https://ui-avatars.com https://*.supabase.co;
       frame-src 'self' https://chronosbvrx.github.io https://trascendencia-sindical-7t85.onrender.com https://rh.imss.gob.mx https://tuperfil.imss.gob.mx https://www.facebook.com;
       connect-src 'self' https://connect.facebook.net https://www.facebook.com https://raw.githubusercontent.com https://*.supabase.co;
       object-src 'none';
@@ -84,7 +84,8 @@
     
     .user-widget { display: flex; align-items: center; gap: 10px; cursor: pointer; background: rgba(var(--panel-base), 0.4); padding: 4px 12px 4px 4px; border-radius: 20px; border: 1px solid var(--ring); transition: all 0.2s ease; }
     .user-widget:hover { border-color: var(--primary-light); background: rgba(var(--panel-base), 0.6); }
-    .user-widget img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--ring); background: var(--bg-body); flex-shrink: 0;}
+    /* CSS ACTUALIZADO: color: transparent añadido para ocultar el texto alt si falla la imagen */
+    .user-widget img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--ring); background: var(--bg-body); flex-shrink: 0; color: transparent;}
     .user-widget .name { font-size: 13px; font-weight: 600; color: var(--text-main); max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 4px; }
     
     .btn-logout { background: transparent; color: #ff7b7b; border: 1px solid rgba(255,123,123,0.3); padding: 6px 10px; border-radius: 8px; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; }
@@ -142,7 +143,6 @@
     .tile p { margin: 0; color: var(--text-muted); font-size: 14px; line-height: 1.5; }
     .badge-ia { position: absolute; top: 14px; right: 14px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; color: var(--primary-light); background: rgba(77, 161, 168, .14); border: 1px solid var(--ring); box-shadow: 0 0 8px rgba(122, 209, 214, 0.2); }
 
-    /* --- BANDA DE DESCARGA PWA --- */
     .download-strip { display: flex; align-items: center; justify-content: space-between; background: rgba(var(--panel-base), 0.2); border: 1px dashed var(--primary-light); border-radius: var(--radius); padding: 16px 24px; margin-bottom: 32px; transition: all 0.3s ease; }
     .download-strip:hover { background: rgba(var(--panel-base), 0.4); border-style: solid; box-shadow: 0 4px 15px rgba(77, 161, 168, 0.15); }
     .ds-content { display: flex; align-items: center; gap: 16px; }
@@ -584,6 +584,8 @@
         this.updateUI(session);
         document.getElementById('header-login-form').addEventListener('submit', (e) => this.handleLogin(e));
       },
+      
+      // FUNCIÓN ACTUALIZADA CON EL "PLAN B" PARA EL AVATAR Y MEJOR CALIDAD
       async updateUI(session) {
         const unloggedDiv = document.getElementById('auth-unlogged');
         const loggedDiv = document.getElementById('auth-logged');
@@ -595,10 +597,24 @@
 
           const { data: prof } = await supabaseClient.from('profiles').select('display_name, avatar_url, role').eq('user_id', session.user.id).maybeSingle();
           const name = prof?.display_name || session.user.user_metadata?.display_name || 'Compañero';
-          const avatar = prof?.avatar_url || session.user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e4f77&color=fff`;
+          
+          // Creamos avatar por defecto de alta calidad
+          const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e4f77&color=fff&size=128&bold=true`;
+          
+          // Intentamos usar la foto del usuario
+          const avatarUrl = prof?.avatar_url || session.user.user_metadata?.avatar_url || defaultAvatar;
 
+          const imgEl = document.getElementById('header-avatar');
           document.getElementById('header-name').textContent = name.split(' ')[0];
-          document.getElementById('header-avatar').src = avatar;
+
+          // Asignamos la imagen
+          imgEl.src = avatarUrl;
+          
+          // TRUCO: Si la imagen real está rota o bloqueada, forzamos las iniciales
+          imgEl.onerror = () => {
+            imgEl.onerror = null; // Evita un bucle infinito
+            imgEl.src = defaultAvatar;
+          };
 
           PSD.renderTiles(session.user.email, prof?.role);
           this.checkNotifications(session.user.id);
@@ -609,6 +625,7 @@
           PSD.renderTiles();
         }
       },
+
       async checkUpcomingEvents() {
         try {
           const hasUpcomingEvent = true; 
@@ -698,12 +715,9 @@
       async logout() { await supabaseClient.auth.signOut(); }
     };
 
-    // ==========================================
-    // LÓGICA DE LA PWA (INTEGRADA AL FINAL)
-    // ==========================================
+    // CONTROLADOR PWA
     const PWAController = {
       init() {
-        // 1. Registrar Service Worker
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
@@ -712,17 +726,14 @@
           });
         }
 
-        // 2. Elementos del DOM
         const pwaStrip = document.getElementById('pwa-install-strip');
         const btnAndroid = document.getElementById('btn-instalar-android');
         const pwaInstrucciones = document.getElementById('pwa-instrucciones');
         let eventoInstalacionAndroid;
 
-        // 3. Helpers de detección
         const esIos = () => /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
         const appYaInstalada = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
-        // 4. Lógica para mostrar la notificación PWA
         if (!appYaInstalada()) {
           if (esIos()) {
             pwaStrip.classList.remove('hide');
@@ -737,7 +748,6 @@
           }
         }
 
-        // 5. Acción del botón en Android
         btnAndroid.addEventListener('click', async () => {
           if (!eventoInstalacionAndroid) return;
           eventoInstalacionAndroid.prompt();
@@ -748,7 +758,6 @@
           eventoInstalacionAndroid = null;
         });
 
-        // 6. Si se instaló con éxito, ocultar banner
         window.addEventListener('appinstalled', () => {
           pwaStrip.classList.add('hide');
         });
@@ -758,7 +767,7 @@
     document.addEventListener('DOMContentLoaded', () => { 
       PSD.init();
       PSDAuth.init(); 
-      PWAController.init(); // Inicializamos el controlador de la PWA
+      PWAController.init(); 
     });
   </script>
 </body>
