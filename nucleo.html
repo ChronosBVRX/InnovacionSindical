@@ -22,7 +22,6 @@
       --ring: rgba(77, 161, 168, .35);
     }
     
-    /* Adaptaciones específicas para iFrame */
     html, body {
       height: 100%;
       margin: 0;
@@ -42,7 +41,6 @@
     
     .hide { display: none !important; }
     
-    /* Pantalla de carga y error */
     .status-screen {
       display: flex;
       flex-direction: column;
@@ -58,7 +56,6 @@
     .error-icon { color: var(--danger); filter: drop-shadow(0 0 10px rgba(255,123,123,0.3)); }
     .loading-icon { color: var(--primary-light); animation: spin 2s linear infinite; }
     
-    /* Interfaz principal del módulo */
     .dashboard-header {
       border-bottom: 1px solid var(--ring);
       padding-bottom: 20px;
@@ -84,7 +81,6 @@
       padding: 24px;
     }
 
-    /* Estilos recuperados para los formularios */
     input, select, textarea { 
       width: 100%; 
       padding: 12px; 
@@ -127,17 +123,17 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <div id="status-container" class="status-screen">
-    <i id="status-icon" class="ph-duotone ph-spinner loading-icon"></i>
-    <h2 id="status-title">Verificando credenciales...</h2>
-    <p id="status-desc">Conectando con el servidor seguro.</p>
+  <div id="nd-status-container" class="status-screen">
+    <i id="nd-status-icon" class="ph-duotone ph-spinner loading-icon"></i>
+    <h2 id="nd-status-title">Verificando credenciales...</h2>
+    <p id="nd-status-desc">Conectando con el servidor seguro.</p>
   </div>
 
-  <div id="app-container" class="hide">
+  <div id="nd-app-container" class="hide">
     <div class="dashboard-header">
       <h1><i class="ph-duotone ph-scales"></i> Núcleo de Defensa</h1>
       <p>Panel exclusivo para Representación Sindical.</p>
-      <div id="unidad-nombre" class="unidad-badge">Cargando unidad...</div>
+      <div id="nd-unidad-nombre" class="unidad-badge">Cargando unidad...</div>
     </div>
 
     <div class="grid-container">
@@ -147,10 +143,10 @@
         <p style="font-size: 13px; color: var(--text-muted);">Tu resolución pasará a validación por el Control Central.</p>
         
         <label>Título del Conflicto</label>
-        <input type="text" id="titulo" placeholder="Ej. Rescisión por supuesta falta...">
+        <input type="text" id="nd-titulo" placeholder="Ej. Rescisión por supuesta falta...">
         
         <label>Categoría</label>
-        <select id="categoria">
+        <select id="nd-categoria">
           <option value="Sanciones">Sanciones Administrativas</option>
           <option value="Permisos">Permisos y Licencias</option>
           <option value="Riesgos">Riesgos de Trabajo</option>
@@ -158,19 +154,19 @@
         </select>
         
         <label>Descripción de la Defensa</label>
-        <textarea id="descripcion" rows="4" placeholder="Detalla los artículos usados..."></textarea>
+        <textarea id="nd-descripcion" rows="4" placeholder="Detalla los artículos usados..."></textarea>
         
         <label>Evidencia Documental (PDF)</label>
-        <input type="file" id="evidencia_pdf" accept="application/pdf">
+        <input type="file" id="nd-evidencia_pdf" accept="application/pdf">
         
-        <button class="btn" onclick="subirResolucion()">Enviar a Validación <i class="ph-bold ph-paper-plane-right"></i></button>
+        <button class="btn" onclick="subirResolucionNucleo()">Enviar a Validación <i class="ph-bold ph-paper-plane-right"></i></button>
       </div>
 
       <div class="card">
         <h3 style="margin-top: 0;"><i class="ph-duotone ph-books"></i> Precedentes Oficiales</h3>
         <p style="font-size: 13px; color: var(--text-muted);">Criterios unificados de otras unidades (Aprobados).</p>
         
-        <div id="lista_criterios" style="margin-top: 16px; overflow-y: auto; max-height: 500px; padding-right: 8px;">
+        <div id="nd-lista_criterios" style="margin-top: 16px; overflow-y: auto; max-height: 500px; padding-right: 8px;">
           <p style="font-size: 13px; color: var(--text-muted);">Cargando precedentes...</p>
         </div>
       </div>
@@ -179,59 +175,59 @@
   </div>
 
   <script>
-    // Variables Globales
-    let supabase;
-    let currentDelegacionId = "";
-    let currentDelegacionNombre = "";
+    // Variables Globales BLINDADAS para evitar choques con Plataforma Sindical Digital
+    let nucleoSupabase;
+    let nucleoDelegacionId = "";
+    let nucleoDelegacionNombre = "";
 
-    // Elementos del DOM
-    const statusContainer = document.getElementById('status-container');
-    const appContainer = document.getElementById('app-container');
-    const statusIcon = document.getElementById('status-icon');
-    const statusTitle = document.getElementById('status-title');
-    const statusDesc = document.getElementById('status-desc');
-    const unidadBadge = document.getElementById('unidad-nombre');
+    // Elementos del DOM BLINDADOS
+    const uiStatusContainer = document.getElementById('nd-status-container');
+    const uiAppContainer = document.getElementById('nd-app-container');
+    const uiStatusIcon = document.getElementById('nd-status-icon');
+    const uiStatusTitle = document.getElementById('nd-status-title');
+    const uiStatusDesc = document.getElementById('nd-status-desc');
+    const uiUnidadBadge = document.getElementById('nd-unidad-nombre');
 
-    function showError(title, desc) {
-      if (statusIcon) statusIcon.className = "ph-fill ph-warning-circle error-icon";
-      if (statusTitle) {
-        statusTitle.textContent = title;
-        statusTitle.style.color = "var(--danger)";
+    function showNucleoError(title, desc) {
+      if (uiStatusIcon) uiStatusIcon.className = "ph-fill ph-warning-circle error-icon";
+      if (uiStatusTitle) {
+        uiStatusTitle.textContent = title;
+        uiStatusTitle.style.color = "var(--danger)";
       }
-      if (statusDesc) statusDesc.textContent = desc;
+      if (uiStatusDesc) uiStatusDesc.textContent = desc;
       
-      if (appContainer) appContainer.classList.add('hide');
-      if (statusContainer) statusContainer.classList.remove('hide');
+      if (uiAppContainer) uiAppContainer.classList.add('hide');
+      if (uiStatusContainer) uiStatusContainer.classList.remove('hide');
     }
 
-    const watchdogTimer = setTimeout(() => {
-      showError(
+    const nucleoWatchdog = setTimeout(() => {
+      showNucleoError(
         "Tiempo de espera agotado", 
-        "No pudimos verificar tu sesión. Si estás viendo esto en un iframe, es posible que tu navegador esté bloqueando el acceso a los datos de sesión por motivos de seguridad (cookies de terceros)."
+        "No pudimos verificar tu sesión. Si estás viendo esto en un iframe, es posible que tu navegador esté bloqueando el acceso por motivos de seguridad."
       );
     }, 8000);
 
     // --- 1. LÓGICA DE AUTENTICACIÓN Y SEGURIDAD ---
-    async function initModulo() {
+    async function initModuloNucleo() {
       try {
         const supabaseUrl = "https://axsncdwshdvsysrpikwj.supabase.co";
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
         
-        // Asignamos a la variable global
-        supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        // Inicializamos con nuestro propio nombre de variable
+        nucleoSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        console.log("1. Iniciando validación de Núcleo...");
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        console.log("[Núcleo] Iniciando validación...");
+        const { data: { session }, error: sessionError } = await nucleoSupabase.auth.getSession();
         
-        clearTimeout(watchdogTimer);
+        clearTimeout(nucleoWatchdog);
 
         if (sessionError) {
-          showError("Error de Autenticación", sessionError.message);
+          showNucleoError("Error de Autenticación", sessionError.message);
           return;
         }
         
         if (!session) {
-          showError("Acceso Denegado", "No se detectó una sesión activa en este módulo. Inicia sesión en la plataforma principal.");
+          showNucleoError("Acceso Denegado", "No se detectó una sesión activa en este módulo. Inicia sesión en la plataforma principal.");
           return;
         }
 
@@ -240,73 +236,65 @@
         const isAdmin = userRole === 'admin' || userRole === 'administrador';
 
         if (isAdmin) {
-          console.log("2. Acceso concedido: Cuenta de Administrador detectada.");
-          currentDelegacionId = "ADMIN";
-          currentDelegacionNombre = "Administrador General";
+          console.log("[Núcleo] Acceso de Administrador.");
+          nucleoDelegacionId = "ADMIN";
+          nucleoDelegacionNombre = "Administrador General";
           
-          if (unidadBadge) unidadBadge.innerHTML = `<i class="ph-bold ph-shield-star"></i> ${currentDelegacionNombre}`;
-          if (statusContainer) statusContainer.classList.add('hide');
-          if (appContainer) appContainer.classList.remove('hide');
+          if (uiUnidadBadge) uiUnidadBadge.innerHTML = `<i class="ph-bold ph-shield-star"></i> ${nucleoDelegacionNombre}`;
+          if (uiStatusContainer) uiStatusContainer.classList.add('hide');
+          if (uiAppContainer) uiAppContainer.classList.remove('hide');
           
-          cargarPrecedentes(); // Cargamos los datos para el admin
+          cargarPrecedentesNucleo();
           return;
         }
 
         const userEmail = user.email || "";
         if (!userEmail) {
-          showError("Datos Incompletos", "Tu cuenta no tiene un correo válido asociado para verificar identidad.");
+          showNucleoError("Datos Incompletos", "Tu cuenta no tiene un correo asociado.");
           return;
         }
 
         const userID = userEmail.split('@')[0].toUpperCase();
-        console.log("3. Buscando en Lista Blanca el ID:", userID);
+        console.log("[Núcleo] Buscando ID:", userID);
 
-        const { data: authData, error: dbError } = await supabase
+        const { data: authData, error: dbError } = await nucleoSupabase
           .from('nucleo_autorizados')
           .select('nombre_unidad')
           .eq('cuenta_id', userID)
           .maybeSingle();
 
         if (dbError) {
-          showError("Error de Base de Datos", "No pudimos conectar con los registros de seguridad.");
+          showNucleoError("Error de Base de Datos", "Falló la conexión de seguridad.");
           return;
         }
 
         if (!authData) {
-          showError("Privilegios Insuficientes", "Tu cuenta no está registrada como Delegación o Representación autorizada.");
+          showNucleoError("Privilegios Insuficientes", "Tu cuenta no está registrada como representación autorizada.");
           return;
         }
-
-        console.log("4. Acceso concedido. Unidad:", authData.nombre_unidad);
         
-        // Guardamos los datos para poder subir archivos a su nombre
-        currentDelegacionId = userID;
-        currentDelegacionNombre = authData.nombre_unidad;
+        nucleoDelegacionId = userID;
+        nucleoDelegacionNombre = authData.nombre_unidad;
 
-        if (unidadBadge) unidadBadge.innerHTML = `<i class="ph-bold ph-identification-badge"></i> ${currentDelegacionNombre}`;
-        if (statusContainer) statusContainer.classList.add('hide');
-        if (appContainer) appContainer.classList.remove('hide');
+        if (uiUnidadBadge) uiUnidadBadge.innerHTML = `<i class="ph-bold ph-identification-badge"></i> ${nucleoDelegacionNombre}`;
+        if (uiStatusContainer) uiStatusContainer.classList.add('hide');
+        if (uiAppContainer) uiAppContainer.classList.remove('hide');
 
-        // Cargamos la lista del lado derecho
-        cargarPrecedentes();
+        cargarPrecedentesNucleo();
 
       } catch (err) {
-        clearTimeout(watchdogTimer);
-        console.error("Error crítico en Núcleo de Defensa:", err);
-        showError(
-          "Error Inesperado", 
-          "El navegador impidió la ejecución del script. Revisa bloqueadores de rastreadores."
-        );
+        clearTimeout(nucleoWatchdog);
+        console.error("Error crítico en Núcleo:", err);
+        showNucleoError("Error Inesperado", "Hubo un fallo en la ejecución del script.");
       }
     }
 
-    // --- 2. LÓGICA DE NEGOCIO RECUPERADA ---
-
-    async function subirResolucion() {
-      const titulo = document.getElementById('titulo').value;
-      const categoria = document.getElementById('categoria').value;
-      const descripcion = document.getElementById('descripcion').value;
-      const archivoInput = document.getElementById('evidencia_pdf');
+    // --- 2. LÓGICA DE NEGOCIO ---
+    async function subirResolucionNucleo() {
+      const titulo = document.getElementById('nd-titulo').value;
+      const categoria = document.getElementById('nd-categoria').value;
+      const descripcion = document.getElementById('nd-descripcion').value;
+      const archivoInput = document.getElementById('nd-evidencia_pdf');
 
       if(!titulo || !descripcion || archivoInput.files.length === 0) {
         return alert("Todos los campos y el PDF son obligatorios.");
@@ -314,30 +302,27 @@
 
       const file = archivoInput.files[0];
       const fileExt = file.name.split('.').pop();
-      const fileName = `${currentDelegacionId}_${Date.now()}.${fileExt}`;
+      const fileName = `${nucleoDelegacionId}_${Date.now()}.${fileExt}`;
 
       try {
-        // Subir PDF al Storage
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await nucleoSupabase.storage
           .from('evidencias_nucleo')
           .upload(fileName, file);
 
         if (uploadError) {
-          console.error("Error al subir archivo:", uploadError);
+          console.error("Error subida:", uploadError);
           return alert("Error al subir el PDF.");
         }
 
-        // Obtener URL Pública
-        const { data: publicUrlData } = supabase.storage
+        const { data: publicUrlData } = nucleoSupabase.storage
           .from('evidencias_nucleo')
           .getPublicUrl(fileName);
 
-        // Guardar en la base de datos
-        const { error: insertError } = await supabase
+        const { error: insertError } = await nucleoSupabase
           .from('nucleo_resoluciones')
           .insert([{
-            id_delegacion: currentDelegacionId,
-            nombre_delegacion: currentDelegacionNombre,
+            id_delegacion: nucleoDelegacionId,
+            nombre_delegacion: nucleoDelegacionNombre,
             titulo_conflicto: titulo,
             categoria: categoria,
             descripcion: descripcion,
@@ -345,33 +330,31 @@
           }]);
 
         if (insertError) {
-          console.error("Error al insertar resolución:", insertError);
+          console.error("Error insert:", insertError);
           alert("Error al guardar en base de datos.");
         } else {
           alert("¡Criterio enviado a validación!");
-          // Limpiar formulario
-          document.getElementById('titulo').value = '';
-          document.getElementById('descripcion').value = '';
+          document.getElementById('nd-titulo').value = '';
+          document.getElementById('nd-descripcion').value = '';
           archivoInput.value = '';
         }
       } catch (err) {
-         console.error("Error inesperado en subirResolucion:", err);
+         console.error("Error en subirResolucionNucleo:", err);
       }
     }
 
-    async function cargarPrecedentes() {
+    async function cargarPrecedentesNucleo() {
       try {
-        const { data, error } = await supabase
+        const { data, error } = await nucleoSupabase
           .from('nucleo_resoluciones')
           .select('*')
           .eq('estatus', 'aprobado')
           .order('fecha_creacion', { ascending: false });
 
-        const lista = document.getElementById('lista_criterios');
+        const lista = document.getElementById('nd-lista_criterios');
         lista.innerHTML = ''; 
 
         if (error) {
-          console.error("Error al cargar precedentes:", error);
           lista.innerHTML = '<p style="font-size: 13px; color: #ff6b6b;">Error al cargar los datos.</p>';
           return;
         }
@@ -396,12 +379,12 @@
           lista.appendChild(item);
         });
       } catch (err) {
-        console.error("Error inesperado en cargarPrecedentes:", err);
+        console.error("Error en cargarPrecedentesNucleo:", err);
       }
     }
 
-    // Iniciar todo el proceso
-    initModulo();
+    // Iniciar
+    initModuloNucleo();
   </script>
 </body>
 </html>
