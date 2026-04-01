@@ -344,6 +344,13 @@
       background: var(--bg-body);
     }
 
+    /* Animación de latido para la IA */
+    @keyframes aiPulse {
+      0% { box-shadow: 0 0 0 0 rgba(122, 209, 214, 0.6); }
+      70% { box-shadow: 0 0 0 12px rgba(122, 209, 214, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(122, 209, 214, 0); }
+    }
+
     .chatbot-bubble {
       width: 60px;
       height: 60px;
@@ -355,15 +362,16 @@
       justify-content: center;
       font-size: 32px;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(77, 161, 168, 0.4);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
       border: none;
       outline: none;
       pointer-events: auto;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      animation: aiPulse 2s infinite;
     }
 
     .chatbot-bubble:hover {
       transform: scale(1.05);
+      animation: none;
       box-shadow: 0 6px 20px rgba(77, 161, 168, 0.6);
     }
 
@@ -573,29 +581,45 @@
     </div>
   </section>
 
-  <div class="chatbot-widget">
+  <div id="chatbot-widget-container" class="chatbot-widget">
     <div id="chatbot-window" class="chatbot-window">
       <div class="chatbot-header">
         <div class="chatbot-header-title">
-          <i class="ph-duotone ph-robot"></i> TrascendencIA
+          <i class="ph-fill ph-sparkle"></i> TrascendencIA
         </div>
-        <button class="close-chat-btn" onclick="toggleChatbot()" title="Cerrar chat">
-          <i class="ph-bold ph-x"></i>
-        </button>
+        <div style="display: flex; gap: 8px;">
+          <button class="close-chat-btn" onclick="minimizeChatbot()" title="Minimizar">
+            <i class="ph-bold ph-minus"></i>
+          </button>
+          <button class="close-chat-btn" onclick="closeChatbotComplete()" title="Cerrar chat">
+            <i class="ph-bold ph-x"></i>
+          </button>
+        </div>
       </div>
       <iframe src="https://trascendencia-sindical-7t85.onrender.com/" class="chatbot-iframe"></iframe>
     </div>
     
     <button class="chatbot-bubble" onclick="toggleChatbot()" title="Abrir Asistente">
-      <i class="ph-bold ph-chat-teardrop-dots"></i>
+      <i class="ph-fill ph-sparkle"></i>
     </button>
   </div>
 
   <script>
-    // FUNCIÓN PARA EL WIDGET
+    // FUNCIÓN PARA EL WIDGET DE IA
     function toggleChatbot() {
       const chatWindow = document.getElementById('chatbot-window');
       chatWindow.classList.toggle('active');
+    }
+
+    function minimizeChatbot() {
+      const chatWindow = document.getElementById('chatbot-window');
+      chatWindow.classList.remove('active');
+    }
+
+    function closeChatbotComplete() {
+      const widgetContainer = document.getElementById('chatbot-widget-container');
+      widgetContainer.style.display = 'none';
+      document.getElementById('chatbot-window').classList.remove('active');
     }
 
     const SAFE_ORIGINS = new Set([
