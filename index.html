@@ -198,8 +198,9 @@
     .bar span { display: block; height: 100%; width: 30%; background: var(--primary-light); position: absolute; animation: load 2s infinite; box-shadow: 0 0 10px var(--primary-light); }
 
     @media (max-width: 768px) {
+      .topbar { padding: max(env(safe-area-inset-top), 16px) 16px 10px 16px; min-height: 56px; }
       .hide-mobile { display: none !important; }
-      .wrap { padding: calc(var(--topbar) + max(env(safe-area-inset-top), 35px) + 16px) 16px 20px 16px; }
+      .wrap { padding: calc(var(--topbar) + max(env(safe-area-inset-top), 20px) + 16px) 16px 20px 16px; }
       .app-head { bottom: max(env(safe-area-inset-bottom, 16px), 16px); }
       .app-head:hover .app-info { display: none; }
       .tiles { grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -221,13 +222,17 @@
 
     @media (max-width: 480px) {
       .topbar { padding-left: 16px; padding-right: 16px; }
+      .mark { width: 30px; height: 30px; }
+      .title { gap: 8px; font-size: 15px; }
       .title-text span:last-child { display: none; } 
       .title-text span.hide-mobile { display: none; } 
-      .title { gap: 8px; font-size: 15px; }
-      .topbar-right { gap: 12px; }
-      .user-widget { padding: 4px; border-radius: 50%; } 
+      .topbar-right { gap: 8px; }
+      .btn-auth { font-size: 12px; padding: 6px 12px; }
+      .notification-icon i { font-size: 20px; }
+      .user-widget { padding: 2px; border-radius: 50%; border-color: transparent; } 
+      .user-widget img { width: 28px; height: 28px; }
       .user-widget .name { display: none; }
-      .btn-auth { font-size: 12px; padding: 8px 12px; }
+      .btn-logout { font-size: 14px; padding: 4px 8px; }
       .brand h1 { font-size: 24px; }
       .brand { gap: 16px; flex-direction: column; align-items: flex-start; }
       .tiles { grid-template-columns: repeat(2, 1fr); gap: 10px; }
