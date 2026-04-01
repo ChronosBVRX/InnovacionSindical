@@ -79,6 +79,28 @@
     .secure-badge i { font-size: 14px; }
 
     .topbar-right { display: flex; align-items: center; gap: 16px; }
+    
+    /* Botón Asistente Topbar */
+    .btn-ai-topbar { 
+      background: rgba(77, 161, 168, 0.15); 
+      color: var(--primary-light); 
+      border: 1px solid var(--primary-light); 
+      padding: 8px 12px; 
+      border-radius: 8px; 
+      font-weight: 600; 
+      font-size: 13px; 
+      cursor: pointer; 
+      transition: all 0.2s ease; 
+      display: flex; 
+      align-items: center; 
+      gap: 6px; 
+    }
+    .btn-ai-topbar:hover { 
+      background: var(--primary-light); 
+      color: var(--bg-body); 
+      box-shadow: 0 0 10px rgba(122, 209, 214, 0.4); 
+    }
+
     .btn-auth { background: var(--primary); color: var(--bg-body); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center;}
     .btn-auth:hover { background: var(--primary-light); transform: translateY(-1px); }
     
@@ -423,6 +445,10 @@
     </div>
     
     <div class="topbar-right">
+      <button class="btn-ai-topbar" onclick="openChatbotFromTopbar()" title="Tus dudas del contrato consúltalas aquí">
+        <i class="ph-fill ph-sparkle"></i> <span class="hide-mobile">Asistente Inteligente</span>
+      </button>
+
       <div class="clock-container hide-mobile">
         <div class="secure-badge"><i class="ph-fill ph-lock-key"></i> <span>Seguro</span></div>
         <div id="clock">--:--</div>
@@ -620,6 +646,17 @@
       const widgetContainer = document.getElementById('chatbot-widget-container');
       widgetContainer.style.display = 'none';
       document.getElementById('chatbot-window').classList.remove('active');
+    }
+
+    function openChatbotFromTopbar() {
+      const widgetContainer = document.getElementById('chatbot-widget-container');
+      const chatWindow = document.getElementById('chatbot-window');
+      
+      // Vuelve a mostrar el contenedor principal si estaba oculto
+      widgetContainer.style.display = 'flex';
+      
+      // Despliega la ventana de chat inmediatamente
+      chatWindow.classList.add('active');
     }
 
     const SAFE_ORIGINS = new Set([
