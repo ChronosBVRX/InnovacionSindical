@@ -79,13 +79,13 @@
   .modal-card { background: #1e293b; border-radius: 20px; width: 100%; max-width: 1000px; padding: 30px; display: flex; flex-direction: column; max-height: 95vh;}
   .modal-b { flex: 1; overflow: auto; display: flex; justify-content: center; background: #334155; border-radius: 12px; padding: 20px; margin: 15px 0;}
   
-  /* HOJA TAMAÑO CARTA EXACTA */
-  .page.carta { width: 816px; height: 1056px; background: #fff; color: #111; box-shadow: 0 10px 40px rgba(0,0,0,0.5); flex-shrink: 0; transform-origin: top center; }
-  .sheet { padding: 72px 64px; font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; position: relative; height: 100%; color: #000; }
+  /* HOJA TAMAÑO CARTA DINÁMICA (CORREGIDA) */
+  .page.carta { width: 816px; min-height: 1056px; height: auto; background: #fff; color: #111; box-shadow: 0 10px 40px rgba(0,0,0,0.5); flex-shrink: 0; transform-origin: top center; }
+  .sheet { padding: 72px 64px; font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; min-height: 1056px; display: flex; flex-direction: column; color: #000; }
   .sheet header { text-align: right; font-weight: bold; margin-bottom: 30px; }
   .sheet .dest { font-weight: bold; text-transform: uppercase; }
   .sheet .cuerpo { text-align: justify; white-space: pre-wrap; margin-top: 20px; }
-  .sheet .pie { position: absolute; bottom: 80px; left: 0; right: 0; text-align: center; font-weight: bold; width: 100%; }
+  .sheet .pie { margin-top: auto; padding-top: 50px; text-align: center; font-weight: bold; width: 100%; page-break-inside: avoid; }
 
   .hide { display: none !important; }
 
@@ -632,7 +632,30 @@
             const canvas = await html2canvas(pageEl, { scale: 2, backgroundColor: '#ffffff' });
             pageEl.style.transform = originalTransform;
 
-            doc.addImage(canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 612, 792);
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const pdfWidth = 612; // Ancho de hoja carta en puntos
+            const pdfHeight = 792; // Alto de hoja carta en puntos
+
+            // Calcular el tamaño proporcional de la imagen para el PDF
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            const ratio = pdfWidth / canvasWidth;
+            const imgHeight = canvasHeight * ratio;
+
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            // Agregar la primera página
+            doc.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+            heightLeft -= pdfHeight;
+
+            // Bucle para crear páginas adicionales si el documento es más largo que una hoja
+            while (heightLeft > 0) {
+              position = heightLeft - imgHeight; // Desplaza la imagen hacia arriba para imprimir la siguiente sección
+              doc.addPage();
+              doc.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+              heightLeft -= pdfHeight;
+            }
             
             fotosBase64.forEach((img, i) => {
               doc.addPage();
