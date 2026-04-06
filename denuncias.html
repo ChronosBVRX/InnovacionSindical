@@ -81,7 +81,7 @@
   
   /* HOJA TAMAÑO CARTA DINÁMICA (CORREGIDA) */
   .page.carta { width: 816px; min-height: 1056px; height: auto; background: #fff; color: #111; box-shadow: 0 10px 40px rgba(0,0,0,0.5); flex-shrink: 0; transform-origin: top center; }
-  .sheet { padding: 72px 64px; font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; min-height: 1056px; display: flex; flex-direction: column; color: #000; }
+  .sheet { padding: 50px 64px; font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; min-height: 1056px; display: flex; flex-direction: column; color: #000; }
   .sheet header { text-align: right; font-weight: bold; margin-bottom: 30px; }
   .sheet .dest { font-weight: bold; text-transform: uppercase; }
   .sheet .cuerpo { text-align: justify; white-space: pre-wrap; margin-top: 20px; }
@@ -499,7 +499,7 @@
             <div class="cuerpo">${cuerpoIA}</div>
             <div class="pie">
               ATENTAMENTE<br>
-              <div id="linea-firma" style="margin: 60px auto 5px auto; width: 250px; border-top: 1px solid black;"></div>
+              <div id="linea-firma" style="margin: 60px auto 5px auto; width: 250px; border-bottom: 2px solid black; min-height: 10px;"></div>
               ${$('#valNombreUser').value}<br>
               Matrícula: ${$('#valMatricula').value}<br>
               ${$('#valCategoria').value}<br>
