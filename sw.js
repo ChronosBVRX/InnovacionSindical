@@ -1,4 +1,4 @@
-const CACHE_NAME = 'inn-sindical-v1';
+const CACHE_NAME = 'inn-comunitaria-v1';
 // Aquí debes listar los archivos que quieres que funcionen sin internet
 const ASSETS_TO_CACHE = [
   './',

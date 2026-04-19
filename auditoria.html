@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Auditoría Sindical - PSD</title>
+  <title>Auditoría Comunitaria - PSD</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
@@ -83,7 +83,7 @@
   <div id="auth-wall" class="auth-wall hide">
     <i class="ph-fill ph-shield-warning"></i>
     <h2>Acceso Denegado</h2>
-    <p>Este módulo es de uso exclusivo para la <strong>Alta Dirección Sindical</strong> (Secretaría General y del Interior). Tu cuenta no tiene los privilegios necesarios para auditar las métricas.</p>
+    <p>Este módulo es de uso exclusivo para la <strong>Alta Dirección Comunitaria</strong> (Secretaría General y del Interior). Tu cuenta no tiene los privilegios necesarios para auditar las métricas.</p>
   </div>
 
   <div id="main-content" class="hide">
@@ -120,7 +120,7 @@
     </div>
 
     <h3 style="margin: 0 0 16px 0; font-size: 18px; color: var(--primary-light); display: flex; align-items: center; gap: 8px;">
-      <i class="ph-duotone ph-users-three"></i> Desglose por Cartera Sindical
+      <i class="ph-duotone ph-users-three"></i> Desglose por Cartera Comunitaria
     </h3>
     
     <div class="cartera-list" id="lista-carteras">
@@ -182,7 +182,7 @@
       contenedor.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);"><i class="ph-bold ph-spinner ph-spin" style="font-size: 24px;"></i> Calculando métricas...</div>';
 
       try {
-        // Al tener los permisos RLS, esta consulta nos traerá TODOS los escritos del sindicato
+        // Al tener los permisos RLS, esta consulta nos traerá TODOS los escritos del organización
         const { data, error } = await supabaseApp.from('escritos_buzon').select('area_destino, estatus');
         if (error) throw error;
 

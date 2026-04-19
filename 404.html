@@ -8,7 +8,7 @@
 // Redirige al index del subpath conservando path como query
 (function(){
 var l = window.location;
-var base = '/InnovacionSindical/';
+var base = '/PlataformaComunitaria/';
 // Si usas una única página (index.html), manda todo allí con ?p=path
 var newUrl = base + 'index.html?p=' + encodeURIComponent(l.pathname.replace(base,'')) + l.search + l.hash;
 // Si no tienes index.html SPA, puedes cambiarlo a login.html
