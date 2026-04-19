@@ -1051,10 +1051,6 @@
       'https://tuperfil.imss.gob.mx',
       'https://www.facebook.com'
     ]);
-    const shouldOpenOutsideIframe = (app) => {
-      if (!app) return false;
-      return app.id === 'perfil-imss' || app.id === 'tarjeton';
-    };
 
     const isExternalUrl = (url) => {
       if (!url || !/^https?:/i.test(url)) return false;
