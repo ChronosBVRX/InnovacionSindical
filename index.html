@@ -9,7 +9,7 @@
   <meta property="og:title" content="Plataforma de Servicios Digitales (PSD)" />
   <meta property="og:description" content="Panel de Control y Gestión de Servicios para la base usuaria." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://raw.githubusercontent.com/ChronosBVRX/PlataformaComunitaria/main/Logo%20PSC.jpeg" />
+  <meta property="og:image" content="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/logoPSD.png" />
 
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#006341">
@@ -24,7 +24,7 @@
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
     font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:;
     img-src 'self' data: blob: https://raw.githubusercontent.com https://*.facebook.com https://*.fbcdn.net https://*.googleusercontent.com https://ui-avatars.com https://*.supabase.co;
-    frame-src 'self' https://plataformacomunitaria.com.mx https://www.plataformacomunitaria.com.mx https://chronosbvrx.github.io https://trascendencia-comunitaria-7t85.onrender.com https://rh.imss.gob.mx https://tuperfil.imss.gob.mx https://www.facebook.com;
+    frame-src 'self' https://innovacionsindical.com.mx https://plataformacomunitaria.com.mx https://www.plataformacomunitaria.com.mx https://chronosbvrx.github.io https://trascendencia-comunitaria-7t85.onrender.com https://rh.imss.gob.mx https://tuperfil.imss.gob.mx https://www.facebook.com;
     connect-src 'self' https://connect.facebook.net https://www.facebook.com https://raw.githubusercontent.com https://*.supabase.co https://cdn.jsdelivr.net;
     object-src 'none';
     base-uri 'self';
@@ -43,7 +43,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
 
-  <link rel="icon" href="https://raw.githubusercontent.com/ChronosBVRX/PlataformaComunitaria/main/Logo%20PSC.jpeg" />
+  <link rel="icon" href="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/logoPSD.png" />
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -858,7 +858,7 @@
   <div id="boot" class="boot">
     <div>
       <div class="logo-boot">
-        <img src="https://raw.githubusercontent.com/ChronosBVRX/PlataformaComunitaria/main/Logo%20PSC.jpeg" alt="PSD">
+        <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/logoPSD.png" alt="PSD">
       </div>
       <div class="bar"><span></span></div>
       <div id="security-status">Inicializando...</div>
@@ -868,7 +868,7 @@
   <header class="topbar">
     <div class="title">
       <div class="mark">
-        <img src="https://raw.githubusercontent.com/ChronosBVRX/PlataformaComunitaria/main/Logo%20PSC.jpeg" alt="PSD">
+        <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/logoPSD.png" alt="PSD">
       </div>
       <div class="title-text">Plataforma <span>PSD</span></div>
     </div>
@@ -1043,6 +1043,8 @@
 
     const SAFE_ORIGINS = new Set([
       window.location.origin,
+      'https://innovacionsindical.com.mx',
+      'https://www.innovacionsindical.com.mx',
       'https://plataformacomunitaria.com.mx',
       'https://www.plataformacomunitaria.com.mx',
       'https://chronosbvrx.github.io',
@@ -1054,6 +1056,12 @@
 
     const isExternalUrl = (url) => {
       if (!url || !/^https?:/i.test(url)) return false;
+      // Tratar estos dominios como internos para que abran en el iframe
+      if (url.includes('innovacionsindical.com.mx') || 
+          url.includes('chronosbvrx.github.io') || 
+          url.includes('trascendencia-comunitaria-7t85.onrender.com')) {
+        return false;
+      }
       try {
         return new URL(url, window.location.href).origin !== window.location.origin;
       } catch {
@@ -1068,21 +1076,21 @@
     };
 
     const APPS = [
-      { id: 'buzon', title: 'Buzón de Atención', desc: 'Trámites y respuestas.', iconClass: 'ph-duotone ph-envelope-open', iframe: 'buzon.html', featured: true, hideFromMenu: true },
-      { id: 'auditoria', title: 'Auditoría', desc: 'Monitor de desempeño.', iconClass: 'ph-duotone ph-chart-line-up', iframe: 'auditoria.html', featured: true, adminOnly: true },
-      { id: 'escalafon', title: 'Consulta tu lugar', desc: 'Bolsa de trabajo y escalafón.', iconClass: 'ph-duotone ph-list-numbers', iframe: 'consultalugar.html', featured: true },
+      { id: 'buzon', title: 'Buzón de Atención', desc: 'Trámites y respuestas.', iconClass: 'ph-duotone ph-envelope-open', iframe: 'https://innovacionsindical.com.mx/buzon.html', featured: true, hideFromMenu: true },
+      { id: 'auditoria', title: 'Auditoría', desc: 'Monitor de desempeño.', iconClass: 'ph-duotone ph-chart-line-up', iframe: 'https://innovacionsindical.com.mx/auditoria.html', featured: true, adminOnly: true },
+      { id: 'escalafon', title: 'Consulta tu lugar', desc: 'Bolsa de trabajo y escalafón.', iconClass: 'ph-duotone ph-list-numbers', iframe: 'https://innovacionsindical.com.mx/consultalugar.html', featured: true },
       { id: 'denuncias', title: 'Gestor de Escritos', desc: 'IA.', iconClass: 'ph-duotone ph-pen-nib', href: 'https://chronosbvrx.github.io/PlataformaComunitaria/denuncias', ia: true },
-      { id: 'noticias', title: 'Noticias', desc: 'Comunicados.', iconClass: 'ph-duotone ph-broadcast', iframe: 'noticias.html' },
-      { id: 'biblioteca', title: 'Biblioteca', desc: 'Recursos digitales.', iconClass: 'ph-duotone ph-books', iframe: 'biblioteca.html' },
-      { id: 'calendario', title: 'Calendario', desc: 'Eventos oficiales.', iconClass: 'ph-duotone ph-calendar-blank', iframe: 'calendario.html', hideFromMenu: true },
-      { id: 'nucleo', title: 'Centro de Soporte', desc: 'Acceso a asesores.', iconClass: 'ph-duotone ph-scales', iframe: 'nucleo.html', featured: true, restrictedNucleo: true },
-      { id: 'kiosko', title: 'Escáner Digital', desc: 'Recepción.', iconClass: 'ph-duotone ph-scan-smiley', href: 'kiosko.html', featured: true, newTab: true },
+      { id: 'noticias', title: 'Noticias', desc: 'Comunicados.', iconClass: 'ph-duotone ph-broadcast', iframe: 'https://innovacionsindical.com.mx/noticias.html' },
+      { id: 'biblioteca', title: 'Biblioteca', desc: 'Recursos digitales.', iconClass: 'ph-duotone ph-books', iframe: 'https://innovacionsindical.com.mx/biblioteca.html' },
+      { id: 'calendario', title: 'Calendario', desc: 'Eventos oficiales.', iconClass: 'ph-duotone ph-calendar-blank', iframe: 'https://innovacionsindical.com.mx/calendario.html', hideFromMenu: true },
+      { id: 'nucleo', title: 'Centro de Soporte', desc: 'Acceso a asesores.', iconClass: 'ph-duotone ph-scales', iframe: 'https://innovacionsindical.com.mx/nucleo.html', featured: true, restrictedNucleo: true },
+      { id: 'kiosko', title: 'Escáner Digital', desc: 'Recepción.', iconClass: 'ph-duotone ph-scan-smiley', href: 'https://innovacionsindical.com.mx/kiosko.html', featured: true, newTab: true },
       { id: 'directorio', title: 'Directorio', desc: 'Contactos.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/PlataformaComunitaria/directorio' },
-      { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de prestaciones.', iconClass: 'ph-duotone ph-hand-coins', iframe: 'prestaciones.html' },
-      { id: 'tramites', title: 'Catálogo de Trámites', desc: 'Requisitos y procesos.', iconClass: 'ph-duotone ph-file-text', iframe: 'requisitos_tramites.html', featured: true },
+      { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de prestaciones.', iconClass: 'ph-duotone ph-hand-coins', iframe: 'https://innovacionsindical.com.mx/prestaciones.html' },
+      { id: 'tramites', title: 'Catálogo de Trámites', desc: 'Requisitos y procesos.', iconClass: 'ph-duotone ph-file-text', iframe: 'https://innovacionsindical.com.mx/requisitos_tramites.html', featured: true },
       { id: 'tarjeton', title: 'Tarjetón Digital', desc: 'Descarga.', iconClass: 'ph-duotone ph-file-pdf', href: 'https://rh.imss.gob.mx/Personal/TarjetonDigital/', secure: true },
       { id: 'perfil-imss', title: 'Tu Perfil IMSS', desc: 'Cuenta.', iconClass: 'ph-duotone ph-hospital', iframe: 'https://tuperfil.imss.gob.mx/guitpei-web/login', secure: true },
-      { id: 'privacidad', title: 'Aviso de Privacidad', desc: 'Documento legal.', iconClass: 'ph-bold ph-shield-check', iframe: 'avisoprivacidad.html' }
+      { id: 'privacidad', title: 'Aviso de Privacidad', desc: 'Documento legal.', iconClass: 'ph-bold ph-shield-check', iframe: 'https://innovacionsindical.com.mx/avisoprivacidad.html' }
     ];
 
     const PSD = {
