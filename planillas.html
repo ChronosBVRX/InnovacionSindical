@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Planillas</title>
+    <title>Generador de Equipos</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- ESTILOS DEL FORMULARIO Y LA INTERFAZ --- */
@@ -177,7 +177,7 @@
 <body>
 
     <div class="app-container" id="form-section">
-        <h1>Generador de Planillas - Alta Resolución</h1>
+        <h1>Generador de Equipos - Alta Resolución</h1>
         
         <div class="form-group">
             <h3>Información Electoral</h3>
@@ -189,8 +189,8 @@
 
         <div class="form-group">
             <h3>Representante</h3>
-            <label>Nombre del Representante de Planilla:</label>
-            <input type="text" id="nombreRep" value="Carlos Guerrero">
+            <label>Nombre del Representante de Equipo:</label>
+            <input type="text" id="nombreRep" value="Perfil Principal">
             <label>Categoría / Cargo:</label>
             <input type="text" id="cargoRep" placeholder="Ej. Médico Especialista">
             <label>Adscripción:</label>
@@ -221,9 +221,9 @@
 
             <div class="p-header">
                 <div class="p-logo-container">
-                    <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo SNTSS" class="p-logo-circular" crossorigin="anonymous">
+                    <img src="https://raw.githubusercontent.com/ChronosBVRX/PlataformaComunitaria/main/Logo%20PSC.jpeg" alt="Logo PSC" class="p-logo-circular" crossorigin="anonymous">
                 </div>
-                <h1>PLANILLA AZUL</h1>
+                <h1>EQUIPO PRINCIPAL</h1>
                 <h2>XXXI Congreso Seccional Ordinario</h2>
             </div>
 
@@ -235,19 +235,19 @@
             <div class="p-representante">
                 <img src="data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" id="render-foto-rep" class="p-rep-photo">
                 <div class="p-rep-info">
-                    <div class="p-rep-title">REPRESENTANTE DE PLANILLA:</div>
-                    <div class="p-rep-name" id="render-nombre-rep">CARLOS GUERRERO</div>
+                    <div class="p-rep-title">RESPONSABLE DEL EQUIPO:</div>
+                    <div class="p-rep-name" id="render-nombre-rep">PERFIL PRINCIPAL</div>
                     <div class="p-rep-role" id="render-cargo-rep">CARGO</div>
                     <div class="p-rep-unit" id="render-unidad-rep">UNIDAD</div>
                 </div>
-                <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" class="p-logo-sec" crossorigin="anonymous">
+                <img src="https://raw.githubusercontent.com/ChronosBVRX/PlataformaComunitaria/main/Logo%20PSC.jpeg" class="p-logo-sec" crossorigin="anonymous">
             </div>
 
             <div class="p-grid" id="render-grid"></div>
 
             <div class="p-footer">
                 <h3>¡Únete a nuestra visión!</h3>
-                <h4>VOTA POR LA PLANILLA AZUL</h4>
+                <h4>VOTA POR LA EQUIPO PRINCIPAL</h4>
                 <h3>"UNIDOS SOMOS FUERZA"</h3>
             </div>
         </div>
@@ -362,7 +362,7 @@
                 const image = canvas.toDataURL("image/png");
                 const link = document.createElement('a');
                 link.href = image;
-                link.download = 'planilla_congresional_alta_resolucion.png';
+                link.download = 'equipo_congresional_alta_resolucion.png';
                 link.click();
                 
                 btn.innerHTML = textoOriginal;

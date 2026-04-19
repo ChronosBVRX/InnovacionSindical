@@ -1,7 +1,7 @@
 {
-  "name": "Plataforma Sindical Digital",
+  "name": "Plataforma Comunitaria Digital",
   "short_name": "PSD",
-  "description": "Plataforma oficial de Innovación Sindical",
+  "description": "Plataforma oficial de Innovación Comunitaria",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -4,8 +4,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Plataforma Sindical CG — Mi Perfil y Miembros</title>
-  <link rel="icon" href="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/refs/heads/main/Logo%20SNTSS.jpeg">
+  <title>Plataforma Comunitaria CG — Mi Perfil y Miembros</title>
+  <link rel="icon" href="https://raw.githubusercontent.com/ChronosBVRX/PlataformaComunitaria/refs/heads/main/Logo%20PSC.jpeg">
   <style>
     :root {
       --bg: #1b2e45;
@@ -179,8 +179,8 @@
 <body>
   <header>
     <h1>
-      <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/refs/heads/main/Logo%20SNTSS.jpeg" alt="Logo">
-      Plataforma Sindical CG
+      <img src="https://raw.githubusercontent.com/ChronosBVRX/PlataformaComunitaria/refs/heads/main/Logo%20PSC.jpeg" alt="Logo">
+      Plataforma Comunitaria CG
     </h1>
     <div style="display: flex; gap: 10px;">
       <a href="index.html" class="btn-header">🏠 Inicio</a>
@@ -188,9 +188,9 @@
     </div>
   </header>
 
-  <section class="page-hero" aria-label="Header de la Plataforma Sindical CG">
+  <section class="page-hero" aria-label="Header de la Plataforma Comunitaria CG">
     <div class="hero-wrap">
-      <img class="hero-img" src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/ChatGPT%20Image%2020%20feb%202026%2C%2002_54_18%20p.m..png" alt="Plataforma Sindical CG — Header">
+      <img class="hero-img" src="https://raw.githubusercontent.com/ChronosBVRX/PlataformaComunitaria/main/ChatGPT%20Image%2020%20feb%202026%2C%2002_54_18%20p.m..png" alt="Plataforma Comunitaria CG — Header">
     </div>
   </section>
 
@@ -235,7 +235,7 @@
                         Estatus: En revisión por subcomisión
                       </div>
                       <div class="promo-overlay">
-                        <p>A partir del 16 de abril, <br><span>vota por la planilla azul</span> <br>para hacerlo realidad</p>
+                        <p>A partir del 16 de abril, <br><span>vota por la equipo azul</span> <br>para hacerlo realidad</p>
                       </div>
                     </div>
                   </div>
@@ -253,7 +253,7 @@
             </div>
 
             <div class="perfil-extra-card">
-              <h3>⭐ Valor para tu labor sindical</h3>
+              <h3>⭐ Valor para tu labor comunitaria</h3>
               <ul id="perfilValorList"></ul>
             </div>
 
@@ -760,7 +760,7 @@
     let FRASES_DB = [], LAST_INDEX = -1, FRASES_INTERVAL = null;
     async function cargarFrasesPerfil() {
       const { data, error } = await supabaseClient.from('phrases').select('text, category').eq('is_active', true);
-      if (error || !data?.length) { $("perfilQuoteText").textContent = "El sindicato es la defensa de nuestros derechos."; return; }
+      if (error || !data?.length) { $("perfilQuoteText").textContent = "El organización es la defensa de nuestros derechos."; return; }
       FRASES_DB = data; mostrarFraseAleatoria();
       if (FRASES_INTERVAL) clearInterval(FRASES_INTERVAL);
       FRASES_INTERVAL = setInterval(mostrarFraseAleatoria, 300000);

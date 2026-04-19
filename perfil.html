@@ -4,9 +4,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Plataforma Sindical CG — Miembros</title>
+  <title>Plataforma Comunitaria CG — Miembros</title>
   <link rel="icon"
-    href="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/refs/heads/main/Logo%20SNTSS.jpeg">
+    href="https://raw.githubusercontent.com/ChronosBVRX/PlataformaComunitaria/refs/heads/main/Logo%20PSC.jpeg">
   <style>
     :root {
       --bg: #1b2e45;
@@ -514,9 +514,9 @@
 <body>
   <header>
     <h1>
-      <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/refs/heads/main/Logo%20SNTSS.jpeg"
+      <img src="https://raw.githubusercontent.com/ChronosBVRX/PlataformaComunitaria/refs/heads/main/Logo%20PSC.jpeg"
         alt="Logo">
-      Plataforma Sindical CG — Miembros
+      Plataforma Comunitaria CG — Miembros
     </h1>
     <button id="btnLogout">Cerrar sesión</button>
   </header>
@@ -541,7 +541,7 @@
           <div class="perfil-main">
             <div>
               <h2>👋 Bienvenido</h2>
-              <p class="muted">Esta es tu página de miembro dentro de la Plataforma Sindical CG</p>
+              <p class="muted">Esta es tu página de miembro dentro de la Plataforma Comunitaria CG</p>
 
               <div id="diagBox" class="diag" style="display:none;"></div>
 
@@ -571,7 +571,7 @@
                         Estatus: En revisión por subcomisión
                       </div>
                       <div class="promo-overlay">
-                        <p>A partir del 16 de abril, <br><span>vota por la planilla azul</span> <br>para hacerlo realidad</p>
+                        <p>A partir del 16 de abril, <br><span>vota por la equipo azul</span> <br>para hacerlo realidad</p>
                       </div>
                     </div>
                   </div>
@@ -612,7 +612,7 @@
             <div class="card" id="perfilQRCard" style="margin-top:12px; background:#233b5c; animation:fadeInSmall .2s ease">
               <h3>✅ Próximo QR de verificación</h3>
               <p class="muted" style="margin-top:6px">
-                Aquí aparecerá el próximo QR para verificar tu asistencia al próximo evento sindical.
+                Aquí aparecerá el próximo QR para verificar tu asistencia al próximo evento comunitaria.
                 Confirma tu asistencia para generarlo.
               </p>
 
@@ -654,7 +654,7 @@
             </div>
 
             <div class="perfil-extra-card">
-              <h3>⭐ Valor para tu labor sindical</h3>
+              <h3>⭐ Valor para tu labor comunitaria</h3>
               <ul id="perfilValorList"></ul>
             </div>
 
@@ -742,7 +742,7 @@
     <section id="biblioteca" class="content">
       <div class="card">
         <h2>📚 Biblioteca de Recursos</h2>
-        <p class="muted">Consulta y explora materiales digitales de la Plataforma Sindical CG.</p>
+        <p class="muted">Consulta y explora materiales digitales de la Plataforma Comunitaria CG.</p>
         <iframe src="biblioteca.html"
           style="width:100%;min-height:650px;border:0;border-radius:12px;margin-top:12px" loading="lazy"></iframe>
       </div>
@@ -751,7 +751,7 @@
     <section id="comite" class="content">
       <div class="card">
         <h2>🏛️ Gestión del Comité Seccional</h2>
-        <p class="muted">Asigna a los integrantes, modifica sus datos y sube su fotografía oficial de campaña.</p>
+        <p class="muted">Asigna a los integrantes, modifica sus datos y sube su fotografía oficial de proyecto.</p>
         <div id="comiteList" style="margin-top:14px;display:grid;gap:12px"></div>
       </div>
     </section>
@@ -866,7 +866,7 @@
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
     const LOGIN_URL = "login.html";
-    const SCANNER_REDIRECT_URL = "https://chronosbvrx.github.io/InnovacionSindical/scanner";
+    const SCANNER_REDIRECT_URL = "https://chronosbvrx.github.io/PlataformaComunitaria/scanner";
     const GOOGLE_API_KEY = "AIzaSyDdtYPPE-jTvw_Gypxrq2c5UePpbK9ZxZ0";
     const CALENDAR_ID = "redunidadenaccion@gmail.com";
 
@@ -1667,7 +1667,7 @@
     }
 
     /* ====== Frases y valor ====== */
-    const FRASES_PERFIL = [{ texto: "Un solo delegado puede marcar la diferencia, pero un equipo unido transforma la historia.", tag: "Trabajo en equipo" }, { texto: "La juventud no es el futuro del sindicato, es el presente que lo está cambiando.", tag: "Juventud" }, { texto: "El sindicalismo es la voz organizada de quienes no se rinden ante la injusticia.", tag: "Sindicalismo" }, { texto: "Ningún derecho se nos regaló; todos se conquistaron con organización y compañerismo.", tag: "Lucha sindical" }];
+    const FRASES_PERFIL = [{ texto: "Un solo coordinador puede marcar la diferencia, pero un equipo unido transforma la historia.", tag: "Trabajo en equipo" }, { texto: "La juventud no es el futuro del organización, es el presente que lo está cambiando.", tag: "Juventud" }, { texto: "El comunitariaismo es la voz organizada de quienes no se rinden ante la injusticia.", tag: "Comunitariaismo" }, { texto: "Ningún derecho se nos regaló; todos se conquistaron con organización y compañerismo.", tag: "Lucha comunitaria" }];
     const VALOR_PERFIL = ["Comparte tu perfil con compañeros que puedan apoyarte en tu zona o servicio.", "Registra tus participaciones en asambleas para documentar tu liderazgo.", "Mantén actualizado tu teléfono y habilidades."];
     function cambiarFrasePerfil() { const f = FRASES_PERFIL[Math.floor(Math.random() * FRASES_PERFIL.length)]; if ($("perfilQuoteText")) $("perfilQuoteText").textContent = `"${f.texto}"`; if ($("perfilQuoteTag")) $("perfilQuoteTag").textContent = f.tag; }
     function aplicarValorPerfil() { if ($("perfilValorList")) { $("perfilValorList").innerHTML = ""; VALOR_PERFIL.forEach(v => { const li = document.createElement('li'); li.textContent = v; $("perfilValorList").appendChild(li); }); } }

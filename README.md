@@ -1,5 +1,5 @@
 ```markdown
-# Innovación Sindical – Frontend (GitHub Pages)
+# Innovación Comunitaria – Frontend (GitHub Pages)
 
 
 Este paquete contiene una página de **login** y un ejemplo de **zona protegida** que consumen una API en **Render** con **Supabase Auth**.
@@ -17,8 +17,8 @@ const SUPABASE_ANON_KEY = "ey...";
 const API_BASE = "https://tu-api.onrender.com";
 ```
 3. Publica esta carpeta dentro de tu repo de Pages, por ejemplo:
-- `chronosbvrx.github.io/InnovacionSindical/`
-- Accede a: `/InnovacionSindical/login.html` y `/InnovacionSindical/protected.html`.
+- `chronosbvrx.github.io/PlataformaComunitaria/`
+- Accede a: `/PlataformaComunitaria/login.html` y `/PlataformaComunitaria/protected.html`.
 
 
 ## 🌐 CORS en tu API (Render)
