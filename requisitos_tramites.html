@@ -11,15 +11,15 @@
     <style>
         /* ===== PALETA PSD (Colores de la Plataforma) ===== */
         :root {
-            --bg-body: #1b2e45; 
-            --bg-body-end: #152336;
+            --bg-body: #004b33;
+            --bg-body-end: #003423;
             --panel-base: 46, 79, 119;
-            --primary: #4da1a8; 
-            --primary-light: #7ad1d6;
+            --primary: #006341;
+            --primary-light: #8fd9b6;
             --success: #4ade80;
-            --text-main: #f0fdfa; 
+            --text-main: #f0fdfa;
             --text-muted: #bce9eb;
-            --ring: rgba(77, 161, 168, .35);
+            --ring: rgba(0, 99, 65, .35);
             --glass-bg: rgba(var(--panel-base), 0.35);
         }
 
@@ -27,18 +27,18 @@
             font-family: 'Inter', sans-serif;
             background-color: transparent; /* Transparente para que tome el fondo del iframe */
             color: var(--text-main);
-            padding: 1rem; 
+            padding: 1rem;
         }
 
         /* ===== ENCABEZADO ===== */
         .page-header {
-            background: linear-gradient(135deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.6));
+            background: linear-gradient(135deg, rgba(0, 99, 65, 0.2), rgba(var(--panel-base), 0.6));
             border: 1px solid var(--primary-light);
             color: var(--text-main);
             padding: 2rem 1.5rem;
             border-radius: 12px;
             margin-bottom: 2rem;
-            box-shadow: 0 8px 24px rgba(77, 161, 168, 0.15);
+            box-shadow: 0 8px 24px rgba(0, 99, 65, 0.15);
         }
         .page-header h2 {
             font-weight: 800;
@@ -66,7 +66,7 @@
             overflow: hidden;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        
+
         .accordion-item:hover {
             transform: translateY(-2px);
             border-color: var(--primary);
@@ -81,18 +81,18 @@
             background: transparent;
             border-radius: 12px !important;
         }
-        
+
         .accordion-button:not(.collapsed) {
             color: var(--text-main);
             background: rgba(var(--panel-base), 0.6);
-            box-shadow: inset 0 -1px 0 rgba(77, 161, 168, 0.2);
+            box-shadow: inset 0 -1px 0 rgba(0, 99, 65, 0.2);
         }
 
         .accordion-button:focus {
             box-shadow: none;
-            border-color: rgba(77, 161, 168, 0.5);
+            border-color: rgba(0, 99, 65, 0.5);
         }
-        
+
         .accordion-button::after {
             filter: brightness(0) invert(1); /* Pone la flecha en blanco */
         }
@@ -101,9 +101,9 @@
             font-size: 1.3rem;
             margin-right: 12px;
             color: var(--primary-light);
-            filter: drop-shadow(0 2px 4px rgba(77, 161, 168, 0.4));
+            filter: drop-shadow(0 2px 4px rgba(0, 99, 65, 0.4));
         }
-        
+
         .accordion-button:not(.collapsed) i.icon-title {
             color: var(--success);
             filter: drop-shadow(0 2px 4px rgba(74, 222, 128, 0.4));
@@ -127,13 +127,13 @@
             margin-bottom: 1.5rem;
             color: var(--text-main);
         }
-        
+
         .req-list li {
             margin-bottom: 0.4rem;
         }
 
         .info-box {
-            background-color: rgba(77, 161, 168, 0.1);
+            background-color: rgba(0, 99, 65, 0.1);
             border-left: 4px solid var(--success);
             padding: 1rem;
             border-radius: 0 8px 8px 0;
@@ -177,7 +177,7 @@
             color: var(--text-main);
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
         }
-        
+
         .search-input::placeholder {
             color: rgba(188, 233, 235, 0.6); /* --text-muted con opacidad */
         }
@@ -186,9 +186,9 @@
             background: rgba(var(--panel-base), 0.7);
             color: var(--text-main);
             border-color: var(--primary-light);
-            box-shadow: 0 0 0 0.25rem rgba(77, 161, 168, 0.25);
+            box-shadow: 0 0 0 0.25rem rgba(0, 99, 65, 0.25);
         }
-        
+
         .input-group-text {
             background: rgba(var(--panel-base), 0.5);
             border: 1px solid var(--ring);
@@ -199,7 +199,7 @@
 <body>
 
     <div class="container-fluid px-0">
-        
+
         <div class="page-header">
             <h2><i class="bi bi-file-earmark-text"></i> Catálogo de Trámites</h2>
             <p>Sección XX - Atención directa y sin intermediarios.</p>
@@ -218,7 +218,7 @@
 
             <h3 class="category-title"><i class="bi bi-people-fill"></i> Igualdad Sustantiva y Familia</h3>
             <div class="accordion" id="accIgualdad">
-                
+
                 <div class="accordion-item tramite-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t1">
@@ -289,8 +289,8 @@
                     </div>
                 </div>
 
-            </div> 
-            
+            </div>
+
             <h3 class="category-title"><i class="bi bi-shield-check"></i> Previsión Social y Habitación</h3>
             <div class="accordion" id="accPrevision">
 
@@ -451,11 +451,11 @@
                     </div>
                 </div>
 
-            </div> 
-            
+            </div>
+
             <h3 class="category-title"><i class="bi bi-mortarboard"></i> Desarrollo Académico y Capacitación</h3>
             <div class="accordion" id="accDesarrollo">
-                
+
                 <div class="accordion-item tramite-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t12">
@@ -497,11 +497,11 @@
                     </div>
                 </div>
 
-            </div> 
-            
+            </div>
+
             <h3 class="category-title"><i class="bi bi-heart-pulse"></i> Prestaciones Médicas Adicionales</h3>
             <div class="accordion" id="accMedicos">
-                
+
                 <div class="accordion-item tramite-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t14">
@@ -523,12 +523,12 @@
                     </div>
                 </div>
 
-            </div> 
-        </div> 
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('searchInput');
@@ -550,7 +550,7 @@
                 document.querySelectorAll('.accordion').forEach(acc => {
                     const parentTitle = acc.previousElementSibling;
                     const visibleItems = Array.from(acc.querySelectorAll('.tramite-item')).filter(i => i.style.display !== 'none');
-                    
+
                     if (visibleItems.length === 0) {
                         parentTitle.style.display = 'none';
                     } else {

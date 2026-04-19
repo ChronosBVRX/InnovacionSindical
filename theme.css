@@ -3,12 +3,12 @@
 
 :root {
   /* Palette */
-  --bg-dark: #050a14;
+  --bg-dark: #032117;
   --bg-panel: rgba(15, 23, 42, 0.65);
-  --primary: #5bd7f2;
+  --primary: #00a86b;
   --primary-glow: rgba(91, 215, 242, 0.4);
-  --secondary: #60a5fa;
-  --accent: #3b82f6;
+  --secondary: #4caf7d;
+  --accent: #2e8b57;
   --text-main: #e2e8f0;
   --text-muted: #94a3b8;
   --border: rgba(148, 163, 184, 0.15);

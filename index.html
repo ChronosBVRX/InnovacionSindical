@@ -171,7 +171,7 @@
     }
 
     .btn-ai-topbar {
-      background: rgba(77, 161, 168, 0.15);
+      background: rgba(0, 99, 65, 0.15);
       color: var(--primary-light);
       border: 1px solid var(--primary-light);
       padding: 8px 12px;
@@ -294,13 +294,13 @@
 
     .icon-illuminated {
       color: var(--primary-light) !important;
-      filter: drop-shadow(0 0 8px rgba(122, 209, 214, 0.6));
+      filter: drop-shadow(0 0 8px rgba(143, 217, 182, 0.6));
     }
 
     @keyframes pulseGlow {
-      0% { box-shadow: 0 0 0 0 rgba(122, 209, 214, 0.7), 0 0 0 2px var(--bg-body); }
-      70% { box-shadow: 0 0 0 6px rgba(122, 209, 214, 0), 0 0 0 2px var(--bg-body); }
-      100% { box-shadow: 0 0 0 0 rgba(122, 209, 214, 0), 0 0 0 2px var(--bg-body); }
+      0% { box-shadow: 0 0 0 0 rgba(143, 217, 182, 0.7), 0 0 0 2px var(--bg-body); }
+      70% { box-shadow: 0 0 0 6px rgba(143, 217, 182, 0), 0 0 0 2px var(--bg-body); }
+      100% { box-shadow: 0 0 0 0 rgba(143, 217, 182, 0), 0 0 0 2px var(--bg-body); }
     }
 
     .layer {
@@ -393,9 +393,9 @@
     }
 
     .tile.featured {
-      background: linear-gradient(145deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.45));
+      background: linear-gradient(145deg, rgba(0, 99, 65, 0.2), rgba(var(--panel-base), 0.45));
       border: 1px solid var(--primary-light);
-      box-shadow: 0 0 15px rgba(77, 161, 168, 0.15);
+      box-shadow: 0 0 15px rgba(0, 99, 65, 0.15);
     }
 
     .tile-icon-integrated {
@@ -403,7 +403,7 @@
       color: var(--primary-light);
       margin-bottom: 16px;
       transition: all 0.3s ease;
-      filter: drop-shadow(0 4px 6px rgba(77, 161, 168, 0.4));
+      filter: drop-shadow(0 4px 6px rgba(0, 99, 65, 0.4));
     }
 
     .tile h3 { margin: 0 0 8px 0; font-size: 18px; }
@@ -421,9 +421,9 @@
       font-size: 11px;
       font-weight: 700;
       color: var(--primary-light);
-      background: rgba(77, 161, 168, .14);
+      background: rgba(0, 99, 65, .14);
       border: 1px solid var(--ring);
-      box-shadow: 0 0 8px rgba(122, 209, 214, 0.2);
+      box-shadow: 0 0 8px rgba(143, 217, 182, 0.2);
     }
 
     .download-strip {
@@ -548,7 +548,7 @@
       display: grid;
       place-items: center;
       z-index: 100;
-      background: radial-gradient(circle at center, #1b2e45 0%, #0a141d 100%);
+      background: radial-gradient(circle at center, #004b33 0%, #0a141d 100%);
       transition: opacity 0.6s ease;
       padding: 20px;
       text-align: center;
@@ -1051,6 +1051,10 @@
       'https://tuperfil.imss.gob.mx',
       'https://www.facebook.com'
     ]);
+    const shouldOpenOutsideIframe = (app) => {
+      if (!app) return false;
+      return app.id === 'perfil-imss' || app.id === 'tarjeton';
+    };
 
     const isExternalUrl = (url) => {
       if (!url || !/^https?:/i.test(url)) return false;

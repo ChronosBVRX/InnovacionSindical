@@ -24,7 +24,7 @@
         }
 
         h1 { color: #122c4d; text-align: center; }
-        
+
         .form-group {
             margin-bottom: 20px;
             background: #f8f9fa;
@@ -72,15 +72,15 @@
 
         /* --- ENCABEZADO Y LOGOS --- */
         .p-header { text-align: center; padding-top: 0.6in; padding-bottom: 0.1in; }
-        
+
         .p-logo-container {
             display: inline-flex; flex-direction: column; align-items: center; margin-bottom: 0.1in;
         }
 
         .p-logo-circular {
-            width: 2.2in; height: 2.2in; border-radius: 50%; object-fit: contain; 
-            border: 0.05in solid var(--dark-blue); background-color: white; 
-            margin: 0; padding: 0.1in; 
+            width: 2.2in; height: 2.2in; border-radius: 50%; object-fit: contain;
+            border: 0.05in solid var(--dark-blue); background-color: white;
+            margin: 0; padding: 0.1in;
         }
 
         .p-header h1 { color: var(--dark-blue); font-size: 0.55in; font-weight: 900; margin-top: 0.1in; margin-bottom: 0.05in; text-transform: uppercase; }
@@ -109,7 +109,7 @@
             margin: 0.1in auto 0.2in auto; border-radius: 100px; display: flex; align-items: center; position: relative;
         }
         .p-rep-photo {
-            width: 2.2in; height: 2.2in; background-color: #ccc; border-radius: 50%; 
+            width: 2.2in; height: 2.2in; background-color: #ccc; border-radius: 50%;
             border: 0.08in solid var(--dark-blue); position: absolute; left: -0.5in; object-fit: cover;
         }
         .p-rep-info { margin-left: 2in; display: flex; flex-direction: column; justify-content: center; }
@@ -117,16 +117,16 @@
         .p-rep-name { font-size: 0.32in; font-weight: 900; text-transform: uppercase; margin-bottom: 0.02in;}
         .p-rep-role { font-size: 0.20in; text-transform: uppercase; color: #ddd;}
         .p-rep-unit { font-size: 0.20in; font-weight: bold; color: var(--teal); text-transform: uppercase; }
-        
+
         .p-logo-sec {
             position: absolute; right: 0.5in; width: 1.2in; height: 1.2in; border-radius: 50%;
             object-fit: contain; border: 0.03in solid white; background-color: white; padding: 0.05in;
         }
 
         /* --- CUADRÍCULA DINÁMICA CON INTEGRANTES --- */
-        .p-grid { 
-            display: grid; padding: 0 0.5in; margin-top: 0.1in; flex-grow: 1; 
-            align-content: start; 
+        .p-grid {
+            display: grid; padding: 0 0.5in; margin-top: 0.1in; flex-grow: 1;
+            align-content: start;
         }
         .p-card { background: white; display: flex; align-items: center; box-sizing: border-box; }
         .p-card-photo { background-color: #ccc; object-fit: cover; }
@@ -178,7 +178,7 @@
 
     <div class="app-container" id="form-section">
         <h1>Generador de Equipos - Alta Resolución</h1>
-        
+
         <div class="form-group">
             <h3>Información Electoral</h3>
             <label>Unidad Electoral:</label>
@@ -259,7 +259,7 @@
         function generarCamposIntegrantes() {
             const container = document.getElementById('integrantes-container');
             const num = document.getElementById('numIntegrantes').value;
-            container.innerHTML = ''; 
+            container.innerHTML = '';
 
             for (let i = 1; i <= num; i++) {
                 container.innerHTML += `
@@ -299,8 +299,8 @@
 
             const num = parseInt(document.getElementById('numIntegrantes').value);
             const grid = document.getElementById('render-grid');
-            grid.innerHTML = ''; 
-            
+            grid.innerHTML = '';
+
             grid.className = 'p-grid';
             if (num >= 10 && num <= 15) {
                 grid.classList.add('size-md');
@@ -314,9 +314,9 @@
                 let nombre = document.getElementById(`nombreInt${i}`).value || 'NOMBRE DEL INTEGRANTE';
                 let cargo = document.getElementById(`cargoInt${i}`).value || 'CARGO';
                 let unidad = document.getElementById(`unidadInt${i}`).value || 'UNIDAD';
-                
+
                 let fotoInput = document.getElementById(`fotoInt${i}`);
-                let fotoSrc = pixelGris; 
+                let fotoSrc = pixelGris;
                 if(fotoInput.files && fotoInput.files[0]) {
                     fotoSrc = URL.createObjectURL(fotoInput.files[0]);
                 }
@@ -343,9 +343,9 @@
             const poster = document.getElementById('poster-section');
             const options = {
                 scale: 3,
-                useCORS: true, 
+                useCORS: true,
                 allowTaint: true,
-                backgroundColor: '#f6f8f9', 
+                backgroundColor: '#f6f8f9',
                 width: poster.offsetWidth,
                 height: poster.offsetHeight,
                 onclone: (clonedDoc) => {
@@ -364,7 +364,7 @@
                 link.href = image;
                 link.download = 'equipo_congresional_alta_resolucion.png';
                 link.click();
-                
+
                 btn.innerHTML = textoOriginal;
                 btn.disabled = false;
             }).catch(err => {

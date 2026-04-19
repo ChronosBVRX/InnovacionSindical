@@ -6,13 +6,13 @@
   <title>Control Central - Validación</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  
+
   <style>
     :root {
-      --bg-body: #1b2e45; --panel-base: 46, 79, 119;
-      --primary: #4da1a8; --primary-light: #7ad1d6;
+      --bg-body: #004b33; --panel-base: 46, 79, 119;
+      --primary: #006341; --primary-light: #8fd9b6;
       --text-main: #f0fdfa; --text-muted: #bce9eb;
-      --ring: rgba(77, 161, 168, .35); --radius: 12px;
+      --ring: rgba(0, 99, 65, .35); --radius: 12px;
     }
     body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; padding: 20px; }
     .container { max-width: 800px; margin: 0 auto; }
@@ -70,7 +70,7 @@
               <h3 style="margin: 0; color: var(--primary-light);">${item.nombre_delegacion}</h3>
               <p style="margin: 8px 0; font-weight: 600; font-size: 18px;">${item.titulo_conflicto}</p>
               <p style="margin: 0 0 12px 0; font-size: 14px; color: var(--text-muted);">${item.descripcion}</p>
-              <span style="background: rgba(77,161,168,0.2); padding: 4px 8px; border-radius: 4px; font-size: 12px;">Categoría: ${item.categoria}</span>
+              <span style="background: rgba(0,99,65,0.2); padding: 4px 8px; border-radius: 4px; font-size: 12px;">Categoría: ${item.categoria}</span>
             </div>
           </div>
           <div style="margin-top: 20px; border-top: 1px solid var(--ring); padding-top: 16px; display: flex; align-items: center; justify-content: space-between;">
@@ -98,7 +98,7 @@
       if (error) {
         alert("Hubo un error al actualizar.");
       } else {
-        cargarPendientes(); 
+        cargarPendientes();
       }
     }
 

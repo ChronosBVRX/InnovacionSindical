@@ -8,20 +8,20 @@
   <link rel="icon" href="https://raw.githubusercontent.com/ChronosBVRX/PlataformaComunitaria/refs/heads/main/Logo%20PSC.jpeg">
   <style>
     :root {
-      --bg: #1b2e45;
+      --bg: #004b33;
       --panel: #2e4f77;
-      --ring: rgba(77, 161, 168, .45);
+      --ring: rgba(0, 99, 65, .45);
       --txt: #f0fdfa;
       --muted: #bce9eb;
-      --primary: #4da1a8;
-      --sky: #7ad1d6;
+      --primary: #006341;
+      --sky: #8fd9b6;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto; }
 
     body {
       min-height: 100vh;
-      background: linear-gradient(180deg, #152336, #1b2e45);
+      background: linear-gradient(180deg, #003423, #004b33);
       color: var(--txt);
       display: flex;
       flex-direction: column;
@@ -73,7 +73,7 @@
     nav { width: 240px; background: transparent; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
 
     nav button {
-      appearance: none; border: none; background: rgba(77, 161, 168, .12); color: var(--txt);
+      appearance: none; border: none; background: rgba(0, 99, 65, .12); color: var(--txt);
       padding: 10px 14px; border-radius: 10px; text-align: left; cursor: pointer; transition: .2s; font-size: 14px;
     }
 
@@ -82,7 +82,7 @@
     section.content { flex: 1; padding: 12px 20px 20px; display: none; min-width: 0; }
     section.content.active { display: block; animation: fade .4s ease; }
 
-    .card { background: var(--panel); border: 1px solid rgba(77, 161, 168, .35); border-radius: 16px; padding: 24px; box-shadow: 0 8px 25px rgba(0, 0, 0, .25); }
+    .card { background: var(--panel); border: 1px solid rgba(0, 99, 65, .35); border-radius: 16px; padding: 24px; box-shadow: 0 8px 25px rgba(0, 0, 0, .25); }
 
     @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -102,7 +102,7 @@
     form { display: grid; gap: 12px; max-width: 600px; margin-top: 16px; }
     label { font-size: 13px; color: #bce9eb; margin-bottom: -4px; }
     input, textarea, select {
-      background: #152336; border: 1px solid rgba(77, 161, 168, .4); color: #f0fdfa; padding: 10px 12px; border-radius: 10px; font-size: 14px;
+      background: #003423; border: 1px solid rgba(0, 99, 65, .4); color: #f0fdfa; padding: 10px 12px; border-radius: 10px; font-size: 14px;
     }
     textarea { min-height: 90px; resize: vertical; }
 
@@ -113,14 +113,14 @@
     .btn:hover { filter: brightness(1.12); }
 
     .subtle-btn {
-      appearance: none; border: 1px solid rgba(77, 161, 168, .28); background: rgba(77, 161, 168, .1);
+      appearance: none; border: 1px solid rgba(0, 99, 65, .28); background: rgba(0, 99, 65, .1);
       color: #fff; padding: 6px 10px; border-radius: 10px; cursor: pointer; font-size: 13px;
     }
-    .subtle-btn:hover { background: rgba(77, 161, 168, .25); }
+    .subtle-btn:hover { background: rgba(0, 99, 65, .25); }
 
     .pill {
       display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px;
-      background: rgba(77, 161, 168, .15); border: 1px solid rgba(77, 161, 168, .35); font-size: 12px; color: #d1f5f7;
+      background: rgba(0, 99, 65, .15); border: 1px solid rgba(0, 99, 65, .35); font-size: 12px; color: #d1f5f7;
     }
 
     .meta { font-size: 12px; color: #8ccacdb6; }
@@ -130,17 +130,17 @@
     .perfil-main { flex: 2; display: flex; flex-direction: column; gap: 16px; }
     .perfil-extra { flex: 1.3; display: flex; flex-direction: column; gap: 12px; }
 
-    .perfil-extra-card { background: #233b5c; border: 1px solid rgba(77, 161, 168, .35); border-radius: 12px; padding: 14px 16px; }
+    .perfil-extra-card { background: #233b5c; border: 1px solid rgba(0, 99, 65, .35); border-radius: 12px; padding: 14px 16px; }
     .perfil-extra-card h3 { margin: 0 0 8px; font-size: 15px; color: #d1f5f7; }
 
     #perfilQuoteText { font-size: 14px; color: var(--txt); line-height: 1.5; font-style: italic; }
     #perfilQuoteTag { display: block; margin-top: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--primary); }
 
     .btn-mini {
-      margin-top: 10px; font-size: 12px; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(77, 161, 168, .6);
+      margin-top: 10px; font-size: 12px; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(0, 99, 65, .6);
       background: rgba(21, 35, 54, 0.9); color: #f0fdfa; cursor: pointer;
     }
-    .btn-mini:hover { background: rgba(77, 161, 168, .25); }
+    .btn-mini:hover { background: rgba(0, 99, 65, .25); }
 
     #perfilValorList, #perfilAccionesList { margin-left: 18px; font-size: 14px; color: var(--muted); }
     #perfilValorList li+li, #perfilAccionesList li+li { margin-top: 6px; }
@@ -151,7 +151,7 @@
       background: rgba(120, 53, 15, .5); font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: #fed7aa; margin-bottom: 6px;
     }
 
-    .escalafon-promo { margin-top: 20px; padding: 16px; border: 1px dashed var(--sky); border-radius: 12px; background: rgba(122, 209, 214, 0.05); }
+    .escalafon-promo { margin-top: 20px; padding: 16px; border: 1px dashed var(--sky); border-radius: 12px; background: rgba(143, 217, 182, 0.05); }
     .blur-box { background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px; position: relative; overflow: hidden; margin-top: 10px; }
     .blur-text { filter: blur(5px); user-select: none; font-size: 14px; }
     .promo-overlay {
@@ -163,7 +163,7 @@
 
     @media (min-width: 980px) { .perfil-layout { flex-direction: row; align-items: flex-start; } }
     @media (max-width: 980px) {
-      nav { width: 100%; flex-direction: row; position: sticky; top: 60px; z-index: 9; overflow-x: auto; background: var(--bg); border-bottom: 1px solid rgba(77,161,168,.25); }
+      nav { width: 100%; flex-direction: row; position: sticky; top: 60px; z-index: 9; overflow-x: auto; background: var(--bg); border-bottom: 1px solid rgba(0,99,65,.25); }
       nav button { white-space: nowrap; }
       main { flex-direction: column; }
     }
@@ -291,7 +291,7 @@
       <div class="card">
         <h2>⚙️ Edita tu información</h2>
         <p class="muted">Actualiza tus datos para mantener a la red informada y conectada.</p>
-        
+
         <div class="row" style="margin-top:20px; margin-bottom: 10px;">
           <div class="avatar" id="avatarPreview" style="width: 80px; height: 80px; font-size: 24px;">🧑</div>
           <div>
@@ -305,12 +305,12 @@
           <label>Nombre completo</label><input id="fNombre" placeholder="Tu nombre completo">
           <label>Matrícula</label><input id="fMatricula" placeholder="Ej. 12345678" inputmode="numeric">
           <label>Teléfono</label><input id="fTelefono" placeholder="Ej. 5532120000">
-          
+
           <label style="display:flex;align-items:center;gap:8px; cursor: pointer;">
             <input type="checkbox" id="fTelefonoPublico" style="width: 16px; height: 16px;">
             <span>Mostrar mi número de teléfono a otros miembros</span>
           </label>
-          
+
           <label>Fecha de cumpleaños</label><input id="fCumple" type="date">
           <label>Categoría</label><input id="fCategoria" placeholder="Ej. Enfermera General A">
 
@@ -345,7 +345,7 @@
 
           <label>Biografía corta</label><textarea id="fBio" placeholder="Cuéntanos algo breve sobre ti"></textarea>
           <label>Servicios / habilidades que ofreces</label><textarea id="fServicios" placeholder="Ej. Asesoría jurídica, diseño gráfico, etc."></textarea>
-          
+
           <button class="btn" type="submit" style="justify-self: start;">💾 Guardar cambios</button>
           <div class="status meta" id="status"></div>
         </form>
@@ -473,7 +473,7 @@
         const { data: prof, error } = await supabaseClient.from('profiles')
           .select('display_name, avatar_url, categoria, adscripcion, bio, cumple, telefono, telefono_publico, servicios, matricula, role')
           .eq('user_id', CURRENT_USER.id).maybeSingle();
-        
+
         if (error) diag("Error leyendo tabla 'profiles'.", error);
 
         IS_ADMIN = (prof?.role === 'admin');
@@ -499,7 +499,7 @@
         $("pfServicios").textContent = serviciosRaw.trim() || "—";
 
         const avatar = prof?.avatar_url || md.avatar_url;
-        if (avatar) { $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`; $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`; } 
+        if (avatar) { $("userAvatar").innerHTML = `<img src="${avatar}" alt="avatar">`; $("avatarPreview").innerHTML = `<img src="${avatar}" alt="avatar">`; }
         else { const ini = (nombreDisplay || "?")[0].toUpperCase(); $("userAvatar").textContent = ini; $("avatarPreview").textContent = ini; }
 
         $("fNombre").value = nombreDisplay || "";
@@ -638,7 +638,7 @@
                 <button class="subtle-btn btn-edit-member" data-uid="${p.user_id}">✏️ Editar</button>
               </div>
 
-              <div class="edit-member-box" data-uid="${p.user_id}" style="display:none;margin-top:14px;border-top:1px solid rgba(77,161,168,.2);padding-top:14px;">
+              <div class="edit-member-box" data-uid="${p.user_id}" style="display:none;margin-top:14px;border-top:1px solid rgba(0,99,65,.2);padding-top:14px;">
                 <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
                   <label class="meta">Rol</label>
                   <select class="m-role">
@@ -777,7 +777,7 @@
     }
 
     function cambiarFrasePerfil() { mostrarFraseAleatoria(); }
-    
+
     async function initPerfilExtras() { aplicarValorPerfil(); await cargarFrasesPerfil(); }
   </script>
 </body>
