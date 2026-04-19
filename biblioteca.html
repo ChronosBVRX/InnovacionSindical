@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Biblioteca — Plataforma Comunitaria CG</title>
-  
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
@@ -12,12 +12,12 @@
   <style>
     :root {
       /* Paleta actualizada */
-      --bg: #1b2e45;
+      --bg: #004b33;
       --panel: #2e4f77;  /* Color solicitado */
       --txt: #f0fdfa;
       --muted: #bce9eb;
-      --primary: #4da1a8; /* Color solicitado */
-      --sky: #7ad1d6;
+      --primary: #006341; /* Color solicitado */
+      --sky: #8fd9b6;
     }
     * {
       box-sizing: border-box;
@@ -26,12 +26,12 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
     body {
-      background: transparent; 
+      background: transparent;
       color: var(--txt);
       min-height: 100vh;
       padding: 24px; /* Añadido padding similar al buzón */
     }
-    
+
     .hide { display: none !important; }
 
     /* --- ESTADO DE CARGA --- */
@@ -40,7 +40,7 @@
 
     /* --- MURO DE ACCESO (AUTH WALL) --- */
     .auth-wall { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; background: rgba(46, 79, 119, 0.2); border: 1px dashed var(--sky); border-radius: 16px; padding: 32px; }
-    .auth-wall i { font-size: 64px; color: var(--sky); margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(122,209,214,0.3)); }
+    .auth-wall i { font-size: 64px; color: var(--sky); margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(143,217,182,0.3)); }
     .auth-wall h2 { margin: 0 0 12px 0; font-size: 24px; color: var(--txt); }
     .auth-wall p { margin: 0 0 24px 0; color: var(--muted); max-width: 400px; line-height: 1.5; font-size: 15px;}
 
@@ -50,7 +50,7 @@
 
     .card {
       background: var(--panel);
-      border: 1px solid rgba(77, 161, 168, .35);
+      border: 1px solid rgba(0, 99, 65, .35);
       border-radius: 16px;
       padding: 16px;
       margin-bottom: 12px;
@@ -77,17 +77,17 @@
     }
 
     input, textarea, select {
-      background: #1b2e45;
+      background: #004b33;
       color: #f0fdfa;
       padding: 8px 10px;
       border-radius: 10px;
-      border: 1px solid rgba(77, 161, 168, .4);
+      border: 1px solid rgba(0, 99, 65, .4);
       font-size: 14px;
     }
     input:focus, textarea:focus, select:focus {
       outline: none;
       border-color: var(--sky);
-      box-shadow: 0 0 0 3px rgba(77, 161, 168, 0.2);
+      box-shadow: 0 0 0 3px rgba(0, 99, 65, 0.2);
     }
     textarea {
       resize: vertical;
@@ -116,8 +116,8 @@
     }
 
     .subtle-btn {
-      background: rgba(77, 161, 168, .1);
-      border: 1px solid rgba(77, 161, 168, .28);
+      background: rgba(0, 99, 65, .1);
+      border: 1px solid rgba(0, 99, 65, .28);
       padding: 6px 10px;
       border-radius: 10px;
       cursor: pointer;
@@ -125,7 +125,7 @@
       font-size: 13px;
     }
     .subtle-btn:hover {
-      background: rgba(77, 161, 168, .25);
+      background: rgba(0, 99, 65, .25);
     }
 
     /* GRID DE LA LISTA */
@@ -138,12 +138,12 @@
 
     .lib-section-header {
       grid-column: 1 / -1;
-      border-top: 1px solid rgba(77, 161, 168, .28);
+      border-top: 1px solid rgba(0, 99, 65, .28);
       margin-top: 6px;
       padding-top: 8px;
       text-transform: uppercase;
       font-size: 12px;
-      color: #7ad1d6;
+      color: #8fd9b6;
       display: flex;
       gap: 6px;
       align-items: center;
@@ -152,10 +152,10 @@
 
     /* TARJETAS DE RECURSO */
     .resource-card {
-      background: radial-gradient(circle at top left, rgba(77, 161, 168, .15), transparent 55%), #233b5c;
+      background: radial-gradient(circle at top left, rgba(0, 99, 65, .15), transparent 55%), #233b5c;
       padding: 12px;
       border-radius: 14px;
-      border: 1px solid rgba(77, 161, 168, .3);
+      border: 1px solid rgba(0, 99, 65, .3);
       cursor: pointer;
       transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
       box-shadow: 0 10px 25px rgba(0, 0, 0, .2);
@@ -163,7 +163,7 @@
     .resource-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 14px 30px rgba(0, 0, 0, .35);
-      border-color: rgba(77, 161, 168, .65);
+      border-color: rgba(0, 99, 65, .65);
     }
 
     .resource-header {
@@ -197,8 +197,8 @@
 
     .pill {
       padding: 4px 8px;
-      background: rgba(77, 161, 168, .15);
-      border: 1px solid rgba(77, 161, 168, .35);
+      background: rgba(0, 99, 65, .15);
+      border: 1px solid rgba(0, 99, 65, .35);
       border-radius: 999px;
       font-size: 11px;
       color: #d1f5f7;
@@ -229,7 +229,7 @@
       border-radius: 16px; /* Ajustado al buzón */
       width: 100%;
       max-width: 640px;
-      border: 1px solid rgba(77, 161, 168, .5);
+      border: 1px solid rgba(0, 99, 65, .5);
       padding: 24px; /* Un poco más despacio interior */
       max-height: 90vh;
       display: flex;
@@ -387,7 +387,7 @@
     /* ========== CONFIG SUPABASE ========== */
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    
+
     // Objeto Supabase global
     let supabaseApp = null;
     let CURRENT_USER = null;
@@ -403,26 +403,26 @@
     async function initApp() {
       try {
         // Soporte para iframe o standalone (Igual que en buzón)
-        if (window.parent && window.parent.supabaseClient) { 
-          supabaseApp = window.parent.supabaseClient; 
-        } 
-        else if (window.supabase) { 
-          supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); 
-        } 
+        if (window.parent && window.parent.supabaseClient) {
+          supabaseApp = window.parent.supabaseClient;
+        }
+        else if (window.supabase) {
+          supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
         else { throw new Error("Conexión no disponible."); }
 
         // Validar sesión activa
         const { data: { session }, error: sessionError } = await supabaseApp.auth.getSession();
-        
+
         // Ocultar spinner
         $("loading-state").classList.add("hide");
 
         if (sessionError) throw sessionError;
 
         // SI NO ESTÁ LOGUEADO -> Muestra el muro
-        if (!session) { 
-          $("auth-wall").classList.remove("hide"); 
-          return; 
+        if (!session) {
+          $("auth-wall").classList.remove("hide");
+          return;
         }
 
         // SI ESTÁ LOGUEADO -> Muestra contenido
@@ -673,7 +673,7 @@
 
       if (stats) stats.innerHTML = '<span style="color:#4ade80">✅ Recurso eliminado.</span>';
       if (fromModal) closeResourceModal();
-      
+
       LIBRARY_CACHE = LIBRARY_CACHE.filter(r => r.id !== item.id);
       renderLibrary();
     }
@@ -724,7 +724,7 @@
       // FORMATEADOR DE LINKS PARA DESCRIPCIÓN (Igual que Buzón)
       let contenidoSeguro = escapeHtml(item.description || "Sin descripción disponible.");
       contenidoSeguro = contenidoSeguro.replace(
-          /(https?:\/\/[^\s]+)/g, 
+          /(https?:\/\/[^\s]+)/g,
           '<div style="margin-top:10px;"><a href="$1" target="_blank" style="color:var(--sky);">Ver enlace extra</a></div>'
       );
       descEl.innerHTML = contenidoSeguro;

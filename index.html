@@ -12,7 +12,7 @@
   <meta property="og:image" content="https://raw.githubusercontent.com/ChronosBVRX/PlataformaComunitaria/main/Logo%20PSC.jpeg" />
 
   <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#1b2e45">
+  <meta name="theme-color" content="#006341">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="PSD">
@@ -49,16 +49,16 @@
 
   <style>
     :root {
-      --bg-body: #1b2e45;
-      --bg-body-end: #152336;
-      --panel-base: 46, 79, 119;
-      --primary: #4da1a8;
-      --primary-light: #7ad1d6;
-      --success: #4ade80;
+      --bg-body: #004b33;
+      --bg-body-end: #003423;
+      --panel-base: 0, 99, 65;
+      --primary: #006341;
+      --primary-light: #8fd9b6;
+      --success: #50c878;
       --danger: #ff7b7b;
-      --text-main: #f0fdfa;
-      --text-muted: #bce9eb;
-      --ring: rgba(77, 161, 168, .35);
+      --text-main: #edf7f1;
+      --text-muted: #c7dfd2;
+      --ring: rgba(0, 168, 107, .28);
       --topbar: 64px;
       --radius: 16px;
       --glass-bg: rgba(var(--panel-base), 0.35);
@@ -122,7 +122,7 @@
       width: 36px;
       height: 36px;
       border-radius: 8px;
-      background: rgba(77, 161, 168, .15);
+      background: rgba(0, 168, 107, .16);
       border: 1px solid var(--ring);
       overflow: hidden;
       display: grid;
@@ -171,7 +171,7 @@
     }
 
     .btn-ai-topbar {
-      background: rgba(77, 161, 168, 0.15);
+      background: rgba(0, 99, 65, 0.15);
       color: var(--primary-light);
       border: 1px solid var(--primary-light);
       padding: 8px 12px;
@@ -188,7 +188,7 @@
     .btn-ai-topbar:hover {
       background: var(--primary-light);
       color: var(--bg-body);
-      box-shadow: 0 0 10px rgba(122, 209, 214, 0.4);
+      box-shadow: 0 0 12px rgba(0, 168, 107, 0.35);
     }
 
     .btn-auth {
@@ -294,13 +294,13 @@
 
     .icon-illuminated {
       color: var(--primary-light) !important;
-      filter: drop-shadow(0 0 8px rgba(122, 209, 214, 0.6));
+      filter: drop-shadow(0 0 8px rgba(143, 217, 182, 0.6));
     }
 
     @keyframes pulseGlow {
-      0% { box-shadow: 0 0 0 0 rgba(122, 209, 214, 0.7), 0 0 0 2px var(--bg-body); }
-      70% { box-shadow: 0 0 0 6px rgba(122, 209, 214, 0), 0 0 0 2px var(--bg-body); }
-      100% { box-shadow: 0 0 0 0 rgba(122, 209, 214, 0), 0 0 0 2px var(--bg-body); }
+      0% { box-shadow: 0 0 0 0 rgba(143, 217, 182, 0.7), 0 0 0 2px var(--bg-body); }
+      70% { box-shadow: 0 0 0 6px rgba(143, 217, 182, 0), 0 0 0 2px var(--bg-body); }
+      100% { box-shadow: 0 0 0 0 rgba(143, 217, 182, 0), 0 0 0 2px var(--bg-body); }
     }
 
     .layer {
@@ -349,7 +349,7 @@
     }
 
     .badge {
-      background: rgba(77, 161, 168, .15);
+      background: rgba(0, 168, 107, .16);
       border: 1px solid var(--ring);
       color: var(--primary-light);
       padding: 6px 14px;
@@ -393,9 +393,9 @@
     }
 
     .tile.featured {
-      background: linear-gradient(145deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.45));
+      background: linear-gradient(145deg, rgba(0, 99, 65, 0.2), rgba(var(--panel-base), 0.45));
       border: 1px solid var(--primary-light);
-      box-shadow: 0 0 15px rgba(77, 161, 168, 0.15);
+      box-shadow: 0 0 15px rgba(0, 99, 65, 0.15);
     }
 
     .tile-icon-integrated {
@@ -403,7 +403,7 @@
       color: var(--primary-light);
       margin-bottom: 16px;
       transition: all 0.3s ease;
-      filter: drop-shadow(0 4px 6px rgba(77, 161, 168, 0.4));
+      filter: drop-shadow(0 4px 6px rgba(0, 99, 65, 0.4));
     }
 
     .tile h3 { margin: 0 0 8px 0; font-size: 18px; }
@@ -421,9 +421,9 @@
       font-size: 11px;
       font-weight: 700;
       color: var(--primary-light);
-      background: rgba(77, 161, 168, .14);
+      background: rgba(0, 99, 65, .14);
       border: 1px solid var(--ring);
-      box-shadow: 0 0 8px rgba(122, 209, 214, 0.2);
+      box-shadow: 0 0 8px rgba(143, 217, 182, 0.2);
     }
 
     .download-strip {
@@ -491,7 +491,7 @@
       backdrop-filter: blur(8px);
       padding: 8px 12px;
       border-radius: 40px;
-      border: 1px solid rgba(122, 209, 214, 0.2);
+      border: 1px solid rgba(143, 217, 182, 0.25);
       box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
 
@@ -548,7 +548,7 @@
       display: grid;
       place-items: center;
       z-index: 100;
-      background: radial-gradient(circle at center, #1b2e45 0%, #0a141d 100%);
+      background: radial-gradient(circle at center, #004b33 0%, #0a141d 100%);
       transition: opacity 0.6s ease;
       padding: 20px;
       text-align: center;
@@ -560,7 +560,7 @@
       border-radius: 22px;
       border: 1px solid var(--ring);
       overflow: hidden;
-      box-shadow: 0 0 30px rgba(77,161,168,0.3);
+      box-shadow: 0 0 30px rgba(0,168,107,0.28);
       margin: 0 auto 20px;
     }
 
@@ -712,7 +712,7 @@
       backdrop-filter: blur(16px);
       border: 1px solid var(--primary-light);
       border-radius: 16px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 20px rgba(77, 161, 168, 0.2);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 20px rgba(0, 168, 107, 0.18);
       overflow: hidden;
       transition: all 0.3s ease;
       transform: translateY(20px) scale(0.95);
@@ -767,9 +767,9 @@
     }
 
     @keyframes aiPulse {
-      0% { box-shadow: 0 0 0 0 rgba(122, 209, 214, 0.6); }
-      70% { box-shadow: 0 0 0 12px rgba(122, 209, 214, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(122, 209, 214, 0); }
+      0% { box-shadow: 0 0 0 0 rgba(0, 168, 107, 0.55); }
+      70% { box-shadow: 0 0 0 12px rgba(0, 168, 107, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 168, 107, 0); }
     }
 
     .chatbot-bubble {
@@ -1051,6 +1051,10 @@
       'https://tuperfil.imss.gob.mx',
       'https://www.facebook.com'
     ]);
+    const shouldOpenOutsideIframe = (app) => {
+      if (!app) return false;
+      return app.id === 'perfil-imss' || app.id === 'tarjeton';
+    };
 
     const APPS = [
       { id: 'buzon', title: 'Buzón de Atención', desc: 'Trámites y respuestas.', iconClass: 'ph-duotone ph-envelope-open', iframe: 'buzon.html', featured: true, hideFromMenu: true },
@@ -1197,7 +1201,7 @@
 
           tile.onclick = () => {
             const url = a.href || a.iframe;
-            if (a.newTab || (url && url.includes('imss.gob.mx'))) {
+            if (shouldOpenOutsideIframe(a)) {
               this.openSafeExternal(url);
             } else {
               this.openApp(a.id);
@@ -1239,7 +1243,13 @@
         title.textContent = app.title;
         desc.textContent = app.desc;
         iconWrap.innerHTML = `<i class="${app.iconClass}"></i>`;
-        iframe.src = app.iframe || app.href || 'about:blank';
+        const target = app.iframe || app.href || 'about:blank';
+        if (shouldOpenOutsideIframe(app)) {
+          this.openSafeExternal(target);
+          this.goHome();
+          return;
+        }
+        iframe.src = target;
       },
 
       goHome() {
