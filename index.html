@@ -1,13 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover" />
 
-  <title>Plataforma Sindical Digital (PSD)</title>
-  <meta name="description" content="Plataforma Sindical Digital (PSD) - Panel de Control y Gestión Sindical." />
-  <meta property="og:title" content="Plataforma Sindical Digital (PSD)" />
-  <meta property="og:description" content="Panel de Control y Gestión Sindical para la base trabajadora." />
+  <title>Plataforma de Servicios Digitales (PSD)</title>
+  <meta name="description" content="Plataforma de Servicios Digitales (PSD) - Panel de Control y Gestión de Servicios." />
+  <meta property="og:title" content="Plataforma de Servicios Digitales (PSD)" />
+  <meta property="og:description" content="Panel de Control y Gestión de Servicios para la base trabajadora." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" />
 
@@ -80,7 +81,6 @@
 
     .topbar-right { display: flex; align-items: center; gap: 16px; }
     
-    /* Botón Asistente Topbar */
     .btn-ai-topbar { 
       background: rgba(77, 161, 168, 0.15); 
       color: var(--primary-light); 
@@ -141,17 +141,6 @@
     .text-gradient { background: linear-gradient(to right, var(--primary-light), var(--text-main)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .badge { background: rgba(77, 161, 168, .15); border: 1px solid var(--ring); color: var(--primary-light); padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
 
-    .campaign-banner { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(77, 161, 168, 0.2), rgba(var(--panel-base), 0.6)); border: 1px solid var(--primary-light); border-radius: var(--radius); padding: 24px 32px; margin-bottom: 32px; cursor: pointer; box-shadow: 0 8px 24px rgba(77, 161, 168, 0.15); transition: all 0.3s ease; position: relative; overflow: hidden; }
-    .campaign-banner:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(77, 161, 168, 0.3); background: linear-gradient(135deg, rgba(77, 161, 168, 0.3), rgba(var(--panel-base), 0.8)); }
-    .campaign-banner::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(122, 209, 214, 0.1) 0%, transparent 60%); pointer-events: none; }
-    .campaign-content { display: flex; align-items: center; gap: 24px; z-index: 1; }
-    .campaign-icon { font-size: 52px; color: var(--primary-light); filter: drop-shadow(0 4px 8px rgba(77, 161, 168, 0.4)); animation: float 3s ease-in-out infinite; }
-    .campaign-text h2 { margin: 0 0 6px 0; font-size: 24px; color: var(--text-main); font-weight: 700; }
-    .campaign-text p { margin: 0; color: var(--text-muted); font-size: 15px; }
-    .campaign-btn { background: var(--primary); color: var(--bg-body); border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; z-index: 1; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(77, 161, 168, 0.3); }
-    .campaign-banner:hover .campaign-btn { background: var(--primary-light); transform: scale(1.05); }
-
-    @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0px); } }
     @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
 
     .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding-bottom: 20px; }
@@ -234,9 +223,6 @@
       .clock-container { padding: 4px 8px; font-size: 11px; }
       .secure-badge span { display: none; }
       .tech-grid { grid-template-columns: 1fr; }
-      .campaign-banner { flex-direction: column; text-align: center; padding: 20px; gap: 16px; }
-      .campaign-content { flex-direction: column; gap: 12px; }
-      .campaign-icon { font-size: 42px; }
       .psd-footer { flex-direction: column; text-align: center; gap: 12px; padding-bottom: 30px;}
       .footer-links { justify-content: center; flex-wrap: wrap; gap: 12px; }
       .download-strip { flex-direction: column; text-align: center; gap: 16px; }
@@ -280,7 +266,7 @@
     .forgot-link:hover { color: var(--text-main); }
 
     /* =========================================
-       WIDGET FLOTANTE TRASCENDENCIA (NUEVO)
+       WIDGET FLOTANTE TRASCENDENCIA
     ========================================= */
     .chatbot-widget {
       position: fixed;
@@ -366,7 +352,6 @@
       background: var(--bg-body);
     }
 
-    /* Animación de latido para la IA */
     @keyframes aiPulse {
       0% { box-shadow: 0 0 0 0 rgba(122, 209, 214, 0.6); }
       70% { box-shadow: 0 0 0 12px rgba(122, 209, 214, 0); }
@@ -427,9 +412,9 @@
   <div id="boot" class="boot" onclick="PSD.skipBoot()">
     <div>
       <div class="logo-boot">
-        <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo SNTSS" />
+        <img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo" />
       </div>
-      <h1 style="font-size: 18px; letter-spacing: 2px; margin:0;">PLATAFORMA SINDICAL</h1>
+      <h1 style="font-size: 18px; letter-spacing: 2px; margin:0;">PLATAFORMA DE SERVICIOS</h1>
       <div class="bar"><span></span></div>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(77, 161, 168, 0.2);">
         <i class="ph-fill ph-shield-check" style="color: var(--success); font-size: 18px; filter: drop-shadow(0 0 5px rgba(74, 222, 128, 0.5));"></i>
@@ -441,11 +426,11 @@
   <div class="topbar">
     <div class="title">
       <div class="mark"><img src="https://raw.githubusercontent.com/ChronosBVRX/InnovacionSindical/main/Logo%20SNTSS.jpeg" alt="Logo" /></div>
-      <div class="title-text"><span class="hide-mobile">Plataforma</span> Sindical <span>Digital</span></div>
+      <div class="title-text"><span class="hide-mobile">Plataforma de</span> Servicios <span>Digitales</span></div>
     </div>
     
     <div class="topbar-right">
-      <button class="btn-ai-topbar" onclick="openChatbotFromTopbar()" title="Tus dudas del contrato consúltalas aquí">
+      <button class="btn-ai-topbar" onclick="openChatbotFromTopbar()" title="Tus dudas consúltalas aquí">
         <i class="ph-fill ph-sparkle"></i> <span class="hide-mobile">Asistente Inteligente</span>
       </button>
 
@@ -464,7 +449,7 @@
           <span id="calendar-badge" class="indicator-dot hide"></span>
         </div>
 
-        <div class="notification-icon" onclick="PSDAuth.markNotificationsAsRead(); PSD.openApp('buzon');" title="Buzón Sindical">
+        <div class="notification-icon" onclick="PSDAuth.markNotificationsAsRead(); PSD.openApp('buzon');" title="Buzón de Atención">
           <i class="ph-duotone ph-envelope-simple"></i>
           <span id="notif-badge" class="notification-badge hide">0</span>
         </div>
@@ -513,20 +498,9 @@
       <section class="brand">
         <div>
           <h1>Bienvenido, <span class="text-gradient">Compañero</span></h1>
-          <p>Panel de Control y Gestión Sindical.</p>
+          <p>Panel de Control y Gestión de Servicios.</p>
         </div>
         <div class="badge"><i class="ph-bold ph-identification-badge"></i> SNTSS Secc. XX</div>
-      </section>
-
-      <section class="campaign-banner" onclick="PSD.openSafeExternal('campaña-carlos-guerrero.html')">
-        <div class="campaign-content">
-          <i class="ph-duotone ph-presentation-chart campaign-icon"></i>
-          <div class="campaign-text">
-            <h2>Planilla Azul</h2>
-            <p>Conoce nuestro proyecto y súmate al cambio.</p>
-          </div>
-        </div>
-        <button class="campaign-btn">Ver Propuestas <i class="ph-bold ph-arrow-right"></i></button>
       </section>
 
       <section class="tiles" id="tiles"></section>
@@ -536,7 +510,7 @@
           <i class="ph-duotone ph-device-mobile ds-icon"></i>
           <div class="ds-text">
             <h3>Instala la App Oficial</h3>
-            <p id="pwa-instrucciones">Agrega la Plataforma Sindical Digital a tu dispositivo para un acceso más rápido y sin ocupar espacio.</p>
+            <p id="pwa-instrucciones">Agrega la Plataforma de Servicios Digitales a tu dispositivo para un acceso más rápido y sin ocupar espacio.</p>
           </div>
         </div>
         <button id="btn-instalar-android" class="ds-btn hide">
@@ -652,10 +626,7 @@
       const widgetContainer = document.getElementById('chatbot-widget-container');
       const chatWindow = document.getElementById('chatbot-window');
       
-      // Vuelve a mostrar el contenedor principal si estaba oculto
       widgetContainer.style.display = 'flex';
-      
-      // Despliega la ventana de chat inmediatamente
       chatWindow.classList.add('active');
     }
 
@@ -671,16 +642,15 @@
     ]);
 
     const APPS = [
-      { id: 'buzon', title: 'Buzón Sindical', desc: 'Trámites y Respuestas.', iconClass: 'ph-duotone ph-envelope-open', iframe: 'buzon.html', featured: true, hideFromMenu: true },
-      { id: 'auditoria', title: 'Auditoría Sindical', desc: 'Monitor de desempeño.', iconClass: 'ph-duotone ph-chart-line-up', iframe: 'auditoria.html', featured: true, adminOnly: true },
-      { id: 'escalafon', title: 'Consulta tu lugar', desc: 'Bolsa de trabajo y Escalafon', iconClass: 'ph-duotone ph-list-numbers', iframe: 'consultalugar.html', featured: true },
+      { id: 'buzon', title: 'Buzón de Atención', desc: 'Trámites y Respuestas.', iconClass: 'ph-duotone ph-envelope-open', iframe: 'buzon.html', featured: true, hideFromMenu: true },
+      { id: 'auditoria', title: 'Auditoría', desc: 'Monitor de desempeño.', iconClass: 'ph-duotone ph-chart-line-up', iframe: 'auditoria.html', featured: true, adminOnly: true },
+      { id: 'escalafon', title: 'Consulta tu lugar', desc: 'Bolsa de trabajo y Escalafón', iconClass: 'ph-duotone ph-list-numbers', iframe: 'consultalugar.html', featured: true },
       { id: 'denuncias', title: 'Gestor de Escritos', desc: 'IA.', iconClass: 'ph-duotone ph-pen-nib', href: 'https://chronosbvrx.github.io/InnovacionSindical/denuncias', ia: true },
       { id: 'noticias', title: 'Noticias', desc: 'Comunicados.', iconClass: 'ph-duotone ph-broadcast', iframe: 'noticias.html' },
       { id: 'biblioteca', title: 'Biblioteca', desc: 'Recursos digitales.', iconClass: 'ph-duotone ph-books', iframe: 'biblioteca.html' },
-      { id: 'calendario', title: 'Calendario', desc: 'Eventos Oficiales sindicales.', iconClass: 'ph-duotone ph-calendar-blank', iframe: 'calendario.html', hideFromMenu: true },
-      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Acceso a representantes sindicales.', iconClass: 'ph-duotone ph-scales', iframe: 'nucleo.html', featured: true, restrictedNucleo: true },
-      { id: 'comite', title: 'Comité Seccional', desc: 'Planilla Azul.', iconClass: 'ph-duotone ph-users-three', iframe: 'comite.html' },
-      { id: 'kiosko', title: 'Escaner Digital', desc: 'Recepción.', iconClass: 'ph-duotone ph-scan-smiley', href: 'kiosko.html', featured: true, newTab: true },
+      { id: 'calendario', title: 'Calendario', desc: 'Eventos Oficiales.', iconClass: 'ph-duotone ph-calendar-blank', iframe: 'calendario.html', hideFromMenu: true },
+      { id: 'nucleo', title: 'Núcleo de Defensa', desc: 'Acceso a representantes.', iconClass: 'ph-duotone ph-scales', iframe: 'nucleo.html', featured: true, restrictedNucleo: true },
+      { id: 'kiosko', title: 'Escáner Digital', desc: 'Recepción.', iconClass: 'ph-duotone ph-scan-smiley', href: 'kiosko.html', featured: true, newTab: true },
       { id: 'directorio', title: 'Directorio', desc: 'Contactos.', iconClass: 'ph-duotone ph-address-book', iframe: 'https://chronosbvrx.github.io/InnovacionSindical/directorio' },
       { id: 'prestaciones', title: 'Prestaciones', desc: 'Cálculo de diferentes prestaciones.', iconClass: 'ph-duotone ph-hand-coins', iframe: 'prestaciones.html' },
       { id: 'tramites', title: 'Catálogo de Trámites', desc: 'Requisitos y Procesos.', iconClass: 'ph-duotone ph-file-text', iframe: 'requisitos_tramites.html', featured: true },
