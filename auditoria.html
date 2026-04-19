@@ -8,21 +8,21 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
-  
+
   <style>
     :root {
       --bg-body: transparent;
       --panel-base: 46, 79, 119;
-      --primary: #4da1a8; 
-      --primary-light: #7ad1d6;
+      --primary: #006341;
+      --primary-light: #8fd9b6;
       --success: #4ade80;
       --warning: #fbbf24;
       --danger: #ff7b7b;
-      --text-main: #f0fdfa; 
+      --text-main: #f0fdfa;
       --text-muted: #bce9eb;
-      --ring: rgba(77, 161, 168, .35);
+      --ring: rgba(0, 99, 65, .35);
     }
-    
+
     body { margin: 0; padding: 24px; background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; box-sizing: border-box; }
     * { box-sizing: border-box; }
 
@@ -42,10 +42,10 @@
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
     .stat-card { background: rgba(var(--panel-base), 0.4); border: 1px solid var(--ring); border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
     .stat-card .icon { font-size: 42px; padding: 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
-    .stat-card.total .icon { color: var(--primary-light); background: rgba(77, 161, 168, 0.15); }
+    .stat-card.total .icon { color: var(--primary-light); background: rgba(0, 99, 65, 0.15); }
     .stat-card.pending .icon { color: var(--danger); background: rgba(255, 123, 123, 0.15); }
     .stat-card.resolved .icon { color: var(--success); background: rgba(74, 222, 128, 0.15); }
-    
+
     .stat-info h3 { margin: 0 0 4px 0; font-size: 32px; font-weight: 800; color: var(--text-main); line-height: 1; }
     .stat-info p { margin: 0; font-size: 13px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
 
@@ -53,10 +53,10 @@
     .cartera-list { display: flex; flex-direction: column; gap: 12px; }
     .cartera-item { background: rgba(21, 35, 54, 0.6); border: 1px solid var(--ring); border-radius: 12px; padding: 20px; transition: all 0.2s; position: relative; overflow: hidden; }
     .cartera-item:hover { background: rgba(var(--panel-base), 0.5); border-color: var(--primary-light); transform: translateX(4px); }
-    
+
     .cartera-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;}
     .cartera-title { margin: 0; font-size: 16px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;}
-    
+
     .cartera-badges { display: flex; gap: 8px; }
     .c-badge { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
     .c-badge.total { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); }
@@ -122,7 +122,7 @@
     <h3 style="margin: 0 0 16px 0; font-size: 18px; color: var(--primary-light); display: flex; align-items: center; gap: 8px;">
       <i class="ph-duotone ph-users-three"></i> Desglose por Cartera Comunitaria
     </h3>
-    
+
     <div class="cartera-list" id="lista-carteras">
       </div>
   </div>
@@ -131,16 +131,16 @@
   <script>
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    
+
     let supabaseApp = null;
 
     async function init() {
       try {
-        if (window.parent && window.parent.supabaseClient) { supabaseApp = window.parent.supabaseClient; } 
-        else if (window.supabase) { supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } 
-        
+        if (window.parent && window.parent.supabaseClient) { supabaseApp = window.parent.supabaseClient; }
+        else if (window.supabase) { supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
+
         const { data: { session }, error } = await supabaseApp.auth.getSession();
-        
+
         if (error || !session) {
           mostrarBloqueo();
           return;
@@ -149,10 +149,10 @@
         // VERIFICACIÓN DE SEGURIDAD ESTRICTA
         const email = session.user.email;
         const correosAutorizados = ['s.general@seccionxx.mx', 's.interior@seccionxx.mx', 'c.vigilancia@seccionxx.mx'];
-        
+
         // Revisamos si es un correo autorizado o si es el super admin (cuenta sin dominio seccionxx)
         const { data: prof } = await supabaseApp.from('profiles').select('role').eq('user_id', session.user.id).maybeSingle();
-        
+
         const isSuperAdmin = prof && prof.role === 'admin' && !email.includes('@seccionxx.mx');
         const isAuthorizedEmail = correosAutorizados.includes(email);
 
@@ -193,13 +193,13 @@
         data.forEach(item => {
           totalGlobal++;
           const area = item.area_destino || 'Área Desconocida';
-          
+
           if(!mapCarteras[area]) {
             mapCarteras[area] = { total: 0, enviado: 0, proceso: 0, atendido: 0 };
           }
-          
+
           mapCarteras[area].total++;
-          
+
           if(item.estatus === 'Atendido') {
             mapCarteras[area].atendido++;
             atendidosGlobal++;
@@ -237,7 +237,7 @@
         arrayCarteras.forEach(c => {
           const s = c.stats;
           const rezago = s.enviado + s.proceso;
-          
+
           // Porcentajes para la barra
           const pctAtendido = s.total > 0 ? (s.atendido / s.total) * 100 : 0;
           const pctProceso = s.total > 0 ? (s.proceso / s.total) * 100 : 0;
@@ -250,7 +250,7 @@
             <div class="cartera-item">
               <div class="cartera-header">
                 <h4 class="cartera-title">
-                  <i class="ph-fill ph-briefcase" style="color: ${iconColor};"></i> 
+                  <i class="ph-fill ph-briefcase" style="color: ${iconColor};"></i>
                   ${c.nombre}
                 </h4>
                 <div class="cartera-badges">
@@ -260,7 +260,7 @@
                   ${s.enviado > 0 ? `<span class="c-badge warn"><i class="ph-bold ph-warning"></i> ${s.enviado} Sin Leer</span>` : ''}
                 </div>
               </div>
-              
+
               <div style="display:flex; justify-content:space-between; font-size: 11px; color: var(--text-muted); font-weight:600; text-transform:uppercase;">
                 <span>Eficiencia de Respuesta: ${pctAtendido.toFixed(1)}%</span>
                 ${rezago > 0 ? `<span style="color: var(--danger);"><i class="ph-bold ph-trend-down"></i> ${rezago} en Rezago</span>` : '<span style="color: var(--success);"><i class="ph-bold ph-trend-up"></i> Al corriente</span>'}

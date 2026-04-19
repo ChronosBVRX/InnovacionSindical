@@ -8,21 +8,21 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
-  
+
   <style>
     :root {
       --bg-body: transparent;
       --panel-base: 46, 79, 119;
-      --primary: #4da1a8; 
-      --primary-light: #7ad1d6;
+      --primary: #006341;
+      --primary-light: #8fd9b6;
       --success: #4ade80;
       --warning: #fbbf24;
       --danger: #ff7b7b;
-      --text-main: #f0fdfa; 
+      --text-main: #f0fdfa;
       --text-muted: #bce9eb;
-      --ring: rgba(77, 161, 168, .35);
+      --ring: rgba(0, 99, 65, .35);
     }
-    
+
     body { margin: 0; padding: 24px; background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; box-sizing: border-box; }
     * { box-sizing: border-box; }
 
@@ -41,14 +41,14 @@
     .loading-state i { font-size: 48px; margin-bottom: 16px; }
 
     .auth-wall { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; background: rgba(var(--panel-base), 0.2); border: 1px dashed var(--primary-light); border-radius: 16px; padding: 32px; }
-    .auth-wall i { font-size: 64px; color: var(--primary-light); margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(122,209,214,0.3)); }
+    .auth-wall i { font-size: 64px; color: var(--primary-light); margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(143,217,182,0.3)); }
     .auth-wall h2 { margin: 0 0 12px 0; font-size: 24px; }
     .auth-wall p { margin: 0 0 24px 0; color: var(--text-muted); max-width: 400px; line-height: 1.5; }
 
     .btn { background: var(--primary); color: #0a141d; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: all 0.2s; text-decoration: none;}
-    .btn:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(77, 161, 168, 0.3); }
+    .btn:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 99, 65, 0.3); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
-    
+
     .btn.success { background: linear-gradient(135deg, #22c55e, #16a34a); color: white;}
     .btn.success:hover { box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); }
 
@@ -56,12 +56,12 @@
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
     .form-control { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--ring); background: rgba(21, 35, 54, 0.8); color: var(--text-main); font-family: 'Inter', sans-serif; }
-    .form-control:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(77, 161, 168, 0.2); }
+    .form-control:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(0, 99, 65, 0.2); }
     textarea.form-control { min-height: 120px; resize: vertical; }
     input[type="file"].form-control { padding: 9px 12px; background: rgba(0,0,0,0.2); cursor: pointer; }
 
     .badge { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-    .badge.enviado { background: rgba(77, 161, 168, 0.15); color: var(--primary-light); border: 1px solid var(--ring); }
+    .badge.enviado { background: rgba(0, 99, 65, 0.15); color: var(--primary-light); border: 1px solid var(--ring); }
     .badge.proceso { background: rgba(251, 191, 36, 0.15); color: var(--warning); border: 1px solid rgba(251, 191, 36, 0.3); }
     .badge.atendido { background: rgba(74, 222, 128, 0.15); color: var(--success); border: 1px solid rgba(74, 222, 128, 0.3); }
 
@@ -69,7 +69,7 @@
     .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--ring); padding-bottom: 10px; overflow-x: auto; }
     .tab-btn { background: transparent; color: var(--text-muted); border: none; padding: 10px 20px; cursor: pointer; font-weight: 600; font-size: 14px; border-radius: 8px; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
     .tab-btn i { font-size: 18px; }
-    .tab-btn.active { background: rgba(77, 161, 168, 0.2); color: var(--primary-light); border: 1px solid rgba(77, 161, 168, 0.4); }
+    .tab-btn.active { background: rgba(0, 99, 65, 0.2); color: var(--primary-light); border: 1px solid rgba(0, 99, 65, 0.4); }
     .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--text-main); }
 
     /* --- LISTA DE ESCRITOS --- */
@@ -84,7 +84,7 @@
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
     .modal-content { background: linear-gradient(180deg, rgba(46,79,119,.95), rgba(27,46,69,.95)); border: 1px solid var(--ring); border-radius: 16px; padding: 24px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: translateY(20px); transition: transform 0.3s ease; }
     .modal-overlay.active .modal-content { transform: translateY(0); }
-    
+
     .respuesta-box { background: rgba(74, 222, 128, 0.05); border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 12px; padding: 16px; margin-top: 16px; }
     .respuesta-box h4 { margin: 0 0 8px 0; color: var(--success); font-size: 14px; display: flex; align-items: center; gap: 6px;}
     .respuesta-box p { margin: 0; font-size: 14px; line-height: 1.5; white-space: pre-wrap; color: var(--text-main);}
@@ -119,7 +119,7 @@
 
     <div class="card" id="bandeja-section">
       <h3 id="bandeja-titulo"><i class="ph-duotone ph-tray"></i> Mi Bandeja</h3>
-      
+
       <div class="tabs" id="buzon-tabs">
         <button id="tab-1" class="tab-btn active" onclick="switchTab('tab1')"><i class="ph-bold ph-paper-plane-right"></i> Enviados</button>
         <button id="tab-2" class="tab-btn" onclick="switchTab('tab2')"><i class="ph-bold ph-download-simple"></i> Recibidos</button>
@@ -166,7 +166,7 @@
           <label>Escribir Respuesta Oficial (Opcional si adjuntas PDF)</label>
           <textarea id="m-respuesta-input" class="form-control" placeholder="Escribe aquí la respuesta que verá el persona usuaria..."></textarea>
         </div>
-        
+
         <div class="form-group">
           <label><i class="ph-bold ph-upload-simple"></i> Adjuntar PDF de Respuesta (Opcional)</label>
           <input type="file" id="m-respuesta-archivo" class="form-control" accept="application/pdf">
@@ -183,11 +183,11 @@
   <script>
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    
+
     let supabaseApp = null;
     let currentUser = null;
     let isAdmin = false;
-    let currentEscritos = []; 
+    let currentEscritos = [];
     let currentTab = 'tab1';
 
     // FUNCIÓN DE REDIRECCIÓN AL GENERADOR
@@ -201,8 +201,8 @@
 
     async function init() {
       try {
-        if (window.parent && window.parent.supabaseClient) { supabaseApp = window.parent.supabaseClient; } 
-        else if (window.supabase) { supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } 
+        if (window.parent && window.parent.supabaseClient) { supabaseApp = window.parent.supabaseClient; }
+        else if (window.supabase) { supabaseApp = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
         else { throw new Error("Conexión no disponible."); }
 
         const { data: { session }, error: sessionError } = await supabaseApp.auth.getSession();
@@ -210,16 +210,16 @@
 
         if (sessionError) throw sessionError;
         if (!session) { document.getElementById('auth-wall').classList.remove('hide'); return; }
-        
+
         currentUser = session.user;
         document.getElementById('main-content').classList.remove('hide');
 
         const { data: prof } = await supabaseApp.from('profiles').select('role, display_name').eq('user_id', currentUser.id).maybeSingle();
-        
+
         if (prof && prof.role === 'admin') {
           isAdmin = true;
           document.getElementById('bandeja-titulo').innerHTML = `<i class="ph-duotone ph-inbox"></i> Bandeja de Administración`;
-          
+
           // Cambiar el texto de las pestañas para los administradores
           document.getElementById('tab-1').innerHTML = `<i class="ph-bold ph-clock"></i> Pendientes`;
           document.getElementById('tab-2').innerHTML = `<i class="ph-bold ph-check-circle"></i> Atendidos`;
@@ -244,7 +244,7 @@
       document.getElementById('tab-1').classList.remove('active');
       document.getElementById('tab-2').classList.remove('active');
       document.getElementById(tabId).classList.add('active');
-      
+
       renderLista();
     }
 
@@ -306,7 +306,7 @@
 
         const displayAsunto = item.folio ? `[${item.folio}] ${item.asunto.replace(`[${item.folio}] `, '')}` : item.asunto;
 
-        let metaText = isAdmin 
+        let metaText = isAdmin
           ? `De: <strong>${item.profiles?.display_name || 'Compañero'}</strong> (Matrícula: ${item.profiles?.matricula || 'N/A'}) • Para: ${item.area_destino}`
           : `Destino: <strong>${item.area_destino}</strong>`;
 
@@ -333,10 +333,10 @@
 
       document.getElementById('m-badge').className = `badge ${badgeClass}`;
       document.getElementById('m-badge').textContent = item.estatus;
-      
+
       const displayAsunto = item.folio ? `[${item.folio}] ${item.asunto.replace(`[${item.folio}] `, '')}` : item.asunto;
       document.getElementById('m-asunto').textContent = displayAsunto;
-      
+
       let metaText = isAdmin ? `De: ${item.profiles?.display_name || 'Compañero'} • Fecha: ${new Date(item.fecha_envio).toLocaleString('es-MX')}` : `Enviado a: ${item.area_destino} • Fecha: ${new Date(item.fecha_envio).toLocaleString('es-MX')}`;
       document.getElementById('m-meta').textContent = metaText;
 
@@ -344,10 +344,10 @@
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;");
-          
+
       contenidoSeguro = contenidoSeguro.replace(/📄 Ver Documento:\s*/g, '');
       contenidoSeguro = contenidoSeguro.replace(
-          /(https?:\/\/[^\s]+)/g, 
+          /(https?:\/\/[^\s]+)/g,
           '<div style="margin-top:16px;"><a href="$1" target="_blank" class="btn" style="color: #0a141d;"><i class="ph-bold ph-file-pdf"></i> Abrir Documento Original</a></div>'
       );
       document.getElementById('m-contenido').innerHTML = contenidoSeguro;
@@ -355,7 +355,7 @@
       const userReplyView = document.getElementById('m-respuesta-view');
       const adminReplyForm = document.getElementById('admin-reply-form');
       document.getElementById('reply-status').innerHTML = '';
-      document.getElementById('m-respuesta-archivo').value = ''; 
+      document.getElementById('m-respuesta-archivo').value = '';
 
       if (isAdmin) {
         adminReplyForm.classList.remove('hide');
@@ -368,7 +368,7 @@
         if (item.respuesta || item.archivo_respuesta || item.estatus === 'Atendido') {
           userReplyView.classList.remove('hide');
           document.getElementById('m-respuesta-text').textContent = item.respuesta || 'Se ha emitido un dictamen en el documento adjunto o se ha marcado como resuelto.';
-          
+
           if (item.archivo_respuesta) {
             document.getElementById('m-respuesta-archivo-btn').innerHTML = `<a href="${item.archivo_respuesta}" target="_blank" class="btn success" style="margin-top: 10px;"><i class="ph-bold ph-file-pdf"></i> Descargar Resolución Oficial</a>`;
           } else {
@@ -401,7 +401,7 @@
       const respuestaText = document.getElementById('m-respuesta-input').value;
       const fileInput = document.getElementById('m-respuesta-archivo');
       const file = fileInput.files[0];
-      
+
       const btn = document.getElementById('btnSaveReply');
       const statusDiv = document.getElementById('reply-status');
 
@@ -414,19 +414,19 @@
         if (file) {
           statusDiv.innerHTML = '<span style="color: var(--primary-light)"><i class="ph-bold ph-spinner ph-spin"></i> Subiendo PDF adjunto...</span>';
           const fileName = `respuestas/${Date.now()}_${id}.pdf`;
-          
+
           const { error: uploadError } = await supabaseApp.storage.from('documentos').upload(fileName, file);
           if (uploadError) throw uploadError;
-          
+
           const { data: { publicUrl } } = supabaseApp.storage.from('documentos').getPublicUrl(fileName);
           archivoUrl = publicUrl;
         }
 
         const updateData = { estatus: estatus };
-        
+
         if (respuestaText.trim() !== '') updateData.respuesta = respuestaText;
         if (archivoUrl) updateData.archivo_respuesta = archivoUrl;
-        
+
         if (respuestaText.trim() !== '' || archivoUrl) {
           const oldItem = currentEscritos.find(x => x.id === id);
           if (!oldItem.fecha_respuesta) updateData.fecha_respuesta = new Date().toISOString();
@@ -437,7 +437,7 @@
         if (error) throw error;
 
         statusDiv.innerHTML = '<span style="color: var(--success)">✅ Guardado exitosamente.</span>';
-        
+
         await loadDatos(); // Recargar datos frescos
         setTimeout(() => cerrarModal(), 1500);
 

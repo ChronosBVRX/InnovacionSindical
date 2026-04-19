@@ -9,19 +9,19 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
-  
+
   <style>
     :root {
-      --bg-body: #1b2e45; 
+      --bg-body: #004b33;
       --panel-base: 46, 79, 119;
-      --primary: #4da1a8; 
-      --primary-light: #7ad1d6;
-      --text-main: #f0fdfa; 
+      --primary: #006341;
+      --primary-light: #8fd9b6;
+      --text-main: #f0fdfa;
       --text-muted: #bce9eb;
       --danger: #ff7b7b;
-      --ring: rgba(77, 161, 168, .35);
+      --ring: rgba(0, 99, 65, .35);
     }
-    
+
     html, body {
       height: 100%;
       margin: 0;
@@ -38,9 +38,9 @@
       flex-direction: column;
       box-sizing: border-box;
     }
-    
+
     .hide { display: none !important; }
-    
+
     .status-screen {
       display: flex;
       flex-direction: column;
@@ -55,7 +55,7 @@
     .status-screen p { color: var(--text-muted); font-size: 15px; max-width: 400px; line-height: 1.4; }
     .error-icon { color: var(--danger); filter: drop-shadow(0 0 10px rgba(255,123,123,0.3)); }
     .loading-icon { color: var(--primary-light); animation: spin 2s linear infinite; }
-    
+
     .dashboard-header {
       border-bottom: 1px solid var(--ring);
       padding-bottom: 20px;
@@ -66,7 +66,7 @@
     .unidad-badge {
       display: inline-block;
       margin-top: 12px;
-      background: rgba(77, 161, 168, 0.15);
+      background: rgba(0, 99, 65, 0.15);
       border: 1px solid var(--ring);
       padding: 6px 12px;
       border-radius: 8px;
@@ -81,38 +81,38 @@
       padding: 24px;
     }
 
-    input, select, textarea { 
-      width: 100%; 
-      padding: 12px; 
-      margin-top: 8px; 
-      margin-bottom: 16px; 
-      background: rgba(0,0,0,0.2); 
-      border: 1px solid var(--ring); 
-      color: white; 
-      border-radius: 8px; 
-      font-family: 'Inter', sans-serif; 
-      box-sizing: border-box; 
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--ring);
+      color: white;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      box-sizing: border-box;
     }
     input[type="file"] { padding: 8px; background: rgba(var(--primary), 0.1); }
-    .btn { 
-      background: linear-gradient(135deg, var(--primary), var(--primary-light)); 
-      color: #0b1f2a; 
-      font-weight: 600; 
-      padding: 12px 24px; 
-      border: none; 
-      border-radius: 8px; 
-      cursor: pointer; 
-      width: 100%; 
-      display: flex; 
-      justify-content: center; 
-      align-items: center; 
-      gap: 8px; 
+    .btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: #0b1f2a;
+      font-weight: 600;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
     }
     .btn:hover { filter: brightness(1.1); }
 
     .grid-container {
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 24px;
     }
 
@@ -137,14 +137,14 @@
     </div>
 
     <div class="grid-container">
-        
+
       <div class="card">
         <h3 style="margin-top: 0;"><i class="ph-duotone ph-upload-simple"></i> Subir Criterio Exitoso</h3>
         <p style="font-size: 13px; color: var(--text-muted);">Tu resolución pasará a validación por el Control Central.</p>
-        
+
         <label>Título del Conflicto</label>
         <input type="text" id="nd-titulo" placeholder="Ej. Rescisión por supuesta falta...">
-        
+
         <label>Categoría</label>
         <select id="nd-categoria">
           <option value="Sanciones">Sanciones Administrativas</option>
@@ -152,20 +152,20 @@
           <option value="Riesgos">Riesgos de Trabajo</option>
           <option value="Derechos">Derechos Contractuales</option>
         </select>
-        
+
         <label>Descripción de la Defensa</label>
         <textarea id="nd-descripcion" rows="4" placeholder="Detalla los artículos usados..."></textarea>
-        
+
         <label>Evidencia Documental (PDF)</label>
         <input type="file" id="nd-evidencia_pdf" accept="application/pdf">
-        
+
         <button class="btn" onclick="subirResolucionNucleo()">Enviar a Validación <i class="ph-bold ph-paper-plane-right"></i></button>
       </div>
 
       <div class="card">
         <h3 style="margin-top: 0;"><i class="ph-duotone ph-books"></i> Precedentes Oficiales</h3>
         <p style="font-size: 13px; color: var(--text-muted);">Criterios unificados de otras unidades (Aprobados).</p>
-        
+
         <div id="nd-lista_criterios" style="margin-top: 16px; overflow-y: auto; max-height: 500px; padding-right: 8px;">
           <p style="font-size: 13px; color: var(--text-muted);">Cargando precedentes...</p>
         </div>
@@ -195,14 +195,14 @@
         uiStatusTitle.style.color = "var(--danger)";
       }
       if (uiStatusDesc) uiStatusDesc.textContent = desc;
-      
+
       if (uiAppContainer) uiAppContainer.classList.add('hide');
       if (uiStatusContainer) uiStatusContainer.classList.remove('hide');
     }
 
     const nucleoWatchdog = setTimeout(() => {
       showNucleoError(
-        "Tiempo de espera agotado", 
+        "Tiempo de espera agotado",
         "No pudimos verificar tu sesión. Si estás viendo esto en un iframe, es posible que tu navegador esté bloqueando el acceso por motivos de seguridad."
       );
     }, 8000);
@@ -212,20 +212,20 @@
       try {
         const supabaseUrl = "https://axsncdwshdvsysrpikwj.supabase.co";
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-        
+
         // Inicializamos con nuestro propio nombre de variable
         nucleoSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         console.log("[Núcleo] Iniciando validación...");
         const { data: { session }, error: sessionError } = await nucleoSupabase.auth.getSession();
-        
+
         clearTimeout(nucleoWatchdog);
 
         if (sessionError) {
           showNucleoError("Error de Autenticación", sessionError.message);
           return;
         }
-        
+
         if (!session) {
           showNucleoError("Acceso Denegado", "No se detectó una sesión activa en este módulo. Inicia sesión en la plataforma principal.");
           return;
@@ -239,11 +239,11 @@
           console.log("[Núcleo] Acceso de Administrador.");
           nucleoDelegacionId = "ADMIN";
           nucleoDelegacionNombre = "Administrador General";
-          
+
           if (uiUnidadBadge) uiUnidadBadge.innerHTML = `<i class="ph-bold ph-shield-star"></i> ${nucleoDelegacionNombre}`;
           if (uiStatusContainer) uiStatusContainer.classList.add('hide');
           if (uiAppContainer) uiAppContainer.classList.remove('hide');
-          
+
           cargarPrecedentesNucleo();
           return;
         }
@@ -272,7 +272,7 @@
           showNucleoError("Privilegios Insuficientes", "Tu cuenta no está registrada como representación autorizada.");
           return;
         }
-        
+
         nucleoDelegacionId = userID;
         nucleoDelegacionNombre = authData.nombre_unidad;
 
@@ -352,7 +352,7 @@
           .order('fecha_creacion', { ascending: false });
 
         const lista = document.getElementById('nd-lista_criterios');
-        lista.innerHTML = ''; 
+        lista.innerHTML = '';
 
         if (error) {
           lista.innerHTML = '<p style="font-size: 13px; color: #ff6b6b;">Error al cargar los datos.</p>';
@@ -371,7 +371,7 @@
             <strong style="color: var(--primary-light);">${resolucion.nombre_delegacion}</strong><br>
             <span style="font-size: 14px; color: var(--text-main); font-weight: 600;">${resolucion.titulo_conflicto}</span><br>
             <span style="font-size: 12px; color: var(--text-muted); display: block; margin: 4px 0;">${resolucion.descripcion}</span>
-            <span style="display: inline-block; background: rgba(77,161,168,0.2); color: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-bottom: 8px;">${resolucion.categoria}</span><br>
+            <span style="display: inline-block; background: rgba(0,99,65,0.2); color: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-bottom: 8px;">${resolucion.categoria}</span><br>
             <a href="${resolucion.pdf_url}" target="_blank" style="color: var(--primary); font-size: 12px; text-decoration: none; font-weight: 600;">
               <i class="ph-bold ph-file-pdf"></i> Ver Documento
             </a>

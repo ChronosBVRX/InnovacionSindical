@@ -7,23 +7,23 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     :root {
-      --bg: #1b2e45;
+      --bg: #004b33;
       --panel: #2e4f77;
       --panel2: #395f8d;
       --txt: #f0fdfa;
       --muted: #bce9eb;
-      --primary: #4da1a8;
+      --primary: #006341;
       --primary-hover: #3b8289;
       --danger: #d9534f;
       --danger-hover: #c9302c;
       --ok: #45d39f;
-      --ring: rgba(77, 161, 168, .35);
+      --ring: rgba(0, 99, 65, .35);
       --shadow: 0 10px 25px rgba(0, 0, 0, .2);
       --shadow-hover: 0 15px 35px rgba(0, 0, 0, .4);
     }
 
     * { box-sizing: border-box; }
-    
+
     body {
       margin: 0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
@@ -96,7 +96,7 @@
     button:active { transform: scale(0.95); }
 
     .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 12px rgba(77, 161, 168, 0.4); }
+    .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 12px rgba(0, 99, 65, 0.4); }
 
     .btn-danger { background: var(--danger); color: white; }
     .btn-danger:hover { background: var(--danger-hover); box-shadow: 0 4px 12px rgba(217, 83, 79, 0.4); }
@@ -183,7 +183,7 @@
       display: block;
       background: #17304f;
       transition: transform 0.3s ease;
-      
+
       /* --- PROTECCIÓN DE IMAGEN --- */
       pointer-events: none; /* Hace que la imagen sea "invisible" al clic del mouse */
       user-select: none; /* Evita que la seleccionen como texto */
@@ -224,17 +224,17 @@
       text-align: center;
       color: var(--primary);
     }
-    
+
     .cargo-badge {
       display: inline-block;
-      background: rgba(77, 161, 168, 0.2);
+      background: rgba(0, 99, 65, 0.2);
       color: #e0f2f1;
       padding: 4px 10px;
       border-radius: 6px;
       font-weight: 600;
       font-size: 0.85rem;
       margin-bottom: 10px;
-      border: 1px solid rgba(77, 161, 168, 0.4);
+      border: 1px solid rgba(0, 99, 65, 0.4);
       align-self: flex-start;
     }
 
@@ -404,7 +404,7 @@
         flex-direction: column;
         gap: 8px;
       }
-      
+
       .main-category-title {
         font-size: 1.4rem;
         margin-bottom: 16px;
@@ -414,7 +414,7 @@
       .desc-text {
         display: none; /* Oculto por defecto en celular */
       }
-      
+
       .desc-text.show {
         display: block; /* Se muestra al hacer clic */
         animation: fadeInUp 0.3s ease;
@@ -433,7 +433,7 @@
     <div class="topbar">
       <div class="title-group">
         <button id="btnBack" class="btn-muted"><i class="fa-solid fa-arrow-left"></i> Volver</button>
-        
+
         <div class="title">
           <i class="fa-solid fa-sitemap"></i> Estructura del Comité
           <span id="adminBadge" class="admin-badge hidden"><i class="fa-solid fa-shield-halved"></i> Admin</span>
@@ -457,7 +457,7 @@
         <input id="area" type="text" placeholder="Cargo en la cartera (Ej. Titular, Auxiliar)" />
         <input id="categoria" type="text" placeholder="Categoría Laboral (Ej. Médico, Administrativo)" />
         <input id="unidad" type="text" placeholder="Unidad de adscripción" />
-        
+
         <input id="foto" type="url" placeholder="Pega aquí el enlace de Google Drive (Ej. https://drive.google.com/file/...)" style="grid-column: 1 / -1;" />
 
         <textarea id="descripcion" placeholder="Descripción o reseña del integrante"></textarea>
@@ -577,7 +577,7 @@
         setDebug('Sin registros en la base de datos.', 'ok', 'fa-check');
       } else {
         setDebug('Estructura cargada correctamente.', 'ok', 'fa-cloud-arrow-down');
-        setTimeout(() => debugBox.classList.add('hidden'), 3000); 
+        setTimeout(() => debugBox.classList.add('hidden'), 3000);
       }
       renderComite(data || []);
     }
@@ -613,14 +613,14 @@
       let animDelay = 0;
 
       for (const [nombreBloque, miembros] of Object.entries(grupos)) {
-        if (miembros.length === 0) continue; 
+        if (miembros.length === 0) continue;
 
         html += `
           <div class="main-category-group" style="animation-delay: ${animDelay}s">
             <h1 class="main-category-title"><i class="fa-solid fa-layer-group"></i> ${escapeHtml(nombreBloque)}</h1>
             <div class="grid">
         `;
-        
+
         animDelay += 0.1;
 
         html += miembros.map(item => {
@@ -636,7 +636,7 @@
               <div class="meta"><i class="fa-solid fa-briefcase"></i> <span><strong>Cartera:</strong> ${escapeHtml(item.cartera || '-')}</span></div>
               <div class="meta"><i class="fa-solid fa-user-tag"></i> <span><strong>Categoría:</strong> ${escapeHtml(item.categoria || '-')}</span></div>
               <div class="meta"><i class="fa-solid fa-location-dot"></i> <span><strong>Unidad:</strong> ${escapeHtml(item.unidad || '-')}</span></div>
-              
+
               ${(item.descripcion || item.desc) ? `
                 <div class="desc-container">
                   <div class="desc-text">${escapeHtml(item.descripcion || item.desc)}</div>
@@ -690,7 +690,7 @@
       unidad.value = item.unidad || '';
       foto.value = item.foto || '';
       descripcion.value = item.descripcion || item.desc || '';
-      
+
       formMessage.innerHTML = `<i class="fa-solid fa-pen"></i> Editando registro activo`;
       adminPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -704,7 +704,7 @@
 
     memberForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       btnSubmitForm.disabled = true;
       formMessage.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Guardando datos...`;
 

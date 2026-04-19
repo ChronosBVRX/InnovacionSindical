@@ -9,14 +9,14 @@
     <style>
         :root {
             --bg-body: transparent; /* Transparente para heredar el fondo del iframe si es necesario, o el color base */
-            --bg-base: #1b2e45;
+            --bg-base: #004b33;
             --panel-base: 46, 79, 119;
-            --primary: #4da1a8; 
-            --primary-light: #7ad1d6;
+            --primary: #006341;
+            --primary-light: #8fd9b6;
             --success: #4ade80;
-            --text-main: #f0fdfa; 
+            --text-main: #f0fdfa;
             --text-muted: #bce9eb;
-            --ring: rgba(77, 161, 168, 0.35);
+            --ring: rgba(0, 99, 65, 0.35);
             --radius: 12px;
             --glass-bg: rgba(var(--panel-base), 0.25);
         }
@@ -107,7 +107,7 @@
             font-size: 15px;
         }
 
-        .accordion-header:hover { background: rgba(77, 161, 168, 0.1); }
+        .accordion-header:hover { background: rgba(0, 99, 65, 0.1); }
 
         .accordion-header span {
             font-size: 20px;
@@ -130,7 +130,7 @@
         }
 
         .accordion-content p { margin-bottom: 12px; }
-        
+
         .accordion-content ul {
             margin-left: 20px;
             margin-bottom: 12px;
@@ -277,7 +277,7 @@
         header.addEventListener('click', () => {
             const content = header.nextElementSibling;
             const span = header.querySelector('span');
-            
+
             // Cerrar otros acordeones si se desea (opcional)
             /* document.querySelectorAll('.accordion-content').forEach(c => {
                 if (c !== content) {
@@ -285,9 +285,9 @@
                     c.previousElementSibling.querySelector('span').style.transform = 'rotate(0deg)';
                 }
             }); */
-            
+
             content.classList.toggle('active');
-            
+
             // Animar el ícono de más/menos
             if(content.classList.contains('active')) {
                 span.textContent = '−';
