@@ -13,7 +13,7 @@
 
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#1b2e45">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="PSD">
   <link rel="apple-touch-icon" href="./assets/icon-192.png">
@@ -31,7 +31,6 @@
       object-src 'none';
       base-uri 'self';
       form-action 'self';
-      frame-ancestors 'self';
       upgrade-insecure-requests;
     "
   />
@@ -48,6 +47,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
 
   <link rel="icon" href="https://raw.githubusercontent.com/ChronosBVRX/PlataformaComunitaria/main/Logo%20PSC.jpeg" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root {
