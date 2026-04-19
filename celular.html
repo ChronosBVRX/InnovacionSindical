@@ -12,16 +12,16 @@
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
-  
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
   <style>
     :root {
       --panel-base: 46, 79, 119;
-      --primary: #4da1a8; --primary-light: #7ad1d6;
+      --primary: #006341; --primary-light: #8fd9b6;
       --text-main: #f0fdfa;
       --text-muted: rgba(240, 253, 250, 0.65);
-      --ring: rgba(77, 161, 168, .35);
+      --ring: rgba(0, 99, 65, .35);
       --radius: 12px;
     }
 
@@ -69,7 +69,7 @@
       background: #000;
       justify-content: center; align-items: center;
     }
-    
+
     #preview-img { max-width: 100%; max-height: 100%; display: block; object-fit: contain; }
 
     /* CONTENEDOR PARA SUBIR PDF */
@@ -144,7 +144,7 @@
     <i class="ph-duotone ph-file-pdf" style="font-size: 80px; color: var(--primary-light); margin-bottom: 20px;"></i>
     <h3 style="margin: 0 0 10px 0;">Sube tu archivo PDF</h3>
     <p style="color: var(--text-muted); margin-bottom: 30px;">Recuerda que el documento no debe superar las 5 hojas permitidas.</p>
-    
+
     <input type="file" id="pdf-file-input" accept="application/pdf" style="display: none;">
     <button class="btn" style="width: 80%;" onclick="document.getElementById('pdf-file-input').click()">
       <i class="ph-bold ph-upload-simple"></i> Seleccionar PDF
@@ -173,7 +173,7 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const idSesion = urlParams.get('sesion') || 'TEST';
-    const tipoScan = urlParams.get('tipo') || 'identificacion'; 
+    const tipoScan = urlParams.get('tipo') || 'identificacion';
 
     const video = document.getElementById('video');
     const cropArea = document.getElementById('crop-area');
@@ -193,7 +193,7 @@
     let imagenReverso = null;
     let streamActual = null;
     let scanicScanner = null;
-    let autoscanDataUrl = null; 
+    let autoscanDataUrl = null;
 
     function setOverlay(show, titleText = "Procesando…", descText = "Por favor espera.") {
       overlayTitle.innerText = titleText;
@@ -229,7 +229,7 @@
       document.getElementById('camera-section').style.display = 'none';
       document.getElementById('controls-section').style.display = 'none';
       document.getElementById('pdf-upload-container').style.display = 'flex';
-      
+
       titulo.innerText = "Enviar Documento PDF";
       subtitulo.innerText = "Selecciona un archivo de tu dispositivo";
 
@@ -255,7 +255,7 @@
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
             const pdf = await pdfjsLib.getDocument(typedarray).promise;
-            
+
             // Validación de las 5 hojas
             if (pdf.numPages > 5) {
               setOverlay(false);
@@ -354,7 +354,7 @@
       previewImg.src = dataUrl;
       video.style.display = 'none';
       guideline.style.display = 'none';
-      
+
       btnCapturar.classList.add('hide');
       grupoConfirmar.classList.remove('hide');
 
@@ -407,9 +407,9 @@
         if (result && result.success && result.output) {
           return result.output.toDataURL('image/jpeg', 0.95);
         }
-        return null; 
+        return null;
       } catch (e) {
-        return null; 
+        return null;
       }
     }
 
@@ -440,7 +440,7 @@
     function reintentarFoto() {
       autoscanDataUrl = null;
       if (cropper) { cropper.destroy(); cropper = null; }
-      
+
       cropArea.style.display = 'none';
       video.style.display = 'block';
       guideline.style.display = 'flex';
@@ -509,7 +509,7 @@
 
       const canvasFinal = document.createElement('canvas');
       const ctxFinal = canvasFinal.getContext('2d');
-      canvasFinal.width = 1275; 
+      canvasFinal.width = 1275;
       canvasFinal.height = 1650;
 
       ctxFinal.fillStyle = "white";

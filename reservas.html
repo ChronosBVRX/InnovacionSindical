@@ -7,20 +7,20 @@
   <link rel="icon" href="https://github.com/ChronosBVRX/PlataformaComunitaria/blob/main/Logo%20Unidad%20en%20Accion.png?raw=true">
   <style>
     :root{
-      --bg:#1b2e45;
+      --bg:#004b33;
       --panel:#2e4f77;
-      --ring:rgba(77,161,168,.45);
+      --ring:rgba(0,99,65,.45);
       --txt:#f0fdfa;
       --muted:#bce9eb;
-      --primary:#4da1a8;
-      --sky:#7ad1d6;
+      --primary:#006341;
+      --sky:#8fd9b6;
       --danger:#ff5b5b;
     }
     *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto}
 
     body{
       min-height:100vh;
-      background:linear-gradient(180deg,#152336,#1b2e45);
+      background:linear-gradient(180deg,#003423,#004b33);
       color:var(--txt);
       display:flex;flex-direction:column;
       overflow-x:hidden;
@@ -38,7 +38,7 @@
       padding:10px 16px;
       background:rgba(30,50,80,.75);
       backdrop-filter:blur(8px);
-      border-bottom:1px solid rgba(77,161,168,.35)
+      border-bottom:1px solid rgba(0,99,65,.35)
     }
     header img{height:40px}
     header h1{font-size:18px;color:#dcfce7;display:flex;align-items:center;gap:10px}
@@ -54,12 +54,12 @@
     nav{
       width:260px;
       background:rgba(27,46,69,.85);
-      border-right:1px solid rgba(77,161,168,.25);
+      border-right:1px solid rgba(0,99,65,.25);
       padding:12px;display:flex;flex-direction:column;gap:10px;
       flex-shrink:0;
     }
     nav button{
-      border:none;background:rgba(77,161,168,.12);
+      border:none;background:rgba(0,99,65,.12);
       color:var(--txt);
       padding:10px;border-radius:10px;text-align:left;
       cursor:pointer;transition:.2s
@@ -74,7 +74,7 @@
 
     .card{
       background:var(--panel);
-      border:1px solid rgba(77,161,168,.35);
+      border:1px solid rgba(0,99,65,.35);
       border-radius:16px;
       padding:20px;
       box-shadow:0 8px 25px rgba(0,0,0,.25);
@@ -86,7 +86,7 @@
     .muted{color:var(--muted)}
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     input, textarea, select{
-      background:#1b2e45;border:1px solid rgba(77,161,168,.4);
+      background:#004b33;border:1px solid rgba(0,99,65,.4);
       color:#f0fdfa;padding:9px 11px;border-radius:10px
     }
     textarea{min-height:90px;resize:vertical}
@@ -99,12 +99,12 @@
     }
     .btn:hover{filter:brightness(1.12)}
     .subtle-btn{
-      border:1px solid rgba(77,161,168,.28);
-      background:rgba(77,161,168,.1);
+      border:1px solid rgba(0,99,65,.28);
+      background:rgba(0,99,65,.1);
       color:#fff;padding:8px 12px;border-radius:10px;
       cursor:pointer;font-size:13px
     }
-    .subtle-btn:hover{background:rgba(77,161,168,.25)}
+    .subtle-btn:hover{background:rgba(0,99,65,.25)}
     .danger-btn{
       border:1px solid rgba(255,90,90,.35);
       background:rgba(255,90,90,.12);
@@ -125,23 +125,23 @@
     }
     .asset-card{
       background:#233b5c;
-      border:1px solid rgba(77,161,168,.30);
+      border:1px solid rgba(0,99,65,.30);
       border-radius:14px;
       overflow:hidden;
       display:flex;flex-direction:column
     }
     .asset-img{
-      height:150px;background:#1b2e45;
+      height:150px;background:#004b33;
       display:flex;align-items:center;justify-content:center;
-      border-bottom:1px solid rgba(77,161,168,.25)
+      border-bottom:1px solid rgba(0,99,65,.25)
     }
     .asset-img img{width:100%;height:100%;object-fit:cover}
     .asset-body{padding:12px}
     .pill{
       display:inline-flex;align-items:center;gap:6px;
       padding:4px 8px;border-radius:999px;
-      background:rgba(77,161,168,.15);
-      border:1px solid rgba(77,161,168,.35);
+      background:rgba(0,99,65,.15);
+      border:1px solid rgba(0,99,65,.35);
       font-size:12px;color:#d1f5f7
     }
     .slots{
@@ -151,7 +151,7 @@
     }
     .slot{
       background:#233b5c;
-      border:1px solid rgba(77,161,168,.28);
+      border:1px solid rgba(0,99,65,.28);
       border-radius:12px;
       padding:10px 12px;
       display:flex;justify-content:space-between;align-items:center;gap:10px
@@ -179,11 +179,11 @@
       flex-direction: column;
       align-items: center;
       padding-top: 15%; /* Espacio superior */
-      border-radius: 16px; 
+      border-radius: 16px;
     }
     .locked-box {
       position: sticky; /* Se mantiene en pantalla al hacer scroll */
-      top: 30%; 
+      top: 30%;
       background: rgba(30, 50, 80, 0.95);
       border: 1px solid var(--sky);
       padding: 20px 30px;
@@ -407,7 +407,7 @@
               <button class="danger-btn" type="button" id="btnDeleteAsset" style="display:none">🗑️ Eliminar</button>
             </div>
 
-            <div class="card" style="background:#1b2e45;border-radius:12px">
+            <div class="card" style="background:#004b33;border-radius:12px">
               <div style="font-weight:800">🖼️ Foto principal (Storage bucket: assets)</div>
               <div class="meta" style="margin-top:6px">Se sube como <code>asset_id/portada.jpg</code> y se guarda el URL en el activo.</div>
               <input id="assetPhoto" type="file" accept="image/png,image/jpeg,image/webp">
@@ -445,7 +445,7 @@
             <div class="meta" id="blockStatus"></div>
           </form>
 
-          <div class="card" style="margin-top:12px;background:#1b2e45;border-radius:12px">
+          <div class="card" style="margin-top:12px;background:#004b33;border-radius:12px">
             <div style="font-weight:800">Lista de bloqueos próximos</div>
             <div id="blocksList" class="meta" style="margin-top:8px">—</div>
           </div>
@@ -774,7 +774,7 @@
     times.forEach(t=>{
       const slotStart = combineDateTimeLocal(dateISO, t);
       const slotEndRaw = addMinutes(slotStart, slotMin);
-      const slotEnd = addMinutes(slotEndRaw, bufMin); 
+      const slotEnd = addMinutes(slotEndRaw, bufMin);
 
       const isBusy = busy.some(r => overlaps(slotStart, slotEnd, r.start_at, r.end_at));
 
@@ -807,7 +807,7 @@
           return;
         }
 
-        PENDING_RESERVE = { start_at: slotStart, end_at: slotEndRaw }; 
+        PENDING_RESERVE = { start_at: slotStart, end_at: slotEndRaw };
         $("detailBox").textContent = `Vas a reservar: ${a.name} el ${dateISO} de ${t} a ${fmtHM(slotEndRaw)}.`;
         $("reserveWhen").textContent = `📌 ${fmtDT(slotStart)} – ${fmtDT(slotEndRaw)}`;
         $("reserveStatus").textContent = "";

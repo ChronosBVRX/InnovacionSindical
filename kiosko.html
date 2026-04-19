@@ -8,17 +8,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
   <style>
     :root {
-      --bg-body: #1b2e45; --bg-body-end: #152336;
+      --bg-body: #004b33; --bg-body-end: #003423;
       --panel-base: 46, 79, 119;
-      --primary: #4da1a8; --primary-light: #7ad1d6;
+      --primary: #006341; --primary-light: #8fd9b6;
       --text-main: #f0fdfa; --text-muted: #bce9eb;
-      --ring: rgba(77, 161, 168, .35);
+      --ring: rgba(0, 99, 65, .35);
       --radius: 16px;
       --glass-bg: rgba(var(--panel-base), 0.35);
     }
@@ -33,7 +33,7 @@
 
     body::before {
       content: ""; position: absolute; inset: 0; opacity: .06; z-index: -1;
-      background-image: linear-gradient(to right, var(--primary) 1px, transparent 1px), 
+      background-image: linear-gradient(to right, var(--primary) 1px, transparent 1px),
                         linear-gradient(to bottom, var(--primary) 1px, transparent 1px);
       background-size: 40px 40px;
     }
@@ -46,7 +46,7 @@
       display: flex; align-items: center; gap: 8px; font-size: 14px;
       font-weight: 600; transition: 0.3s; z-index: 50;
     }
-    .btn-flotante:hover { background: rgba(77, 161, 168, 0.2); color: var(--primary-light); }
+    .btn-flotante:hover { background: rgba(0, 99, 65, 0.2); color: var(--primary-light); }
 
     .container { width: 100%; max-width: 900px; padding: 40px; text-align: center; }
 
@@ -59,27 +59,27 @@
     p.subtitle { color: var(--text-muted); font-size: 18px; margin-bottom: 40px; }
 
     .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    
+
     .card-btn {
       background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--ring);
       border-radius: var(--radius); padding: 40px 20px; cursor: pointer; transition: all 0.3s ease;
       display: flex; flex-direction: column; align-items: center; gap: 16px;
     }
-    
+
     .card-btn:hover {
       border-color: var(--primary-light); background: rgba(var(--panel-base), 0.6);
-      transform: translateY(-5px); box-shadow: 0 10px 30px rgba(77, 161, 168, 0.2);
+      transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 99, 65, 0.2);
     }
-    
+
     .card-btn i { font-size: 64px; color: var(--primary-light); }
     .card-btn h3 { margin: 0; font-size: 20px; }
     .card-btn p { margin: 0; font-size: 13px; color: var(--text-muted); }
 
     .qr-box {
       background: white; padding: 20px; border-radius: var(--radius);
-      display: inline-block; margin: 20px 0; box-shadow: 0 0 40px rgba(77,161,168,0.3);
+      display: inline-block; margin: 20px 0; box-shadow: 0 0 40px rgba(0,99,65,0.3);
     }
-    
+
     .session-id { font-family: monospace; font-size: 24px; color: var(--primary-light); letter-spacing: 2px; margin-top: 10px; }
 
     /* Contenedor flexible para imagen o PDF */
@@ -98,30 +98,30 @@
       display: inline-flex; align-items: center; gap: 10px; transition: 0.3s;
     }
     .btn-action:hover { background: var(--primary-light); transform: scale(1.05); }
-    
+
     .btn-secondary { background: transparent; color: var(--text-main); border: 1px solid var(--ring); }
     .btn-secondary:hover { background: rgba(255,255,255,0.1); }
 
     @media print {
       body * { visibility: hidden !important; }
       body { background: white !important; }
-      
-      #doc-image, #doc-pdf { 
-        visibility: visible !important; 
-        position: absolute !important; 
-        left: 0 !important; 
-        top: 0 !important; 
-        width: 100vw !important; 
-        height: 100vh !important; 
-        max-width: none !important; 
+
+      #doc-image, #doc-pdf {
+        visibility: visible !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: none !important;
         max-height: none !important;
-        border: none !important; 
-        margin: 0 !important; 
-        padding: 0 !important; 
+        border: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
         border-radius: 0 !important;
       }
       #doc-image { object-fit: contain !important; }
-      
+
       @page { margin: 0; size: auto; }
     }
   </style>
@@ -133,18 +133,18 @@
   </button>
 
   <div class="container">
-    
+
     <div id="view-menu" class="view active">
       <h1>Kiosko de Recepción Digital</h1>
       <p class="subtitle">Selecciona el tipo de documento que deseas enviar con tu celular</p>
-      
+
       <div class="options-grid">
         <div class="card-btn" onclick="iniciarSesion('identificacion')">
           <i class="ph-duotone ph-identification-card"></i>
           <h3>Identificación</h3>
           <p>Escanea frente y reverso.<br>Impresión en una hoja.</p>
         </div>
-        
+
         <div class="card-btn" onclick="iniciarSesion('documento')">
           <i class="ph-duotone ph-file-text"></i>
           <h3>Escáner Físico</h3>
@@ -162,10 +162,10 @@
     <div id="view-qr" class="view">
       <h1>Conecta tu Celular</h1>
       <p class="subtitle">Apunta con la cámara de tu celular a este código para continuar.</p>
-      
+
       <div class="qr-box" id="qrcode"></div>
       <div>ID de Sesión: <span id="session-display" class="session-id">----</span></div>
-      
+
       <br><br>
       <button class="btn-action btn-secondary" onclick="mostrarVista('view-menu')">
         <i class="ph-bold ph-arrow-left"></i> Cancelar y Volver
@@ -175,12 +175,12 @@
     <div id="view-result" class="view">
       <h1>¡Documento Recibido!</h1>
       <p class="subtitle">Verifica que sea correcto antes de imprimir.</p>
-      
+
       <div class="document-preview-container">
         <img id="doc-image" src="" alt="Vista previa del documento">
         <iframe id="doc-pdf" src=""></iframe>
       </div>
-      
+
       <div style="display: flex; gap: 20px; justify-content: center;">
         <button class="btn-action" onclick="imprimirDocumento()">
           <i class="ph-bold ph-printer"></i> Imprimir Ahora
@@ -196,7 +196,7 @@
   <script>
     let qrCodeObj = null;
     let sesionActual = '';
-    
+
     const API_URL = 'https://sinos-api.onrender.com';
     const socket = io(API_URL);
 
@@ -211,7 +211,7 @@
       if (archivoBase64 && archivoBase64.startsWith('data:application/pdf')) {
         imgPreview.style.display = 'none';
         pdfPreview.style.display = 'block';
-        
+
         // Convertimos el Base64 a un Blob URL para que el iframe lo cargue perfecto sin romperse
         fetch(archivoBase64)
           .then(res => res.blob())
@@ -227,7 +227,7 @@
         imgPreview.style.display = 'block';
         imgPreview.src = archivoBase64;
       }
-      
+
       mostrarVista('view-result');
     });
 
@@ -244,8 +244,8 @@
       const urlParaCelular = `${baseUrl}celular.html?sesion=${sesionActual}&tipo=${tipo}`;
 
       const contenedorQR = document.getElementById('qrcode');
-      contenedorQR.innerHTML = ''; 
-      
+      contenedorQR.innerHTML = '';
+
       qrCodeObj = new QRCode(contenedorQR, {
         text: urlParaCelular,
         width: 250, height: 250,
@@ -259,7 +259,7 @@
 
     function imprimirDocumento() {
       const pdfPreview = document.getElementById('doc-pdf');
-      
+
       if (pdfPreview.style.display === 'block') {
         try {
           // Disparamos la impresión directa del PDF en el iframe

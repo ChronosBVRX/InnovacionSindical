@@ -8,20 +8,20 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
-  
+
   <style>
     :root {
       --bg-body: transparent;
       --panel-base: 46, 79, 119;
-      --primary: #4da1a8; 
-      --primary-light: #7ad1d6;
+      --primary: #006341;
+      --primary-light: #8fd9b6;
       --success: #4ade80;
       --danger: #ff7b7b;
-      --text-main: #f0fdfa; 
+      --text-main: #f0fdfa;
       --text-muted: #bce9eb;
-      --ring: rgba(77, 161, 168, .35);
+      --ring: rgba(0, 99, 65, .35);
     }
-    
+
     body { margin: 0; padding: 24px; background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; box-sizing: border-box; }
     * { box-sizing: border-box; }
 
@@ -36,22 +36,22 @@
     .loading-state i { font-size: 48px; margin-bottom: 16px; }
 
     .auth-wall { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; background: rgba(var(--panel-base), 0.2); border: 1px dashed var(--primary-light); border-radius: 16px; padding: 32px; }
-    .auth-wall i { font-size: 64px; color: var(--primary-light); margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(122,209,214,0.3)); }
+    .auth-wall i { font-size: 64px; color: var(--primary-light); margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(143,217,182,0.3)); }
     .auth-wall h2 { margin: 0 0 12px 0; font-size: 24px; }
     .auth-wall p { margin: 0 0 24px 0; color: var(--text-muted); max-width: 400px; line-height: 1.5; }
 
     .blur-container { background: rgba(0, 0, 0, 0.25); border-radius: 12px; position: relative; overflow: hidden; border: 1px solid var(--ring); min-height: 150px;}
     .blur-content { filter: blur(8px); opacity: 0.4; pointer-events: none; user-select: none; transition: filter 0.3s;}
     .blur-content.unlocked { filter: blur(0); opacity: 1; pointer-events: auto; user-select: auto; }
-    
+
     .promo-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(27, 46, 69, 0.8); text-align: center; padding: 24px; z-index: 10; }
     .promo-overlay i { font-size: 42px; color: var(--primary-light); margin-bottom: 12px; }
     .promo-overlay p { margin: 0 0 8px 0; font-size: 16px; font-weight: 500; line-height: 1.4; color: var(--text-main); }
     .promo-overlay .highlight { color: var(--primary-light); font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-top: 4px;}
-    
+
     .tramite-item { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
     .tramite-item:last-child { border-bottom: none; }
-    .tramite-rank { font-size: 38px; font-weight: 800; color: var(--primary-light); background: rgba(77, 161, 168, 0.15); padding: 12px 24px; border-radius: 12px; text-align: center; line-height: 1;}
+    .tramite-rank { font-size: 38px; font-weight: 800; color: var(--primary-light); background: rgba(0, 99, 65, 0.15); padding: 12px 24px; border-radius: 12px; text-align: center; line-height: 1;}
     .tramite-rank span { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-top: 4px; }
 
     .pdf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
@@ -70,7 +70,7 @@
     .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
     .form-control { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--ring); background: rgba(21, 35, 54, 0.8); color: var(--text-main); font-family: 'Inter', sans-serif; }
     .form-control:focus { outline: none; border-color: var(--primary-light); }
-    
+
     .btn { background: var(--primary); color: var(--bg-body); border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: all 0.2s; }
     .btn:hover { background: var(--primary-light); transform: translateY(-2px); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
@@ -99,7 +99,7 @@
 
     <div class="card" style="padding: 0; overflow: hidden; border: none; background: transparent;">
       <div class="blur-container" id="user-data-container">
-        
+
         <div class="blur-content" id="real-data-render">
           <div class="tramite-item" style="display: flex; flex-direction: column; gap: 16px; background: rgba(var(--panel-base), 0.3);">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -167,7 +167,7 @@
   <script>
     const SUPABASE_URL = "https://axsncdwshdvsysrpikwj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4c25jZHdzaGR2c3lzcnBpa3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjkwMjQsImV4cCI6MjA3NTgwNTAyNH0.oapcH219puVjaR2DcG7dX51uhwVn530L1hhz8ASv7qs";
-    
+
     let supabaseApp = null;
     let isAdmin = false;
     let currentUserMatricula = null;
@@ -189,21 +189,21 @@
 
         if (result?.error) throw result.error;
         if (!session) { document.getElementById('auth-wall').classList.remove('hide'); return; }
-        
+
         document.getElementById('main-content').classList.remove('hide');
 
         const { data: prof } = await supabaseApp.from('profiles').select('role, matricula').eq('user_id', session.user.id).maybeSingle();
-        
+
         if (prof) {
           currentUserMatricula = prof.matricula;
           if (prof.role === 'admin') {
             isAdmin = true;
             document.getElementById('admin-section').classList.remove('hide');
             document.getElementById('pdf-section').classList.remove('hide');
-            
+
             document.getElementById('promo-wall').style.display = 'none';
             document.getElementById('real-data-render').classList.add('unlocked');
-            
+
             loadPDFs();
           }
         }
@@ -222,7 +222,7 @@
     // --- RENDERIZAR DATOS DEL USUARIO ---
     async function loadUserRank() {
       const container = document.getElementById('real-data-render');
-      
+
       if (!currentUserMatricula) {
         container.innerHTML = `<div style="padding: 20px; text-align:center; color: var(--danger);">No tienes una matrícula registrada en tu perfil. Modifícalo para poder consultar.</div>`;
         return;
@@ -261,7 +261,7 @@
                 <span style="color: var(--text-muted); font-size: 13px;">Arriba de ti:</span>
               </div>
               <div style="font-weight: 700; color: var(--text-main); margin-bottom: 16px; padding-left: 28px;">${t.nombre_arriba}</div>
-              
+
               <div style="border-top: 1px dashed rgba(255,255,255,0.1); margin-bottom: 16px;"></div>
 
               <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
@@ -282,25 +282,25 @@
       let rawRecords = [];
       const tramiteTitulo = document.getElementById('docTitle').value;
       const periodoInput = document.getElementById('docPeriodo').value;
-      
+
       const nameRegex = /[A-ZÑ ]+\/[A-ZÑ ]+\/[A-ZÑ ]+/;
-      const matRegex = /\b\d{8}\b/; 
-      
+      const matRegex = /\b\d{8}\b/;
+
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
         let currentName = null;
-        
+
         for (let item of content.items) {
-          let text = item.str.trim().replace(/,/g, ' '); 
+          let text = item.str.trim().replace(/,/g, ' ');
           let foundName = text.match(nameRegex);
           let foundMat = text.match(matRegex);
 
           if (foundName) currentName = foundName[0].trim();
-          
+
           if (foundMat && currentName) {
             rawRecords.push({ nombre: currentName, matricula: foundMat[0] });
-            currentName = null; 
+            currentName = null;
           }
         }
       }
@@ -342,7 +342,7 @@
 
       try {
         const finalRecords = await extractDataFromPDF(fileInput);
-        
+
         if (finalRecords.length === 0) {
           throw new Error("No se encontraron matrículas o nombres legibles en este PDF.");
         }
@@ -361,8 +361,8 @@
 
         statusDiv.innerHTML = `<span style="color: var(--success)">✅ ¡Éxito! Se procesaron y ocultaron ${finalRecords.length} lugares en la plataforma.</span>`;
         document.getElementById('upload-form').reset();
-        
-        loadPDFs(); 
+
+        loadPDFs();
         loadUserRank();
 
       } catch (err) {
@@ -392,10 +392,10 @@
     }
 
     async function deletePDF(id, event) {
-      event.preventDefault(); 
+      event.preventDefault();
       if (!isAdmin || !confirm('¿Eliminar este PDF del registro? (Esto no borra los lugares en BD, solo el archivo)')) return;
       await supabaseApp.from('listados_pdf').delete().eq('id', id);
-      loadPDFs(); 
+      loadPDFs();
     }
 
     document.addEventListener('DOMContentLoaded', init);
