@@ -1051,7 +1051,7 @@
       'https://tuperfil.imss.gob.mx',
       'https://www.facebook.com'
     ]);
-    const shouldOpenOutsideIframe = (app) => {
+    window.shouldOpenOutsideIframe = window.shouldOpenOutsideIframe || function (app) {
       if (!app) return false;
       return app.id === 'perfil-imss' || app.id === 'tarjeton';
     };
@@ -1201,7 +1201,7 @@
 
           tile.onclick = () => {
             const url = a.href || a.iframe;
-            if (shouldOpenOutsideIframe(a)) {
+            if (window.shouldOpenOutsideIframe(a)) {
               this.openSafeExternal(url);
             } else {
               this.openApp(a.id);
@@ -1244,7 +1244,7 @@
         desc.textContent = app.desc;
         iconWrap.innerHTML = `<i class="${app.iconClass}"></i>`;
         const target = app.iframe || app.href || 'about:blank';
-        if (shouldOpenOutsideIframe(app)) {
+        if (window.shouldOpenOutsideIframe(app)) {
           this.openSafeExternal(target);
           this.goHome();
           return;
